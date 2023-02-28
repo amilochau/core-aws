@@ -1,0 +1,33 @@
+<Project>
+
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <Company>Milochau</Company>
+    <Authors>Antoine Milochau</Authors>
+    <Copyright>Copyright © Milochau 2011-$([System.DateTime]::UtcNow.ToString(`yyyy`))</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>$(GITHUB_REPOSITORY)</PackageProjectUrl>
+    <RepositoryUrl>$(GITHUB_SERVER_URL)/$(GITHUB_REPOSITORY)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>$(GITHUB_REF)</RepositoryBranch>
+    <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
+    
+    <Version>15.1.2</Version>
+    <InformationalVersion Condition="('$(GITHUB_ACTION)' != '') And ('$(GITHUB_SHA)' != '')">$(Version)+$(GITHUB_ACTION)-$(GITHUB_SHA)</InformationalVersion>
+    <InformationalVersion Condition="('$(GITHUB_ACTION)' == '') Or ('$(GITHUB_SHA)' == '')">$(Version)+local</InformationalVersion>
+  </PropertyGroup>
+
+  <!-- Ensure InternalsVisibleTo for tests inside business assemblies only -->
+  <ItemGroup Condition="'$(IsTestProject)'!='true'">
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  
+</Project>

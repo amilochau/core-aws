@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:4000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONVENTION__APPLICATION": "maps",
+        "CONVENTION__HOST": "dev",
+        "CONVENTION__PREFIX": "maps-dev"
+      }
+    }
+  }
+}
