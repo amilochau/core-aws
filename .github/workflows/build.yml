@@ -10,11 +10,12 @@ on:
     - main
 
 env:
-  PROJECTS_BUILD: './src/Milochau.Core.Aws.sln'
-  PROJECTS_TESTS: './src/Milochau.Core.Aws.sln'
+  PROJECT_API_BUILD: './src/Milochau.Core.Aws.sln'
+  PROJECT_API_TESTS: './src/Milochau.Core.Aws.sln'
   DOTNET_VERSION: 7.0.x
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  VERBOSITY: normal
 
 jobs:
   build:
@@ -22,9 +23,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build and test projects
-        uses: amilochau/github-actions/build/netcore@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
         with:
-          dotnetVersion: ${{ env.DOTNET_VERSION }}
-          projectsToBuild: ${{ env.PROJECTS_BUILD }}
-          projectsToTest: ${{ env.PROJECTS_TESTS }}
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore packages
+        shell: pwsh
+        run: dotnet restore ${{ env.PROJECT_API_BUILD }} --verbosity ${{ env.VERBOSITY }}
+      - name: Build application
+        shell: pwsh
+        run: dotnet build ${{ env.PROJECT_API_BUILD }} --configuration Release --no-restore --verbosity ${{ env.VERBOSITY }}
+      - name: Run tests
+        shell: pwsh
+        run: dotnet test ${{ env.PROJECT_API_TESTS }} --configuration Release --no-restore --no-build --verbosity ${{ env.VERBOSITY }}
+
