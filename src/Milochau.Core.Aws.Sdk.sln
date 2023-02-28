@@ -3,19 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC428F01-F358-43AD-A32E-A04CF48834F3}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference Projects", "Reference Projects", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries Projects", "Libraries Projects", "{CB7C2181-2BFA-4105-9CAE-6520D08F9664}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ReferenceProjects.Integration", "Reference Projects\Milochau.Core.Aws.ReferenceProjects.Integration\Milochau.Core.Aws.ReferenceProjects.Integration.csproj", "{FBAF5679-B6BC-471D-B84F-3014CB938613}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ReferenceProjects.LambdaFunction", "Reference Projects\Milochau.Core.Aws.ReferenceProjects.LambdaFunction\Milochau.Core.Aws.ReferenceProjects.LambdaFunction.csproj", "{593FC0DF-9A33-4374-BCA1-005B63C3FB8C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Abstractions", "Libraries Projects\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj", "{E2A9770E-03C2-4072-9B18-7F04C1D3E687}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ApiGateway", "Libraries Projects\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj", "{53787035-4E4E-4B75-A215-CA5E74B1E4D7}"
@@ -30,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FBAF5679-B6BC-471D-B84F-3014CB938613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBAF5679-B6BC-471D-B84F-3014CB938613}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBAF5679-B6BC-471D-B84F-3014CB938613}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBAF5679-B6BC-471D-B84F-3014CB938613}.Release|Any CPU.Build.0 = Release|Any CPU
-		{593FC0DF-9A33-4374-BCA1-005B63C3FB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{593FC0DF-9A33-4374-BCA1-005B63C3FB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{593FC0DF-9A33-4374-BCA1-005B63C3FB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{593FC0DF-9A33-4374-BCA1-005B63C3FB8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E2A9770E-03C2-4072-9B18-7F04C1D3E687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2A9770E-03C2-4072-9B18-7F04C1D3E687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2A9770E-03C2-4072-9B18-7F04C1D3E687}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,14 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{FBAF5679-B6BC-471D-B84F-3014CB938613} = {2E096EB8-7464-42F8-B04C-617BF240F956}
-		{593FC0DF-9A33-4374-BCA1-005B63C3FB8C} = {2E096EB8-7464-42F8-B04C-617BF240F956}
-		{E2A9770E-03C2-4072-9B18-7F04C1D3E687} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
-		{53787035-4E4E-4B75-A215-CA5E74B1E4D7} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
-		{483E33C5-586B-472F-A715-623F573FCBA0} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
-		{82F05B54-4971-4565-9532-AD9C8189F8A2} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}
