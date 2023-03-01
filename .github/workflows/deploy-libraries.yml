@@ -8,7 +8,7 @@ concurrency: deploy_libraries
 
 env:
   PROJECTS_BUILD: './src/Milochau.Core.Aws.Sdk.sln'
-  PROJECTS_LIBRARIES: './src/Milochau.Aws.Core.Sdk.sln'
+  PROJECTS_LIBRARIES: './src/Milochau.Core.Aws.Sdk.sln'
   VERSION_FILE: './src/Directory.Build.props'
   NUGET_URL: 'https://nuget.pkg.github.com/amilochau/index.json'
   DOTNET_VERSION: 7.0.x
