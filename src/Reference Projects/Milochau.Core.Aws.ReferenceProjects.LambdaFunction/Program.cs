@@ -1,33 +1,41 @@
 ﻿using Amazon.DynamoDBv2;
-using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
-using Amazon.Lambda.Serialization.SystemTextJson;
 using Milochau.Core.Aws.ApiGateway;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
+using Milochau.Core.Aws.ReferenceProjects.LambdaFunctions.Internals;
+using Milochau.Core.Aws.ReferenceProjects.LambdaFunctions.Internals.Context;
 using System;
+using System.Net.Http;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
     public class Function
     {
         private static async Task Main()
         {
-            Func<APIGatewayHttpApiV2ProxyRequest, ILambdaContext, Task<APIGatewayHttpApiV2ProxyResponse>> handler = FunctionHandler;
-            await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<ApplicationJsonSerializerContext>())
-                .Build()
-                .RunAsync();
+            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(FunctionHandler,
+                deserializerInput: stream => JsonSerializer.Deserialize(stream, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest),
+                serializeOutput: (output, stream) => JsonSerializer.Serialize(stream, output, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse));
+
+            using var httpClient = new HttpClient(new SocketsHttpHandler()) { Timeout = TimeSpan.FromHours(12) };
+
+            var lambdaBootstrap = new LambdaBootstrap(httpClient, handlerWrapper.Handler);
+            await lambdaBootstrap.RunAsync();
         }
 
-        public static async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public static async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest? request, ILambdaContext context)
         {
             try
             {
                 var cancellationToken = CancellationToken.None;
+                if (request == null)
+                {
+                    throw new Exception("Request can not be deserialized");
+                }
 
                 using var dynamoDBClient = new AmazonDynamoDBClient();
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
@@ -57,6 +65,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
     [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
+    [JsonSerializable(typeof(StatusResponse))]
+    [JsonSerializable(typeof(Exception))]
     public partial class ApplicationJsonSerializerContext : JsonSerializerContext
     {
     }

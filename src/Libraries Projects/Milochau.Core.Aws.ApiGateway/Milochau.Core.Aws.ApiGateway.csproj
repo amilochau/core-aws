@@ -13,10 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
   </ItemGroup>
 
