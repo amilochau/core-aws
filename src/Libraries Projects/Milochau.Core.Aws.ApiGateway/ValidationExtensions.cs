@@ -111,11 +111,6 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         #endregion
-        #region Dictionary
-
-
-
-        #endregion
         #region Misc
 
         /// <summary>Validate an email address</summary>
