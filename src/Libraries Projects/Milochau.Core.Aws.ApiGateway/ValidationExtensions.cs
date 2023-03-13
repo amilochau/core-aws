@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 
 namespace Milochau.Core.Aws.ApiGateway
@@ -194,6 +195,30 @@ namespace Milochau.Core.Aws.ApiGateway
 
         #endregion
         #region Misc
+
+        /// <summary>Validate a GUID</summary>
+        public static void ValidateGuid(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
+        {
+            if (value != null)
+            {
+                if (!Guid.TryParseExact(value, "N", out _))
+                {
+                    modelStateDictionary.Populate(key, "GUID required");
+                }
+            }
+        }
+
+        /// <summary>Validate a datetime</summary>
+        public static void ValidateDateTime(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
+        {
+            if (value != null)
+            {
+                if (!DateTime.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                {
+                    modelStateDictionary.Populate(key, "Date required");
+                }
+            }
+        }
 
         /// <summary>Validate an email address</summary>
         public static void ValidateEmail(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
