@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -7,119 +8,117 @@ namespace Milochau.Core.Aws.ApiGateway
     /// <summary>Extension methods for validation</summary>
     public static class ValidationExtensions
     {
-        /// <summary>Validate a required string value</summary>
-        public static void ValidateRequired(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                modelStateDictionary.Populate(key, "Required");
-            }
-        }
+        #region General
 
-        /// <summary>Validate a required object value</summary>
-        public static void ValidateRequired(this Dictionary<string, Collection<string>> modelStateDictionary, string key, object? value)
+        /// <summary>Validate a required value</summary>
+        public static void ValidateRequired<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value)
         {
             if (value == null)
             {
-                modelStateDictionary.Populate(key, "Required");
+                modelStateDictionary.Populate(key, "Required value");
             }
         }
 
-        /// <summary>Validate an int value in a range</summary>
-        public static void ValidateBetween(this Dictionary<string, Collection<string>> modelStateDictionary, string key, int? value, int min, int max)
+        #endregion
+        #region IComparable
+
+        /// <summary>Validate a min value</summary>
+        public static void ValidateMinValue<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, TValue minValue)
+            where TValue: IComparable<TValue>
         {
-            if (value != null && (value < min || value > max))
+            if (value != null && value.CompareTo(minValue) < 0)
             {
-                modelStateDictionary.Populate(key, $"Between {min} and {max}");
+                modelStateDictionary.Populate(key, $"Min {minValue} value");
             }
         }
 
-        /// <summary>Validate the minimal length of a string value</summary>
-        public static void ValidateMinLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int minLength)
+        /// <summary>Validate a max value</summary>
+        public static void ValidateMaxValue<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, TValue maxValue)
+            where TValue : IComparable<TValue>
         {
-            if (value != null && value.Length < minLength)
+            if (value != null && value.CompareTo(maxValue) > 0)
             {
-                modelStateDictionary.Populate(key, $"Min {minLength} characters");
+                modelStateDictionary.Populate(key, $"Max {maxValue} value");
             }
         }
 
-        /// <summary>Validate the minimal length of an enumerable value</summary>
-        public static void ValidateMinLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<string>? value, int minLength)
+        /// <summary>Validate an equal value</summary>
+        public static void ValidateEqualValue<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, TValue equalValue)
+            where TValue : IComparable<TValue>
+        {
+            if (value != null && value.CompareTo(equalValue) != 0)
+            {
+                modelStateDictionary.Populate(key, $"Is {equalValue} value");
+            }
+        }
+
+        /// <summary>Validate a range value</summary>
+        public static void ValidateRangeValue<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, TValue minValue, TValue maxValue)
+            where TValue : IComparable<TValue>
+        {
+            if (value != null)
+            {
+                if (value.CompareTo(minValue) < 0 || value.CompareTo(maxValue) > 0)
+                modelStateDictionary.Populate(key, $"Between {minValue} and {maxValue} value");
+            }
+        }
+
+        #endregion
+        #region IEnumerable
+
+        /// <summary>Validate a min length</summary>
+        public static void ValidateMinLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int minLength)
+            where TValue : IEnumerable<TItemValue>
         {
             if (value != null && value.Count() < minLength)
             {
-                modelStateDictionary.Populate(key, $"Min {minLength} items");
+                modelStateDictionary.Populate(key, $"Min {minLength} length");
             }
         }
 
-        /// <summary>Validate the minimal length of a dictionary value</summary>
-        public static void ValidateMinLength<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TValue>? value, int minLength)
-        {
-            if (value != null && value.Count < minLength)
-            {
-                modelStateDictionary.Populate(key, $"Min {minLength} items");
-            }
-        }
-
-        /// <summary>Validate the maximal length of a string value</summary>
-        public static void ValidateMaxLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int maxLength)
-        {
-            if (value != null && value.Length > maxLength)
-            {
-                modelStateDictionary.Populate(key, $"Max {maxLength} characters");
-            }
-        }
-
-        /// <summary>Validate the maximal length of an enumerable value</summary>
-        public static void ValidateMaxLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<string>? value, int maxLength)
+        /// <summary>Validate a max length</summary>
+        public static void ValidateMaxLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int maxLength)
+            where TValue : IEnumerable<TItemValue>
         {
             if (value != null && value.Count() > maxLength)
             {
-                modelStateDictionary.Populate(key, $"Max {maxLength} items");
+                modelStateDictionary.Populate(key, $"Min {maxLength} length");
             }
         }
 
-        /// <summary>Validate the maximal length of a dictionary value</summary>
-        public static void ValidateMaxLength<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TValue>? value, int maxLength)
+        /// <summary>Validate an equal length</summary>
+        public static void ValidateEqualLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int equalLength)
+            where TValue : IEnumerable<TItemValue>
         {
-            if (value != null && value.Count > maxLength)
+            if (value != null && value.Count() != equalLength)
             {
-                modelStateDictionary.Populate(key, $"Max {maxLength} items");
+                modelStateDictionary.Populate(key, $"Is {equalLength} length");
             }
         }
 
-        /// <summary>Validate the maximal length of each item of an enumerable value</summary>
-        public static void ValidateMaxLengthItem(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<string>? value, int maxLength)
+        /// <summary>Validate a range length</summary>
+        public static void ValidateRangeLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int minLength, int maxLength)
+            where TValue : IEnumerable<TItemValue>
         {
             if (value != null)
             {
-                foreach (var item in value)
+                var count = value.Count();
+                if (count < minLength || count > maxLength)
                 {
-                    if (item.Length > maxLength)
-                    {
-                        modelStateDictionary.Populate(key, $"Max {maxLength} characters");
-                        break;
-                    }
-                }
-            }
-        }
-        /// <summary>Validate the maximal length of each item of a dictionary value</summary>
-        public static void ValidateMaxLengthItem(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, string>? value, int maxLength)
-        {
-            if (value != null)
-            {
-                foreach (var item in value)
-                {
-                    if (item.Value.Length > maxLength)
-                    {
-                        modelStateDictionary.Populate(key, $"Max {maxLength} characters");
-                        break;
-                    }
+                    modelStateDictionary.Populate(key, $"Between {minLength} and {maxLength} length");
                 }
             }
         }
 
-        /// <summary>Validate a string value as an email address</summary>
+        #endregion
+        #region Dictionary
+
+
+
+        #endregion
+        #region Misc
+
+        /// <summary>Validate an email address</summary>
         public static void ValidateEmail(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
         {
             if (value != null)
@@ -132,5 +131,7 @@ namespace Milochau.Core.Aws.ApiGateway
                 }
             }
         }
+
+        #endregion
     }
 }
