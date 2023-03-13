@@ -75,6 +75,12 @@ namespace Milochau.Core.Aws.DynamoDB
             return attributes.Append(new(key, new AttributeValue { N = $"{value}" }));
         }
 
+        /// <summary>Append a long value</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, decimal value)
+        {
+            return attributes.Append(new(key, new AttributeValue { N = $"{value}" }));
+        }
+
         /// <summary>Append an enum value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEnum>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, TEnum value)
             where TEnum : Enum
@@ -185,6 +191,22 @@ namespace Milochau.Core.Aws.DynamoDB
             if (attributes.TryGetValue(key, out var attribute) && attribute != null)
             {
                 return int.Parse(attribute.N);
+            }
+            return null;
+        }
+
+        /// <summary>Read a value as an decimal</summary>
+        public static decimal ReadDecimal(this Dictionary<string, AttributeValue?> attributes, string key)
+        {
+            return decimal.Parse(attributes[key]!.N);
+        }
+
+        /// <summary>Read an optional value as an decimal</summary>
+        public static decimal? ReadDecimalOptional(this Dictionary<string, AttributeValue?> attributes, string key)
+        {
+            if (attributes.TryGetValue(key, out var attribute) && attribute != null)
+            {
+                return decimal.Parse(attribute.N);
             }
             return null;
         }
