@@ -67,8 +67,7 @@ namespace Milochau.Core.Aws.ApiGateway
         #region IEnumerable
 
         /// <summary>Validate a min length</summary>
-        public static void ValidateMinLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int minLength)
-            where TValue : IEnumerable<TItemValue>
+        public static void ValidateMinLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<TItemValue>? value, int minLength)
         {
             if (value != null && value.Count() < minLength)
             {
@@ -77,8 +76,7 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         /// <summary>Validate a max length</summary>
-        public static void ValidateMaxLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int maxLength)
-            where TValue : IEnumerable<TItemValue>
+        public static void ValidateMaxLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<TItemValue>? value, int maxLength)
         {
             if (value != null && value.Count() > maxLength)
             {
@@ -87,8 +85,7 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         /// <summary>Validate an equal length</summary>
-        public static void ValidateEqualLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int equalLength)
-            where TValue : IEnumerable<TItemValue>
+        public static void ValidateEqualLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<TItemValue>? value, int equalLength)
         {
             if (value != null && value.Count() != equalLength)
             {
@@ -97,8 +94,7 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         /// <summary>Validate a range length</summary>
-        public static void ValidateRangeLength<TValue, TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, int minLength, int maxLength)
-            where TValue : IEnumerable<TItemValue>
+        public static void ValidateRangeLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IEnumerable<TItemValue>? value, int minLength, int maxLength)
         {
             if (value != null)
             {
