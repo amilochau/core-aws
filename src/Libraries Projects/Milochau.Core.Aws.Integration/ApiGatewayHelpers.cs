@@ -5,9 +5,9 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
-using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 
 namespace Milochau.Core.Aws.Integration
 {
