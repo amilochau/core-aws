@@ -111,6 +111,92 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         #endregion
+        #region IDictionary
+
+        /// <summary>Validate a min length</summary>
+        public static void ValidateMinLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TItemValue>? value, int minLength)
+        {
+            if (value != null && value.Count < minLength)
+            {
+                modelStateDictionary.Populate(key, $"Min {minLength} length");
+            }
+        }
+
+        /// <summary>Validate a max length</summary>
+        public static void ValidateMaxLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TItemValue>? value, int maxLength)
+        {
+            if (value != null && value.Count > maxLength)
+            {
+                modelStateDictionary.Populate(key, $"Min {maxLength} length");
+            }
+        }
+
+        /// <summary>Validate an equal length</summary>
+        public static void ValidateEqualLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TItemValue>? value, int equalLength)
+        {
+            if (value != null && value.Count != equalLength)
+            {
+                modelStateDictionary.Populate(key, $"Is {equalLength} length");
+            }
+        }
+
+        /// <summary>Validate a range length</summary>
+        public static void ValidateRangeLength<TItemValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, IDictionary<string, TItemValue>? value, int minLength, int maxLength)
+        {
+            if (value != null)
+            {
+                var count = value.Count;
+                if (count < minLength || count > maxLength)
+                {
+                    modelStateDictionary.Populate(key, $"Between {minLength} and {maxLength} length");
+                }
+            }
+        }
+
+        #endregion
+        #region String
+
+        /// <summary>Validate a min length</summary>
+        public static void ValidateMinLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int minLength)
+        {
+            if (value != null && value.Length < minLength)
+            {
+                modelStateDictionary.Populate(key, $"Min {minLength} length");
+            }
+        }
+
+        /// <summary>Validate a max length</summary>
+        public static void ValidateMaxLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int maxLength)
+        {
+            if (value != null && value.Length > maxLength)
+            {
+                modelStateDictionary.Populate(key, $"Min {maxLength} length");
+            }
+        }
+
+        /// <summary>Validate an equal length</summary>
+        public static void ValidateEqualLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int equalLength)
+        {
+            if (value != null && value.Length != equalLength)
+            {
+                modelStateDictionary.Populate(key, $"Is {equalLength} length");
+            }
+        }
+
+        /// <summary>Validate a range length</summary>
+        public static void ValidateRangeLength(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, int minLength, int maxLength)
+        {
+            if (value != null)
+            {
+                var count = value.Length;
+                if (count < minLength || count > maxLength)
+                {
+                    modelStateDictionary.Populate(key, $"Between {minLength} and {maxLength} length");
+                }
+            }
+        }
+
+        #endregion
         #region Misc
 
         /// <summary>Validate an email address</summary>
