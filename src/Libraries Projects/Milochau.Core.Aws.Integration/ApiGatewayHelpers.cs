@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace Milochau.Core.Aws.Integration
 {
@@ -63,13 +64,13 @@ namespace Milochau.Core.Aws.Integration
         }
 
         /// <summary>Build a JSON HTTP result from a proxy response</summary>
-        public static JsonHttpResult<TResult> BuildResult<TResult>(APIGatewayHttpApiV2ProxyResponse proxyResponse)
+        public static ContentHttpResult BuildResult(APIGatewayHttpApiV2ProxyResponse proxyResponse)
         {
             if (proxyResponse.Body == null)
             {
-                return TypedResults.Json(default(TResult), statusCode: proxyResponse.StatusCode);
+                return TypedResults.Text(string.Empty, statusCode: proxyResponse.StatusCode);
             }
-            return TypedResults.Json(JsonSerializer.Deserialize<TResult>(proxyResponse.Body, new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }), options: new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }, statusCode: proxyResponse.StatusCode);
+            return TypedResults.Text(proxyResponse.Body, "application/json", Encoding.UTF8, proxyResponse.StatusCode);
         }
 
         /// <summary>Build an empty JSON HTTP result from a proxy response</summary>
