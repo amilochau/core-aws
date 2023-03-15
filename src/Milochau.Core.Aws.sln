@@ -24,6 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Integration", "Libraries Projects\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj", "{455964C3-5BDE-40B1-9C88-6E118384C043}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{21DD2CF3-EFB0-4867-BE50-FD873F3C0D27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ApiGateway.Tests", "Libraries Projects\Milochau.Core.Aws.ApiGateway.Tests\Milochau.Core.Aws.ApiGateway.Tests.csproj", "{094C0534-23D7-4594-8F50-7660124FC718}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +58,10 @@ Global
 		{455964C3-5BDE-40B1-9C88-6E118384C043}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{455964C3-5BDE-40B1-9C88-6E118384C043}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{455964C3-5BDE-40B1-9C88-6E118384C043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094C0534-23D7-4594-8F50-7660124FC718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094C0534-23D7-4594-8F50-7660124FC718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094C0534-23D7-4594-8F50-7660124FC718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094C0534-23D7-4594-8F50-7660124FC718}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +73,8 @@ Global
 		{3444C713-A266-4C16-8628-03D9D9DAAC06} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{270F4B69-786B-484E-A2BE-6C9130E9745F} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{455964C3-5BDE-40B1-9C88-6E118384C043} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{21DD2CF3-EFB0-4867-BE50-FD873F3C0D27} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{094C0534-23D7-4594-8F50-7660124FC718} = {21DD2CF3-EFB0-4867-BE50-FD873F3C0D27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}
