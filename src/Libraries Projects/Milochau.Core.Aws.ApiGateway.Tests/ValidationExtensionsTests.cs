@@ -339,5 +339,23 @@ namespace Milochau.Core.Aws.ApiGateway.Tests
                 Assert.AreEqual(messagesCount, modelStateDictionary.First().Value.Count);
             }
         }
+        [TestMethod]
+        [DataRow(null, 1)]
+        [DataRow("2022", 1)]
+        [DataRow("2022-01", 1)]
+        [DataRow("2022-01-01", 0)]
+        public void ValidateDate(string value, int messagesCount)
+        {
+            var modelStateDictionary = new Dictionary<string, Collection<string>>();
+
+            modelStateDictionary.ValidateRequired("key", value);
+            modelStateDictionary.ValidateDate("key", value);
+
+            Assert.AreEqual(messagesCount > 0 ? 1 : 0, modelStateDictionary.Count);
+            if (messagesCount > 0)
+            {
+                Assert.AreEqual(messagesCount, modelStateDictionary.First().Value.Count);
+            }
+        }
     }
 }

@@ -131,12 +131,12 @@ namespace Milochau.Core.Aws.ApiGateway
             }
         }
 
-        /// <summary>Validate a datetime</summary>
-        public static void ValidateDateTime(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
+        /// <summary>Validate a date from the date part of ISO 8601 (yyyy-MM-dd)</summary>
+        public static void ValidateDate(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
         {
             if (value != null)
             {
-                if (!DateTime.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+                if (!DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
                 {
                     modelStateDictionary.Populate(key, "Date required");
                 }
