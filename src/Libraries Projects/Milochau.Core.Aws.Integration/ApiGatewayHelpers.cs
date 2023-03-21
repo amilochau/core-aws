@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.Integration
                 Body = await new StreamReader(httpContext.Request.Body).ReadToEndAsync(cancellationToken),
             };
 
-            if (options.UserId != null)
+            if (!options.AnonymousRequest)
             {
                 proxyRequest.RequestContext.Authorizer = new APIGatewayHttpApiV2ProxyRequest.AuthorizerDescription
                 {
