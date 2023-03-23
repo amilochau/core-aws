@@ -89,6 +89,18 @@ namespace Milochau.Core.Aws.DynamoDB
             return attributes.Append(new(key, new AttributeValue { N = $"{intValue}" }));
         }
 
+        /// <summary>Append an enum value</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEnum>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, TEnum? value)
+            where TEnum : struct, Enum
+        {
+            if (value == null)
+            {
+                return attributes;
+            }
+            var intValue = Convert.ToInt32(value);
+            return attributes.Append(new(key, new AttributeValue { N = $"{intValue}" }));
+        }
+
         /// <summary>Append a date time offset value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, DateTimeOffset value)
         {
