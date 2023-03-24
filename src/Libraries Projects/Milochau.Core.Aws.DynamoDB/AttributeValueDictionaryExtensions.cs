@@ -144,13 +144,13 @@ namespace Milochau.Core.Aws.DynamoDB
         }
 
         /// <summary>Read a value as a list of objects</summary>
-        public static List<Dictionary<string, AttributeValue?>> ReadList(this Dictionary<string, AttributeValue> attributes, string key)
+        public static List<Dictionary<string, AttributeValue?>> ReadList(this Dictionary<string, AttributeValue?> attributes, string key)
         {
             return attributes[key]!.L.Select(x => x.M).ToList();
         }
 
         /// <summary>Read an optional value as a list of objects</summary>
-        public static List<Dictionary<string, AttributeValue?>>? ReadListOptional(this Dictionary<string, AttributeValue> attributes, string key)
+        public static List<Dictionary<string, AttributeValue?>>? ReadListOptional(this Dictionary<string, AttributeValue?> attributes, string key)
         {
             if (attributes.TryGetValue(key, out var attribute) && attribute != null)
             {
