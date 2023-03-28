@@ -107,6 +107,16 @@ namespace Milochau.Core.Aws.DynamoDB
             return attributes.Append(new(key, new AttributeValue { N = $"{value.ToUnixTimeSeconds()}" }));
         }
 
+        /// <summary>Append a date time offset value</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, DateTimeOffset? value)
+        {
+            if (value == null)
+            {
+                return attributes;
+            }
+            return attributes.Append(new(key, new AttributeValue { N = $"{value.Value.ToUnixTimeSeconds()}" }));
+        }
+
         /// <summary>Append an object value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Dictionary<string, AttributeValue>? value)
         {
