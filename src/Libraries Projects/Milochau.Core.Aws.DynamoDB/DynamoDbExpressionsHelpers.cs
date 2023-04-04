@@ -20,5 +20,23 @@ namespace Milochau.Core.Aws.DynamoDB
             var allAttributes = attributes.Union(more).Select(x => new KeyValuePair<string, string>($"#{x}", x));
             return allAttributes.ToDictionary(x => x.Key, x => x.Value);
         }
+
+        /// <summary>Build a dictionary of expression attribute names from an enumerable of attributes</summary>
+        public static Dictionary<string, string> BuildExpressionAttributeNames(params string[] attributes)
+        {
+            var expressionAttributeNames = new List<KeyValuePair<string, string>>();
+            expressionAttributeNames.AddExpressionAttributeNames(attributes);
+            return expressionAttributeNames.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        /// <summary>Add expression attribute names from an enumerable of attributes to an existing dictionary</summary>
+        public static ICollection<KeyValuePair<string, string>> AddExpressionAttributeNames(this ICollection<KeyValuePair<string, string>> expressionAttributeNames, params string[] attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                expressionAttributeNames.Add(new KeyValuePair<string, string>($"#{attribute}", attribute));
+            }
+            return expressionAttributeNames;
+        }
     }
 }
