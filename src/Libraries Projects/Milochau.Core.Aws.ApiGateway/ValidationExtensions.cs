@@ -120,11 +120,12 @@ namespace Milochau.Core.Aws.ApiGateway
         }
 
         /// <summary>Validate a GUID</summary>
-        public static void ValidateGuid(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
+        public static void ValidateGuid(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value, bool useDashes = false)
         {
             if (value != null)
             {
-                if (!Guid.TryParseExact(value, "N", out _))
+                var format = useDashes ? "D" : "N";
+                if (!Guid.TryParseExact(value, format, out _))
                 {
                     modelStateDictionary.Populate(key, "GUID required");
                 }
