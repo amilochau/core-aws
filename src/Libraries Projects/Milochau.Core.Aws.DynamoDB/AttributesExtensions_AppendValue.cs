@@ -20,7 +20,7 @@ namespace Milochau.Core.Aws.DynamoDB
         }
 
         /// <summary>Append an enumerable value of strings</summary>
-        public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string?>? value)
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string?>? value, bool preserveOrder = false)
         {
             if (value == null)
             {
@@ -31,7 +31,14 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 return attributes;
             }
-            return attributes.Append(new($":v_{key}", new AttributeValue { SS = formattedList }));
+            if (preserveOrder)
+            {
+                return attributes.Append(new($":v_{key}", new AttributeValue { L = formattedList.Select(x => new AttributeValue { S = x }).ToList() }));
+            }
+            else
+            {
+                return attributes.Append(new($":v_{key}", new AttributeValue { SS = formattedList }));
+            }
         }
 
         /// <summary>Append a boolean value</summary>

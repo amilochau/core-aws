@@ -43,7 +43,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <summary>Read a value as a list of string</summary>
         public static List<string> ReadListString(this Dictionary<string, AttributeValue?> attributes, string key)
         {
-            return attributes[key]!.SS;
+            var attribute = attributes[key]!;
+            if (attribute.SS != null && attribute.SS.Any())
+            {
+                return attribute.SS;
+            }
+            else
+            {
+                return attribute.L.Select(x => x.S).ToList();
+            }
         }
 
         /// <summary>Read an optional value as a list of string</summary>
@@ -51,7 +59,14 @@ namespace Milochau.Core.Aws.DynamoDB
         {
             if (attributes.TryGetValue(key, out var attribute) && attribute != null)
             {
-                return attribute.SS;
+                if (attribute.SS != null && attribute.SS.Any())
+                {
+                    return attribute.SS;
+                }
+                else
+                {
+                    return attribute.L.Select(x => x.S).ToList();
+                }
             }
             return null;
         }
