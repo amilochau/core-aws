@@ -158,6 +158,18 @@ namespace Milochau.Core.Aws.ApiGateway
             }
         }
 
+        /// <summary>Validate an URI</summary>
+        public static void ValidateUri(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string? value)
+        {
+            if (value != null)
+            {
+                if (!Uri.TryCreate(value, UriKind.Absolute, out _))
+                {
+                    modelStateDictionary.Populate(key, "URI required");
+                }
+            }
+        }
+
         #endregion
     }
 }

@@ -339,6 +339,7 @@ namespace Milochau.Core.Aws.ApiGateway.Tests
                 Assert.AreEqual(messagesCount, modelStateDictionary.First().Value.Count);
             }
         }
+
         [TestMethod]
         [DataRow(null, 1)]
         [DataRow("2022", 1)]
@@ -350,6 +351,25 @@ namespace Milochau.Core.Aws.ApiGateway.Tests
 
             modelStateDictionary.ValidateRequired("key", value);
             modelStateDictionary.ValidateDate("key", value);
+
+            Assert.AreEqual(messagesCount > 0 ? 1 : 0, modelStateDictionary.Count);
+            if (messagesCount > 0)
+            {
+                Assert.AreEqual(messagesCount, modelStateDictionary.First().Value.Count);
+            }
+        }
+
+        [TestMethod]
+        [DataRow(null, 1)]
+        [DataRow("https://google.com", 0)]
+        [DataRow("google.com", 1)]
+        [DataRow("/maps", 1)]
+        public void ValidateUri(string value, int messagesCount)
+        {
+            var modelStateDictionary = new Dictionary<string, Collection<string>>();
+
+            modelStateDictionary.ValidateRequired("key", value);
+            modelStateDictionary.ValidateUri("key", value);
 
             Assert.AreEqual(messagesCount > 0 ? 1 : 0, modelStateDictionary.Count);
             if (messagesCount > 0)
