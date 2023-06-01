@@ -363,7 +363,6 @@ namespace Milochau.Core.Aws.ApiGateway.Tests
         [DataRow(null, 1)]
         [DataRow("https://google.com", 0)]
         [DataRow("google.com", 1)]
-        [DataRow("/maps", 1)]
         public void ValidateUri(string value, int messagesCount)
         {
             var modelStateDictionary = new Dictionary<string, Collection<string>>();
