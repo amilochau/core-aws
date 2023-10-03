@@ -24,6 +24,8 @@
     <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
     <UseNativeHttpHandler>true</UseNativeHttpHandler>
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +35,7 @@
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
     <PackageReference Include="AWSSDK.Core" Version="3.7.202.17" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.202.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
   </ItemGroup>
 
   <ItemGroup>
