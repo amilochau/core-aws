@@ -24,8 +24,6 @@
     <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
     <UseNativeHttpHandler>true</UseNativeHttpHandler>
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
