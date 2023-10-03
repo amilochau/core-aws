@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <TargetFramework>net7.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Milochau.Core.Aws.ApiGateway contains API Gateway helpers as part of the Milochau.Core.Aws framework for applications.</Description>
@@ -11,10 +11,6 @@
 
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />

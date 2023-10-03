@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using System.Text;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 
 namespace Milochau.Core.Aws.Integration
 {

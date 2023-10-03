@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <TargetFramework>net7.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Milochau.Core.Aws.DynamoDB contains DynamoDB helpers as part of the Milochau.Core.Aws framework for applications.</Description>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.202.3" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.202.17" />
   </ItemGroup>
   
 </Project>

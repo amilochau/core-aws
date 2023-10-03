@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -13,6 +13,7 @@
     <PublishAot>true</PublishAot>
     <StripSymbols>true</StripSymbols>
 
+    <OptimizationPreference>Size</OptimizationPreference>
     <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
     <DebuggerSupport>false</DebuggerSupport>
     <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
@@ -29,9 +30,7 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.8" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
     <PackageReference Include="AWSSDK.Core" Version="3.7.202.17" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.202.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,7 +41,7 @@
 
   <ItemGroup>
     <TrimmerRootAssembly Include="AWSSDK.Core" />
-    <RdXmlFile Include="rd.xml" />
+    <TrimmerRootAssembly Include="bootstrap" />
   </ItemGroup>
 
 </Project>
