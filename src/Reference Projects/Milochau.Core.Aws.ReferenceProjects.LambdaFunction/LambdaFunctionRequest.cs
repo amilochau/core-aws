@@ -1,5 +1,5 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
-using Milochau.Core.Aws.ApiGateway;
+﻿using Milochau.Core.Aws.ApiGateway;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;

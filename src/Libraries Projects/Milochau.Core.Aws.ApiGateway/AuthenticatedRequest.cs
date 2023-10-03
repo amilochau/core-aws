@@ -1,5 +1,5 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
-using Milochau.Core.Aws.Abstractions;
+﻿using Milochau.Core.Aws.Abstractions;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.ApiGateway

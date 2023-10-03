@@ -1,9 +1,9 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Milochau.Core.Aws.ApiGateway;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
+using Milochau.Core.Aws.DynamoDB.DynamoDBv2;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 using System;
 using System.Text.Json.Serialization;
@@ -47,6 +47,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             {
                 return proxyResponse;
             }
+
+            await dynamoDbDataAccess.GetMessageAsync(cancellationToken);
 
             await Task.CompletedTask;
 

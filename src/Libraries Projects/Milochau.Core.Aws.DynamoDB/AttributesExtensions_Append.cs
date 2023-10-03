@@ -1,4 +1,4 @@
-﻿using Amazon.DynamoDBv2.Model;
+﻿using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,13 +20,13 @@ namespace Milochau.Core.Aws.DynamoDB
         }
 
         /// <summary>Append an enumerable value of strings</summary>
-        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string?>? value, bool preserveOrder = false)
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string>? value, bool preserveOrder = false)
         {
             if (value == null)
             {
                 return attributes;
             }
-            var formattedList = value.Select(x => x?.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            var formattedList = value.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
             if (!formattedList.Any())
             {
                 return attributes;

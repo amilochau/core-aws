@@ -1,8 +1,8 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization.Metadata;
 using System.Text.Json;
+using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 
 namespace Milochau.Core.Aws.ApiGateway
 {
