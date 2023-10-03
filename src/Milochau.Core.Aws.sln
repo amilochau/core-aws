@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC428F01-F358-43AD-A32E-A04CF48834F3}"
 	ProjectSection(SolutionItems) = preProject
+		build-reference-lambda.ps1 = build-reference-lambda.ps1
 		Directory.Build.props = Directory.Build.props
+		Dockerfile-reference-lambda = Dockerfile-reference-lambda
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference Projects", "Reference Projects", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
