@@ -1,8 +1,8 @@
-﻿using Amazon.Runtime.Endpoints;
-using Amazon.Runtime;
+﻿using Amazon.Runtime;
 using System;
 using System.Collections.Generic;
 using static Amazon.Runtime.Internal.Endpoints.StandardLibrary.Fn;
+using Amazon.Runtime.Endpoints;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Internal/AmazonDynamoDBEndpointProvider.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal

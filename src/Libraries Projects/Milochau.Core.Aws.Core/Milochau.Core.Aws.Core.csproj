@@ -6,16 +6,23 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Milochau.Core.Aws.Core contains AWS SDK core utilities for Milochau.Core.Aws framework.</Description>
 
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Nullable>disable</Nullable>
 
-    <IsTrimmable>true</IsTrimmable>
+    <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Runtime2\**" />
+    <Compile Remove="Runtime3\**" />
     <EmbeddedResource Remove="Runtime2\**" />
+    <EmbeddedResource Remove="Runtime3\**" />
     <None Remove="Runtime2\**" />
+    <None Remove="Runtime3\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="RegionEndpoint.cs" />
   </ItemGroup>
 
 </Project>

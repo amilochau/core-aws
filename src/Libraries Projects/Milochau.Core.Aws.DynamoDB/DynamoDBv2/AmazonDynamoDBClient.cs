@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
     /// <summary>
     /// Implementation for accessing DynamoDB
     /// </summary>
-    public partial class AmazonDynamoDBClient : Core.Runtime.AmazonServiceClient, IAmazonDynamoDB
+    public partial class AmazonDynamoDBClient : AmazonServiceClient, IAmazonDynamoDB
     {
         private static readonly IServiceMetadata serviceMetadata = new AmazonDynamoDBMetadata();
 
@@ -118,29 +118,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             };
 
             return Invoke<DescribeEndpointsResponse>(request, options);
-        }
-
-        /// <summary>
-        /// Returns the regional endpoint information. For more information on policy permissions,
-        /// please see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/inter-network-traffic-privacy.html#inter-network-traffic-DescribeEndpoints">Internetwork
-        /// traffic privacy</a>.
-        /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the DescribeEndpoints service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
-        /// <returns>The response from the DescribeEndpoints service method, as returned by DynamoDB.</returns>
-        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/DescribeEndpoints">REST API Reference for DescribeEndpoints Operation</seealso>
-        public virtual Task<DescribeEndpointsResponse> DescribeEndpointsAsync(DescribeEndpointsRequest request, System.Threading.CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var options = new InvokeOptions
-            {
-                RequestMarshaller = DescribeEndpointsRequestMarshaller.Instance,
-                ResponseUnmarshaller = DescribeEndpointsResponseUnmarshaller.Instance
-            };
-
-            return InvokeAsync<DescribeEndpointsResponse>(request, options, cancellationToken);
         }
 
         #endregion

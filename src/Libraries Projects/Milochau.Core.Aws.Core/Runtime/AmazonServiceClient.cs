@@ -1,35 +1,47 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Credentials;
-using Milochau.Core.Aws.Core.Runtime.Internal;
+﻿/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ * 
+ *  http://aws.amazon.com/apache2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+using Amazon.Runtime.Internal.Auth;
+using Amazon.Runtime.Internal.Transform;
+using Amazon.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Amazon.Util.Internal;
+using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Util;
 
-// https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Core/Amazon.Runtime/AmazonServiceClient.cs
-namespace Milochau.Core.Aws.Core.Runtime
+namespace Amazon.Runtime
 {
-    /// <summary></summary>
     public abstract class AmazonServiceClient : IDisposable
     {
-        /*
         private static volatile bool _isProtocolUpdated;
-        */
 
         private bool _disposed;
-
-        /*
         private Logger _logger;
         protected EndpointDiscoveryResolverBase EndpointDiscoveryResolver { get; private set; }
         protected RuntimePipeline RuntimePipeline { get; set; }
         protected internal AWSCredentials Credentials { get; private set; }
-
         public IClientConfig Config => _config;
-        */
         private readonly ClientConfig _config;
-        /*
         protected virtual IServiceMetadata ServiceMetadata { get; } = new ServiceMetadata();
         protected virtual bool SupportResponseLogging
         {
@@ -134,7 +146,6 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #endregion
 
-        */
         #region Constructors
 
         protected AmazonServiceClient(AWSCredentials credentials, ClientConfig config)
@@ -142,15 +153,14 @@ namespace Milochau.Core.Aws.Core.Runtime
             if (config.DisableLogging)
                 _logger = Logger.EmptyLogger;
             else
-                _logger = Logger.GetLogger(this.GetType());
+                _logger = Logger.GetLogger(GetType());
 
             config.Validate();
-            this.Credentials = credentials;
+            Credentials = credentials;
             _config = config;
             Signer = CreateSigner();
             EndpointDiscoveryResolver = new EndpointDiscoveryResolver(config, _logger);
             Initialize();
-            UpdateSecurityProtocol();
             BuildRuntimePipeline();
         }
 
@@ -158,16 +168,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             get;
             private set;
-        }
-
-        protected AmazonServiceClient(string awsAccessKeyId, string awsSecretAccessKey, string awsSessionToken, ClientConfig config)
-            : this(new SessionAWSCredentials(awsAccessKeyId, awsSecretAccessKey, awsSessionToken), config)
-        {
-        }
-
-        protected AmazonServiceClient(string awsAccessKeyId, string awsSecretAccessKey, ClientConfig config)
-            : this(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey), config)
-        {
         }
 
         protected virtual void Initialize()
@@ -178,10 +178,33 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #region Invoke methods
 
-        protected Task<TResponse> InvokeAsync<TResponse>(
+        protected TResponse Invoke<TResponse>(AmazonWebServiceRequest request, InvokeOptionsBase options)
+            where TResponse : AmazonWebServiceResponse
+        {
+            ThrowIfDisposed();
+
+            var executionContext = new ExecutionContext(
+                new RequestContext(Config.LogMetrics, Signer)
+                {
+                    ClientConfig = Config,
+                    Marshaller = options.RequestMarshaller,
+                    OriginalRequest = request,
+                    Unmarshaller = options.ResponseUnmarshaller,
+                    IsAsync = false,
+                    ServiceMetaData = ServiceMetadata,
+                    Options = options
+                },
+                new ResponseContext()
+            );
+            SetupCSMHandler(executionContext.RequestContext);
+            var response = (TResponse)RuntimePipeline.InvokeSync(executionContext).Response;
+            return response;
+        }
+
+        protected System.Threading.Tasks.Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
-            InvokeOptions options,
-            CancellationToken cancellationToken)
+            InvokeOptionsBase options,
+            System.Threading.CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
             ThrowIfDisposed();
@@ -206,7 +229,6 @@ namespace Milochau.Core.Aws.Core.Runtime
             SetupCSMHandler(executionContext.RequestContext);
             return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);
         }
-        /*
 
         protected virtual IEnumerable<DiscoveryEndpointBase> EndpointOperation(EndpointOperationContextBase context) { return null; }
 
@@ -246,6 +268,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                 executionContext.ResponseContext.Response,
                 executionContext.RequestContext.Request,
                 executionContext.ResponseContext.HttpResponse);
+
             mAfterResponseEvent(this, args);
         }
 
@@ -259,7 +282,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         }
 
         #endregion
-        */
+
         #region Dispose methods
 
         public void Dispose()
@@ -275,10 +298,8 @@ namespace Milochau.Core.Aws.Core.Runtime
 
             if (disposing)
             {
-                /*
                 if (RuntimePipeline != null)
                     RuntimePipeline.Dispose();
-                */
 
                 _disposed = true;
             }
@@ -286,18 +307,18 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         private void ThrowIfDisposed()
         {
-            if (this._disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
         }
 
         #endregion
-        /*
+
         protected abstract AbstractAWSSigner CreateSigner();
         protected virtual void CustomizeRuntimePipeline(RuntimePipeline pipeline) { }
 
         private void BuildRuntimePipeline()
         {
-            var httpRequestFactory = new HttpRequestMessageFactory(this.Config);
+            var httpRequestFactory = new HttpRequestMessageFactory(Config);
             var httpHandler = new HttpHandler<System.Net.Http.HttpContent>(httpRequestFactory, this);
             var preMarshallHandler = new CallbackHandler();
             preMarshallHandler.OnPreInvoke = this.ProcessPreRequestHandlers;
@@ -313,26 +334,26 @@ namespace Milochau.Core.Aws.Core.Runtime
 
             //Determine which retry policy to use based on the retry mode
             RetryPolicy retryPolicy;
-            switch (this.Config.RetryMode)
+            switch (Config.RetryMode)
             {
                 case RequestRetryMode.Adaptive:
-                    retryPolicy = new AdaptiveRetryPolicy(this.Config);
+                    retryPolicy = new AdaptiveRetryPolicy(Config);
                     break;
                 case RequestRetryMode.Standard:
-                    retryPolicy = new StandardRetryPolicy(this.Config);
+                    retryPolicy = new StandardRetryPolicy(Config);
                     break;
                 case RequestRetryMode.Legacy:
-                    retryPolicy = new DefaultRetryPolicy(this.Config);
+                    retryPolicy = new DefaultRetryPolicy(Config);
                     break;
                 default:
                     throw new InvalidOperationException("Unknown retry mode");
             }
 
             // Build default runtime pipeline.
-            this.RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
+            RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
                 {
                     httpHandler,
-                    new Unmarshaller(this.SupportResponseLogging),
+                    new Unmarshaller(SupportResponseLogging),
                     new ErrorHandler(_logger),
                     postUnmarshallHandler,
                     new Signer(),
@@ -343,7 +364,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                     // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
                     new ChecksumHandler(),
                     // CredentialsRetriever must come after RetryHandler because of any credential related changes.
-                    new CredentialsRetriever(this.Credentials),
+                    new CredentialsRetriever(Credentials),
                     new RetryHandler(retryPolicy),
                     new CompressionHandler(),
                     postMarshallHandler,
@@ -359,47 +380,14 @@ namespace Milochau.Core.Aws.Core.Runtime
 
             if (DeterminedCSMConfiguration.Instance.CSMConfiguration.Enabled && !string.IsNullOrEmpty(ServiceMetadata.ServiceId))
             {
-                this.RuntimePipeline.AddHandlerBefore<ErrorHandler>(new CSMCallAttemptHandler());
-                this.RuntimePipeline.AddHandlerBefore<MetricsHandler>(new CSMCallEventHandler());
+                RuntimePipeline.AddHandlerBefore<ErrorHandler>(new CSMCallAttemptHandler());
+                RuntimePipeline.AddHandlerBefore<MetricsHandler>(new CSMCallEventHandler());
             }
 
-            CustomizeRuntimePipeline(this.RuntimePipeline);
+            CustomizeRuntimePipeline(RuntimePipeline);
 
             // Apply global pipeline customizations
-            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(this.GetType(), this.RuntimePipeline);
-        }
-
-        /// <summary>
-        /// Some AWS services like Cloud 9 require at least TLS 1.1. Version of .NET Framework 4.5 and earlier 
-        /// do not eanble TLS 1.1 and TLS 1.2 by default. This code adds those protocols if using an earlier 
-        /// version of .NET that explicitly set the protocol and didn't have TLS 1.1 and TLS 1.2. 
-        /// </summary>
-        private void UpdateSecurityProtocol()
-        {
-            if (_isProtocolUpdated) return;
-
-            var amazonSecurityProtocolManager = new AmazonSecurityProtocolManager();
-
-            try
-            {
-                if (!amazonSecurityProtocolManager.IsSecurityProtocolSystemDefault())
-                {
-                    amazonSecurityProtocolManager.UpdateProtocolsToSupported();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (ex is NotSupportedException)
-                {
-                    _logger.InfoFormat(ex.Message);
-                }
-                else
-                {
-                    _logger.InfoFormat("Unexpected error " + ex.GetType().Name +
-                                       " encountered when trying to set Security Protocol.\n" + ex);
-                }
-            }
-            _isProtocolUpdated = true;
+            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(GetType(), RuntimePipeline);
         }
 
         /// <summary>
@@ -488,27 +476,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             var uri = hasSlash
                 ? new Uri(url.AbsoluteUri + parameterizedPath)
                 : new Uri(url.AbsoluteUri + "/" + parameterizedPath);
-            DontUnescapePathDotsAndSlashes(uri);
             return uri;
-        }
-
-        /// <summary>
-        /// Patches the in-flight uri to stop it unescaping the path etc (what Uri did before
-        /// Microsoft deprecated the constructor flag). This is particularly important for
-        /// Amazon S3 customers who want to use backslash (\) in their key names.
-        /// </summary>
-        /// <remarks>
-        /// Different behavior in the various runtimes has been observed and in addition some 
-        /// 'documented' ways of doing this between 2.x and 4.x runtimes has also been observed 
-        /// to not be reliable.
-        /// 
-        /// This patch effectively emulates what adding a schemesettings element to the 
-        /// app.config file with value 'name="http" genericUriParserOptions="DontUnescapePathDotsAndSlashes"'
-        /// does. As we're a dll, that avenue is not open to us.
-        /// </remarks>
-        /// <param name="uri"></param>
-        private static void DontUnescapePathDotsAndSlashes(Uri uri)
-        {
         }
 
         /// <summary>
@@ -526,23 +494,23 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         internal void CloneConfig(ClientConfig newConfig)
         {
-            if (!string.IsNullOrEmpty(this.Config.ServiceURL))
+            if (!string.IsNullOrEmpty(Config.ServiceURL))
             {
-                var regionName = Util.AWSSDKUtils.DetermineRegion(this.Config.ServiceURL);
+                var regionName = Util.AWSSDKUtils.DetermineRegion(Config.ServiceURL);
                 RegionEndpoint region = RegionEndpoint.GetBySystemName(regionName);
                 newConfig.RegionEndpoint = region;
             }
             else
             {
-                newConfig.RegionEndpoint = this.Config.RegionEndpoint;
+                newConfig.RegionEndpoint = Config.RegionEndpoint;
             }
 
-            newConfig.UseHttp = this.Config.UseHttp;
+            newConfig.UseHttp = Config.UseHttp;
 
 
-            newConfig.ProxyCredentials = this.Config.ProxyCredentials;
-            newConfig.ProxyHost = this.Config.ProxyHost;
-            newConfig.ProxyPort = this.Config.ProxyPort;
+            newConfig.ProxyCredentials = Config.ProxyCredentials;
+            newConfig.ProxyHost = Config.ProxyHost;
+            newConfig.ProxyPort = Config.ProxyPort;
         }
 
         private static void SetupCSMHandler(IRequestContext requestContext)
@@ -552,6 +520,5 @@ namespace Milochau.Core.Aws.Core.Runtime
                 requestContext.CSMCallEvent = new MonitoringAPICallEvent(requestContext);
             }
         }
-        */
     }
 }

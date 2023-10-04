@@ -1,11 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Milochau.Core.Aws.Core.Runtime
+using Amazon.Runtime.Internal.Util;
+using System.Collections.Generic;
+using Amazon.Util;
+using Amazon.Runtime.CredentialManagement;
+
+namespace Amazon.Runtime
 {
     /// <summary>
     /// Base class for determining region based on inspection.
@@ -13,6 +28,16 @@ namespace Milochau.Core.Aws.Core.Runtime
     public abstract class AWSRegion
     {
         public RegionEndpoint Region { get; protected set; }
+
+        /// <summary>
+        /// Sets the Region property by looking up the corresponding RegionEndpoint
+        /// from the supplied region system name (us-east-1, us-west-2 etc).
+        /// </summary>
+        /// <param name="regionSystemName">The system name of the region.</param>
+        protected void SetRegionFromName(string regionSystemName)
+        {
+            Region = RegionEndpoint.GetBySystemName(regionSystemName);
+        }
     }
 
     /// <summary>
@@ -153,23 +178,19 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public static class FallbackRegionFactory
     {
+        private static CredentialProfileStoreChain credentialProfileChain = new CredentialProfileStoreChain();
 
         private static object _lock = new object();
-        private static AWSRegion? cachedRegion;
-        private delegate AWSRegion RegionGenerator();
-
-        private static List<RegionGenerator> AllGenerators { get; set; } = null!;
-        private static List<RegionGenerator> NonMetadataGenerators { get; set; } = null!;
 
         static FallbackRegionFactory()
         {
             Reset();
         }
 
-        public static RegionEndpoint? GetRegionEndpoint()
-        {
-            return GetRegionEndpoint(true);
-        }
+        private delegate AWSRegion RegionGenerator();
+
+        private static List<RegionGenerator> AllGenerators { get; set; }
+        private static List<RegionGenerator> NonMetadataGenerators { get; set; }
 
         public static void Reset()
         {
@@ -190,9 +211,16 @@ namespace Milochau.Core.Aws.Core.Runtime
             };
         }
 
-        public static RegionEndpoint? GetRegionEndpoint(bool includeInstanceMetadata)
+        private static AWSRegion cachedRegion;
+
+        public static RegionEndpoint GetRegionEndpoint()
         {
-            lock (_lock)
+            return GetRegionEndpoint(true);
+        }
+
+        public static RegionEndpoint GetRegionEndpoint(bool includeInstanceMetadata)
+        {
+            lock(_lock)
             {
                 if (cachedRegion != null)
                     return cachedRegion.Region;
