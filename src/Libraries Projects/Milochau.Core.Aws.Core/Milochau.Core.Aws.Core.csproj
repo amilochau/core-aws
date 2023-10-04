@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description>Milochau.Core.Aws.Core contains AWS SDK core utilities for Milochau.Core.Aws framework.</Description>
+
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Runtime2\**" />
+    <EmbeddedResource Remove="Runtime2\**" />
+    <None Remove="Runtime2\**" />
+  </ItemGroup>
+
+</Project>

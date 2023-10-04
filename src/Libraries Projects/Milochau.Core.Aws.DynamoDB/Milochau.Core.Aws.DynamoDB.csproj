@@ -15,5 +15,9 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core" Version="3.7.202.17" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
+  </ItemGroup>
   
 </Project>
