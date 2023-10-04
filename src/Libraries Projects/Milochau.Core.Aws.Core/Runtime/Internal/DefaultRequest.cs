@@ -52,7 +52,6 @@ namespace Amazon.Runtime.Internal
         string httpMethod = "POST";
         bool useQueryString = false;
         string requestName;
-        string canonicalResource;
         RegionEndpoint alternateRegion;
         long originalStreamLength;
         int marshallerVersion = 2; //2 is the default version and must be used whenever a version is not specified in the marshaller.
@@ -71,7 +70,6 @@ namespace Amazon.Runtime.Internal
             this.serviceName = serviceName;
             this.originalRequest = request;
             this.requestName = this.originalRequest.GetType().Name;
-            this.UseSigV4 = ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)this.originalRequest).UseSigV4;
             this.SignatureVersion = ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)this.originalRequest).SignatureVersion;
             this.HostPrefix = string.Empty;
 
@@ -182,25 +180,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Adds a new null entry to the SubResources collection for the request
-        /// </summary>
-        /// <param name="subResource">The name of the subresource</param>
-        public void AddSubResource(string subResource)
-        {
-            AddSubResource(subResource, null);
-        }
-
-        /// <summary>
-        /// Adds a new entry to the SubResources collection for the request
-        /// </summary>
-        /// <param name="subResource">The name of the subresource</param>
-        /// <param name="value">Value of the entry</param>
-        public void AddSubResource(string subResource, string value)
-        {
-            SubResources.Add(subResource, value);
-        }
-
-        /// <summary>
         /// Gets and Sets the endpoint for this request.
         /// </summary>
         public Uri Endpoint
@@ -273,19 +252,6 @@ namespace Amazon.Runtime.Internal
                 this.marshallerVersion = value;
             }
         }
-
-        public string CanonicalResource
-        {
-            get
-            {
-                return this.canonicalResource;
-            }
-            set
-            {
-                this.canonicalResource = value;
-            }
-        }
-
 
         /// <summary>
         /// Gets and Sets the content for this request.
@@ -453,31 +419,6 @@ namespace Amazon.Runtime.Internal
         /// Currently only S3 and S3 Control will disable double encoding.
         /// </summary>
         public bool UseDoubleEncoding { get; set; } = true;
-
-        /// <summary>
-        /// Used for Amazon S3 requests where the bucket name is removed from
-        /// the marshalled resource path into the host header. To comply with
-        /// AWS2 signature calculation, we need to recover the bucket name
-        /// and include it in the resource canonicalization, which we do using
-        /// this field.
-        /// </summary>
-        public string CanonicalResourcePrefix
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// This flag specifies if SigV4 is required for the current request.
-        /// Returns true if the request will use SigV4.
-        /// Setting it to false will use SigV2.
-        /// </summary>
-        [Obsolete("UseSigV4 is deprecated. Use SignatureVersion directly instead.")]
-        public bool UseSigV4
-        {
-            get { return SignatureVersion == SignatureVersion.SigV4; }
-            set { this.SignatureVersion = value ? SignatureVersion.SigV4 : SignatureVersion.SigV2; }
-        }
 
         /// <summary>
         /// Specifies which signature version shall be used for the current request.

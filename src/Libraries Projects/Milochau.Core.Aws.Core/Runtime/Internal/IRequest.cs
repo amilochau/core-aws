@@ -87,19 +87,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Adds a new null entry to the SubResources collection for the request
-        /// </summary>
-        /// <param name="subResource">The name of the subresource</param>
-        void AddSubResource(string subResource);
-
-        /// <summary>
-        /// Adds a new entry to the SubResources collection for the request
-        /// </summary>
-        /// <param name="subResource">The name of the subresource</param>
-        /// <param name="value">Value of the entry</param>
-        void AddSubResource(string subResource, string value);
-
-        /// <summary>
         /// Gets and sets the type of http request to make, whether it should be POST,GET or DELETE
         /// </summary>
         string HttpMethod
@@ -311,25 +298,6 @@ namespace Amazon.Runtime.Internal
             get;
             set;
         }
-
-        /// <summary>
-        /// Used for Amazon S3 requests where the bucket name is removed from
-        /// the marshalled resource path into the host header. To comply with
-        /// AWS2 signature calculation, we need to recover the bucket name
-        /// and include it in the resource canonicalization, which we do using
-        /// this field.
-        /// </summary>
-        string CanonicalResourcePrefix
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// This flag specifies if SigV4 is required for the current request.
-        /// </summary>
-        [Obsolete("UseSigV4 is deprecated. Use SignatureVersion directly instead.")]
-        bool UseSigV4 { get; set; }
 
         /// <summary>
         /// Specifies which signature version shall be used for the current request.

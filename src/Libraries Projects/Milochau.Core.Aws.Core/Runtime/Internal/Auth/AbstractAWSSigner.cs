@@ -28,42 +28,6 @@ namespace Amazon.Runtime.Internal.Auth
 
     public abstract class AbstractAWSSigner
     {
-        private AWS4Signer _aws4Signer;
-        private AWS4Signer AWS4SignerInstance
-        {
-            get
-            {
-                if (_aws4Signer == null)
-                {
-                    lock (this)
-                    {
-                        if (_aws4Signer == null)
-                            _aws4Signer = new AWS4Signer();
-                    }
-                }
-
-                return _aws4Signer;
-            }
-        }
-
-        private AWS4aSignerCRTWrapper _aws4aSignerCRTWrapper;
-        private AWS4aSignerCRTWrapper AWS4aSignerCRTWrapperInstance
-        {
-            get
-            {
-                if (_aws4aSignerCRTWrapper == null)
-                {
-                    lock (this)
-                    {
-                        if (_aws4aSignerCRTWrapper == null)
-                            _aws4aSignerCRTWrapper = new AWS4aSignerCRTWrapper();
-                    }
-                }
-
-                return _aws4aSignerCRTWrapper;
-            }
-        }
-
         /// <summary>
         /// Signals to the <see cref="Signer"/> Pipeline Handler
         /// if a Signer requires valid <see cref="ImmutableCredentials"/> in order
@@ -71,39 +35,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// </summary>
         public virtual bool RequiresCredentials { get; } = true;
 
-        /// <summary>
-        /// Computes RFC 2104-compliant HMAC signature.
-        /// </summary>
-        protected static string ComputeHash(string data, string secretkey, SigningAlgorithm algorithm)
-        {
-            try 
-            {
-                string signature = CryptoUtilFactory.CryptoInstance.HMACSign(data, secretkey, algorithm);
-
-                return signature;
-            } 
-            catch (Exception e) 
-            {
-                throw new Amazon.Runtime.SignatureException("Failed to generate signature: " + e.Message, e);
-            }
-        }
-
-        /// <summary>
-        /// Computes RFC 2104-compliant HMAC signature.
-        /// </summary>
-        protected static string ComputeHash(byte[] data, string secretkey, SigningAlgorithm algorithm)
-        {
-            try
-            {
-                string signature = CryptoUtilFactory.CryptoInstance.HMACSign(data, secretkey, algorithm);
-
-                return signature;
-            }
-            catch (Exception e)
-            {
-                throw new Amazon.Runtime.SignatureException("Failed to generate signature: " + e.Message, e);
-            }
-        }
         public abstract void Sign(IRequest request, IClientConfig clientConfig, RequestMetrics metrics, string awsAccessKeyId, string awsSecretAccessKey);
 
         public virtual void Sign(IRequest request, IClientConfig clientConfig, RequestMetrics metrics, ImmutableCredentials credentials)
@@ -123,66 +54,5 @@ namespace Amazon.Runtime.Internal.Auth
         }
 
         public abstract ClientProtocol Protocol { get; }
-
-        /// <summary>
-        /// Inspects the supplied evidence to determine if sigv4 or sigv2 signing should be used
-        /// </summary>
-        /// <param name="useSigV4Setting">Global setting for the service</param>
-        /// <param name="request">The request.</param>
-        /// <param name="config">Configuration for the client</param>
-        /// <returns>True if signature v4 request signing should be used, false if v2 signing should be used</returns>
-        protected static bool UseV4Signing(bool useSigV4Setting, IRequest request, IClientConfig config)
-        {
-            if (request.SignatureVersion == SignatureVersion.SigV4 ||
-                config.SignatureVersion == "4" ||
-                (useSigV4Setting && config.SignatureVersion != "2"))
-            {
-                return true;
-            }
-            else
-            {
-                // do a cascading series of checks to try and arrive at whether we have
-                // a recognisable region; this is required to use the AWS4 signer
-                RegionEndpoint r = null;
-                if (!string.IsNullOrEmpty(request.AuthenticationRegion))
-                    r = RegionEndpoint.GetBySystemName(request.AuthenticationRegion);
-
-                if (r == null && !string.IsNullOrEmpty(config.ServiceURL))
-                {
-                    var parsedRegion = AWSSDKUtils.DetermineRegion(config.ServiceURL);
-                    if (!string.IsNullOrEmpty(parsedRegion))
-                        r = RegionEndpoint.GetBySystemName(parsedRegion);
-                }
-
-                if (r == null && config.RegionEndpoint != null)
-                    r = config.RegionEndpoint;
-
-                if (r != null)
-                {
-                    var endpoint = r.GetEndpointForService(config.RegionEndpointServiceName, config.ToGetEndpointForServiceOptions());
-                    if (endpoint != null && (endpoint.SignatureVersionOverride == "4" || string.IsNullOrEmpty(endpoint.SignatureVersionOverride)))
-                        return true;
-                }
-
-                return false;
-            }
-        }
-
-        
-        protected AbstractAWSSigner SelectSigner(IRequest request, IClientConfig config)
-        {
-            return SelectSigner(this, useSigV4Setting: false, request: request, config: config);
-        }
-
-        protected AbstractAWSSigner SelectSigner(AbstractAWSSigner defaultSigner,bool useSigV4Setting, 
-            IRequest request, IClientConfig config)
-        {
-            if (request.SignatureVersion == SignatureVersion.SigV4a)
-                return AWS4aSignerCRTWrapperInstance;
-            else if (UseV4Signing(useSigV4Setting, request, config))
-                return AWS4SignerInstance;
-            else
-                return defaultSigner;
-        }
     }
 }

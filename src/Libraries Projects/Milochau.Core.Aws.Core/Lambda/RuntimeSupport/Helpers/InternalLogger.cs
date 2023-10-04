@@ -39,11 +39,6 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
             }
         }
 
-        public void LogDebug(string message)
-        {
-            _internalLoggingAction($"[Debug] {message}");
-        }
-
         public void LogError(Exception exception, string message)
         {
             _internalLoggingAction($"[Error] {message} - {exception.ToString()}");
@@ -52,17 +47,6 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
         public void LogInformation(string message)
         {
             _internalLoggingAction($"[Info] {message}");
-        }
-
-        /// <summary>
-        /// Gets an InternalLogger with a custom logging action.
-        /// Mainly used for unit testing
-        /// </summary>
-        /// <param name="loggingAction"></param>
-        /// <returns></returns>
-        public static InternalLogger GetCustomInternalLogger(Action<string> loggingAction)
-        {
-            return new InternalLogger(loggingAction);
         }
 
         /// <summary>

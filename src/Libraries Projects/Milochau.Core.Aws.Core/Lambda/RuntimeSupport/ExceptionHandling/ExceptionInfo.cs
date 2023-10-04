@@ -34,10 +34,6 @@ namespace Amazon.Lambda.RuntimeSupport
         public ExceptionInfo InnerException { get; set; }
         public List<ExceptionInfo> InnerExceptions { get; internal set; } = new List<ExceptionInfo>();
 
-        public Exception OriginalException { get; set; }
-
-        public ExceptionInfo() { }
-
         public ExceptionInfo(Exception exception, bool isNestedException = false)
         {
             if (exception == null)

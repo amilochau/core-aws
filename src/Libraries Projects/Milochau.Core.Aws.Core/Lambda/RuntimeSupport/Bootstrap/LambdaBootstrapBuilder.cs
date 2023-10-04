@@ -29,8 +29,6 @@ namespace Amazon.Lambda.RuntimeSupport
     public class LambdaBootstrapBuilder
     {
         private HandlerWrapper _handlerWrapper;
-        private HttpClient _httpClient;
-        private LambdaBootstrapInitializer _lambdaBootstrapInitializer;
 
         private LambdaBootstrapBuilder(HandlerWrapper handlerWrapper)
         {
@@ -59,12 +57,7 @@ namespace Amazon.Lambda.RuntimeSupport
 
         public LambdaBootstrap Build()
         {
-            if(_httpClient == null)
-            {
-                return new LambdaBootstrap(_handlerWrapper, _lambdaBootstrapInitializer);
-            }
-
-            return new LambdaBootstrap(_httpClient, _handlerWrapper, _lambdaBootstrapInitializer);
+            return new LambdaBootstrap(_handlerWrapper);
         }
     }
 }

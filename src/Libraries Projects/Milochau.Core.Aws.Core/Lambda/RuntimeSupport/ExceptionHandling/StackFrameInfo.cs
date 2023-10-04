@@ -19,35 +19,13 @@ namespace Amazon.Lambda.RuntimeSupport
 {
     internal class StackFrameInfo
     {
-        public StackFrameInfo(string path, int line, string label)
-        {
-            Path = path;
-            Line = line;
-            Label = label;
-        }
-
         public StackFrameInfo(StackFrame stackFrame)
         {
             Path = stackFrame.GetFileName();
             Line = stackFrame.GetFileLineNumber();
-
-            var method = stackFrame.GetMethod();
-            if (method != null)
-            {
-                var methodTypeName = method.DeclaringType?.Name;
-                if (methodTypeName == null)
-                {
-                    Label = method.Name;
-                }
-                else
-                {
-                    Label = methodTypeName + "." + method.Name;
-                }
-            }
         }
 
         public string Path { get; }
         public int Line { get; }
-        public string Label { get; }
     }
 }

@@ -33,8 +33,6 @@ namespace Amazon.Runtime
 {
     public abstract class AmazonServiceClient : IDisposable
     {
-        private static volatile bool _isProtocolUpdated;
-
         private bool _disposed;
         private Logger _logger;
         protected EndpointDiscoveryResolverBase EndpointDiscoveryResolver { get; private set; }

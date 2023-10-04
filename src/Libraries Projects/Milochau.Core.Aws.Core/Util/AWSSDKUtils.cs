@@ -127,7 +127,7 @@ namespace Amazon.Util
             var sb = new StringBuilder();
             foreach (var c in basePathCharacters)
             {
-                var escaped = Uri.EscapeUriString(c.ToString());
+                var escaped = Uri.EscapeDataString(c.ToString());
                 if (escaped.Length == 1 && escaped[0] == c)
                     sb.Append(c);
             }

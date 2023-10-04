@@ -52,24 +52,11 @@ namespace Amazon.Runtime.Internal.Auth
                 {
                     if (_awsSigV4AProvider == null)
                     {
-                        try
-                        {
-                            var crtWrapperTypeInfo = ServiceClientHelpers.LoadTypeFromAssembly(CRT_WRAPPER_ASSEMBLY_NAME, CRT_WRAPPER_CLASS_NAME);
-                            var constructor = crtWrapperTypeInfo.GetConstructor(new ITypeInfo[]
-                            {
-                                TypeFactory.GetTypeInfo(typeof(bool))
-                            });
-
-                            _awsSigV4AProvider = constructor.Invoke(new object[] { signPayload }) as IAWSSigV4aProvider;
-                        }
-                        catch (FileNotFoundException)
-                        {
-                            throw new AWSCommonRuntimeException
-                            (
-                                string.Format(CultureInfo.InvariantCulture, "Attempting to make a request that requires an implementation of AWS Signature V4a. " +
-                                $"Add a reference to the {CRT_WRAPPER_NUGET_PACKGE_NAME} NuGet package to your project to include the AWS Signature V4a signer.")
-                            );
-                        }
+                        throw new AWSCommonRuntimeException
+                        (
+                            string.Format(CultureInfo.InvariantCulture, "Attempting to make a request that requires an implementation of AWS Signature V4a. " +
+                            $"Add a reference to the {CRT_WRAPPER_NUGET_PACKGE_NAME} NuGet package to your project to include the AWS Signature V4a signer.")
+                        );
                     }
                 }
             }
@@ -111,68 +98,6 @@ namespace Amazon.Runtime.Internal.Auth
         public override void Sign(IRequest request, IClientConfig clientConfig, RequestMetrics metrics, string awsAccessKeyId, string awsSecretAccessKey)
         {
             throw new AWSCommonRuntimeException("SigV4a signing with only an access key and secret is not supported. Call the Sign override with ImmutableCredentials instead.");
-        }
-
-        /// <summary>
-        /// Calculates and signs the specified request using the asymmetric Sigv4 (Sigv4a) signing protocol.
-        /// The resulting signature is added to the request headers as 'Authorization'. Parameters supplied in the request, either in
-        /// the resource path as a query string or in the Parameters collection must not have been
-        /// uri encoded. If they have, use the SignRequest method to obtain a signature.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4a protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Client configuration data encompassing the service call (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="credentials">
-        /// The AWS credentials for the account making the service call.
-        /// </param>
-        /// <returns>AWS4a Signing Result</returns>
-        public AWS4aSigningResult SignRequest(IRequest request,
-                                     IClientConfig clientConfig,
-                                     RequestMetrics metrics,
-                                     ImmutableCredentials credentials)
-        {
-            return _awsSigV4AProvider.SignRequest(request, clientConfig, metrics, credentials);
-        }
-
-        /// <summary>
-        /// Calculates the asymmetric Sigv4 (Sigv4a) signature for a presigned url.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Adding supporting data for the service call required by the signer (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="credentials">
-        /// The AWS credentials for the account making the service call.
-        /// </param>
-        /// <param name="service">
-        /// The service to sign for
-        /// </param>
-        /// <param name="overrideSigningRegion">
-        /// The region to sign to, if null then the region the client is configured for will be used.
-        /// </param>
-        /// <returns>AWS4a Signing Result</returns>
-        public AWS4aSigningResult Presign4a(IRequest request,
-                                    IClientConfig clientConfig,
-                                    RequestMetrics metrics,
-                                    ImmutableCredentials credentials,
-                                    string service,
-                                    string overrideSigningRegion)
-        {
-            return _awsSigV4AProvider.Presign4a(request, clientConfig, metrics, credentials, service, overrideSigningRegion);
         }
 
         /// <summary>

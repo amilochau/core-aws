@@ -351,14 +351,6 @@ namespace Amazon.Runtime.Internal.Settings
 
 #endregion
 
-
-#region Events
-
-        public event EventHandler SettingsChanged;
-
-#endregion
-
-
 #region IDisposable Members
 
         public void Dispose()
@@ -373,8 +365,6 @@ namespace Amazon.Runtime.Internal.Settings
             {
             }
         }
-
-
 #endregion
     }
 }

@@ -33,23 +33,15 @@ namespace Amazon.Util.Internal
         Type Type { get; }
 
         Assembly Assembly { get; }
-        bool IsArray { get; }
-
-        Array ArrayCreateInstance(int length);
 
         Type GetInterface(string name);
-        Type[] GetInterfaces();
 
         IEnumerable<PropertyInfo> GetProperties();
 
         IEnumerable<FieldInfo> GetFields();
         FieldInfo GetField(string name);
 
-        MethodInfo GetMethod(string name);
         MethodInfo GetMethod(string name, ITypeInfo[] paramTypes);
-
-        MemberInfo[] GetMembers();
-
 
         ConstructorInfo GetConstructor(ITypeInfo[] paramTypes);
 
@@ -60,34 +52,8 @@ namespace Amazon.Util.Internal
         bool IsEnum {get;}
 
         bool IsClass { get; }
-        bool IsValueType { get; }
-
-        bool IsInterface { get; }
-        bool IsAbstract { get; }
-        bool IsSealed { get; }
-
-        object EnumToObject(object value);
-
-        ITypeInfo EnumGetUnderlyingType();
-
-        object CreateInstance();
-
-        ITypeInfo GetElementType();
-
-        bool IsType(Type type);
 
         string FullName { get; }
-        string Name { get; }
-
-        bool IsGenericTypeDefinition { get; }
-        bool IsGenericType { get; }
-        bool ContainsGenericParameters { get; }
-        Type GetGenericTypeDefinition();
-        Type[] GetGenericArguments();
-
-        object[] GetCustomAttributes(bool inherit);
-        object[] GetCustomAttributes(ITypeInfo attributeType, bool inherit);
-
     }
 
     public static partial class TypeFactory
@@ -137,76 +103,21 @@ namespace Amazon.Util.Internal
             public abstract Type BaseType { get; }
             public abstract Assembly Assembly { get; }
             public abstract Type GetInterface(string name);
-            public abstract Type[] GetInterfaces();
             public abstract IEnumerable<PropertyInfo> GetProperties();
             public abstract IEnumerable<FieldInfo> GetFields();
             public abstract FieldInfo GetField(string name);
-            public abstract MethodInfo GetMethod(string name);
             public abstract MethodInfo GetMethod(string name, ITypeInfo[] paramTypes);
-            public abstract MemberInfo[] GetMembers();
             public abstract PropertyInfo GetProperty(string name);
             public abstract bool IsAssignableFrom(ITypeInfo typeInfo);
             public abstract bool IsClass { get; }
-            public abstract bool IsInterface { get; }
-            public abstract bool IsAbstract { get; }
-            public abstract bool IsSealed { get; }
             public abstract bool IsEnum { get; }
-            public abstract bool IsValueType { get; }
             public abstract ConstructorInfo GetConstructor(ITypeInfo[] paramTypes);
-
-            public abstract object[] GetCustomAttributes(bool inherit);
-            public abstract object[] GetCustomAttributes(ITypeInfo attributeType, bool inherit);
-
-            public abstract bool ContainsGenericParameters { get; }
-            public abstract bool IsGenericTypeDefinition { get; }
-            public abstract bool IsGenericType {get;}
-            public abstract Type GetGenericTypeDefinition();
-            public abstract Type[] GetGenericArguments();
-
-            public bool IsArray
-            {
-                get { return this._type.IsArray; }
-            }
-
-
-            public object EnumToObject(object value)
-            {
-                return Enum.ToObject(this._type, value);
-            }
-
-            public ITypeInfo EnumGetUnderlyingType()
-            {
-                return TypeFactory.GetTypeInfo(Enum.GetUnderlyingType(this._type));
-            }
-
-            public object CreateInstance()
-            {
-                return Activator.CreateInstance(this._type);
-            }
-
-            public Array ArrayCreateInstance(int length)
-            {
-                return Array.CreateInstance(this._type, length);
-            }
-
-            public ITypeInfo GetElementType()
-            {
-                return TypeFactory.GetTypeInfo(this._type.GetElementType());
-            }
 
             public string FullName 
             {
                 get
                 {
                     return this._type.FullName;
-                }
-            }
-
-            public string Name
-            {
-                get
-                {
-                    return this._type.Name;
                 }
             }
        }

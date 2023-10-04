@@ -38,9 +38,7 @@ namespace Amazon.Lambda.RuntimeSupport
         /// </summary>
         private static readonly TimeSpan RuntimeApiHttpTimeout = TimeSpan.FromHours(12);
 
-        private LambdaBootstrapInitializer _initializer;
         private LambdaBootstrapHandler _handler;
-        private bool _ownsHttpClient;
         private InternalLogger _logger = InternalLogger.GetDefaultLogger();
 
         private HttpClient _httpClient;
@@ -49,48 +47,22 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <summary>
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
-        /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
-        /// <returns></returns>
-        public LambdaBootstrap(LambdaBootstrapHandler handler, LambdaBootstrapInitializer initializer = null)
-            : this(ConstructHttpClient(), handler, initializer, ownsHttpClient: true)
-        { }
-
-        /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
-        /// </summary>
         /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
         /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
         /// <returns></returns>
-        public LambdaBootstrap(HandlerWrapper handlerWrapper, LambdaBootstrapInitializer initializer = null)
-            : this(handlerWrapper.Handler, initializer)
+        public LambdaBootstrap(HandlerWrapper handlerWrapper)
+            : this(handlerWrapper.Handler)
         { }
 
         /// <summary>
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
-        /// <param name="httpClient">The HTTP client to use with the Lambda runtime.</param>
-        /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
-        /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
-        /// <returns></returns>
-        public LambdaBootstrap(HttpClient httpClient, HandlerWrapper handlerWrapper, LambdaBootstrapInitializer initializer = null)
-            : this(httpClient, handlerWrapper.Handler, initializer, ownsHttpClient: false)
-        { }
-
-        /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
-        /// </summary>
-        /// <param name="httpClient">The HTTP client to use with the Lambda runtime.</param>
         /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
-        /// <param name="ownsHttpClient">Whether the instance owns the HTTP client and should dispose of it.</param>
         /// <returns></returns>
-        private LambdaBootstrap(HttpClient httpClient, LambdaBootstrapHandler handler, LambdaBootstrapInitializer initializer, bool ownsHttpClient)
+        public LambdaBootstrap(LambdaBootstrapHandler handler)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = ConstructHttpClient();
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            _ownsHttpClient = ownsHttpClient;
-            _initializer = initializer;
             _httpClient.Timeout = RuntimeApiHttpTimeout;
             Client = new RuntimeApiClient(new SystemEnvironmentVariables(), _httpClient);
         }
@@ -108,9 +80,7 @@ namespace Amazon.Lambda.RuntimeSupport
             // variable should never be set when function is deployed to Lambda.
             var runOnce = string.Equals(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VARIABLE_AWS_LAMBDA_DOTNET_DEBUG_RUN_ONCE), "true", StringComparison.OrdinalIgnoreCase);
 
-            bool doStartInvokeLoop = _initializer == null || await InitializeAsync();
-
-            while (doStartInvokeLoop && !cancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
@@ -125,20 +95,6 @@ namespace Amazon.Lambda.RuntimeSupport
                 {
                     // Loop cancelled
                 }
-            }
-        }
-
-        internal async Task<bool> InitializeAsync()
-        {
-            try
-            {
-                return await _initializer();
-            }
-            catch (Exception exception)
-            {
-                WriteUnhandledExceptionToLog(exception);
-                await Client.ReportInitializationErrorAsync(exception);
-                throw;
             }
         }
 
@@ -230,7 +186,7 @@ namespace Amazon.Lambda.RuntimeSupport
         {
             if (!disposedValue)
             {
-                if (disposing && _ownsHttpClient)
+                if (disposing)
                 {
                     _httpClient?.Dispose();
                 }

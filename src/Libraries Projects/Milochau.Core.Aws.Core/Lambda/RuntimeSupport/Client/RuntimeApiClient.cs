@@ -35,15 +35,6 @@ namespace Amazon.Lambda.RuntimeSupport
         internal Func<Exception, ExceptionInfo> ExceptionConverter { get;  set; }
         internal LambdaEnvironment LambdaEnvironment { get; set; }
 
-        /// <summary>
-        /// Create a new RuntimeApiClient
-        /// </summary>
-        /// <param name="httpClient">The HttpClient to use to communicate with the Runtime API.</param>
-        public RuntimeApiClient(HttpClient httpClient)
-            : this(new SystemEnvironmentVariables(), httpClient)
-        {
-        }
-
         internal RuntimeApiClient(IEnvironmentVariables environmentVariables, HttpClient httpClient)
         {
             ExceptionConverter = ExceptionInfo.GetExceptionInfo;
@@ -52,13 +43,6 @@ namespace Amazon.Lambda.RuntimeSupport
             var internalClient = new InternalRuntimeApiClient(httpClient);
             internalClient.BaseUrl = "http://" + LambdaEnvironment.RuntimeServerHostAndPort + internalClient.BaseUrl;
             _internalClient = internalClient;
-        }
-
-        internal RuntimeApiClient(IEnvironmentVariables environmentVariables, IInternalRuntimeApiClient internalClient)
-        {
-            LambdaEnvironment = new LambdaEnvironment(environmentVariables);
-            _internalClient = internalClient;
-            ExceptionConverter = ExceptionInfo.GetExceptionInfo;
         }
 
         /// <summary>

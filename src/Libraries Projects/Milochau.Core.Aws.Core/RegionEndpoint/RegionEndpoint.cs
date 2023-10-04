@@ -46,22 +46,6 @@ namespace Amazon
         private static Dictionary<string, RegionEndpoint> _hashRegionEndpointOverride = new Dictionary<string, RegionEndpoint>();
 
         /// <summary>
-        /// Enumerate through all the regions.
-        /// </summary>
-        public static IEnumerable<RegionEndpoint> EnumerableAllRegions
-        {
-            get
-            {
-                List<RegionEndpoint> list = new List<RegionEndpoint>();
-                foreach (IRegionEndpoint endpoint in RegionEndpointProvider.AllRegionEndpoints)
-                {
-                    list.Add(GetEndpoint(endpoint.RegionName, endpoint.DisplayName));
-                }
-                return list;
-            }
-        }
-
-        /// <summary>
         /// Gets the region based on its system name like "us-west-1"
         /// </summary>
         /// <param name="systemName">The system name of the service like "us-west-1"</param>
@@ -95,94 +79,6 @@ namespace Amazon
             {
                 _regionEndpointOverrideLock.ExitReadLock();
             }
-        }
-
-        /// <summary>
-        /// Force the SDK to load and apply the given endpoints details
-        /// (eg: an updated endpoints.json file).
-        /// Service clients created after this call will be set up with
-        /// endpoints based on this information.
-        ///
-        /// This function should only be used at application startup, before
-        /// creating service clients.
-        ///
-        /// Known Caveats:
-        /// * static readonly fields (eg: <see cref="RegionEndpoint.USEast1"/>) are not updated.
-        ///   If you use this function, you should use <see cref="RegionEndpoint.GetEndpoint"/> with
-        ///   explicit region system names to ensure you work with RegionEndpoint objects containing
-        ///   the reloaded data. RegionEndpoint objects returned from GetEndpoint will generally 
-        ///   fail Equality comparisons against the static fields.
-        /// * Service clients created before calling Reload have no guarantee around
-        ///   which endpoint data will be used.
-        /// </summary>
-        /// <param name="stream">Stream containing an Endpoints manifest to reload in the SDK.
-        /// Pass null in to reset the SDK, so that it uses its built-in manifest instead.</param>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        public static void Reload(Stream stream)
-        {
-            if (stream == null)
-            {
-                _regionEndpointProvider = null;
-            }
-            else
-            {
-                JsonData rootData = null;
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    rootData = JsonMapper.ToObject(reader);
-                }
-
-                var manifestVersion = rootData?["version"]?.ToString();
-                if (manifestVersion == "3")
-                {
-                    _regionEndpointProvider = new RegionEndpointProviderV3(rootData);
-                }
-                else
-                {
-                    throw new NotSupportedException("Endpoints data format is not supported by reload");
-                }
-            }
-
-            // Reset static lookup maps that may contain objects relating to old endpoint data
-            lock (_hashBySystemName)
-            {
-                _hashBySystemName.Clear();
-
-                // Add the .NET/S3-specific legacy region back to the lookup map
-                GetEndpoint("us-east-1-regional", "US East (Virginia) regional");
-            }
-
-            ResetRegionEndpointOverride();
-        }
-
-        /// <summary>
-        /// Rebuilds the endpoint override map, referencing the SDK's current Region Endpoint data.
-        /// </summary>
-        private static void ResetRegionEndpointOverride()
-        {
-            try
-            {
-                _regionEndpointOverrideLock.EnterWriteLock();
-
-                _hashRegionEndpointOverride.Clear();
-                _hashRegionEndpointOverride.Add(USEast1Regional.SystemName, GetEndpoint(USEast1.SystemName, null));
-            }
-            finally
-            {
-                _regionEndpointOverrideLock.ExitWriteLock();
-            }
-        }
-
-        /// <summary>
-        /// Returns the DNS suffix for the given partition, or
-        /// an empty string if a matching partition was not found in endpoints.json
-        /// </summary>
-        /// <param name="partition">partition</param>
-        /// <returns>DNS suffix for the given partition, empty string if a matching partition was not found</returns>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        public static string GetDnsSuffixForPartition(string partition)
-        {
-            return RegionEndpointProvider.GetDnsSuffixForPartition(partition);
         }
 
         private static RegionEndpoint GetEndpoint(string systemName, string displayName)
@@ -281,77 +177,12 @@ namespace Amazon
             private set;
         }
 
-        /// <summary>
-        /// Gets the partition name the region is in. For example for us-east-1 the partition name is aws. For cn-northwest-1 the partition name is aws-cn.
-        /// </summary>
-        public string PartitionName
-        {
-            get
-            {
-                var regionEndpointV3 = this.InternedRegionEndpoint as RegionEndpointV3;
-                return regionEndpointV3?.PartitionName;
-            }
-        }
-
-        /// <summary>
-        /// Gets the dns suffix for the region endpoints in a partition. For example the aws partition's suffix is amazonaws.com. The aws-cn partition's suffix is amazonaws.com.cn.
-        /// </summary>
-        public string PartitionDnsSuffix
-        {
-            get
-            {
-                var regionEndpointV3 = this.InternedRegionEndpoint as RegionEndpointV3;
-                return regionEndpointV3?.PartitionDnsSuffix;
-            }
-        }
-
         private IRegionEndpoint InternedRegionEndpoint
         {
             get
             {
                 return RegionEndpointProvider.GetRegionEndpoint(SystemName);
             }
-        }
-
-        /// <summary>
-        /// Gets the endpoint for a service in a region.
-        /// </summary>
-        /// <param name="serviceName">
-        /// The services system name. Service system names can be obtained from the
-        /// RegionEndpointServiceName member of the ClientConfig-derived class for the service.
-        /// </param>
-        /// <param>
-        /// For forwards compatibility, if the service being requested for isn't known in the region, this method 
-        /// will generate an endpoint using the AWS endpoint heuristics. In this case, it is not guaranteed the
-        /// endpoint will point to a valid service endpoint.
-        /// </param>
-        /// <returns></returns>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        public Endpoint GetEndpointForService(string serviceName)
-        {
-            return GetEndpointForService(serviceName, new GetEndpointForServiceOptions());
-        }
-
-        /// <summary>
-        /// Gets the endpoint for a service in a region, optionally selecting a dualstack compatible endpoint.
-        /// </summary>
-        /// <param name="serviceName">
-        /// The services system name. Service system names can be obtained from the
-        /// RegionEndpointServiceName member of the ClientConfig-derived class for the service.
-        /// </param>
-        /// <param name="dualStack">
-        /// If true a dualstack endpoint is returned. It is the user's responsibility to verify that the given service
-        /// supports a dualstack endpoint for the region.
-        /// </param>
-        /// <param>
-        /// For forwards compatibility, if the service being requested for isn't known in the region, this method 
-        /// will generate an endpoint using the AWS endpoint heuristics. In this case, it is not guaranteed the
-        /// endpoint will point to a valid service endpoint.
-        /// </param>
-        [Obsolete("Use GetEndpointForService(string serviceName, GetEndpointForServiceOptions options) instead", error: false)]
-        public Endpoint GetEndpointForService(string serviceName, bool dualStack)
-        {
-            return GetEndpointForService(serviceName, new GetEndpointForServiceOptions {DualStack = dualStack});
         }
 
         /// <summary>
@@ -372,11 +203,6 @@ namespace Amazon
         public Endpoint GetEndpointForService(string serviceName, GetEndpointForServiceOptions options)
         {
             return InternedRegionEndpoint.GetEndpointForService(serviceName, options);
-        }
-
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", this.DisplayName, this.SystemName);
         }
 
         /// <summary>

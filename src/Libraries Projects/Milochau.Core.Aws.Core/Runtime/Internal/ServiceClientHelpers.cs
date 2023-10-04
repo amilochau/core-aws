@@ -28,42 +28,6 @@ namespace Amazon.Runtime.Internal
         public const string KMS_ASSEMBLY_NAME = "AWSSDK.KeyManagementService";
         public const string KMS_SERVICE_CLASS_NAME = "Amazon.KeyManagementService.AmazonKeyManagementServiceClient";
 
-        public static TClient CreateServiceFromAnother<TClient, TConfig>(AmazonServiceClient originalServiceClient)
-            where TConfig : ClientConfig, new ()
-            where TClient : AmazonServiceClient
-        {
-            var credentials = originalServiceClient.Credentials;
-            var newConfig = originalServiceClient.CloneConfig<TConfig>();
-
-            var newServiceClientTypeInfo = TypeFactory.GetTypeInfo(typeof(TClient));
-
-            var constructor = newServiceClientTypeInfo.GetConstructor(new ITypeInfo[]
-                {
-                    TypeFactory.GetTypeInfo(typeof(AWSCredentials)),
-                    TypeFactory.GetTypeInfo(newConfig.GetType())
-                });
-
-            var newServiceClient = constructor.Invoke(new object[] { credentials, newConfig }) as TClient;
-
-            return newServiceClient;
-        }
-
-        public static TClient CreateServiceFromAssembly<TClient>(string assemblyName, string serviceClientClassName,
-            RegionEndpoint region)
-            where TClient : class
-        {
-            var serviceClientTypeInfo = LoadServiceClientType(assemblyName, serviceClientClassName);
-
-            var constructor = serviceClientTypeInfo.GetConstructor(new ITypeInfo[]
-                {
-                    TypeFactory.GetTypeInfo(typeof(RegionEndpoint))
-                });
-
-            var newServiceClient = constructor.Invoke(new object[] { region }) as TClient;
-
-            return newServiceClient;
-        }
-
         public static TClient CreateServiceFromAssembly<TClient>(string assemblyName, string serviceClientClassName, 
             AWSCredentials credentials, RegionEndpoint region)
             where TClient : class
@@ -94,25 +58,6 @@ namespace Amazon.Runtime.Internal
                 });
 
             var newServiceClient = constructor.Invoke(new object[] { credentials, config }) as TClient;
-
-            return newServiceClient;
-        }
-
-        public static TClient CreateServiceFromAssembly<TClient>(string assemblyName, string serviceClientClassName, AmazonServiceClient originalServiceClient)
-            where TClient : class
-        {
-            var serviceClientTypeInfo = LoadServiceClientType(assemblyName, serviceClientClassName);
-
-            var config = CreateServiceConfig(assemblyName, serviceClientClassName.Replace("Client", "Config"));
-            originalServiceClient.CloneConfig(config);
-
-            var constructor = serviceClientTypeInfo.GetConstructor(new ITypeInfo[]
-                {
-                    TypeFactory.GetTypeInfo(typeof(AWSCredentials)),
-                    TypeFactory.GetTypeInfo(config.GetType())
-                });
-
-            var newServiceClient = constructor.Invoke(new object[] { originalServiceClient.Credentials, config }) as TClient;
 
             return newServiceClient;
         }

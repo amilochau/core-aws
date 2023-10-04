@@ -10,7 +10,7 @@ namespace Amazon.Lambda.Core
     public static class LambdaLogger
     {
         // Logging action, logs to Console by default
-        private static Action<string> _loggingAction = LogToConsole;
+        internal static Action<string> _loggingAction = LogToConsole;
 
         // Logs message to console
         private static void LogToConsole(string message)

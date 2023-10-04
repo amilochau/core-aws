@@ -200,7 +200,6 @@ namespace Amazon.Runtime
                 return clientConfig.ProxyCredentials == null && clientConfig.GetWebProxy() == null;
             else
                 return clientConfig.HttpClientFactory.GetConfigUniqueString(clientConfig) != null;
-            return clientConfig.ProxyCredentials == null;
         }
     }
 

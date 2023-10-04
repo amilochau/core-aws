@@ -38,8 +38,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
         private IEnvironmentVariables _environmentVariables;
 
-        public LambdaEnvironment() : this(new SystemEnvironmentVariables()) { }
-
         internal LambdaEnvironment(IEnvironmentVariables environmentVariables)
         {
             _environmentVariables = environmentVariables;
@@ -83,19 +81,5 @@ namespace Amazon.Lambda.RuntimeSupport
         public string LogStreamName { get; private set; }
         public string RuntimeServerHostAndPort { get; private set; }
         public string Handler { get; private set; }
-        public string XAmznTraceId
-        {
-            get
-            {
-                return _environmentVariables.GetEnvironmentVariable(EnvVarTraceId);
-            }
-        }
-        public string ExecutionEnvironment
-        {
-            get
-            {
-                return _environmentVariables.GetEnvironmentVariable(EnvVarExecutionEnvironment);
-            }
-        }
     }
 }

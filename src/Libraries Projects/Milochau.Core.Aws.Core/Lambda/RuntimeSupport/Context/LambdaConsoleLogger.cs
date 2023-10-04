@@ -37,8 +37,6 @@ namespace Amazon.Lambda.RuntimeSupport
             _consoleLoggerRedirector.FormattedWriteLine(message);
         }
 
-        public string CurrentAwsRequestId { get; set; }
-
         public void Log(string level, string message)
         {
             _consoleLoggerRedirector.FormattedWriteLine(level, message);

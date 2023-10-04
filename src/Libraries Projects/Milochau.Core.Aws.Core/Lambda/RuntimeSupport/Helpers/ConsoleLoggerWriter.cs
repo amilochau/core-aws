@@ -13,6 +13,7 @@
  * permissions and limitations under the License.
  */
 
+using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport.Bootstrap;
 using System;
 using System.IO;
@@ -197,16 +198,7 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
         /// </summary>
         private void ConfigureLoggingActionField()
         {
-            var lambdaILoggerType = typeof(Amazon.Lambda.Core.LambdaLogger);
-            if (lambdaILoggerType == null)
-                return;
-
-            var loggingActionField = lambdaILoggerType.GetTypeInfo().GetField("_loggingAction", BindingFlags.NonPublic | BindingFlags.Static);
-            if (loggingActionField == null)
-                return;
-
-            Action<string> callback = (message => FormattedWriteLine(null, message));
-            loggingActionField.SetValue(null, callback);
+            LambdaLogger._loggingAction = message => FormattedWriteLine(null, message);
         }
 
         public void SetCurrentAwsRequestId(string awsRequestId)
@@ -318,18 +310,12 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
                 }
             }
 
-            private Task FormattedWriteLineAsync(string message)
-            {
-                FormattedWriteLine(message);
-                return Task.CompletedTask;
-            }
-
             /// <summary>
             /// Convert LogLevel enums to the the same string label that console provider for Microsoft.Extensions.Logging.ILogger uses.
             /// </summary>
             /// <param name="level"></param>
             /// <returns></returns>
-            private string ConvertLogLevelToLabel(LogLevel level)
+            private static string ConvertLogLevelToLabel(LogLevel level)
             {
                 switch (level)
                 {

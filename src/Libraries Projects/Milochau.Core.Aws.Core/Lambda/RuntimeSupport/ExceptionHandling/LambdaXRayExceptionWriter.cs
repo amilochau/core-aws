@@ -119,7 +119,6 @@ namespace Amazon.Lambda.RuntimeSupport
         private static string CreateStackFrameJson(StackFrameInfo stackFrame, int tab)
         {
             string file = JsonExceptionWriterHelpers.EscapeStringForJson(stackFrame.Path);
-            string label = JsonExceptionWriterHelpers.EscapeStringForJson(stackFrame.Label);
             int line = stackFrame.Line;
 
             string fileJson = null;
@@ -130,13 +129,7 @@ namespace Amazon.Lambda.RuntimeSupport
                 lineJson = TabString($"\"{STACK_FRAME_LINE}\": {line}", tab);
             }
 
-            string labelJson = null;
-            if (label != null)
-            {
-                labelJson = TabString($"\"{STACK_FRAME_METHOD}\": \"{label}\"", tab);
-            }
-
-            string[] jsonElements = GetNonNullElements(fileJson, labelJson, lineJson);
+            string[] jsonElements = GetNonNullElements(fileJson, lineJson);
             return CombinePartsIntoJsonObject(tab, '{', '}', jsonElements);
         }
 

@@ -38,8 +38,6 @@ namespace Amazon.Lambda.RuntimeSupport
             Handler = handler;
         }
 
-        private HandlerWrapper() { }
-
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.

@@ -58,5 +58,4 @@ namespace Amazon.Lambda.RuntimeSupport
             return null;
         }
     }
-
 }

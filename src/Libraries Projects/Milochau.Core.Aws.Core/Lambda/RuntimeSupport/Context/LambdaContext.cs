@@ -25,7 +25,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
         private LambdaEnvironment _lambdaEnvironment;
         private RuntimeApiHeaders _runtimeApiHeaders;
-        private IDateTimeHelper _dateTimeHelper;
         private long _deadlineMs;
         private int _memoryLimitInMB;
         private Lazy<CognitoIdentity> _cognitoIdentityLazy;
@@ -33,16 +32,10 @@ namespace Amazon.Lambda.RuntimeSupport
         private IConsoleLoggerWriter _consoleLogger;
 
         public LambdaContext(RuntimeApiHeaders runtimeApiHeaders, LambdaEnvironment lambdaEnvironment, IConsoleLoggerWriter consoleLogger)
-            : this(runtimeApiHeaders, lambdaEnvironment, new DateTimeHelper(), consoleLogger)
-        {
-        }
-
-        public LambdaContext(RuntimeApiHeaders runtimeApiHeaders, LambdaEnvironment lambdaEnvironment, IDateTimeHelper dateTimeHelper, IConsoleLoggerWriter consoleLogger)
         {
 
             _lambdaEnvironment = lambdaEnvironment;
             _runtimeApiHeaders = runtimeApiHeaders;
-            _dateTimeHelper = dateTimeHelper;
             _consoleLogger = consoleLogger;
 
             int.TryParse(_lambdaEnvironment.FunctionMemorySize, out _memoryLimitInMB);
@@ -53,10 +46,6 @@ namespace Amazon.Lambda.RuntimeSupport
             // set environment variable so that if the function uses the XRay client it will work correctly
             _lambdaEnvironment.SetXAmznTraceId(_runtimeApiHeaders.TraceId);
         }
-
-        // TODO If/When Amazon.Lambda.Core is major versioned, add this to ILambdaContext.
-        // Until then function code can access it via the _X_AMZN_TRACE_ID environment variable set by LambdaBootstrap.
-        public string TraceId => _runtimeApiHeaders.TraceId;
 
         public string AwsRequestId => _runtimeApiHeaders.AwsRequestId;
 
@@ -78,6 +67,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
         public int MemoryLimitInMB => _memoryLimitInMB;
 
-        public TimeSpan RemainingTime => TimeSpan.FromMilliseconds(_deadlineMs - (_dateTimeHelper.UtcNow - UnixEpoch).TotalMilliseconds);
+        public TimeSpan RemainingTime => TimeSpan.FromMilliseconds(_deadlineMs - (DateTime.UtcNow - UnixEpoch).TotalMilliseconds);
     }
 }
