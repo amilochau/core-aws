@@ -13,16 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Runtime2\**" />
-    <Compile Remove="Runtime3\**" />
-    <EmbeddedResource Remove="Runtime2\**" />
-    <EmbeddedResource Remove="Runtime3\**" />
-    <None Remove="Runtime2\**" />
-    <None Remove="Runtime3\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="RegionEndpoint.cs" />
+    <Folder Include="Lambda\Core\" />
+    <Folder Include="Lambda\RuntimeSupport\" />
   </ItemGroup>
 
 </Project>
