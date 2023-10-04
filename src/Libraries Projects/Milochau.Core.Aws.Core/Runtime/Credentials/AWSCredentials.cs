@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Runtime.Credentials
 {
-    internal class AWSCredentials
+    /// <summary>
+    /// Abstract class that represents a credentials object for AWS services.
+    /// </summary>
+    public abstract class AWSCredentials
     {
     }
 }

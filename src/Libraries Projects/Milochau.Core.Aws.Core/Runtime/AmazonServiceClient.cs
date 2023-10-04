@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+﻿using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,9 +26,10 @@ namespace Milochau.Core.Aws.Core.Runtime
         protected RuntimePipeline RuntimePipeline { get; set; }
         protected internal AWSCredentials Credentials { get; private set; }
 
-        /// <summary></summary>
         public IClientConfig Config => _config;
+        */
         private readonly ClientConfig _config;
+        /*
         protected virtual IServiceMetadata ServiceMetadata { get; } = new ServiceMetadata();
         protected virtual bool SupportResponseLogging
         {
@@ -132,6 +134,7 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #endregion
 
+        */
         #region Constructors
 
         protected AmazonServiceClient(AWSCredentials credentials, ClientConfig config)
@@ -175,57 +178,6 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #region Invoke methods
 
-        [Obsolete("Invoke taking marshallers is obsolete. Use Invoke taking InvokeOptionsBase instead.")]
-        protected TResponse Invoke<TRequest, TResponse>(TRequest request,
-            IMarshaller<IRequest, AmazonWebServiceRequest> marshaller, ResponseUnmarshaller unmarshaller)
-            where TRequest : AmazonWebServiceRequest
-            where TResponse : AmazonWebServiceResponse
-        {
-            var options = new InvokeOptions();
-            options.RequestMarshaller = marshaller;
-            options.ResponseUnmarshaller = unmarshaller;
-            return Invoke<TResponse>(request, options);
-        }
-
-        protected TResponse Invoke<TResponse>(AmazonWebServiceRequest request, InvokeOptionsBase options)
-            where TResponse : AmazonWebServiceResponse
-        {
-            ThrowIfDisposed();
-
-            var executionContext = new ExecutionContext(
-                new RequestContext(this.Config.LogMetrics, Signer)
-                {
-                    ClientConfig = this.Config,
-                    Marshaller = options.RequestMarshaller,
-                    OriginalRequest = request,
-                    Unmarshaller = options.ResponseUnmarshaller,
-                    IsAsync = false,
-                    ServiceMetaData = this.ServiceMetadata,
-                    Options = options
-                },
-                new ResponseContext()
-            );
-            SetupCSMHandler(executionContext.RequestContext);
-            var response = (TResponse)this.RuntimePipeline.InvokeSync(executionContext).Response;
-            return response;
-        }
-
-        [Obsolete("InvokeAsync taking marshallers is obsolete. Use InvokeAsync taking InvokeOptionsBase instead.")]
-        protected System.Threading.Tasks.Task<TResponse> InvokeAsync<TRequest, TResponse>(
-            TRequest request,
-            IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
-            ResponseUnmarshaller unmarshaller,
-            System.Threading.CancellationToken cancellationToken)
-            where TRequest : AmazonWebServiceRequest
-            where TResponse : AmazonWebServiceResponse, new()
-        {
-            var options = new InvokeOptions();
-            options.RequestMarshaller = marshaller;
-            options.ResponseUnmarshaller = unmarshaller;
-            return InvokeAsync<TResponse>(request, options, cancellationToken);
-        }
-
-        */
         protected Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
             InvokeOptions options,
