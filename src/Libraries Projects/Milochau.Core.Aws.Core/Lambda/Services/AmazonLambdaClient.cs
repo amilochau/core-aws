@@ -379,7 +379,7 @@ namespace Amazon.Lambda
         /// The content type of the <code>Invoke</code> request body is not JSON.
         /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/lambda-2015-03-31/Invoke">REST API Reference for Invoke Operation</seealso>
-        public virtual Task<InvokeResponse> InvokeAsync(InvokeRequest request, System.Threading.CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<InvokeResponse> InvokeAsync(InvokeRequest request, CancellationToken cancellationToken)
         {
             var options = new InvokeOptions();
             options.RequestMarshaller = InvokeRequestMarshaller.Instance;

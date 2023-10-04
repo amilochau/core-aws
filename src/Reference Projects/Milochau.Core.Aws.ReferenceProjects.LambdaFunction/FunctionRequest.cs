@@ -6,11 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
-    public class LambdaFunctionRequest : MaybeAuthenticatedRequest, IParsableAndValidatable<LambdaFunctionRequest>
+    public class FunctionRequest : MaybeAuthenticatedRequest, IParsableAndValidatable<FunctionRequest>
     {
-        public static bool TryParse(APIGatewayHttpApiV2ProxyRequest request, [NotNullWhen(true)] out LambdaFunctionRequest? result)
+        public static bool TryParse(APIGatewayHttpApiV2ProxyRequest request, [NotNullWhen(true)] out FunctionRequest? result)
         {
-            result = new LambdaFunctionRequest();
+            result = new FunctionRequest();
 
             return result.ParseAuthentication(request);
         }
