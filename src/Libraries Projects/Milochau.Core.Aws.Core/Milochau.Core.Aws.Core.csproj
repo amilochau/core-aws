@@ -12,9 +12,4 @@
     <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Lambda\Core\" />
-    <Folder Include="Lambda\RuntimeSupport\" />
-  </ItemGroup>
-
 </Project>

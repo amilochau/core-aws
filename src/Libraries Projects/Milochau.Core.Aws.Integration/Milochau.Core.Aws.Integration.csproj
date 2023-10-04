@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
+    <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
   </ItemGroup>
 
 </Project>

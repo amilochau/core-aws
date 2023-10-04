@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda.TestUtilities;
+﻿using Amazon.Lambda;
+using Amazon.Lambda.TestUtilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             {
                 var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
                 var dynamoDbDataAccess = new LambdaFunction.DataAccess.DynamoDbDataAccess(new AmazonDynamoDBClient());
-                var proxyResponse = await LambdaFunction.Function.DoAsync(proxyRequest, new TestLambdaContext(), dynamoDbDataAccess, cancellationToken);
+
+                var emailsLambdaDataAccess = new LambdaFunction.DataAccess.EmailsLambdaDataAccess(new AmazonLambdaClient());
+                var proxyResponse = await LambdaFunction.Function.DoAsync(proxyRequest, new TestLambdaContext(), dynamoDbDataAccess, emailsLambdaDataAccess, cancellationToken);
                 return ApiGatewayHelpers.BuildEmptyResult(proxyResponse);
             })
             .Produces(204)

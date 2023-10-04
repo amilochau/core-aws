@@ -27,8 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.8" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <!--
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
   -->
