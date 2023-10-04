@@ -49,17 +49,6 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <summary>
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
-        /// <param name="httpClient">The HTTP client to use with the Lambda runtime.</param>
-        /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
-        /// <returns></returns>
-        public LambdaBootstrap(HttpClient httpClient, LambdaBootstrapHandler handler, LambdaBootstrapInitializer initializer = null)
-            : this(httpClient, handler, initializer, ownsHttpClient: false)
-        { }
-
-        /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
-        /// </summary>
         /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
         /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
         /// <returns></returns>
@@ -114,15 +103,6 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <returns>A Task that represents the operation.</returns>
         public async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(UserCodeInit.IsCallPreJit())
-            {
-                this._logger.LogInformation("PreJit: CultureInfo");
-                UserCodeInit.LoadStringCultureInfo();
-
-                this._logger.LogInformation("PreJit: Amazon.Lambda.Core");
-                UserCodeInit.PreJitAssembly(typeof(Amazon.Lambda.Core.ILambdaContext).Assembly);
-            }
-
             // For local debugging purposes this environment variable can be set to run a Lambda executable assembly and process one event
             // and then shut down cleanly. Useful for profiling or running local tests with the .NET Lambda Test Tool. This environment
             // variable should never be set when function is deployed to Lambda.
@@ -228,8 +208,7 @@ namespace Amazon.Lambda.RuntimeSupport
             };
 
             // If we are running in an AOT environment, mark it as such.
-            var userAgentString = NativeAotHelper.IsRunningNativeAot() ? $"aws-lambda-dotnet/{dotnetRuntimeVersion}-{amazonLambdaRuntimeSupport}-aot"
-                : $"aws-lambda-dotnet/{dotnetRuntimeVersion}-{amazonLambdaRuntimeSupport}";
+            var userAgentString = $"aws-lambda-dotnet/{dotnetRuntimeVersion}-{amazonLambdaRuntimeSupport}-aot";
 
             var client = new HttpClient(handler);
 

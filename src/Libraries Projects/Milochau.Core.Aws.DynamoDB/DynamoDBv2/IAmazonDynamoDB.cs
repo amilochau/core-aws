@@ -152,29 +152,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the BatchWriteItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ItemCollectionSizeLimitExceededException">
-        /// An item collection is too large. This exception is only returned for tables that have
-        /// one or more local secondary indexes.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/BatchWriteItem">REST API Reference for BatchWriteItem Operation</seealso>
         Task<BatchWriteItemResponse> BatchWriteItemAsync(Dictionary<string, List<WriteRequest>> requestItems, CancellationToken cancellationToken);
 
@@ -292,29 +269,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the BatchWriteItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ItemCollectionSizeLimitExceededException">
-        /// An item collection is too large. This exception is only returned for tables that have
-        /// one or more local secondary indexes.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/BatchWriteItem">REST API Reference for BatchWriteItem Operation</seealso>
         Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken);
 
@@ -346,35 +300,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the DeleteItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="ConditionalCheckFailedException">
-        /// A condition specified in the operation could not be evaluated.
-        /// </exception>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ItemCollectionSizeLimitExceededException">
-        /// An item collection is too large. This exception is only returned for tables that have
-        /// one or more local secondary indexes.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
-        /// <exception cref="TransactionConflictException">
-        /// Operation was rejected because there is an ongoing transaction for the item.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/DeleteItem">REST API Reference for DeleteItem Operation</seealso>
         Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken);
 
@@ -397,25 +322,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the GetItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/GetItem">REST API Reference for GetItem Operation</seealso>
         Task<GetItemResponse> GetItemAsync(GetItemRequest request, CancellationToken cancellationToken);
 
@@ -463,35 +369,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the PutItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="ConditionalCheckFailedException">
-        /// A condition specified in the operation could not be evaluated.
-        /// </exception>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ItemCollectionSizeLimitExceededException">
-        /// An item collection is too large. This exception is only returned for tables that have
-        /// one or more local secondary indexes.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
-        /// <exception cref="TransactionConflictException">
-        /// Operation was rejected because there is an ongoing transaction for the item.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/PutItem">REST API Reference for PutItem Operation</seealso>
         Task<PutItemResponse> PutItemAsync(PutItemRequest request, CancellationToken cancellationToken);
 
@@ -569,25 +446,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the Query service method, as returned by DynamoDB.</returns>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/Query">REST API Reference for Query Operation</seealso>
         Task<QueryResponse> QueryAsync(QueryRequest request, CancellationToken cancellationToken);
 
@@ -610,35 +468,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// </param>
         /// 
         /// <returns>The response from the UpdateItem service method, as returned by DynamoDB.</returns>
-        /// <exception cref="ConditionalCheckFailedException">
-        /// A condition specified in the operation could not be evaluated.
-        /// </exception>
-        /// <exception cref="InternalServerErrorException">
-        /// An error occurred on the server side.
-        /// </exception>
-        /// <exception cref="ItemCollectionSizeLimitExceededException">
-        /// An item collection is too large. This exception is only returned for tables that have
-        /// one or more local secondary indexes.
-        /// </exception>
-        /// <exception cref="ProvisionedThroughputExceededException">
-        /// Your request rate is too high. The Amazon Web Services SDKs for DynamoDB automatically
-        /// retry requests that receive this exception. Your request is eventually successful,
-        /// unless your retry queue is too large to finish. Reduce the frequency of requests and
-        /// use exponential backoff. For more information, go to <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#Programming.Errors.RetryAndBackoff">Error
-        /// Retries and Exponential Backoff</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </exception>
-        /// <exception cref="RequestLimitExceededException">
-        /// Throughput exceeds the current throughput quota for your account. Please contact <a
-        /// href="https://aws.amazon.com/support">Amazon Web Services Support</a> to request a
-        /// quota increase.
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// The operation tried to access a nonexistent table or index. The resource might not
-        /// be specified correctly, or its status might not be <code>ACTIVE</code>.
-        /// </exception>
-        /// <exception cref="TransactionConflictException">
-        /// Operation was rejected because there is an ongoing transaction for the item.
-        /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
         Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken);
     }

@@ -6,9 +6,9 @@ using System.Net;
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
 {
     /// <summary>
-    /// A condition specified in the operation could not be evaluated.
+    /// Generic exception when using DynamoDB
     /// </summary>
-    public partial class ConditionalCheckFailedException : AmazonDynamoDBException
+    public partial class GenericException : AmazonDynamoDBException
     {
         /// <summary>
         /// Constructs a new ConditionalCheckFailedException with the specified error
@@ -17,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// <param name="message">
         /// Describes the error encountered.
         /// </param>
-        public ConditionalCheckFailedException(string message)
+        public GenericException(string message)
             : base(message) { }
 
         /// <summary>
@@ -25,14 +25,14 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// </summary>
         /// <param name="message"></param>
         /// <param name="innerException"></param>
-        public ConditionalCheckFailedException(string message, Exception innerException)
+        public GenericException(string message, Exception innerException)
             : base(message, innerException) { }
 
         /// <summary>
         /// Construct instance of ConditionalCheckFailedException
         /// </summary>
         /// <param name="innerException"></param>
-        public ConditionalCheckFailedException(Exception innerException)
+        public GenericException(Exception innerException)
             : base(innerException) { }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// <param name="errorCode"></param>
         /// <param name="requestId"></param>
         /// <param name="statusCode"></param>
-        public ConditionalCheckFailedException(string message, Exception innerException, Amazon.Runtime.ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public GenericException(string message, Exception innerException, Amazon.Runtime.ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
             : base(message, innerException, errorType, errorCode, requestId, statusCode) { }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// <param name="errorCode"></param>
         /// <param name="requestId"></param>
         /// <param name="statusCode"></param>
-        public ConditionalCheckFailedException(string message, Amazon.Runtime.ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public GenericException(string message, Amazon.Runtime.ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
             : base(message, errorType, errorCode, requestId, statusCode) { }
 
 
