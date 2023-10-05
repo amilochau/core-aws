@@ -257,7 +257,6 @@ namespace Amazon.Runtime
         private const int MaxRetriesLegacyDefault = 4;
         private const long DefaultMinCompressionSizeBytes = 10240;
         private bool didProcessServiceURL = false;
-        private IAWSTokenProvider _awsTokenProvider = new DefaultAWSTokenProviderChain();
 
         private CredentialProfileStoreChain credentialProfileStoreChain;
 
@@ -289,13 +288,6 @@ namespace Amazon.Runtime
             {
                 credentialProfileStoreChain = value;
             }
-        }
-
-        /// <inheritdoc />
-        public IAWSTokenProvider AWSTokenProvider
-        {
-            get { return this._awsTokenProvider; }
-            set { this._awsTokenProvider = value; }
         }
 
         /// <summary>

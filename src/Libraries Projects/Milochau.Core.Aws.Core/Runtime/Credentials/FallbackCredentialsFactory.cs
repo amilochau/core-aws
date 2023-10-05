@@ -93,16 +93,6 @@ namespace Amazon.Runtime
                 {
                     cachedCredentials = new EnvironmentVariablesAWSCredentials();
                 }
-                // Breaking the FallbackCredentialFactory chain in case a ProcessAWSCredentialException exception 
-                // is encountered. ProcessAWSCredentialException is thrown by the ProcessAWSCredential provider
-                // when an exception is encountered when running a user provided process to obtain Basic/Session 
-                // credentials. The motivation behind this is that, if the user has provided a process to be run
-                // he expects to use the credentials obtained by running the process. Therefore the exception is
-                // surfaced to the user.
-                catch (ProcessAWSCredentialException)
-                {
-                    throw;
-                }
                 catch (Exception e)
                 {
                     cachedCredentials = null;

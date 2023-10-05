@@ -26,6 +26,5 @@ namespace Amazon.Runtime.SharedInterfaces
     /// </summary>
     public interface ICoreAmazonSSO
     {
-        Task<ImmutableCredentials> CredentialsFromSsoAccessTokenAsync(string accountId, string roleName, string accessToken, IDictionary<string, object> additionalProperties);
     }
 }

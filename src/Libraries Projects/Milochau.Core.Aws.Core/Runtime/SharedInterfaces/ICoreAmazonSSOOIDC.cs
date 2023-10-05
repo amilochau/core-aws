@@ -41,14 +41,6 @@ namespace Amazon.Runtime.SharedInterfaces
         /// 
         /// Use Amazon SSO OIDC to refresh <paramref name="previousResponse"/>
         /// </summary>
-        GetSsoTokenResponse RefreshToken(GetSsoTokenResponse previousResponse);
-
-        /// <summary>
-        /// This method is used internally to access the Amazon SSO OIDC service within other service assemblies.
-        /// Please use AmazonSSOOIDCClient to access the Amazon SSO OIDC service instead.
-        /// 
-        /// Use Amazon SSO OIDC to refresh <paramref name="previousResponse"/>
-        /// </summary>
         Task<GetSsoTokenResponse> RefreshTokenAsync(GetSsoTokenResponse previousResponse);
     }
 
@@ -73,12 +65,6 @@ namespace Amazon.Runtime.SharedInterfaces
         /// Callback for presenting the user with a SSO Login flow.
         /// </summary>
         public Action<SsoVerificationArguments> SsoVerificationCallback { get; set; }
-
-        /// <summary>
-        /// Additional properties to provide to the operation.
-        /// Optional, can be null.
-        /// </summary>
-        public IDictionary<string, object> AdditionalProperties { get; set; }
 
         public IList<string> Scopes { get; set; }
     }

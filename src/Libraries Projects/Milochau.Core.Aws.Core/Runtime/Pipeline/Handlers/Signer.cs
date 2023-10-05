@@ -101,9 +101,7 @@ namespace Amazon.Runtime.Internal
 
             using (requestContext.Metrics.StartEvent(Metric.RequestSigningTime))
             {
-                if (immutableCredentials?.UseToken == true && 
-                    !(requestContext.Signer is NullSigner) && 
-                    !(requestContext.Signer is BearerTokenSigner))
+                if (immutableCredentials?.UseToken == true)
                 {
                     ClientProtocol protocol = requestContext.Signer.Protocol;
                     switch (protocol)
@@ -136,9 +134,7 @@ namespace Amazon.Runtime.Internal
 
             using (requestContext.Metrics.StartEvent(Metric.RequestSigningTime))
             {
-                if (immutableCredentials?.UseToken == true &&
-                    !(requestContext.Signer is NullSigner) &&
-                    !(requestContext.Signer is BearerTokenSigner))
+                if (immutableCredentials?.UseToken == true)
                 {
                     ClientProtocol protocol = requestContext.Signer.Protocol;
                     switch (protocol)

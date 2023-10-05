@@ -80,26 +80,6 @@ namespace Amazon.Runtime.CredentialManagement
         public bool? EndpointDiscoveryEnabled { get; set; }
 
         /// <summary>
-        /// If true the region identified in the S3 access point arn will be used when making requests.
-        /// </summary>
-        public bool? S3UseArnRegion { get; set; }
-
-        /// <summary>
-        /// If true, the use of multi-region access points is disabled.
-        /// </summary>
-        public bool? S3DisableMultiRegionAccessPoints { get; set; }
-        
-        /// <summary>
-        /// The Sts Regional Endpoints Value as either legacy or regional
-        /// </summary>
-        public StsRegionalEndpointsValue? StsRegionalEndpoints { get; set; }
-
-        /// <summary>
-        /// The S3 Regional Endpoint Value as either legacy or regional
-        /// </summary>
-        public S3UsEast1RegionalEndpointValue? S3RegionalEndpoint { get; set; }
-
-        /// <summary>
         /// The request retry mode  as legacy, standard, or adaptive
         /// </summary>
         public RequestRetryMode? RetryMode { get; set; }
@@ -189,21 +169,6 @@ namespace Amazon.Runtime.CredentialManagement
 
             Options = profileOptions ?? throw new ArgumentNullException("profileOptions");
             Name = name;
-        }
-
-        /// <summary>
-        /// Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
-        /// and AWSCredentials can be created.  Throws an exception otherwise.
-        ///
-        /// See <see cref="CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
-        /// </summary>
-        /// <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
-        /// <param name="nonCallbackOnly">If true, throw a descriptive exception for any credentials that would not operate as-is.
-        /// In other words, any credentials that require programmatic callbacks at runtime.</param>
-        /// <returns>AWSCredentials for this profile.</returns>
-        internal AWSCredentials GetAWSCredentials(ICredentialProfileSource profileSource, bool nonCallbackOnly)
-        {
-            return AWSCredentialsFactory.GetAWSCredentials(this, profileSource, nonCallbackOnly);
         }
 
         private string GetPropertiesString()

@@ -24,10 +24,6 @@ namespace Amazon.Runtime.Credentials.Internal
     /// <para />
     /// <see cref="SsoToken"/>s are persisted using <see cref="SSOTokenManager"/>.
     /// </summary>
-    /// <remarks>
-    /// This class is meant to be used internally.  It may be projected to a
-    /// <see cref="AWSToken"/>
-    /// </remarks>
     public class SsoToken
     {
         /// <summary>
