@@ -29,7 +29,6 @@ using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Endpoints;
 using Amazon.Runtime.Internal;
 using System.ComponentModel.Design;
-using Amazon.Runtime.Internal.Settings;
 using System.Runtime.InteropServices;
 
 namespace Amazon.Runtime
