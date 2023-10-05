@@ -233,7 +233,6 @@ namespace Amazon.Runtime
         private bool? useFIPSEndpoint;
         private bool? disableRequestCompression;
         private long? requestMinCompressionSizeBytes;
-        private TimeSpan? readWriteTimeout = null;
         private bool disableHostPrefixInjection = false;
         private bool? endpointDiscoveryEnabled = null;
         private bool? ignoreConfiguredEndpointUrls;
@@ -941,16 +940,6 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// Returns the request timeout value if its value is set, 
-        /// else returns client timeout value.
-        /// </summary>
-        public static TimeSpan? GetTimeoutValue(TimeSpan? clientTimeout, TimeSpan? requestTimeout)
-        {
-            return requestTimeout.HasValue ? requestTimeout
-                : (clientTimeout.HasValue ? clientTimeout : null);
-        }
-
-        /// <summary>
         /// <para>
         /// This is a switch used for performance testing and is not intended for production applications 
         /// to change. This switch may be removed in a future version of the SDK as the .NET Core platform matures.
@@ -988,29 +977,6 @@ namespace Amazon.Runtime
                 return 1;
             }
             set => _httpClientCacheSize = value;
-        }
-
-        /// <summary>
-        /// Overrides the default read-write timeout value.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the value is set, the value is assigned to the ReadWriteTimeout property of the HttpWebRequest object used
-        /// to send requests.
-        /// </para>
-        /// <exception cref="System.ArgumentNullException">The timeout specified is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">The timeout specified is less than or equal to zero and is not Infinite.</exception>
-        /// </remarks>
-        /// <seealso cref="P:System.Net.HttpWebRequest.ReadWriteTimeout"/>
-        [Obsolete("ReadWriteTimeout is not consumed in asynchronous HTTP requests. Please use a cancellation token to handle stream read/write timeouts.")]
-        public TimeSpan? ReadWriteTimeout
-        {
-            get { return this.readWriteTimeout; }
-            set
-            {
-                ValidateTimeout(value);
-                this.readWriteTimeout = value;
-            }
         }
 
         /// <summary>

@@ -77,11 +77,7 @@ namespace Amazon.Runtime.Internal
             var config = requestContext.ClientConfig;
             Endpoint endpoint = null;
 
-            if (GlobalEndpoints.Provider != null)
-            {
-                endpoint = GlobalEndpoints.Provider.ResolveEndpoint(requestContext.ServiceMetaData?.ServiceId, parameters);
-            }
-            else if (endpoint == null && config.EndpointProvider != null)
+            if (config.EndpointProvider != null)
             {
                 endpoint = config.EndpointProvider.ResolveEndpoint(parameters);
             }

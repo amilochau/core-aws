@@ -27,7 +27,6 @@ namespace Amazon.Lambda.RuntimeSupport
     /// </summary>
     public class RuntimeApiClient : IRuntimeApiClient
     {
-        private readonly HttpClient _httpClient;
         private readonly IInternalRuntimeApiClient _internalClient;
 
         private readonly IConsoleLoggerWriter _consoleLoggerRedirector = new LogLevelLoggerWriter();
@@ -38,40 +37,10 @@ namespace Amazon.Lambda.RuntimeSupport
         internal RuntimeApiClient(IEnvironmentVariables environmentVariables, HttpClient httpClient)
         {
             ExceptionConverter = ExceptionInfo.GetExceptionInfo;
-            _httpClient = httpClient;
             LambdaEnvironment = new LambdaEnvironment(environmentVariables);
             var internalClient = new InternalRuntimeApiClient(httpClient);
             internalClient.BaseUrl = "http://" + LambdaEnvironment.RuntimeServerHostAndPort + internalClient.BaseUrl;
             _internalClient = internalClient;
-        }
-
-        /// <summary>
-        /// Report an initialization error as an asynchronous operation.
-        /// </summary>
-        /// <param name="exception">The exception to report.</param>
-        /// <param name="cancellationToken">The optional cancellation token to use.</param>
-        /// <returns>A Task representing the asynchronous operation.</returns>
-        public Task ReportInitializationErrorAsync(Exception exception, CancellationToken cancellationToken = default)
-        {
-            if (exception == null)
-                throw new ArgumentNullException(nameof(exception));
-
-            return _internalClient.ErrorAsync(null, LambdaJsonExceptionWriter.WriteJson(ExceptionInfo.GetExceptionInfo(exception)), cancellationToken);
-        }
-
-        /// <summary>
-        /// Send an initialization error with a type string but no other information as an asynchronous operation.
-        /// This can be used to directly control flow in Step Functions without creating an Exception class and throwing it.
-        /// </summary>
-        /// <param name="errorType">The type of the error to report to Lambda.  This does not need to be a .NET type name.</param>
-        /// <param name="cancellationToken">The optional cancellation token to use.</param>
-        /// <returns>A Task representing the asynchronous operation.</returns>
-        public Task ReportInitializationErrorAsync(string errorType, CancellationToken cancellationToken = default)
-        {
-            if (errorType == null)
-                throw new ArgumentNullException(nameof(errorType));
-
-            return _internalClient.ErrorAsync(errorType, null, cancellationToken);
         }
 
         /// <summary>

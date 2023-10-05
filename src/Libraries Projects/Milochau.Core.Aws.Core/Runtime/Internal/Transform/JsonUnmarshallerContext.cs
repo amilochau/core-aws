@@ -140,32 +140,6 @@ namespace Amazon.Runtime.Internal.Transform
 
         #region Overrides
 
-        /// <summary>
-        /// Are we at the start of the json document.
-        /// </summary>
-        public override bool IsStartOfDocument
-        {
-            get
-            {
-                return (CurrentTokenType == JsonToken.None) && (!streamReader.EndOfStream);
-            }
-        }
-
-        /// <summary>
-        /// Is the current token the end of an object
-        /// </summary>    
-        public override bool IsEndElement
-        {
-            get { return CurrentTokenType == JsonToken.ObjectEnd; }
-        }
-
-        /// <summary>
-        /// Is the current token the start of an object
-        /// </summary>
-        public override bool IsStartElement
-        {
-            get { return CurrentTokenType == JsonToken.ObjectStart; }
-        }
 
         /// <summary>
         ///     Returns the element depth of the parser's current position in the json

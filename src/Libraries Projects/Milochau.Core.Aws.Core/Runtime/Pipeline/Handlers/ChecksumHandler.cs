@@ -57,19 +57,6 @@ namespace Amazon.Runtime.Internal
         /// request and response context.</param>
         protected virtual void PreInvoke(IExecutionContext executionContext)
         {
-            var request = executionContext.RequestContext.Request;
-            var ChecksumData = request.ChecksumData;
-            if (ChecksumData != null)
-            {
-                if (ChecksumData.IsMD5Checksum)
-                {
-                    ChecksumUtils.SetRequestChecksumMD5(request);
-                }
-                else
-                {
-                    ChecksumUtils.SetRequestChecksum(request, ChecksumData.SelectedChecksum, ChecksumData.FallbackToMD5 ?? true);
-                }
-            }
         }
     }
 }

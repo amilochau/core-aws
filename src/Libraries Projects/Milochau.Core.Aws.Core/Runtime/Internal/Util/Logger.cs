@@ -35,12 +35,7 @@ namespace Amazon.Runtime.Internal.Util
         private Logger(Type type)
         {
             loggers = new List<InternalLogger>();
-
-            InternalLog4netLogger log4netLogger = new InternalLog4netLogger(type);
-            loggers.Add(log4netLogger);
             loggers.Add(new InternalConsoleLogger(type));
-            InternalSystemDiagnosticsLogger sdLogger = new InternalSystemDiagnosticsLogger(type);
-            loggers.Add(sdLogger);
             ConfigureLoggers();
             AWSConfigs.PropertyChanged += ConfigsChanged;
         }
@@ -56,12 +51,8 @@ namespace Amazon.Runtime.Internal.Util
             LoggingOptions logging = AWSConfigs.LoggingConfig.LogTo;
             foreach (InternalLogger il in loggers)
             {
-                if (il is InternalLog4netLogger)
-                    il.IsEnabled = (logging & LoggingOptions.Log4Net) == LoggingOptions.Log4Net;
                 if (il is InternalConsoleLogger)
                     il.IsEnabled = (logging & LoggingOptions.Console) == LoggingOptions.Console;
-                if (il is InternalSystemDiagnosticsLogger)
-                    il.IsEnabled = (logging & LoggingOptions.SystemDiagnostics) == LoggingOptions.SystemDiagnostics;
             }
         }
 
@@ -81,14 +72,6 @@ namespace Amazon.Runtime.Internal.Util
                 }
             }
             return l;
-        }
-
-        public static void ClearLoggerCache()
-        {
-            lock (cachedLoggers)
-            {
-                cachedLoggers = new Dictionary<Type, Logger>();
-            }
         }
 
         public static Logger EmptyLogger { get { return emptyLogger; } }

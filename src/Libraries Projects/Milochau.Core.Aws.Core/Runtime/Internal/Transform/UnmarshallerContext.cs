@@ -247,21 +247,6 @@ namespace Amazon.Runtime.Internal.Transform
         /// </returns>
         public abstract string ReadText();
 
-        /// <summary>
-        /// True if <c>NodeType</c> is <c>Element</c>.
-        /// </summary>
-        public abstract bool IsStartElement { get; }
-
-        /// <summary>
-        /// True if <c>NodeType</c> is <c>EndElement</c>.
-        /// </summary>
-        public abstract bool IsEndElement { get; }
-
-        /// <summary>
-        /// True if the context is at the start of the document.
-        /// </summary>
-        public abstract bool IsStartOfDocument { get; }
-
         #endregion
 
         #region Dispose Pattern Implementation

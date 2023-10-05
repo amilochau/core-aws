@@ -275,15 +275,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
                     writer.Write(frame.GetFileName());
                     writer.WritePropertyName("line");
                     writer.Write(frame.GetFileLineNumber());
-                    writer.WritePropertyName("label");
-                    MethodBase method = frame.GetMethod();
-                    string label = method.Name;
-                    if (method.ReflectedType != null)
-                    {
-                        label = method.ReflectedType.FullName + "." + label;
-                    }
-
-                    writer.Write(label);
                     writer.WriteObjectEnd();    // trace
                 }
             }

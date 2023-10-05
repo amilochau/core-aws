@@ -27,11 +27,6 @@ namespace Amazon.Lambda.RuntimeSupport
             return Environment.GetEnvironmentVariable(variable);
         }
 
-        public IDictionary GetEnvironmentVariables()
-        {
-            return Environment.GetEnvironmentVariables();
-        }
-
         public void SetEnvironmentVariable(string variable, string value)
         {
             Environment.SetEnvironmentVariable(variable, value);

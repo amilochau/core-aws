@@ -337,10 +337,5 @@ namespace Amazon.Runtime.Internal
         /// The selected compression algorithm to be used to compress the payload of the request.
         /// </summary>
         CompressionEncodingAlgorithm CompressionAlgorithm { get; set; }
-
-        /// <summary>
-        /// Checksum data to calculate checksum after optionally compressing the request payload
-        /// </summary>
-        ChecksumData ChecksumData { get; set; }
     }
 }

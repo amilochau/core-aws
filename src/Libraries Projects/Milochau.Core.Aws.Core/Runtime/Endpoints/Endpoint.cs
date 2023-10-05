@@ -24,13 +24,6 @@ namespace Amazon.Runtime.Endpoints
     public class Endpoint
     {
         /// <summary>
-        /// Constructor used by custorm EndpointProvider
-        /// </summary>
-        public Endpoint(string url) : this(url, null, null)
-        {
-        }
-
-        /// <summary>
         /// Constructor used by code-generated EndpointProvider
         /// </summary>
         public Endpoint(string url, string attributesJson, string headersJson)

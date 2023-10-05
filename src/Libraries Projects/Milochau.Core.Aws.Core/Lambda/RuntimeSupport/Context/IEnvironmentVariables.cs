@@ -24,6 +24,5 @@ namespace Amazon.Lambda.RuntimeSupport
     {
         void SetEnvironmentVariable(string variable, string value);
         string GetEnvironmentVariable(string variable);
-        IDictionary GetEnvironmentVariables();
     }
 }
