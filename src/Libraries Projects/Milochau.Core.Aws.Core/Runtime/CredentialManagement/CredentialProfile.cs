@@ -171,31 +171,9 @@ namespace Amazon.Runtime.CredentialManagement
         public bool CanCreateAWSCredentials => ProfileType.HasValue;
 
         /// <summary>
-        /// The <see cref="ICredentialProfileStore"/> that this <see cref="CredentialProfile"/> is associated with.
-        /// Null if this <see cref="CredentialProfile"/> is not associated with a <see cref="ICredentialProfileStore"/>.
-        /// </summary>
-        public ICredentialProfileStore CredentialProfileStore
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// If CanCreateAWSCredentials is true, returns a short description of the type of
-        /// credentials that would be created.
-        /// If CanCreateAWSCredentials is false, return null.
-        /// </summary>
-        public string CredentialDescription => CredentialProfileTypeDetector.GetUserFriendlyCredentialType(ProfileType);
-
-        /// <summary>
         /// The CredentialProfileType of this CredentialProfile, if one applies.
         /// </summary>
         internal CredentialProfileType? ProfileType => CredentialProfileTypeDetector.DetectProfileType(Options);
-
-        /// <summary>
-        /// Determine this CredentialProfile will generate AWSCredentials that require a callback to be set on them.
-        /// </summary>
-        internal bool IsCallbackRequired => AWSCredentialsFactory.IsCallbackRequired(ProfileType);
 
         /// <summary>
         /// Construct a new CredentialProfile.
@@ -211,19 +189,6 @@ namespace Amazon.Runtime.CredentialManagement
 
             Options = profileOptions ?? throw new ArgumentNullException("profileOptions");
             Name = name;
-        }
-
-        /// <summary>
-        /// Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
-        /// and AWSCredentials can be created.  Throws an exception otherwise.
-        ///
-        /// See <see cref="CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
-        /// </summary>
-        /// <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
-        /// <returns>AWSCredentials for this profile.</returns>
-        public AWSCredentials GetAWSCredentials(ICredentialProfileSource profileSource)
-        {
-            return GetAWSCredentials(profileSource, false);
         }
 
         /// <summary>

@@ -26,7 +26,6 @@ namespace Amazon.Runtime
     /// Looks for a AWS Profile and then passes token resolution
     /// to <see cref="SSOTokenProvider"/>.
     /// <para />
-    /// This provider requires .NET 4.5 or newer.
     /// </summary>
     public class ProfileTokenProvider : IAWSTokenProvider
     {

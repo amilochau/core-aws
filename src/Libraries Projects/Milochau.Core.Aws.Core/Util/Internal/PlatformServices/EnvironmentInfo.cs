@@ -3,13 +3,13 @@ using System.Globalization;
 
 namespace Amazon.Util.Internal.PlatformServices
 {
-    public class EnvironmentInfo : IEnvironmentInfo 
+    public class EnvironmentInfo 
     {
         public EnvironmentInfo()
         {
-            this.Platform = InternalSDKUtils.DetermineOS();
-            this.PlatformUserAgent = InternalSDKUtils.PlatformUserAgent();
-            this.FrameworkUserAgent = InternalSDKUtils.DetermineFramework();
+            Platform = InternalSDKUtils.DetermineOS();
+            PlatformUserAgent = InternalSDKUtils.PlatformUserAgent();
+            FrameworkUserAgent = InternalSDKUtils.DetermineFramework();
         }
 
         public string Platform { get; }
@@ -17,5 +17,7 @@ namespace Amazon.Util.Internal.PlatformServices
         public string PlatformUserAgent { get; }
 
         public string FrameworkUserAgent { get; }
+
+        public static readonly EnvironmentInfo Instance = new EnvironmentInfo();
     }
 }

@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
     public class Function
     {
-        public static readonly int handlerChoice = 1;
+        public static readonly int handlerChoice = 0;
         private static async Task Main()
         {
             //AWSSDKHandler.RegisterXRayForAllServices();

@@ -26,8 +26,6 @@ namespace Amazon.Runtime
     /// </summary>
     public abstract class RefreshingAWSCredentials : AWSCredentials, IDisposable
     {
-        private Logger _logger = Logger.GetLogger(typeof(RefreshingAWSCredentials));
-
         #region Refresh data
 
         /// <summary>
@@ -42,10 +40,6 @@ namespace Amazon.Runtime
                 set;
             }
             public DateTime Expiration { get; set; }
-
-            public CredentialsRefreshState()
-            {
-            }
 
             public CredentialsRefreshState(ImmutableCredentials credentials, DateTime expiration)
             {
@@ -195,22 +189,6 @@ namespace Amazon.Runtime
                     AWSSDKUtils.CorrectedUtcNow.ToLocalTime(),
 #pragma warning restore CS0612 // Type or member is obsolete
                     state.Expiration, preemptExpiryTime);
-            }
-        }
-
-        /// <summary>
-        /// Test credentials existence and expiration time
-        /// should update if:
-        /// credentials have not been loaded yet
-        /// it's past the expiration time. At this point currentState.Expiration may
-        /// have the PreemptExpiryTime baked into to the expiration from a call to
-        /// UpdateToGeneratedCredentials but it may not if this is new application load.
-        /// </summary>
-        protected bool ShouldUpdate
-        {
-            get
-            {
-                return ShouldUpdateState(currentState, PreemptExpiryTime);
             }
         }
 

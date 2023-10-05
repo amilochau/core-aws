@@ -36,7 +36,7 @@ namespace Amazon.Util.Internal
                 return _customSdkUserAgent;
             }
 
-            var environmentInfo = ServiceFactory.Instance.GetService<IEnvironmentInfo>();
+            var environmentInfo = EnvironmentInfo.Instance;
 
             return string.Format(CultureInfo.InvariantCulture, "{0}/{1} aws-sdk-dotnet-core/{2} {3} OS/{4} {5} {6}",
                 _userAgentBaseName,

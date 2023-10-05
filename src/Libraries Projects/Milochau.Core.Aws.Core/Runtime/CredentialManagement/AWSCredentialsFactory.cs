@@ -48,56 +48,12 @@ namespace Amazon.Runtime.CredentialManagement
         /// </summary>
         /// <param name="profile">The profile to get AWSCredentials for.</param>
         /// <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
-        /// <returns>AWSCredentials for this profile.</returns>
-        public static AWSCredentials GetAWSCredentials(CredentialProfile profile, ICredentialProfileSource profileSource)
-        {
-            return GetAWSCredentials(profile.Name, profileSource, profile.Options, profile.Region, false);
-        }
-
-        /// <summary>
-        /// Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
-        /// and AWSCredentials can be created.  Throws an exception otherwise.
-        ///
-        /// See <see cref="CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
-        /// </summary>
-        /// <param name="options">The options to get AWSCredentials for.</param>
-        /// <param name="profileSource">The profile source, for options that reference other profiles.</param>
-        /// <returns>AWSCredentials for the options given.</returns>
-        public static AWSCredentials GetAWSCredentials(CredentialProfileOptions options, ICredentialProfileSource profileSource)
-        {
-            return GetAWSCredentials(null, profileSource, options, null, false);
-        }
-
-        /// <summary>
-        /// Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
-        /// and AWSCredentials can be created.  Throws an exception otherwise.
-        ///
-        /// See <see cref="CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
-        /// </summary>
-        /// <param name="profile">The profile to get AWSCredentials for.</param>
-        /// <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
         /// <param name="nonCallbackOnly">If true, throw a descriptive exception for any credentials that would not operate as-is.
         /// In other words, any credentials that require programmatic callbacks at runtime.</param>
         /// <returns>AWSCredentials for this profile.</returns>
         public static AWSCredentials GetAWSCredentials(CredentialProfile profile, ICredentialProfileSource profileSource, bool nonCallbackOnly)
         {
             return GetAWSCredentials(profile.Name, profileSource, profile.Options, profile.Region, nonCallbackOnly);
-        }
-
-        /// <summary>
-        /// Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
-        /// and AWSCredentials can be created.  Throws an exception otherwise.
-        ///
-        /// See <see cref="CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
-        /// </summary>
-        /// <param name="options">The options to get AWSCredentials for.</param>
-        /// <param name="profileSource">The profile source, for options that reference other profiles.</param>
-        /// <param name="nonCallbackOnly">If true, throw a descriptive exception for any credentials that would not operate as-is.
-        /// In other words, any credentials that require programmatic callbacks at runtime.</param>
-        /// <returns>AWSCredentials for the options given.</returns>
-        public static AWSCredentials GetAWSCredentials(CredentialProfileOptions options, ICredentialProfileSource profileSource, bool nonCallbackOnly)
-        {
-            return GetAWSCredentials(null, profileSource, options, null, nonCallbackOnly);
         }
 
         /// <summary>
@@ -110,20 +66,6 @@ namespace Amazon.Runtime.CredentialManagement
         public static bool TryGetAWSCredentials(CredentialProfile profile, ICredentialProfileSource profileSource, out AWSCredentials credentials)
         {
             credentials = GetAWSCredentialsInternal(profile.Name, profile.ProfileType, profile.Options, profile.Region, profileSource, false);
-            return credentials != null;
-        }
-
-        /// <summary>
-        /// Return the credentials for the profile if valid credentials can created.
-        /// </summary>
-        /// <param name="options">The options to get AWSCredentials for.</param>
-        /// <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
-        /// <param name="credentials">The credentials for the profile.</param>
-        /// <returns>True if credentials can be created from the profile, false otherwise.</returns>
-        public static bool TryGetAWSCredentials(CredentialProfileOptions options, ICredentialProfileSource profileSource, out AWSCredentials credentials)
-        {
-            var profileType = CredentialProfileTypeDetector.DetectProfileType(options);
-            credentials = GetAWSCredentialsInternal(null, profileType, options, null, profileSource, false);
             return credentials != null;
         }
 

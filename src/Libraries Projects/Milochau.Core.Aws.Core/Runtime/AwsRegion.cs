@@ -140,17 +140,6 @@ namespace Amazon.Runtime
             Setup(source, profileName);
         }
 
-        /// <summary>
-        /// Attempts to construct an instance of <see cref="ProfileAWSRegion"/>.
-        /// If the profile doesn't exist or there is no region information an InvalidOperationException is thrown.
-        /// </summary>
-        /// <param name="source">The ICredentialProfileSource to read the profile from.</param>
-        /// <param name="profileName">The name of the profile.</param>
-        public ProfileAWSRegion(ICredentialProfileSource source, string profileName)
-        {
-            Setup(source, profileName);
-        }
-
         private void Setup(ICredentialProfileSource source, string profileName)
         {
             RegionEndpoint region = null;

@@ -32,7 +32,7 @@ namespace Amazon.Runtime.CredentialManagement
     ///
     /// This class is not threadsafe.
     /// </summary>
-    public class SharedCredentialsFile : ICredentialProfileStore
+    public class SharedCredentialsFile : ICredentialProfileSource
     {
         public const string DefaultProfileName = "default";
         public const string SharedCredentialsFileEnvVar = "AWS_SHARED_CREDENTIALS_FILE";
@@ -257,14 +257,6 @@ namespace Amazon.Runtime.CredentialManagement
         /// The path to the config file
         /// </summary>
         public string ConfigFilePath { get; private set; }
-        /// <summary>
-        /// Construct a new SharedCredentialsFile in the default location.
-        /// </summary>
-        public SharedCredentialsFile()
-        {
-            SetUpFilePath(null);
-            Refresh();
-        }
 
         /// <summary>
         /// Construct a new SharedCredentialsFile.
@@ -303,222 +295,9 @@ namespace Amazon.Runtime.CredentialManagement
             }
         }
 
-        public List<string> ListProfileNames()
-        {
-            Refresh();
-            return ListProfiles().Select(p => p.Name).ToList();
-        }
-
-        public List<CredentialProfile> ListProfiles()
-        {
-            Refresh();
-            var profiles = new List<CredentialProfile>();
-            foreach (var profileName in ListAllProfileNames())
-            {
-                CredentialProfile profile = null;
-                if (TryGetProfile(profileName, doRefresh: false, isSsoSession: false,isServicesSection: false, out profile) && profile.CanCreateAWSCredentials)
-                {
-                    profiles.Add(profile);
-                }
-            }
-            return profiles;
-        }
-
         public bool TryGetProfile(string profileName, out CredentialProfile profile)
         {
             return TryGetProfile(profileName, doRefresh: true, isSsoSession: false, isServicesSection: false, out profile);
-        }
-
-        /// <summary>
-        /// Add the profile given. If the profile already exists, update it.
-        /// </summary>
-        /// <param name="profile">The profile to be written.</param>
-        public void RegisterProfile(CredentialProfile profile)
-        {
-            Refresh();
-            if (profile.CanCreateAWSCredentials || profile.Options.IsEmpty)
-            {
-                if (!IsSupportedProfileType(profile.ProfileType))
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture,
-                        "Unable to update profile {0}. The CredentialProfile object provided represents a " +
-                        "{1} profile but {2} does not support the {1} profile type.",
-                        profile.Name, profile.ProfileType, GetType().Name));
-                }
-
-                RegisterProfileInternal(profile);
-            }
-            else
-            {
-                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture,
-                    "Unable to update profile {0}.  The CredentialProfile provided is not a valid profile.", profile.Name));
-            }
-        }
-
-        /// <summary>
-        /// Update the profile on disk regardless of the profile type.
-        /// </summary>
-        /// <param name="profile"></param>
-        [SuppressMessage("Microsoft.Globalization", "CA1308", Justification = "Value is not surfaced to user. Booleans have been lowercased by SDK precedent.")]
-        private void RegisterProfileInternal(CredentialProfile profile)
-        {
-            var reservedProperties = new Dictionary<string, string>();
-
-            if (profile.UniqueKey != null)
-                reservedProperties[ToolkitArtifactGuidField] = profile.UniqueKey.Value.ToString("D");
-
-            if (profile.Region != null)
-                reservedProperties[RegionField] = profile.Region.SystemName;
-
-            if (profile.EndpointDiscoveryEnabled != null)
-                reservedProperties[EndpointDiscoveryEnabledField] = profile.EndpointDiscoveryEnabled.Value.ToString().ToLowerInvariant();
-
-            if (profile.StsRegionalEndpoints != null)
-                reservedProperties[StsRegionalEndpointsField] = profile.StsRegionalEndpoints.ToString().ToLowerInvariant();
-
-            if (profile.S3UseArnRegion != null)
-                reservedProperties[S3UseArnRegionField] = profile.S3UseArnRegion.Value.ToString().ToLowerInvariant();
-
-            if (profile.S3RegionalEndpoint != null)
-                reservedProperties[S3RegionalEndpointField] = profile.S3RegionalEndpoint.ToString().ToLowerInvariant();
-
-            if (profile.S3DisableMultiRegionAccessPoints != null)
-                reservedProperties[S3DisableMultiRegionAccessPointsField] = profile.S3DisableMultiRegionAccessPoints.ToString().ToLowerInvariant();
-
-            if (profile.RetryMode != null)
-                reservedProperties[RetryModeField] = profile.RetryMode.ToString().ToLowerInvariant();
-
-            if (profile.MaxAttempts != null)
-                reservedProperties[MaxAttemptsField] = profile.MaxAttempts.ToString().ToLowerInvariant();
-
-            if (profile.EC2MetadataServiceEndpoint != null)
-                reservedProperties[EC2MetadataServiceEndpointField] = profile.EC2MetadataServiceEndpoint.ToString().ToLowerInvariant();
-
-            if (profile.EC2MetadataServiceEndpointMode != null)
-                reservedProperties[EC2MetadataServiceEndpointModeField] = profile.EC2MetadataServiceEndpointMode.ToString().ToLowerInvariant();
-
-            if (profile.UseDualstackEndpoint != null)
-                reservedProperties[UseDualstackEndpointField] = profile.UseDualstackEndpoint.ToString().ToLowerInvariant();
-
-            if (profile.UseFIPSEndpoint != null)
-                reservedProperties[UseFIPSEndpointField] = profile.UseFIPSEndpoint.ToString().ToLowerInvariant();
-
-            if(profile.IgnoreConfiguredEndpointUrls != null)
-                reservedProperties[IgnoreConfiguredEndpointUrlsField] = profile.IgnoreConfiguredEndpointUrls.ToString().ToLowerInvariant();
-                
-            if(profile.EndpointUrl != null)
-                reservedProperties[EndpointUrlField] = profile.EndpointUrl.ToString().ToLowerInvariant();
-
-            if (profile.DisableRequestCompression != null)
-                reservedProperties[DisableRequestCompressionField] = profile.DisableRequestCompression.ToString().ToLowerInvariant();
-
-            if (profile.RequestMinCompressionSizeBytes != null)
-                reservedProperties[RequestMinCompressionSizeBytesField] = profile.RequestMinCompressionSizeBytes.ToString().ToLowerInvariant();
-
-            var profileDictionary = PropertyMapping.CombineProfileParts(
-                profile.Options, ReservedPropertyNames, reservedProperties, profile.Properties);
-
-            // The config file might contain parts of the profile
-            // These parts are updated at the config file and removed from profileDictionary to avoid duplication
-            UpdateConfigSectionsFromProfile(profile, profileDictionary);
-
-            _credentialsFile.EditSection(profile.Name, new SortedDictionary<string, string>(profileDictionary));
-            _credentialsFile.Persist();
-            profile.CredentialProfileStore = this;
-        }
-
-        private void UpdateConfigSectionsFromProfile(CredentialProfile profile, Dictionary<string, string> profileDictionary)
-        {
-            if (_configFile == null || !_configFile.TryGetSection(profile.Name, out var configProperties))
-                return;
-
-            var configPropertiesNames = configProperties.Keys.ToArray();
-            foreach (var propertyName in configPropertiesNames)
-            {
-                if (profileDictionary.ContainsKey(propertyName))
-                {
-                    configProperties[propertyName] = profileDictionary[propertyName];
-                    profileDictionary.Remove(propertyName); // Remove the property from profileDictionary as we updated it in the config
-                }
-                else
-                {
-                    configProperties[propertyName] = null;
-                }
-            }
-
-            _configFile.EditSection(profile.Name, new SortedDictionary<string, string>(configProperties));
-            _configFile.Persist();
-
-
-            if (configProperties.TryGetValue(SsoSession, out var session)
-                && _configFile.TryGetSection(session, true, out var ssoSessionProperties))
-            {
-                // Skip SsoSession properties as it might be used by other profiles
-                var ssoSessionPropertiesNames = ssoSessionProperties.Keys.ToArray();
-                foreach (var propertyName in ssoSessionPropertiesNames)
-                {
-                    profileDictionary.Remove(propertyName);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deletes the section with the given ProfileName from the SharedCredentialsFile, if one exists.
-        /// </summary>
-        /// <param name="profileName">The ProfileName of the section to delete.</param>
-        public void UnregisterProfile(string profileName)
-        {
-            Refresh();
-            _credentialsFile.DeleteSection(profileName);
-            _credentialsFile.Persist();
-        }
-
-        /// <summary>
-        /// Rename the profile with oldProfileName to newProfileName.
-        /// </summary>
-        /// <param name="oldProfileName">The profile to rename.</param>
-        /// <param name="newProfileName">The new name for the profile.</param>
-        public void RenameProfile(string oldProfileName, string newProfileName)
-        {
-            RenameProfile(oldProfileName, newProfileName, false);
-        }
-
-        /// <summary>
-        /// Rename the profile with oldProfileName to newProfileName.
-        /// </summary>
-        /// <param name="oldProfileName">The profile to rename.</param>
-        /// <param name="newProfileName">The new name for the profile.</param>
-        /// <param name="force">If true and the destination profile exists it will be overwritten.</param>
-        public void RenameProfile(string oldProfileName, string newProfileName, bool force)
-        {
-            Refresh();
-            _credentialsFile.RenameSection(oldProfileName, newProfileName, force);
-            _credentialsFile.Persist();
-        }
-
-        /// <summary>
-        /// Make a copy of the profile with fromProfileName called toProfileName.
-        /// </summary>
-        /// <param name="fromProfileName">The name of the profile to copy from.</param>
-        /// <param name="toProfileName">The name of the new profile.</param>
-        public void CopyProfile(string fromProfileName, string toProfileName)
-        {
-            CopyProfile(fromProfileName, toProfileName, false);
-        }
-
-        /// <summary>
-        /// Make a copy of the profile with fromProfileName called toProfileName.
-        /// </summary>
-        /// <param name="fromProfileName">The name of the profile to copy from.</param>
-        /// <param name="toProfileName">The name of the new profile.</param>
-        /// <param name="force">If true and the destination profile exists it will be overwritten.</param>
-        public void CopyProfile(string fromProfileName, string toProfileName, bool force)
-        {
-            Refresh();
-            // Do the copy but make sure to replace the toolkitArtifactGuid with a new one, if it's there.
-            _credentialsFile.CopySection(fromProfileName, toProfileName,
-                new Dictionary<string, string> { { ToolkitArtifactGuidField, Guid.NewGuid().ToString() } }, force);
-            _credentialsFile.Persist();
         }
 
         private void Refresh()
@@ -541,17 +320,6 @@ namespace Amazon.Runtime.CredentialManagement
                     _configFile = new ProfileIniFile(configPath, true);
                 }
             }
-        }
-
-        private HashSet<string> ListAllProfileNames()
-        {
-            var profileNames = _credentialsFile.ListSectionNames();
-
-            if (_configFile != null)
-            {
-                profileNames.UnionWith(_configFile.ListSectionNames());
-            }
-            return profileNames;
         }
 
         private bool TryGetProfile(string profileName, bool doRefresh, bool isSsoSession, bool isServicesSection, out CredentialProfile profile)
@@ -823,7 +591,6 @@ namespace Amazon.Runtime.CredentialManagement
                     UniqueKey = toolkitArtifactGuid,
                     Properties = userProperties,
                     Region = region,
-                    CredentialProfileStore = this,
                     DefaultConfigurationModeName = defaultConfigurationModeName,
                     EndpointDiscoveryEnabled = endpointDiscoveryEnabled,
                     StsRegionalEndpoints = stsRegionalEndpoints,

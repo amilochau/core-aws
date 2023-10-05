@@ -120,16 +120,16 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         public EnvironmentVariableInternalConfiguration()
         {
-            EndpointDiscoveryEnabled = GetEnvironmentVariable<bool>(ENVIRONMENT_VARIABLE_AWS_ENABLE_ENDPOINT_DISCOVERY);
-            MaxAttempts = GetEnvironmentVariable<int>(ENVIRONMENT_VARIABLE_AWS_MAX_ATTEMPTS);
-            RetryMode = GetEnvironmentVariable<RequestRetryMode>(ENVIRONMENT_VARIABLE_AWS_RETRY_MODE);
+            EndpointDiscoveryEnabled = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_ENABLE_ENDPOINT_DISCOVERY, s => (bool)new BooleanConverter().ConvertFromString(s));
+            MaxAttempts = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_MAX_ATTEMPTS, s => (int)new Int32Converter().ConvertFromString(s));
+            RetryMode = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_RETRY_MODE, s => (RequestRetryMode)new EnumConverter(typeof(RequestRetryMode)).ConvertFromString(s));
             EC2MetadataServiceEndpoint = GetEC2MetadataEndpointEnvironmentVariable();
-            EC2MetadataServiceEndpointMode = GetEnvironmentVariable<EC2MetadataServiceEndpointMode>(ENVIRONMENT_VARIABLE_AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE);
-            UseDualstackEndpoint = GetEnvironmentVariable<bool>(ENVIRONMENT_VARIABLE_AWS_USE_DUALSTACK_ENDPOINT);
-            UseFIPSEndpoint = GetEnvironmentVariable<bool>(ENVIRONMENT_VARIABLE_AWS_USE_FIPS_ENDPOINT);
+            EC2MetadataServiceEndpointMode = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE, s => (EC2MetadataServiceEndpointMode)new EnumConverter(typeof(EC2MetadataServiceEndpointMode)).ConvertFromString(s));
+            UseDualstackEndpoint = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_USE_DUALSTACK_ENDPOINT, s => (bool)new BooleanConverter().ConvertFromString(s));
+            UseFIPSEndpoint = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_USE_FIPS_ENDPOINT, s => (bool)new BooleanConverter().ConvertFromString(s));
             IgnoreConfiguredEndpointUrls = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_IGNORE_CONFIGURED_ENDPOINT_URLS, false);
-            DisableRequestCompression = GetEnvironmentVariable<bool>(ENVIRONMENT_VARIABLE_AWS_DISABLE_REQUEST_COMPRESSION);
-            RequestMinCompressionSizeBytes = GetEnvironmentVariable<long>(ENVIRONMENT_VARIABLE_AWS_REQUEST_MIN_COMPRESSION_SIZE_BYTES);
+            DisableRequestCompression = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_DISABLE_REQUEST_COMPRESSION, s => (bool)new BooleanConverter().ConvertFromString(s));
+            RequestMinCompressionSizeBytes = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_REQUEST_MIN_COMPRESSION_SIZE_BYTES, s => (long)new Int64Converter().ConvertFromString(s));
         }
 
         private bool GetEnvironmentVariable(string name, bool defaultValue)
@@ -163,30 +163,14 @@ namespace Amazon.Runtime.Internal
             return true;
         }
 
-        private T? GetEnvironmentVariable<T>(string name) where T : struct
+        private T? GetEnvironmentVariable<T>(string name, Func<string, T> converter) where T : struct
         {
             if (!TryGetEnvironmentVariable(name, out var value))
             {
                 return null;
             }
 
-            var converter = TypeDescriptor.GetConverter(typeof(T?));
-            if (converter == null)
-            {
-                throw new InvalidOperationException($"Unable to obtain type converter for type {typeof(T?)} " +
-                    $"to convert environment variable {name}.");
-            }
-
-
-            try
-            {
-                return (T?)converter.ConvertFromString(value);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, $"The environment variable {name} was set with value {value}, but it could not be parsed as a valid value.");
-            }
-            return null;
+            return converter(value);
         }
 
         /// <summary>
@@ -229,17 +213,6 @@ namespace Amazon.Runtime.Internal
         public ProfileInternalConfiguration(ICredentialProfileSource source)
         {
             var profileName = FallbackCredentialsFactory.GetProfileName();
-            Setup(source, profileName);
-        }
-
-        /// <summary>
-        /// Attempts to construct an instance of <see cref="ProfileInternalConfiguration"/>.
-        /// If the profile doesn't exist status will be logged and no value will be set in the configuration.
-        /// </summary>
-        /// <param name="source">The ICredentialProfileSource to read the profile from.</param>
-        /// <param name="profileName">The name of the profile.</param>
-        public ProfileInternalConfiguration(ICredentialProfileSource source, string profileName)
-        {
             Setup(source, profileName);
         }
 

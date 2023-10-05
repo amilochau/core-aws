@@ -37,7 +37,7 @@ namespace Amazon.Runtime.CredentialManagement
     /// This class is not threadsafe.
     /// </para>
     /// </summary>
-    public class NetSDKCredentialsFile : ICredentialProfileStore
+    public class NetSDKCredentialsFile : ICredentialProfileSource
     {
         public const string DefaultProfileName = "Default";
 
@@ -125,25 +125,6 @@ namespace Amazon.Runtime.CredentialManagement
         public NetSDKCredentialsFile()
         {
             _settingsManager = new NamedSettingsManager(SettingsConstants.RegisteredProfiles);
-        }
-
-        public List<string> ListProfileNames()
-        {
-            return ListProfiles().Select(p => p.Name).ToList();
-        }
-
-        public List<CredentialProfile> ListProfiles()
-        {
-            var profiles = new List<CredentialProfile>();
-            foreach (var profileName in _settingsManager.ListObjectNames())
-            {
-                CredentialProfile profile = null;
-                if (TryGetProfile(profileName, out profile) && profile.CanCreateAWSCredentials)
-                {
-                    profiles.Add(profile);
-                }
-            }
-            return profiles;
         }
 
         /// <summary>
@@ -280,7 +261,6 @@ namespace Amazon.Runtime.CredentialManagement
                         UniqueKey = uniqueKey,
                         Properties = userProperties,
                         Region = region,
-                        CredentialProfileStore = this,
                         DefaultConfigurationModeName = defaultConfigurationModeName,
                         EndpointDiscoveryEnabled = endpointDiscoveryEnabled,
                         StsRegionalEndpoints = stsRegionalEndpoints,
@@ -302,144 +282,6 @@ namespace Amazon.Runtime.CredentialManagement
             {
                 profile = null;
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Add the profile to this store, if it's valid.
-        /// </summary>
-        /// <param name="profile">The profile to add.</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1308", Justification = "Value is not surfaced to user. Booleans have been lowercased by SDK precedent.")]
-        public void RegisterProfile(CredentialProfile profile)
-        {
-            if (profile.CanCreateAWSCredentials || profile.Options.IsEmpty)
-            {
-                var reservedProperties = new Dictionary<string, string>();
-                if (profile.CanCreateAWSCredentials)
-                {
-                    // set profile type field for backward compatibility
-                    SetProfileTypeField(reservedProperties, profile.ProfileType.Value);
-                }
-
-                if (profile.Region != null)
-                    reservedProperties[RegionField] = profile.Region.SystemName;
-
-                if (profile.EndpointDiscoveryEnabled != null)
-                    reservedProperties[EndpointDiscoveryEnabledField] = profile.EndpointDiscoveryEnabled.Value.ToString().ToLowerInvariant();
-
-                if (profile.StsRegionalEndpoints != null)
-                    reservedProperties[StsRegionalEndpointsField] = profile.StsRegionalEndpoints.ToString().ToLowerInvariant();
-
-                if (profile.S3UseArnRegion != null)
-                    reservedProperties[S3UseArnRegionField] = profile.S3UseArnRegion.Value.ToString().ToLowerInvariant();
-                    
-                if (profile.S3RegionalEndpoint != null)
-                    reservedProperties[S3RegionalEndpointField] = profile.S3RegionalEndpoint.ToString().ToLowerInvariant();
-
-                if (profile.S3DisableMultiRegionAccessPoints != null)
-                    reservedProperties[S3DisableMultiRegionAccessPointsField] = profile.S3DisableMultiRegionAccessPoints.ToString().ToLowerInvariant();
-
-                if (profile.RetryMode != null)
-                    reservedProperties[RetryModeField] = profile.RetryMode.ToString().ToLowerInvariant();
-
-                if (profile.MaxAttempts != null)
-                    reservedProperties[MaxAttemptsField] = profile.MaxAttempts.ToString().ToLowerInvariant();
-
-                if (profile.IgnoreConfiguredEndpointUrls != null)
-                    reservedProperties[IgnoreConfiguredEndpointUrlsField] = profile.IgnoreConfiguredEndpointUrls.ToString().ToLowerInvariant();
-
-                if (profile.EndpointUrl != null)
-                    reservedProperties[EndpointUrlField] = profile.EndpointUrl.ToString().ToLowerInvariant();
-
-                var profileDictionary = PropertyMapping.CombineProfileParts(
-                    profile.Options, ReservedPropertyNames, reservedProperties, profile.Properties);
-
-                // Set the UniqueKey.  It might change if the unique key is set by the objectManger,
-                // or if this is an update to an existing profile.
-                string newUniqueKeyStr = _settingsManager.RegisterObject(profile.Name, profileDictionary);
-                Guid? newUniqueKey;
-                if (GuidUtils.TryParseNullableGuid(newUniqueKeyStr, out newUniqueKey))
-                    profile.UniqueKey = newUniqueKey;
-                profile.CredentialProfileStore = this;
-            }
-            else
-            {
-                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture,
-                    "Unable to register profile {0}.  The CredentialProfileOptions provided is not valid.", profile.Name));
-            }
-        }
-
-        /// <summary>
-        /// If there is a profile in the store with the given name, delete it.
-        /// </summary>
-        /// <param name="profileName">The name of the profile to delete.</param>
-        public void UnregisterProfile(string profileName)
-        {
-            _settingsManager.UnregisterObject(profileName);
-        }
-
-        /// <summary>
-        /// Rename the profile with oldProfileName to newProfileName.
-        /// </summary>
-        /// <param name="oldProfileName">The profile to rename.</param>
-        /// <param name="newProfileName">The new name for the profile.</param>
-        public void RenameProfile(string oldProfileName, string newProfileName)
-        {
-            RenameProfile(oldProfileName, newProfileName, false);
-        }
-
-        /// <summary>
-        /// Rename the profile with oldProfileName to newProfileName.
-        /// </summary>
-        /// <param name="oldProfileName">The profile to rename.</param>
-        /// <param name="newProfileName">The new name for the profile.</param>
-        /// <param name="force">If true and the destination profile exists it will be overwritten.</param>
-        public void RenameProfile(string oldProfileName, string newProfileName, bool force)
-        {
-            _settingsManager.RenameObject(oldProfileName, newProfileName, force);
-        }
-
-        /// <summary>
-        /// Make a copy of the profile with fromProfileName called toProfileName.
-        /// </summary>
-        /// <param name="fromProfileName">The name of the profile to copy from.</param>
-        /// <param name="toProfileName">The name of the new profile.</param>
-        public void CopyProfile(string fromProfileName, string toProfileName)
-        {
-            CopyProfile(fromProfileName, toProfileName, false);
-        }
-
-        /// <summary>
-        /// Make a copy of the profile with fromProfileName called toProfileName.
-        /// </summary>
-        /// <param name="fromProfileName">The name of the profile to copy from.</param>
-        /// <param name="toProfileName">The name of the new profile.</param>
-        /// <param name="force">If true and the destination profile exists it will be overwritten.</param>
-        public void CopyProfile(string fromProfileName, string toProfileName, bool force)
-        {
-            _settingsManager.CopyObject(fromProfileName, toProfileName, force);
-        }
-
-        /// <summary>
-        /// Set the ProfileType field to maintain backward compatibility with ProfileManager.
-        /// The value is ignored when it's read back in.
-        /// </summary>
-        /// <param name="properties"></param>
-        /// <param name="profileType"></param>
-        private static void SetProfileTypeField(IDictionary<string, string> properties, CredentialProfileType profileType)
-        {
-            switch (profileType)
-            {
-                case CredentialProfileType.Basic:
-                    properties[SettingsConstants.ProfileTypeField] = AWSCredentialsProfileType;
-                    break;
-                case CredentialProfileType.SAMLRole:
-                case CredentialProfileType.SAMLRoleUserIdentity:
-                    properties[SettingsConstants.ProfileTypeField] = SAMLRoleProfileType;
-                    break;
-                default:
-                    properties[SettingsConstants.ProfileTypeField] = profileType.ToString();
-                    break;
             }
         }
     }
