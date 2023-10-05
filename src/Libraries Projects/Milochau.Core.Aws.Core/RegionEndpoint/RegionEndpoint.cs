@@ -180,7 +180,6 @@ namespace Amazon
         /// <param name="options">
         /// Specify additional requirements on the <see cref="Endpoint"/> to be returned.
         /// </param>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         public Endpoint GetEndpointForService(string serviceName, GetEndpointForServiceOptions options)
         {
             return InternedRegionEndpoint.GetEndpointForService(serviceName, options);
@@ -189,7 +188,6 @@ namespace Amazon
         /// <summary>
         /// This class defines an endpoints hostname and which protocols it supports.
         /// </summary>
-        [Obsolete("This class is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         public class Endpoint
         {
             internal Endpoint(string hostname, string authregion, string signatureVersionOverride, string dnsSuffix, bool deprecated)
@@ -204,53 +202,28 @@ namespace Amazon
             /// <summary>
             /// Gets the hostname for the service.
             /// </summary>
-            public string Hostname
-            {
-                get;
-                private set;
-            }
+            public string Hostname { get; private set; }
 
             /// <summary>
             /// Gets the DNS suffix for the service.
             /// </summary>
-            public string DnsSuffix
-            {
-                get;
-                private set;
-            }
+            public string DnsSuffix { get; private set; }
 
             /// <summary>
             /// The authentication region to be used in request signing.
             /// </summary>
-            public string AuthRegion
-            {
-                get;
-                private set;
-            }
-
-            public override string ToString()
-            {
-                return this.Hostname;
-            }
+            public string AuthRegion { get; private set; }
 
             /// <summary>
             /// This property is only set for S3 endpoints.  For all other services this property returns null.
             /// For S3 endpoints, if the endpoint supports signature version 2 this property will be "2", otherwise it will be "4".
             /// </summary>
-            public string SignatureVersionOverride
-            {
-                get;
-                private set;
-            }
+            public string SignatureVersionOverride { get; private set; }
 
             /// <summary>
             /// Gets the hostname for the service.
             /// </summary>
-            public bool Deprecated
-            {
-                get;
-                private set;
-            }
+            public bool Deprecated { get; private set; }
         }
     }
 }

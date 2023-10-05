@@ -54,30 +54,6 @@ namespace Amazon.Internal
             }
         }
 
-        /// <summary>
-        /// Returns the DNS suffix for the given partition, or
-        /// an empty string if a matching partition was not found
-        /// </summary>
-        /// <param name="partition">partition</param>
-        /// <returns>DNS suffix for the given partition, empty string if a matching partition was not found</returns>
-        public string GetDnsSuffixForPartition(string partition)
-        {
-            switch (partition)
-            {
-                case "aws":
-                case "aws-us-gov":
-                    return "amazonaws.com";
-                case "aws-cn":
-                    return "amazonaws.com.cn";
-                case "aws-iso":
-                    return "c2s.ic.gov";
-                case "aws-iso-b":
-                    return "sc2s.sgov.gov";
-                default:
-                    throw new AmazonClientException($"Unable to determine the DNS suffix for partition {partition} using {nameof(RegionEndpointProviderV2)}");
-            }
-        }
-
         public IRegionEndpoint GetRegionEndpoint(string regionName)
         {
             return RegionEndpoint.GetBySystemName(regionName);
@@ -92,8 +68,6 @@ namespace Amazon.Internal
         {
             // The shared endpoint rules used by other AWS SDKs.
             const string REGIONS_FILE = "Core.endpoints.json";
-            // The .NET SDK specific customization to support legacy decisions made for endpoints.
-            const string REGIONS_CUSTOMIZATIONS_FILE = "Core.endpoints.customizations.json";
 
             const string DEFAULT_RULE = "*/*";
 
@@ -200,6 +174,8 @@ namespace Amazon.Internal
 
                 if (_documentEndpoints.TryGetValue(string.Format(CultureInfo.InvariantCulture, "*/{0}", serviceName), out rule))
                     return rule;
+
+                // return Endpoints.Reference.Partitions[0].Services[serviceName];
 
                 return _documentEndpoints[DEFAULT_RULE];
             }
@@ -316,10 +292,6 @@ namespace Amazon.Internal
             static void LoadEndpointDefinitionsFromEmbeddedResource()
             {
                 using (var stream = Amazon.Util.Internal.TypeFactory.GetTypeInfo(typeof(RegionEndpoint)).Assembly.GetManifestResourceStream(REGIONS_FILE))
-                {
-                    ReadEndpointFile(stream);
-                }
-                using (var stream = Amazon.Util.Internal.TypeFactory.GetTypeInfo(typeof(RegionEndpoint)).Assembly.GetManifestResourceStream(REGIONS_CUSTOMIZATIONS_FILE))
                 {
                     ReadEndpointFile(stream);
                 }

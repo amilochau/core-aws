@@ -191,7 +191,7 @@ namespace Amazon.Runtime.Internal.Auth
                 request.UseDoubleEncoding = false;
             }
 
-            request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName, request.AlternateEndpoint, request);
+            request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName, request);
             SetXAmzTrailerHeader(request.Headers, request.TrailingHeaders);
 
             var parametersToCanonicalize = GetParametersToCanonicalize(request);
@@ -572,21 +572,9 @@ namespace Amazon.Runtime.Internal.Auth
         }
 
         public static string DetermineSigningRegion(IClientConfig clientConfig, 
-                                                    string serviceName, 
-                                                    RegionEndpoint alternateEndpoint,
+                                                    string serviceName,
                                                     IRequest request)
         {
-            // Alternate endpoint (IRequest.AlternateEndpoint) takes precedence over
-            // client config properties.
-            if (alternateEndpoint != null)
-            {
-                var serviceEndpoint = alternateEndpoint.GetEndpointForService(serviceName, clientConfig.ToGetEndpointForServiceOptions());
-                if (serviceEndpoint.AuthRegion != null)
-                    return serviceEndpoint.AuthRegion;
-
-                return alternateEndpoint.SystemName;
-            }
-
             string authenticationRegion = clientConfig.AuthenticationRegion;
             // We always have request.AuthenticationRegion defined, as per 
             // Amazon.Runtime.Internal.BaseEndpointResolver implementation.
@@ -598,13 +586,6 @@ namespace Amazon.Runtime.Internal.Auth
 
             if (!string.IsNullOrEmpty(authenticationRegion))
                 return authenticationRegion.ToLowerInvariant();
-
-            if (!string.IsNullOrEmpty(clientConfig.ServiceURL))
-            {
-                var parsedRegion = AWSSDKUtils.DetermineRegion(clientConfig.ServiceURL);
-                if (!string.IsNullOrEmpty(parsedRegion))
-                    return parsedRegion.ToLowerInvariant();
-            }
 
             var endpoint = clientConfig.RegionEndpoint;
             if (endpoint != null)

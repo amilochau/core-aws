@@ -33,7 +33,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
     public class UdpSegmentEmitter : ISegmentEmitter
     {
         private static readonly Logger _logger = Logger.GetLogger(typeof(UdpSegmentEmitter));
-        private readonly IPAddress _defaultDaemonAddress = IPAddress.Loopback;
         private readonly ISegmentMarshaller _marshaller;
         private readonly UdpClient _udpClient;
         private DaemonConfig _daemonConfig;

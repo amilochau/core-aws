@@ -95,13 +95,6 @@ namespace Amazon.Runtime
         string RegionEndpointServiceName { get; }
 
         /// <summary>
-        /// Gets and sets of the ServiceURL property.
-        /// This is an optional property if you need to set a specific service URL 
-        /// instead setting the region with the RegionEndpoint property.
-        /// </summary>
-        string ServiceURL { get; }
-
-        /// <summary>
         /// Gets and sets of the EndpointProvider property.
         /// This property is used for endpoints resolution.
         /// During service client creation it is set to service's default generated EndpointProvider,

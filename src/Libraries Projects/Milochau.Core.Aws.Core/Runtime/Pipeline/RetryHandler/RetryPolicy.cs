@@ -627,8 +627,7 @@ namespace Amazon.Runtime
         /// </summary>
         protected static string GetRetryCapacityKey(IClientConfig config)
         {
-            return config.ServiceURL != null ? config.ServiceURL :
-                $"http:{config.UseHttp}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{config.UseFIPSEndpoint}.ipv6:{config.UseDualstackEndpoint}";
+            return $"http:{config.UseHttp}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{config.UseFIPSEndpoint}.ipv6:{config.UseDualstackEndpoint}";
         }
 
     }

@@ -71,31 +71,11 @@ namespace AWSSDK.Runtime.Internal.Util
         /// Computes a CRC32 hash
         /// </summary>
         /// <param name="source">Data to hash</param>
-        /// <returns>CRC32 hash as a base64-encoded string</returns>
-        public static string Crc32(byte[] source)
-        {
-            return Instance.Crc32(source);
-        }
-
-        /// <summary>
-        /// Computes a CRC32 hash
-        /// </summary>
-        /// <param name="source">Data to hash</param>
         /// <param name="previous">Previous value of a rolling checksum</param>
         /// <returns>Updated CRC32 hash as 32-bit integer</returns>
         public static uint Crc32(byte[] source, uint previous)
         {
             return Instance.Crc32(source, previous);
-        }
-
-        /// <summary>
-        /// Computes a CRC32C hash
-        /// </summary>
-        /// <param name="source">Data to hash</param>
-        /// <returns>CRC32c hash as a base64-encoded string</returns>
-        public static string Crc32C(byte[] source)
-        {
-            return Instance.Crc32C(source);
         }
 
         /// <summary>

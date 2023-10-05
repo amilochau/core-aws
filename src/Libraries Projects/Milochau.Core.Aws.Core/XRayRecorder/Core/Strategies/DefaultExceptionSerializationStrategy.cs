@@ -65,32 +65,6 @@ namespace Amazon.XRay.Recorder.Core.Strategies
         }
 
         /// <summary>
-        /// Initializes <see cref="DefaultExceptionSerializationStrategy"/> instance with provided Stack frame size and 
-        /// list of types for which exceptions should be marked as remote.
-        /// While setting number consider max trace size limit : https://aws.amazon.com/xray/pricing/
-        /// </summary>
-        /// <param name="stackFrameSize">Stack frame size for the recorded exception.</param>
-        /// <param name="types">List of <see cref="Type"/> for which exceptions should be marked as remote.</param>
-        public DefaultExceptionSerializationStrategy(int stackFrameSize, List<Type> types)
-        {
-            MaxStackFrameSize = GetValidStackFrameSize(stackFrameSize);
-            _remoteExceptionClasses.AddRange(types);
-            _remoteExceptionClasses.AddRange(_defaultExceptionClasses);
-        }
-
-        /// <summary>
-        /// Initializes <see cref="DefaultExceptionSerializationStrategy"/> instance with provided
-        /// list of types for which exceptions should be marked as remote.
-        /// </summary>
-        /// <param name="types">List of <see cref="Type"/> for which exceptions should be marked as remote.</param>
-        public DefaultExceptionSerializationStrategy(List<Type> types)
-        {
-            MaxStackFrameSize = DefaultStackFrameSize;
-            _remoteExceptionClasses.AddRange(types);
-            _remoteExceptionClasses.AddRange(_defaultExceptionClasses);
-        }
-
-        /// <summary>
         /// Validates and returns valid max stack frame size.
         /// </summary>
         public static int GetValidStackFrameSize(int stackFrameSize)

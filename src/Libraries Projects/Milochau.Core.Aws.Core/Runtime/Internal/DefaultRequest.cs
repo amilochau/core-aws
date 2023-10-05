@@ -52,7 +52,6 @@ namespace Amazon.Runtime.Internal
         string httpMethod = "POST";
         bool useQueryString = false;
         string requestName;
-        RegionEndpoint alternateRegion;
         long originalStreamLength;
         int marshallerVersion = 2; //2 is the default version and must be used whenever a version is not specified in the marshaller.
 
@@ -338,21 +337,6 @@ namespace Amazon.Runtime.Internal
             get
             {
                 return this.serviceName;
-            }
-        }
-
-        /// <summary>
-        /// Alternate endpoint to use for this request, if any.
-        /// </summary>
-        public RegionEndpoint AlternateEndpoint
-        {
-            get
-            {
-                return this.alternateRegion;
-            }
-            set
-            {
-                this.alternateRegion = value;
             }
         }
 

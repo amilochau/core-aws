@@ -51,31 +51,6 @@ namespace Amazon.SimpleEmail.Internal
             result.Region = config.RegionEndpoint?.SystemName;
             result.UseDualStack = config.UseDualstackEndpoint;
             result.UseFIPS = config.UseFIPSEndpoint;
-            result.Endpoint = config.ServiceURL;
-
-
-            // The region needs to be determined from the ServiceURL if not set.
-            var regionEndpoint = config.RegionEndpoint;
-            if (regionEndpoint == null && !string.IsNullOrEmpty(config.ServiceURL))
-            {
-                var regionName = AWSSDKUtils.DetermineRegion(config.ServiceURL);
-                result.Region = RegionEndpoint.GetBySystemName(regionName).SystemName;
-            }
-
-            // To support legacy endpoint overridding rules in the endpoints.json
-            if (result.Region == "us-east-1-regional")
-            {
-                result.Region = "us-east-1";
-            }
-
-            // Use AlternateEndpoint region override if set
-            if (requestContext.Request.AlternateEndpoint != null)
-            {
-                result.Region = requestContext.Request.AlternateEndpoint.SystemName;
-            }
-
-
-            // Assign staticContextParams and contextParam per operation
 
             return result;
         }

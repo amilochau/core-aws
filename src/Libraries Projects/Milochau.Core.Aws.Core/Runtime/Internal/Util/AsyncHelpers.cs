@@ -15,37 +15,6 @@ namespace Amazon.Runtime.Internal.Util
     /// </summary>
     public static class AsyncHelpers
     {
-        public static void RunSync(Func<Task> workItem)
-        {
-            var prevContext = SynchronizationContext.Current;
-            try
-            {
-                var synch = new ExclusiveSynchronizationContext();
-                SynchronizationContext.SetSynchronizationContext(synch);
-                synch.Post(async _ =>
-                {
-                    try
-                    {
-                        await workItem().ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        synch.ObjectException = e;
-                        throw;
-                    }
-                    finally
-                    {
-                        synch.EndMessageLoop();
-                    }
-                }, null);
-                synch.BeginMessageLoop();
-            }
-            finally
-            {
-                SynchronizationContext.SetSynchronizationContext(prevContext);
-            }
-        }
-
         public static T RunSync<T>(Func<Task<T>> workItem)
         {
             var prevContext = SynchronizationContext.Current;

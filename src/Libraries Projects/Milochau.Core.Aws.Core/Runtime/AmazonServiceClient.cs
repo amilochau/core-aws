@@ -477,40 +477,6 @@ namespace Amazon.Runtime
             return uri;
         }
 
-        /// <summary>
-        /// Used to create a copy of the config for a different service than the current instance.
-        /// </summary>
-        /// <typeparam name="C">Target service ClientConfig</typeparam>
-        /// <returns>The new ClientConfig for the desired service</returns>
-        internal C CloneConfig<C>()
-            where C : ClientConfig, new()
-        {
-            var config = new C();
-            CloneConfig(config);
-            return config;
-        }
-
-        internal void CloneConfig(ClientConfig newConfig)
-        {
-            if (!string.IsNullOrEmpty(Config.ServiceURL))
-            {
-                var regionName = Util.AWSSDKUtils.DetermineRegion(Config.ServiceURL);
-                RegionEndpoint region = RegionEndpoint.GetBySystemName(regionName);
-                newConfig.RegionEndpoint = region;
-            }
-            else
-            {
-                newConfig.RegionEndpoint = Config.RegionEndpoint;
-            }
-
-            newConfig.UseHttp = Config.UseHttp;
-
-
-            newConfig.ProxyCredentials = Config.ProxyCredentials;
-            newConfig.ProxyHost = Config.ProxyHost;
-            newConfig.ProxyPort = Config.ProxyPort;
-        }
-
         private static void SetupCSMHandler(IRequestContext requestContext)
         {
             if (requestContext.CSMEnabled)

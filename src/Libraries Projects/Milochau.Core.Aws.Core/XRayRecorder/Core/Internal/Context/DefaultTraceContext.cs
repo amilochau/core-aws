@@ -25,14 +25,7 @@ namespace Amazon.XRay.Recorder.Core.Internal.Context
         /// <returns>default instance of <see cref="ITraceContext"/></returns>
         public static ITraceContext GetTraceContext()
         {
-            if (AWSXRayRecorder.IsLambda())
-            {
-                return new LambdaContextContainer();
-            }
-            else
-            {
-                return new AsyncLocalContextContainer();
-            }
+            return new LambdaContextContainer();
         }
     }
 }

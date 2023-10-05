@@ -252,7 +252,6 @@ namespace Amazon.Runtime
         private const int MaxRetriesDefault = 2;
         private const int MaxRetriesLegacyDefault = 4;
         private const long DefaultMinCompressionSizeBytes = 10240;
-        private bool didProcessServiceURL = false;
 
         /// <summary>
         /// Gets Service Version
@@ -290,11 +289,6 @@ namespace Amazon.Runtime
         /// RegionEndpoint value based on App/WebConfig, environment variables,
         /// profile, etc.
         /// </para>
-        /// <para>
-        /// RegionEndpoint and ServiceURL are mutually exclusive properties. 
-        /// Whichever property is set last will cause the other to automatically 
-        /// be reset to null.
-        /// </para>
         /// </summary>
         public RegionEndpoint RegionEndpoint
         {
@@ -310,7 +304,6 @@ namespace Amazon.Runtime
             set
             {
                 this.defaultConfigurationBackingField = null;
-                this.serviceURL = null;
                 this.regionEndpoint = value;
                 this.probeForRegionEndpoint = this.regionEndpoint == null;
 
@@ -355,54 +348,7 @@ namespace Amazon.Runtime
         {
             get
             {
-                if (!didProcessServiceURL && this.serviceURL == null && IgnoreConfiguredEndpointUrls == false && ServiceId != null)
-                {
-                    string serviceSpecificTransformedEnvironmentVariable = TransformServiceId.TransformServiceIdToEnvVariable(ServiceId);
-
-                    if (Environment.GetEnvironmentVariable(serviceSpecificTransformedEnvironmentVariable) != null)
-                    {
-                        didProcessServiceURL = true;
-                        Logger.GetLogger(GetType()).InfoFormat($"ServiceURL configured from service specific environment variable: {serviceSpecificTransformedEnvironmentVariable}.");
-                        this.ServiceURL = Environment.GetEnvironmentVariable(serviceSpecificTransformedEnvironmentVariable);
-                    }
-                    else if (Environment.GetEnvironmentVariable(EnvironmentVariables.GLOBAL_ENDPOINT_ENVIRONMENT_VARIABLE) != null)
-                    {
-                        didProcessServiceURL = true;
-                        this.ServiceURL = Environment.GetEnvironmentVariable(EnvironmentVariables.GLOBAL_ENDPOINT_ENVIRONMENT_VARIABLE);
-                        Logger.GetLogger(GetType()).InfoFormat($"ServiceURL configured from global environment variable: {EnvironmentVariables.GLOBAL_ENDPOINT_ENVIRONMENT_VARIABLE}.");
-                    }
-                }
                 return this.serviceURL;
-            }
-            set
-            {
-                this.regionEndpoint = null;
-                this.probeForRegionEndpoint = false;
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    // If the URL passed in only has a host name make sure there is an ending "/" to avoid signature mismatch issues.
-                    // If there is a resource path do not add a "/" because the marshallers are relying on the URL to be in format without the "/".
-                    // API Gateway Management API is an example of a service that vends its own URL that users have to set which has a resource path.
-                    // The marshallers add new segments to the resource path with the "/".
-                    try
-                    {
-                        var path = new Uri(value).PathAndQuery;
-                        if (string.IsNullOrEmpty(path) || path == "/")
-                        {
-                            if (!string.IsNullOrEmpty(value) && !value.EndsWith("/"))
-                            {
-                                value += "/";
-                            }
-                        }
-                    }
-                    catch (UriFormatException)
-                    {
-                        throw new AmazonClientException("Value for ServiceURL is not a valid URL: " + value);
-                    }
-                }
-
-                this.serviceURL = value;
             }
         }
 
@@ -412,7 +358,6 @@ namespace Amazon.Runtime
         /// to use HTTP protocol, if the target endpoint supports it.
         /// By default, this property is set to false.
         /// </summary>
-        /// <remarks>This does not apply if an explicit <see cref="ServiceURL"/> is specified.</remarks>
         public bool UseHttp
         {
             get { return this.useHttp; }
@@ -425,17 +370,7 @@ namespace Amazon.Runtime
         [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         public virtual string DetermineServiceURL()
         {
-            string url;
-            if (this.ServiceURL != null)
-            {
-                url = this.ServiceURL;
-            }
-            else
-            {
-                url = GetUrl(this, RegionEndpoint);
-            }
-
-            return url;
+            return GetUrl(this, RegionEndpoint);
         }
 
         internal static string GetUrl(IClientConfig config, RegionEndpoint regionEndpoint)
@@ -933,8 +868,8 @@ namespace Amazon.Runtime
         /// </summary>
         public virtual void Validate()
         {
-            if (RegionEndpoint == null && string.IsNullOrEmpty(this.ServiceURL))
-                throw new AmazonClientException("No RegionEndpoint or ServiceURL configured");
+            if (RegionEndpoint == null)
+                throw new AmazonClientException("No RegionEndpoint configured");
         }
 
         /// <summary>

@@ -215,15 +215,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Alternate endpoint to use for this request, if any.
-        /// </summary>
-        RegionEndpoint AlternateEndpoint
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Host prefix value to prepend to the endpoint for this request, if any. 
         /// </summary>
         string HostPrefix

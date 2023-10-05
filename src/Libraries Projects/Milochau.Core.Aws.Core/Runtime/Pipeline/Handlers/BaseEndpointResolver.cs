@@ -54,9 +54,7 @@ namespace Amazon.Runtime.Internal
             requestContext.Request.Endpoint = new Uri(endpoint.URL);
             requestContext.Request.EndpointAttributes = endpoint.Attributes;
 
-            // If an explicit ServiceURL was provided, do not manipulate it based on UseHttp
-            // This preserves existing behavior prior to 3.7.100
-            if (config.UseHttp && string.IsNullOrEmpty(requestContext.ClientConfig.ServiceURL))
+            if (config.UseHttp)
             {
                 var uriBuilder = new UriBuilder(requestContext.Request.Endpoint)
                 {
@@ -77,14 +75,6 @@ namespace Amazon.Runtime.Internal
             {
                 requestContext.Request.AuthenticationRegion = config.AuthenticationRegion;
             }
-        }
-
-        public virtual Endpoint GetEndpoint(IExecutionContext executionContext)
-        {
-            var requestContext = executionContext.RequestContext;
-            var parameters = MapEndpointsParameters(requestContext);
-
-            return GetEndpoint(executionContext, parameters);
         }
 
         private Endpoint GetEndpoint(IExecutionContext executionContext, EndpointParameters parameters)

@@ -46,14 +46,5 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             get { return (bool?)this["UseFIPS"]; }
             set { this["UseFIPS"] = value; }
         }
-
-        /// <summary>
-        /// Endpoint parameter
-        /// </summary>
-        public string Endpoint
-        {
-            get { return (string)this["Endpoint"]; }
-            set { this["Endpoint"] = value; }
-        }
     }
 }

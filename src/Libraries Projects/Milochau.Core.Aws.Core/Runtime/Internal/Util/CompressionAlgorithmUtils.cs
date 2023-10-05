@@ -23,18 +23,6 @@ namespace Amazon.Runtime.Internal.Util
     /// </summary>
     public static class CompressionAlgorithmUtils
     {
-
-        /// <summary>
-        /// Sets the <see cref="CompressionEncodingAlgorithm"/> enum member of <see cref="IRequest"/>
-        /// based off its enum value.
-        /// </summary>
-        /// <param name="request"> The request containing the payload that we want to compress </param>
-        /// <param name="compressionAlgorithm"> The enum value of <see cref="CompressionEncodingAlgorithm"/> </param>
-        public static void SetCompressionAlgorithm(IRequest request, CompressionEncodingAlgorithm compressionAlgorithm)
-        {
-            request.CompressionAlgorithm = compressionAlgorithm;
-        }
-
         /// <summary>
         /// Sets or appends <see cref="CompressionEncodingAlgorithm"/> to the request header <see cref="ContentEncodingKeyHeader"/>
         /// </summary>

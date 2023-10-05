@@ -71,36 +71,11 @@ namespace Amazon.XRay.Recorder.Core
         ISegmentEmitter Emitter { get; set; }
 
         /// <summary>
-        /// Begin a tracing segment. A new tracing segment will be created and started.
-        /// </summary>
-        /// <param name="name">The name of the segment</param>
-        /// <param name="traceId">Trace id of the segment</param>
-        /// <param name="parentId">Unique id of the upstream remote segment or subsegment where the downstream call originated from.</param>
-        /// <param name="samplingResponse">Instance  of <see cref="SamplingResponse"/>, contains sampling decision for the segment from upstream service. If not passed, sampling decision is made based on <see cref="SamplingStrategy"/> set with the recorder instance.</param>
-        /// <param name="timestamp">If not null, sets the start time for the segment else current time is set.</param>
-        /// <exception cref="ArgumentNullException">The argument has a null value.</exception>
-        void BeginSegment(string name, string traceId = null, string parentId = null, SamplingResponse samplingResponse = null, DateTime? timestamp = null);
-
-        /// <summary>
-        /// End tracing of a given segment.
-        /// </summary>
-        /// <param name="timestamp">If not null, set as endtime for the current segment.</param>
-        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        void EndSegment(DateTime? timestamp = null);
-
-        /// <summary>
         /// Start a subsegment with a given name and optional creation timestamp
         /// </summary>
         /// <param name="name">Name of the subsegment</param>
         /// <param name="timestamp">Sets the start time for the subsegment</param>
         void BeginSubsegment(string name, DateTime? timestamp = null);
-
-        /// <summary>
-        /// Start a subsegment with a given name
-        /// This subsegment will not emit and its trace context will have Sampled=0
-        /// </summary>
-        /// <param name="name">Name of the subsegment</param>
-        void BeginSubsegmentWithoutSampling(string name);
 
         /// <summary>
         /// End a subsegment
@@ -115,13 +90,6 @@ namespace Amazon.XRay.Recorder.Core
         void SetNamespace(string value);
 
         /// <summary>
-        /// Adds the specified key and value as annotation to current segment
-        /// </summary>
-        /// <param name="key">The key of the annotation to add</param>
-        /// <param name="value">The value of the annotation to add</param>
-        void AddAnnotation(string key, object value);
-
-        /// <summary>
         /// Mark the current segment as fault.
         /// </summary>
         void MarkFault();
@@ -130,46 +98,6 @@ namespace Amazon.XRay.Recorder.Core
         /// Mark the current segment as error.
         /// </summary>
         void MarkError();
-
-        /// <summary>
-        /// Add the exception to current segment
-        /// </summary>
-        /// <param name="ex">The exception to be added.</param>
-        void AddException(Exception ex);
-
-        /// <summary>
-        /// Trace a given method with return value. 
-        /// </summary>
-        /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates</typeparam>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        /// <returns>The return value of the given method</returns>
-        TResult TraceMethod<TResult>(string name, Func<TResult> method);
-
-        /// <summary>
-        /// Trace a given method returns void.
-        /// </summary>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        void TraceMethod(string name, Action method);
-
-        /// <summary>
-        /// Trace a given asynchronous function with return value. A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates</typeparam>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        /// <returns>The return value of the given method</returns>
-        Task<TResult> TraceMethodAsync<TResult>(string name, Func<Task<TResult>> method);
-
-        /// <summary>
-        /// Trace a given asynchronous method that returns no value.  A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        Task TraceMethodAsync(string name, Func<Task> method);
 
         /// <summary>
         /// Adds the specified key and value as http information to current segment
@@ -182,34 +110,6 @@ namespace Amazon.XRay.Recorder.Core
         /// Mark the current segment as being throttled.
         /// </summary>
         void MarkThrottle();
-
-        /// <summary>
-        /// Add a precursor id.
-        /// </summary>
-        /// <param name="precursorId">The precursor id to be added.</param>
-        void AddPrecursorId(string precursorId);
-
-        /// <summary>
-        /// Add the specified key and value as SQL information to current segment
-        /// </summary>
-        /// <param name="key">The key of the SQL information</param>
-        /// <param name="value">The value of the SQL information</param>
-        void AddSqlInformation(string key, string value);
-
-        /// <summary>
-        /// Adds the specified key and value to metadata under default namespace.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        void AddMetadata(string key, object value);
-
-        /// <summary>
-        /// Adds the specified key and value to metadata with given namespace.
-        /// </summary>
-        /// <param name="nameSpace">The namespace.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        void AddMetadata(string nameSpace, string key, object value);
 
         /// <summary>
         /// Sets the daemon address.

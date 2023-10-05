@@ -127,95 +127,6 @@ namespace Amazon.XRay.Recorder.Core
         public IStreamingStrategy StreamingStrategy { get; set; } = new DefaultStreamingStrategy();
 
         /// <summary>
-        /// Begin a tracing segment. A new tracing segment will be created and started.
-        /// </summary>
-        /// <param name="name">The name of the segment</param>
-        /// <param name="traceId">Trace id of the segment</param>
-        /// <param name="parentId">Unique id of the upstream remote segment or subsegment where the downstream call originated from.</param>
-        /// <param name="samplingResponse">Instance  of <see cref="SamplingResponse"/>, contains sampling decision for the segment from upstream service. If not passed, sampling decision is made based on <see cref="SamplingStrategy"/> set with the recorder instance.</param>
-        /// <param name="timestamp">If not null, sets the start time for the segment else current time is set.</param>
-        /// <exception cref="ArgumentNullException">The argument has a null value.</exception>
-        public void BeginSegment(string name, string traceId = null, string parentId = null, SamplingResponse samplingResponse = null, DateTime? timestamp = null)
-        {
-            if (AWSXRayRecorder.IsLambda())
-            {
-                throw new UnsupportedOperationException("Cannot override Facade Segment. New segment not created.");
-            }
-
-            Segment newSegment = new Segment(name, traceId, parentId);
-
-            if (samplingResponse == null)
-            {
-                SamplingInput samplingInput = new SamplingInput(name);
-                samplingResponse = SamplingStrategy.ShouldTrace(samplingInput);
-            }
-
-            if (!IsTracingDisabled())
-            {
-                if (timestamp == null)
-                {
-                    newSegment.SetStartTimeToNow();
-                }
-                else
-                {
-
-                    newSegment.SetStartTime(timestamp.Value);
-                }
-
-                PopulateNewSegmentAttributes(newSegment, samplingResponse);
-            }
-
-            newSegment.Sampled = samplingResponse.SampleDecision;
-
-            TraceContext.SetEntity(newSegment);
-        }
-
-
-        /// <summary>
-        /// End tracing of a given segment.
-        /// </summary>
-        /// <param name="timestamp">If not null, set as endtime for the current segment.</param>
-        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public void EndSegment(DateTime? timestamp = null)
-        {
-            if (AWSXRayRecorder.IsLambda())
-            {
-                throw new UnsupportedOperationException("Cannot override Facade Segment. New segment not created.");
-            }
-
-            try
-            {
-                // If the request is not sampled, a segment will still be available in TraceContext.
-                // Need to clean up the segment, but do not emit it.
-                Segment segment = (Segment)TraceContext.GetEntity();
-
-                if (!IsTracingDisabled())
-                {
-                    if (timestamp == null)
-                    {
-                        segment.SetEndTimeToNow();
-                    }
-                    else
-                    {
-                        segment.SetEndTime(timestamp.Value); // sets custom endtime
-                    }
-
-                    ProcessEndSegment(segment);
-                }
-
-                TraceContext.ClearEntity();
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to end segment because cannot get the segment from trace context.");
-            }
-            catch (InvalidCastException e)
-            {
-                HandleEntityNotAvailableException(new EntityNotAvailableException("Failed to cast the entity to Segment.", e), "Failed to cast the entity to Segment.");
-            }
-        }
-
-        /// <summary>
         /// Begin a tracing subsegment. A new subsegment will be created and added as a subsegment to previous segment.
         /// </summary>
         /// <param name="name">Name of the operation.</param>
@@ -223,16 +134,6 @@ namespace Amazon.XRay.Recorder.Core
         /// <exception cref="ArgumentNullException">The argument has a null value.</exception>
         /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
         public abstract void BeginSubsegment(string name, DateTime? timestamp = null);
-
-        /// <summary>
-        /// Begin a tracing subsegment. A new subsegment will be created and added as a subsegment to previous segment.
-        /// </summary>
-        /// <param name="name">Name of the operation.</param>
-        public void BeginSubsegmentWithoutSampling(string name)
-        {
-            BeginSubsegment(name);
-            TraceContext.GetEntity().Sampled = SampleDecision.NotSampled;
-        }
 
         /// <summary>
         /// End a subsegment.
@@ -245,32 +146,6 @@ namespace Amazon.XRay.Recorder.Core
         /// </summary>
         /// <returns> Returns true if Tracing is disabled else false.</returns>
         public abstract Boolean IsTracingDisabled();
-
-        /// <summary>
-        /// Adds the specified key and value as annotation to current segment.
-        /// The type of value is restricted. Only <see cref="string" />, <see cref="int" />, <see cref="long" />,
-        /// <see cref="double" /> and <see cref="bool" /> are supported.
-        /// </summary>
-        /// <param name="key">The key of the annotation to add.</param>
-        /// <param name="value">The value of the annotation to add.</param>
-        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public void AddAnnotation(string key, object value)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add annotation.");
-                return;
-            }
-
-            try
-            {
-                TraceContext.GetEntity().AddAnnotation(key, value);
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add annotation because subsegment is not available in trace context.");
-            }
-        }
 
         /// <summary>
         /// Set namespace to current segment.
@@ -306,85 +181,6 @@ namespace Amazon.XRay.Recorder.Core
             {
                 HandleEntityNotAvailableException(e, "Failed to set namespace because of subsegment is not available.");
             }
-        }
-
-        /// <summary>
-        /// Populates runtime and service contexts for the segment.
-        /// </summary>
-        /// <param name="newSegment">Instance of <see cref="Segment"/>.</param>
-        protected void PopulateNewSegmentAttributes(Segment newSegment)
-        {
-            if (RuntimeContext != null)
-            {
-                foreach (var keyValuePair in RuntimeContext)
-                {
-                    newSegment.Aws[keyValuePair.Key] = keyValuePair.Value;
-                }
-            }
-
-            if (Origin != null)
-            {
-                newSegment.Origin = Origin;
-            }
-
-            foreach (var keyValuePair in ServiceContext)
-            {
-                newSegment.Service[keyValuePair.Key] = keyValuePair.Value;
-            }
-        }
-
-        /// <summary>
-        /// Populates runtime and service contexts for the segment.
-        /// </summary>
-        /// <param name="newSegment">Instance of <see cref="Segment"/>.</param>
-        /// <param name="sampleResponse">Instance of <see cref="SamplingResponse"/>.</param>
-        protected void PopulateNewSegmentAttributes(Segment newSegment, SamplingResponse sampleResponse)
-        {
-            if (RuntimeContext != null)
-            {
-                foreach (var keyValuePair in RuntimeContext)
-                {
-                    newSegment.Aws[keyValuePair.Key] = keyValuePair.Value;
-                }
-            }
-
-            AWSXRayRecorderImpl.AddRuleName(newSegment, sampleResponse);
-
-            if (Origin != null)
-            {
-                newSegment.Origin = Origin;
-            }
-
-            foreach (var keyValuePair in ServiceContext)
-            {
-                newSegment.Service[keyValuePair.Key] = keyValuePair.Value;
-            }
-        }
-
-        /// <summary>
-        /// If non null, adds given rulename to the segment..
-        /// </summary>
-        private static void AddRuleName(Segment newSegment, SamplingResponse sampleResponse)
-        {
-            var ruleName = sampleResponse.RuleName;
-            string ruleNameKey = "sampling_rule_name";
-            if (string.IsNullOrEmpty(ruleName))
-            {
-                return;
-            }
-            IDictionary<string, string> xrayContext;
-            if (newSegment.Aws.TryGetValue("xray", out object value))
-            {
-                xrayContext = (ConcurrentDictionary<string, string>)value;
-                xrayContext[ruleNameKey] = ruleName;
-            }
-            else
-            {
-                xrayContext = new ConcurrentDictionary<string, string>();
-                xrayContext[ruleNameKey] = ruleName;
-            }
-
-            newSegment.Aws["xray"] = xrayContext;
         }
 
         /// <summary>
@@ -472,29 +268,6 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// Add the exception to current segment and also mark current segment as fault.
-        /// </summary>
-        /// <param name="ex">The exception to be added.</param>
-        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public void AddException(Exception ex)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add exception.");
-                return;
-            }
-
-            try
-            {
-                TraceContext.GetEntity().AddException(ex);
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add exception because segment is not available in trace context.");
-            }
-        }
-
-        /// <summary>
         /// Mark the current segment as being throttled. And Error will also be marked for current segment.
         /// </summary>
         /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
@@ -514,117 +287,6 @@ namespace Amazon.XRay.Recorder.Core
             catch (EntityNotAvailableException e)
             {
                 HandleEntityNotAvailableException(e, "Failed to mark throttle because segment is not available in trace context.");
-            }
-        }
-
-        /// <summary>
-        /// Add a precursor id.
-        /// </summary>
-        /// <param name="precursorId">The precursor id to be added.</param>
-        public void AddPrecursorId(string precursorId)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add precursorId.");
-                return;
-            }
-
-            try
-            {
-                var subsegment = TraceContext.GetEntity() as Subsegment;
-                if (subsegment == null)
-                {
-                    _logger.DebugFormat("Can't cast the Entity from TraceContext to Subsegment. The AddPrecursorId is only available for subsegment");
-                    return;
-                }
-
-                subsegment.AddPrecursorId(precursorId);
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add precursor id because segment is not available in trace context.");
-            }
-        }
-
-        /// <summary>
-        /// Add the specified key and value as SQL information to current segment.
-        /// </summary>
-        /// <param name="key">The key of the SQL information.</param>
-        /// <param name="value">The value of the http information.</param>
-        /// <exception cref="ArgumentException">Value or key is null or empty.</exception>
-        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public void AddSqlInformation(string key, string value)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add sql information.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Key cannot be null or empty", nameof(key));
-            }
-
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("Value cannot be null or empty", nameof(value));
-            }
-
-            try
-            {
-                TraceContext.GetEntity().Sql[key] = value;
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add sql information because segment is not available in trace context.");
-            }
-        }
-
-        /// <summary>
-        /// Adds the specified key and value to metadata under default namespace.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string key, object value)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add metadata.");
-                return;
-            }
-
-            try
-            {
-                TraceContext.GetEntity().AddMetadata(key, value);
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add metadata because segment is not available in trace context.");
-            }
-        }
-
-        /// <summary>
-        /// Adds the specified key and value to metadata with given namespace.
-        /// </summary>
-        /// <param name="nameSpace">The namespace.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string nameSpace, string key, object value)
-        {
-            if (IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add metadata.");
-                return;
-            }
-
-            try
-            {
-                TraceContext.GetEntity().AddMetadata(nameSpace, key, value);
-            }
-            catch (EntityNotAvailableException e)
-            {
-                HandleEntityNotAvailableException(e, "Failed to add metadata because segment is not available in trace context.");
             }
         }
 
@@ -696,23 +358,6 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// Returns subsegments.
-        /// </summary>
-        /// <param name="entity">Instance of <see cref="Entity"/></param>
-        /// <returns>Subsegments of instance of <see cref="Entity"/>.</returns>
-        protected Subsegment[] GetSubsegmentsToStream(Entity entity)
-        {
-            Subsegment[] copy;
-            lock (entity.Subsegments)
-            {
-                copy = new Subsegment[entity.Subsegments.Count];
-                entity.Subsegments.CopyTo(copy);
-            }
-
-            return copy;
-        }
-
-        /// <summary>
         /// Populates runtime and service contexts.
         /// </summary>
         protected void PopulateContexts()
@@ -739,24 +384,6 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// If sampled and is emittable sends segments using emitter else checks for subsegments to stream.
-        /// </summary>
-        /// <param name="segment"></param>
-        protected void ProcessEndSegment(Segment segment)
-        {
-            PrepEndSegment(segment);
-
-            if (segment.Sampled == SampleDecision.Sampled && segment.IsEmittable())
-            {
-                Emitter.Send(segment);
-            }
-            else if (StreamingStrategy.ShouldStream(segment))
-            {
-                StreamingStrategy.Stream(segment, Emitter);
-            }
-        }
-
-        /// <summary>
         /// Sets segment IsInProgress to false and releases the segment.
         /// </summary>
         /// <param name="segment">Instance of <see cref="Segment"/>.</param>
@@ -764,66 +391,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             segment.IsInProgress = false;
             segment.Release();
-        }
-
-        /// <summary>
-        /// Sends root segment of the current subsegment.
-        /// </summary>
-        protected void ProcessEndSubsegment(DateTime? timestamp = null)
-        {
-            var subsegment = PrepEndSubsegment();
-
-            if (subsegment == null)
-            {
-                return;
-            }
-
-            if (timestamp == null)
-            {
-                subsegment.SetEndTimeToNow();
-            }
-            else
-            {
-                subsegment.SetEndTime(timestamp.Value);
-            }
-
-            // Check emittable
-            if (subsegment.IsEmittable())
-            {
-                // Emit
-                Emitter.Send(subsegment.RootSegment);
-            }
-            else if (StreamingStrategy.ShouldStream(subsegment))
-            {
-                StreamingStrategy.Stream(subsegment.RootSegment, Emitter);
-            }
-        }
-
-        private Subsegment PrepEndSubsegment()
-        {
-            // If the request is not sampled, a segment will still be available in TraceContext.
-            Entity entity = TraceContext.GetEntity();
-
-            // If the segment is not sampled, a subsegment is not created. Do nothing and exit.
-            if (entity.Sampled != SampleDecision.Sampled)
-            {
-                return null;
-            }
-
-            Subsegment subsegment = (Subsegment)entity;
-
-            subsegment.IsInProgress = false;
-
-            // Restore parent segment to trace context
-            if (subsegment.Parent != null)
-            {
-                TraceContext.SetEntity(subsegment.Parent);
-            }
-
-            // Drop ref count
-            subsegment.Release();
-
-            return subsegment;
         }
 
         /// <summary>
@@ -837,114 +404,6 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// Trace a given function with return value. A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
-        /// <param name="name">The name of the trace subsegment for the method.</param>
-        /// <param name="method">The method to be traced.</param>
-        /// <returns>The return value of the given method.</returns>
-        public TResult TraceMethod<TResult>(string name, Func<TResult> method)
-        {
-            BeginSubsegment(name);
-
-            try
-            {
-                return method();
-            }
-            catch (Exception e)
-            {
-                AddException(e);
-                throw;
-            }
-
-            finally
-            {
-                EndSubsegment();
-            }
-        }
-
-        /// <summary>
-        /// Trace a given method returns void.  A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <param name="name">The name of the trace subsegment for the method.</param>
-        /// <param name="method">The method to be traced.</param>
-        public void TraceMethod(string name, Action method)
-        {
-            BeginSubsegment(name);
-
-            try
-            {
-                method();
-            }
-            catch (Exception e)
-            {
-                AddException(e);
-                throw;
-            }
-
-            finally
-            {
-                EndSubsegment();
-            }
-        }
-
-        /// <summary>
-        /// Trace a given asynchronous function with return value. A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates</typeparam>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        /// <returns>The return value of the given method</returns>
-        public async Task<TResult> TraceMethodAsync<TResult>(string name, Func<Task<TResult>> method)
-        {
-            BeginSubsegment(name);
-
-            try
-            {
-                return await method();
-            }
-            catch (Exception e)
-            {
-                AddException(e);
-                throw;
-            }
-
-            finally
-            {
-                EndSubsegment();
-            }
-        }
-
-        /// <summary>
-        /// Trace a given asynchronous method that returns no value.  A subsegment will be created for this method.
-        /// Any exception thrown by the method will be captured.
-        /// </summary>
-        /// <param name="name">The name of the trace subsegment for the method</param>
-        /// <param name="method">The method to be traced</param>
-        public async Task TraceMethodAsync(string name, Func<Task> method)
-        {
-            BeginSubsegment(name);
-
-            try
-            {
-                await method();
-            }
-            catch (Exception e)
-            {
-                AddException(e);
-                throw;
-            }
-
-            finally
-            {
-                EndSubsegment();
-            }
-        }
-
-        /// <summary>
         /// Gets entity (segment/subsegment) from the <see cref="TraceContext"/>.
         /// </summary>
         /// <returns>The entity (segment/subsegment)</returns>
@@ -952,33 +411,6 @@ namespace Amazon.XRay.Recorder.Core
         public Entity GetEntity()
         {
             return TraceContext.GetEntity();
-        }
-
-        /// <summary>
-        /// Set the specified entity (segment/subsegment) into <see cref="TraceContext"/>.
-        /// </summary>
-        /// <param name="entity">The entity to be set</param>
-        /// <exception cref="EntityNotAvailableException">Thrown when the entity is not available to set</exception>
-        public void SetEntity(Entity entity)
-        {
-            TraceContext.SetEntity(entity);
-        }
-
-        /// <summary>
-        /// Checks whether entity is present in <see cref="TraceContext"/>.
-        /// </summary>
-        /// <returns>True if entity is present TraceContext else false.</returns>
-        public bool IsEntityPresent()
-        {
-            return TraceContext.IsEntityPresent();
-        }
-
-        /// <summary>
-        /// Clear entity from <see cref="TraceContext"/>.
-        /// </summary>
-        public void ClearEntity()
-        {
-            TraceContext.ClearEntity();
         }
 
         /// <summary>
