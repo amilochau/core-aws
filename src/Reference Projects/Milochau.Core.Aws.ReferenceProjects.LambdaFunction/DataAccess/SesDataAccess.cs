@@ -2,6 +2,7 @@
 using Amazon.SimpleEmail.Model;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,15 +27,24 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task SendEmailAsync(FunctionRequest emailRequest, CancellationToken cancellationToken)
         {
-            await amazonSimpleEmailService.SendTemplatedEmailAsync(new SendTemplatedEmailRequest
+            var response = await amazonSimpleEmailService.SendTemplatedEmailAsync(new SendTemplatedEmailRequest
             {
-                Source = FromAddress,
+                Source = "noreply@dev.milochau.com",
                 Destination = new Destination
                 {
-                    ToAddresses = new List<string> { "test@test.com" },
+                    ToAddresses = new List<string> { "aaa@outlook.com" },
                 },
-                Template = $"{ConventionsPrefix}-template-templateId",
-                TemplateData = "templateData",
+                Template = $"emails-dev-template-contacts-summary",
+                TemplateData = JsonSerializer.Serialize(new EmailRequestContent
+                {
+                    Messages = new List<EmailRequestContentMessage>
+                    {
+                        new EmailRequestContentMessage
+                        {
+                            Message = "Ok"
+                        }
+                    }
+                }, ApplicationJsonSerializerContext.Default.EmailRequestContent),
             }, cancellationToken);
         }
     }

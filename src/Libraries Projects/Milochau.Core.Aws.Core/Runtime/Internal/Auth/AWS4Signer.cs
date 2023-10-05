@@ -183,7 +183,7 @@ namespace Amazon.Runtime.Internal.Auth
             ValidateRequest(request);
             var signedAt = InitializeHeaders(request.Headers, request.Endpoint);
             
-            var serviceSigningName = !string.IsNullOrEmpty(request.OverrideSigningServiceName) ? request.OverrideSigningServiceName : DetermineService(clientConfig);
+            var serviceSigningName = !string.IsNullOrEmpty(request.OverrideSigningServiceName) ? request.OverrideSigningServiceName : clientConfig.AuthenticationServiceName;
             if (serviceSigningName == "s3")
             {
                 // Older versions of the S3 package can be used with newer versions of Core, this guarantees no double encoding will be used.
@@ -575,7 +575,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     string serviceName,
                                                     IRequest request)
         {
-            string authenticationRegion = clientConfig.AuthenticationRegion;
+            string authenticationRegion = null;
             // We always have request.AuthenticationRegion defined, as per 
             // Amazon.Runtime.Internal.BaseEndpointResolver implementation.
             // request.AuthenticationRegion value is set either based on endpoint rules or
@@ -603,13 +603,6 @@ namespace Amazon.Runtime.Internal.Auth
             }
 
             return string.Empty;
-        }
-
-        public static string DetermineService(IClientConfig clientConfig)
-        {
-            return (!string.IsNullOrEmpty(clientConfig.AuthenticationServiceName)) 
-                ? clientConfig.AuthenticationServiceName 
-                : AWSSDKUtils.DetermineService(clientConfig.DetermineServiceURL());
         }
 
         /// <summary>

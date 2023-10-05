@@ -153,7 +153,6 @@ namespace Amazon.Runtime
             else
                 _logger = Logger.GetLogger(GetType());
 
-            config.Validate();
             Credentials = credentials;
             _config = config;
             Signer = CreateSigner();

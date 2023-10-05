@@ -226,7 +226,6 @@ namespace Amazon.Runtime
         private bool useHttp = false;
         private bool useAlternateUserAgentHeader = AWSConfigs.UseAlternateUserAgentHeader;
         private string serviceURL = null;
-        private string authRegion = null;
         private string authServiceName = null;
         private bool readEntireResponse = false;
         private bool logResponse = false;
@@ -382,18 +381,6 @@ namespace Amazon.Runtime
 
             string url = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}{1}", config.UseHttp ? "http://" : "https://", endpoint.Hostname)).AbsoluteUri;
             return url;
-        }
-
-        /// <summary>
-        /// Gets and sets the AuthenticationRegion property.
-        /// Used in AWS4 request signing, this is an optional property; 
-        /// change it only if the region cannot be determined from the 
-        /// service endpoint.
-        /// </summary>
-        public string AuthenticationRegion
-        {
-            get { return this.authRegion; }
-            set { this.authRegion = value; }
         }
 
         /// <summary>
@@ -849,27 +836,6 @@ namespace Amazon.Runtime
         {
             get { return throttleRetries; }
             set { throttleRetries = value; }
-        }
-
-        /// <summary>
-        /// Enable or disable the Nagle algorithm on the underlying http
-        /// client.
-        /// 
-        /// This method is not intended to be called by consumers of the AWS SDK for .NET
-        /// </summary>
-        /// <param name="useNagle"></param>
-        public void SetUseNagleIfAvailable(bool useNagle)
-        {
-        }
-
-        /// <summary>
-        /// Performs validation on this config object.
-        /// Throws exception if any of the required values are missing/invalid.
-        /// </summary>
-        public virtual void Validate()
-        {
-            if (RegionEndpoint == null)
-                throw new AmazonClientException("No RegionEndpoint configured");
         }
 
         /// <summary>

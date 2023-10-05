@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.Runtime.Internal.Transform;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -77,6 +78,38 @@ namespace Amazon.Internal
                                     },
                                 },
                             }
+                        },
+                        {
+                            "lambda",
+                            new EndpointsPartitionService
+                            {
+                                Endpoints = new Dictionary<string, EndpointsPartitionDefaults>
+                                {
+                                    { "eu-west-3", new EndpointsPartitionDefaults
+                                        {
+                                            Hostname = "lambda.eu-west-3.api.aws",
+                                            Tags = new List<string> { "dualstack" },
+                                        }
+                                    },
+                                    { "us-east-1", new EndpointsPartitionDefaults
+                                        {
+                                            Variants = new List<EndpointsPartitionDefaultsVariant>
+                                            {
+                                                new EndpointsPartitionDefaultsVariant
+                                                {
+                                                    Hostname = "lambda-fips.us-east-1.amazonaws.com",
+                                                    Tags = new List<string> { "fips "},
+                                                },
+                                                new EndpointsPartitionDefaultsVariant
+                                                {
+                                                    Hostname = "lambda.us-east-1.api.aws",
+                                                    Tags = new List<string> { "dualstack" },
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                 }
@@ -108,6 +141,7 @@ namespace Amazon.Internal
         public string Hostname { get; set; }
         public List<string> Protocols { get; set; }
         public List<string> SignatureVersions { get; set; }
+        public List<string> Tags { get; set; }
         public List<EndpointsPartitionDefaultsVariant> Variants { get; set; } = new List<EndpointsPartitionDefaultsVariant>();
     }
 

@@ -32,10 +32,5 @@ namespace Amazon.Internal
                 FIPS = config.UseFIPSEndpoint
             };
         }
-
-        public static RegionEndpoint.Endpoint GetEndpointForService(this RegionEndpoint endpoint, IClientConfig config)
-        {
-            return endpoint.GetEndpointForService(config.RegionEndpointServiceName, config.ToGetEndpointForServiceOptions());
-        }
     }
 }

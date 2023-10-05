@@ -117,14 +117,6 @@ namespace Amazon.Runtime
         string ServiceVersion { get; }
 
         /// <summary>
-        /// Gets the AuthenticationRegion property.
-        /// Used in AWS4 request signing, this is an optional property; 
-        /// change it only if the region cannot be determined from the 
-        /// service endpoint.
-        /// </summary>
-        string AuthenticationRegion { get; }
-
-        /// <summary>
         /// Gets the AuthenticationServiceName property.
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
@@ -282,13 +274,6 @@ namespace Amazon.Runtime
         /// <returns>The URL to the service.</returns>
         [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         string DetermineServiceURL();
-
-        /// <summary>
-        /// Performs validation on this config object.
-        /// Throws exception if any of the required values are missing/invalid.
-        /// </summary>
-        /// <exception cref="Amazon.Runtime.AmazonClientException">The timeout specified is null.</exception>
-        void Validate();
 
         /// <summary>
         /// Returns the calculated clock skew value for this config's service endpoint. If AWSConfigs.CorrectForClockSkew is false,

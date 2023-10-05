@@ -8,18 +8,8 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// Response Unmarshaller for Capacity Object
     /// </summary>  
-    public class CapacityUnmarshaller : IUnmarshaller<Capacity, XmlUnmarshallerContext>, IUnmarshaller<Capacity, JsonUnmarshallerContext>
+    public class CapacityUnmarshaller : IUnmarshaller<Capacity, JsonUnmarshallerContext>
     {
-        /// <summary>
-        /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        /// <param name="context"></param>
-        /// <returns></returns>
-        Capacity IUnmarshaller<Capacity, XmlUnmarshallerContext>.Unmarshall(XmlUnmarshallerContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  

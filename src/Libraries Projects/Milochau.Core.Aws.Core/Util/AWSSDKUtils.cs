@@ -60,9 +60,6 @@ namespace Amazon.Util
 
         internal const int DefaultMaxRetry = 3;
         private const int DefaultConnectionLimit = 50;
-        private const int DefaultMaxIdleTime = 50 * 1000; // 50 seconds
-
-        private const int MaxIsSetMethodsCacheSize = 50;
 
         public static readonly DateTime EPOCH_START = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -79,8 +76,6 @@ namespace Amazon.Util
 
         internal const string S3Accelerate = "s3-accelerate";
         internal const string S3Control = "s3-control";
-
-        private const int DefaultMarshallerVersion = 2;
 
         private static readonly string _userAgent = InternalSDKUtils.BuildUserAgentString(string.Empty);
 
@@ -365,58 +360,6 @@ namespace Amazon.Util
             return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
         }
 
-        /// <summary>
-        /// Attempt to infer the region for a service request based on the endpoint
-        /// </summary>
-        /// <param name="url">Endpoint to the service to be called</param>
-        /// <returns>
-        /// Region parsed from the endpoint; DefaultRegion (or DefaultGovRegion)
-        /// if it cannot be determined/is not explicit
-        /// </returns>
-        public static string DetermineRegion(string url)
-        {
-            var regionEndpoint = RegionFinder.Instance.FindRegion(url);
-            return regionEndpoint?.RegionName;
-        }
-
-        /// <summary>
-        /// Attempt to infer the service name for a request (in short form, eg 'iam') from the
-        /// service endpoint.
-        /// </summary>
-        /// <param name="url">Endpoint to the service to be called</param>
-        /// <returns>
-        /// Short-form name of the service parsed from the endpoint; empty string if it cannot 
-        /// be determined
-        /// </returns>
-        public static string DetermineService(string url)
-        {
-            int delimIndex = url.IndexOf("//", StringComparison.Ordinal);
-            if (delimIndex >= 0)
-                url = url.Substring(delimIndex + 2);
-
-            string[] urlParts = url.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            if (urlParts == null || urlParts.Length == 0)
-                return string.Empty;
-
-            string servicePart = urlParts[0];
-            int hyphenated = servicePart.IndexOf('-');
-            string service;
-            if (hyphenated < 0)
-            { service = servicePart; }
-            else
-            { service = servicePart.Substring(0, hyphenated); }
-
-            // Check for SQS : return "sqs" incase service is determined to be "queue" as per the URL.
-            if (service.Equals("queue"))
-            {
-                return "sqs";
-            }
-            else
-            {
-                return service;
-            }
-        }
-
         public static string ConvertToUnixEpochSecondsString(DateTime dateTime)
         {
             return Convert.ToInt64(GetTimeSpanInTicks(dateTime).TotalSeconds).ToString(CultureInfo.InvariantCulture);
@@ -528,17 +471,6 @@ namespace Amazon.Util
             return (a.Equals(b));
         }
 
-        internal static bool DictionariesAreEqual<K,V>(Dictionary<K, V> a, Dictionary<K, V> b)
-        {
-            if (a == null || b == null)
-                return (a == b);
-
-            if (object.ReferenceEquals(a, b))
-                return true;
-
-            return a.Count == b.Count && !a.Except(b).Any();
-        }
-
         /// <summary>
         /// Utility method for converting a string to a MemoryStream.
         /// </summary>
@@ -589,21 +521,6 @@ namespace Amazon.Util
 #endregion
 
 #region Public Methods and Properties
-
-        /// <summary>
-        /// Determines whether the given string is an absolute path to a root.
-        /// </summary>
-        /// <param name="path">The hypothetical absolute path.</param>
-        /// <returns>True if <paramref name="path"/> is an absolute path.</returns>
-        public static bool IsAbsolutePath(string path)
-        {
-            return IsWindows() ? !IsPartiallyQualifiedForWindows(path) : Path.IsPathRooted(path);
-        }
-
-        private static bool IsWindows()
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        }
 
         #region The code in this region has been minimally adapted from Microsoft's PathInternal.Windows.cs class as of 11/19/2019.  The logic remains the same.
         /// <summary>
@@ -857,11 +774,6 @@ namespace Amazon.Util
             }
         }
 
-        public static void Sleep(TimeSpan ts)
-        {
-            Sleep((int)ts.TotalMilliseconds);
-        }
-
         /// <summary>
         /// Returns DateTime.UtcNow + ManualClockCorrection when
         /// <seealso cref="AWSConfigs.ManualClockCorrection"/> is set.
@@ -991,15 +903,6 @@ namespace Amazon.Util
             return client;
         }
 
-        public static Stream OpenStream(Uri uri, IWebProxy proxy)
-        {
-            using (var client = new System.Net.Http.HttpClient(new System.Net.Http.HttpClientHandler() { Proxy = proxy }))
-            {
-                var task = client.GetStreamAsync(uri);
-                return task.Result;
-            }
-        }
-
         /// <summary>
         /// Utility method that accepts a string and replaces white spaces with a space.
         /// </summary>
@@ -1029,77 +932,9 @@ namespace Amazon.Util
             return stringBuilder.ToString();
         }
 
-        /// <summary>
-        /// Runs a process with the below input parameters.
-        /// </summary>
-        /// <param name="processStartInfo"></param>
-        /// <returns></returns>
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public static ProcessExecutionResult RunProcess(ProcessStartInfo processStartInfo)
-        {
-            using (var process = new Process
-            {
-                StartInfo = processStartInfo
-            })
-            {
-                var logger = Logger.GetLogger(typeof(AWSSDKUtils));
-                logger.InfoFormat("Starting a process with the following ProcessInfo: UseShellExecute - {0} RedirectStandardError - {1}, RedirectStandardOutput - {2}, CreateNoWindow - {3}",  
-                    processStartInfo.UseShellExecute, processStartInfo.RedirectStandardError, processStartInfo.RedirectStandardOutput, processStartInfo.CreateNoWindow);
-                process.Start();
-                logger.InfoFormat("Process started");
-                string standardOutput = null;
-                var thread = new Thread(() => standardOutput = process.StandardOutput.ReadToEnd());
-                thread.Start();
-                var standardError = process.StandardError.ReadToEnd();
-                thread.Join();
-                process.WaitForExit();    
-
-                return new ProcessExecutionResult
-                {
-                    ExitCode = process.ExitCode,
-                    StandardError = standardError,
-                    StandardOutput = standardOutput
-                };    
-            }
-        }
-
-        [SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public static async Task<ProcessExecutionResult> RunProcessAsync(ProcessStartInfo processStartInfo)
-        {
-            var logger = Logger.GetLogger(typeof(AWSSDKUtils));
-            using (var process = new Process
-            {
-                StartInfo = processStartInfo,
-                EnableRaisingEvents = true
-            })
-            {
-                var tcs = new TaskCompletionSource<object>();
-                process.Exited += (s, ea) => tcs.SetResult(null);
-                logger.InfoFormat("Starting a process with the following ProcessInfo: UseShellExecute - {0} RedirectStandardError - {1}, RedirectStandardOutput - {2}, CreateNoWindow - {3}",  
-                    processStartInfo.UseShellExecute, processStartInfo.RedirectStandardError, processStartInfo.RedirectStandardOutput, processStartInfo.CreateNoWindow);    
-                process.Start();
-                logger.InfoFormat("Process started");
-
-                var standardErrorTask = process.StandardError.ReadToEndAsync();
-                var standardOutputTask = process.StandardOutput.ReadToEndAsync();
-
-                await Task.WhenAll(tcs.Task, standardErrorTask, standardOutputTask).ConfigureAwait(false);
-
-                return new ProcessExecutionResult
-                {
-                    ExitCode = process.ExitCode,
-                    StandardError = standardErrorTask.Result,
-                    StandardOutput = standardOutputTask.Result
-                };
-            }
-
-        }
-
 #endregion
 
 #region Private Methods, Static Fields and Classes
-
-        private static LruCache<IsSetMethodsCacheKey, MethodInfo> IsSetMethodsCache = new LruCache<IsSetMethodsCacheKey, MethodInfo>(MaxIsSetMethodsCacheSize);
 
         private class IsSetMethodsCacheKey
         {
@@ -1131,47 +966,5 @@ namespace Amazon.Util
             }
         }
 #endregion
-    }
-
-    public class JitteredDelay
-    {
-        private TimeSpan _maxDelay;
-        private TimeSpan _variance;
-        private TimeSpan _baseIncrement;
-        private Random _rand = null;
-        private int _count = 0;
-
-        public JitteredDelay(TimeSpan baseIncrement, TimeSpan variance)
-            : this(baseIncrement, variance, new TimeSpan(0, 0, 30))
-        {
-        }
-
-        public JitteredDelay(TimeSpan baseIncrement, TimeSpan variance, TimeSpan maxDelay)
-        {
-            _baseIncrement = baseIncrement;
-            _variance = variance;
-            _maxDelay = maxDelay;
-            _rand = new System.Random();
-        }
-
-        public TimeSpan GetRetryDelay(int attemptCount)
-        {
-            long ticks = (_baseIncrement.Ticks * (long)Math.Pow(2, attemptCount) + (long)(_rand.NextDouble() * _variance.Ticks));
-            return new TimeSpan(ticks);
-        }
-
-        public TimeSpan Next()
-        {
-            long nextTick = GetRetryDelay(_count + 1).Ticks;
-            if (nextTick < _maxDelay.Ticks)
-            {
-                _count++;
-            }
-            else
-            {
-                nextTick = _maxDelay.Ticks;
-            }
-            return new TimeSpan(nextTick);
-        }
     }
 }

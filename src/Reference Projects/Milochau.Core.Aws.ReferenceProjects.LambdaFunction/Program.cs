@@ -147,6 +147,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 return proxyResponse;
             }
 
+            //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             await dynamoDbDataAccess.GetMessageAsync(cancellationToken);
 
             await Task.CompletedTask;

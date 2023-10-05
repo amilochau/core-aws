@@ -1,8 +1,10 @@
 ﻿using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
+using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {

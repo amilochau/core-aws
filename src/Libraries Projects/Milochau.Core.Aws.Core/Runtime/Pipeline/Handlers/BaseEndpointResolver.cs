@@ -69,12 +69,6 @@ namespace Amazon.Runtime.Internal
 
             // service-specific handling, code-generated
             ServiceSpecificHandler(executionContext, parameters);
-
-            // override AuthenticationRegion from ClientConfig if specified
-            if (!string.IsNullOrEmpty(config.AuthenticationRegion))
-            {
-                requestContext.Request.AuthenticationRegion = config.AuthenticationRegion;
-            }
         }
 
         private Endpoint GetEndpoint(IExecutionContext executionContext, EndpointParameters parameters)

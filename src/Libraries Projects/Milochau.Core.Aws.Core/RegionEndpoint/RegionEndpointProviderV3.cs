@@ -31,21 +31,6 @@ namespace Amazon.Internal
         private ServiceMap _serviceMap = new ServiceMap();
         public string RegionName { get; private set; }
         public string DisplayName { get; private set; }
-        public string PartitionName
-        {
-            get
-            {
-                return partition.Partition;
-            }
-        }
-
-        public string PartitionDnsSuffix
-        {
-            get
-            {
-                return partition.DnsSuffix;
-            }
-        }
 
         private EndpointsPartition partition;
         private Dictionary<string, EndpointsPartitionService> services;
@@ -59,18 +44,6 @@ namespace Amazon.Internal
 
             this.partition = partition;
             this.services = services;
-        }
-
-        /// <summary>
-        /// Retrieves the endpoint for the given service in the current region
-        /// </summary>
-        /// <param name="serviceName">Name of the service in endpoints.json</param>
-        /// <param name="dualStack">Whether to retrieve the dual-stack variant</param>
-        /// <returns>Matching endpoint from endpoints.json, or a computed endpoint if possible</returns>
-        [Obsolete("Use GetEndpointForService(string serviceName, GetEndpointForServiceOptions options) instead", error: false)]
-        public RegionEndpoint.Endpoint GetEndpointForService(string serviceName, bool dualStack)
-        {
-            return GetEndpointForService(serviceName, new GetEndpointForServiceOptions { DualStack = dualStack });
         }
 
         /// <summary>
@@ -135,7 +108,7 @@ namespace Amazon.Internal
                                  .Replace("{region}", RegionName)
                                  .Replace("{dnsSuffix}", dnsSuffix);
 
-            return new RegionEndpoint.Endpoint(hostname, null, null, dnsSuffix, deprecated: false);
+            return new RegionEndpoint.Endpoint(hostname, null);
         }
 
         private void ParseAllServices()
@@ -233,12 +206,7 @@ namespace Amazon.Internal
                 authRegion = DetermineAuthRegion(credentialScope);
             }
 
-            var deprecatedJson = mergedEndpoint.Deprecated;
-            var deprecated =  deprecatedJson ?? false;
-
-            var signatureOverride = DetermineSignatureOverride(mergedEndpoint, serviceName);
-
-            RegionEndpoint.Endpoint endpoint = new RegionEndpoint.Endpoint(hostname, authRegion, signatureOverride, dnsSuffix, deprecated);
+            RegionEndpoint.Endpoint endpoint = new RegionEndpoint.Endpoint(hostname, authRegion);
             _serviceMap.Add(serviceName, endpoint);
         }
 
@@ -250,11 +218,6 @@ namespace Amazon.Internal
             {
                 authRegion = DetermineAuthRegion(credentialScope);
             }
-
-            var deprecatedJson = mergedEndpoint.Deprecated;
-            var deprecated = deprecatedJson ?? false;
-
-            string signatureOverride = DetermineSignatureOverride(mergedEndpoint, serviceName);
 
             foreach (var tagsKey in mergedVariants.Keys)
             {
@@ -279,27 +242,8 @@ namespace Amazon.Internal
                                      .Replace("{region}", regionName)
                                      .Replace("{dnsSuffix}", variantDnsSuffix);
 
-                _serviceMap.Add(serviceName, new RegionEndpoint.Endpoint(variantHostname, authRegion, signatureOverride, variantDnsSuffix, deprecated), tagsKey);
+                _serviceMap.Add(serviceName, new RegionEndpoint.Endpoint(variantHostname, authRegion), tagsKey);
             }
-        }
-
-        private static string DetermineSignatureOverride(MergedEndpoint defaults, string serviceName)
-        {
-            if (string.Equals(serviceName, "s3", StringComparison.OrdinalIgnoreCase))
-            {
-                bool supportsSigV2 = false;
-                foreach (var element in defaults.SignatureVersions)
-                {
-                    if (string.Equals(element, "s3", StringComparison.OrdinalIgnoreCase))
-                    {
-                        supportsSigV2 = true;
-                        break;
-                    }
-                }
-                return (supportsSigV2 ? "2" : "4");
-            }
-
-            return null;
         }
 
         private static string DetermineAuthRegion(MergedEndpointCredentialScope credentialScope)
@@ -353,11 +297,6 @@ namespace Amazon.Internal
             /// </summary>
             private Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>> _variantMap = new Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>>();
 
-            public bool ContainsKey(string serviceName)
-            {
-                return _serviceMap.ContainsKey(serviceName);
-            }
-
             public void Add(string serviceName, RegionEndpoint.Endpoint endpoint, HashSet<string> variants = null)
             {
                 if (variants == null || variants.Count == 0)
@@ -405,81 +344,6 @@ namespace Amazon.Internal
 
 
         private ReaderWriterLockSlim _readerWriterLock = new ReaderWriterLockSlim();
-
-        private IEnumerable<IRegionEndpoint> _allRegionEndpoints;
-        public IEnumerable<IRegionEndpoint> AllRegionEndpoints
-        {
-            get
-            {
-                if (_allRegionEndpoints == null)
-                {
-                    try
-                    {
-                        _readerWriterLock.EnterWriteLock();
-
-                        if (_allRegionEndpoints == null)
-                        {
-                            var partitions = Endpoints.Reference.Partitions;
-                            List<IRegionEndpoint> endpoints = new List<IRegionEndpoint>();
-                            foreach (var partition in partitions)
-                            {
-                                var regions = partition.Regions;
-                                foreach (string regionName in regions.Keys)
-                                {
-                                    IRegionEndpoint endpoint;
-                                    if (!_regionEndpointMap.TryGetValue(regionName, out endpoint))
-                                    {
-                                        endpoint = new RegionEndpointV3(regionName, regions[regionName].Description, partition, partition.Services);
-                                        _regionEndpointMap.Add(regionName, endpoint);
-                                    }
-                                    endpoints.Add(endpoint);
-                                }
-                            }
-
-                            _allRegionEndpoints = endpoints;
-                        }
-                    }
-                    finally
-                    {
-                        if (_readerWriterLock.IsWriteLockHeld)
-                        {
-                            _readerWriterLock.ExitWriteLock();
-                        }
-                    }
-                }
-
-                return _allRegionEndpoints;
-            }
-        }
-
-        private IEnumerable<string> _allRegionRegex;
-        public IEnumerable<string> AllRegionRegex
-        {
-            get
-            {
-                if (_allRegionRegex == null)
-                {
-                    try
-                    {
-                        _readerWriterLock.EnterWriteLock();
-
-                        if (_allRegionRegex == null)
-                        {
-                            _allRegionRegex = Endpoints.Reference.Partitions.Select(x => x.RegionRegex).ToList();
-                        }
-                    }
-                    finally
-                    {
-                        if (_readerWriterLock.IsWriteLockHeld)
-                        {
-                            _readerWriterLock.ExitWriteLock();
-                        }
-                    }
-                }
-
-                return _allRegionRegex;
-            }
-        }
 
         private static string GetUnknownRegionDescription(string regionName)
         {

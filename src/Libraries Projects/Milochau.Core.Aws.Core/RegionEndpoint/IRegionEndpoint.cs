@@ -28,8 +28,6 @@ namespace Amazon.Internal
     {
         string RegionName { get;  }
         string DisplayName { get; }
-        [Obsolete("Use GetEndpointForService(string serviceName, GetEndpointForServiceOptions options) instead", error: false)]
-        Amazon.RegionEndpoint.Endpoint GetEndpointForService(string serviceName, bool dualStack);
         /// <summary>
         /// Gets the endpoint for a service in a region.
         /// <para />
@@ -50,8 +48,6 @@ namespace Amazon.Internal
     [Obsolete("This interface is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
     public interface IRegionEndpointProvider
     {
-        IEnumerable<IRegionEndpoint> AllRegionEndpoints { get; }
-
         IRegionEndpoint GetRegionEndpoint(string regionName);
     }
 }

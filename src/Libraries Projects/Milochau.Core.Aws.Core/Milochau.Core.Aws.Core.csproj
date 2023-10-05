@@ -12,10 +12,4 @@
     <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="endpoints.json">
-      <LogicalName>Core.endpoints.json</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

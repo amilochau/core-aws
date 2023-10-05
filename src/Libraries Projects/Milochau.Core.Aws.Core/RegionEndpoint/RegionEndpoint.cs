@@ -190,13 +190,10 @@ namespace Amazon
         /// </summary>
         public class Endpoint
         {
-            internal Endpoint(string hostname, string authregion, string signatureVersionOverride, string dnsSuffix, bool deprecated)
+            internal Endpoint(string hostname, string authregion)
             {
                 this.Hostname = hostname;
                 this.AuthRegion = authregion;
-                this.SignatureVersionOverride = signatureVersionOverride;
-                this.Deprecated = deprecated;
-                this.DnsSuffix = dnsSuffix;
             }
 
             /// <summary>
@@ -205,25 +202,9 @@ namespace Amazon
             public string Hostname { get; private set; }
 
             /// <summary>
-            /// Gets the DNS suffix for the service.
-            /// </summary>
-            public string DnsSuffix { get; private set; }
-
-            /// <summary>
             /// The authentication region to be used in request signing.
             /// </summary>
             public string AuthRegion { get; private set; }
-
-            /// <summary>
-            /// This property is only set for S3 endpoints.  For all other services this property returns null.
-            /// For S3 endpoints, if the endpoint supports signature version 2 this property will be "2", otherwise it will be "4".
-            /// </summary>
-            public string SignatureVersionOverride { get; private set; }
-
-            /// <summary>
-            /// Gets the hostname for the service.
-            /// </summary>
-            public bool Deprecated { get; private set; }
         }
     }
 }

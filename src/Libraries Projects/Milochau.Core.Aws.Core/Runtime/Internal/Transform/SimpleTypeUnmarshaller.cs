@@ -46,7 +46,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for int fields
     /// </summary>
-    public class IntUnmarshaller : IUnmarshaller<int, XmlUnmarshallerContext>, IUnmarshaller<int, JsonUnmarshallerContext>
+    public class IntUnmarshaller : IUnmarshaller<int, JsonUnmarshallerContext>
     {
         private IntUnmarshaller() { }
 
@@ -60,15 +60,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-        public static IntUnmarshaller GetInstance()
-        {
-            return IntUnmarshaller.Instance;
-        }
-
-        public int Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<int>.Unmarshall(context);
-        }
         public int Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<int>.Unmarshall(context);
@@ -84,21 +75,6 @@ namespace Amazon.Runtime.Internal.Transform
     public class NullableIntUnmarshaller : IUnmarshaller<int?, JsonUnmarshallerContext>
     {   
         private NullableIntUnmarshaller() { }
-
-        private static NullableIntUnmarshaller _instance = new NullableIntUnmarshaller();
-
-        public static NullableIntUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static NullableIntUnmarshaller GetInstance()
-        {
-            return NullableIntUnmarshaller.Instance;
-        }
 
         public int? Unmarshall(JsonUnmarshallerContext context)
         {
@@ -116,7 +92,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for long fields
     /// </summary>
-    public class LongUnmarshaller : IUnmarshaller<long, XmlUnmarshallerContext>, IUnmarshaller<long, JsonUnmarshallerContext>
+    public class LongUnmarshaller : IUnmarshaller<long, JsonUnmarshallerContext>
     {
         private LongUnmarshaller() { }
 
@@ -130,15 +106,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-        public static LongUnmarshaller GetInstance()
-        {
-            return LongUnmarshaller.Instance;
-        }
-
-        public long Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<long>.Unmarshall(context);
-        }
         public long Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<long>.Unmarshall(context);
@@ -148,29 +115,10 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for float fields
     /// </summary>
-    public class FloatUnmarshaller : IUnmarshaller<float, XmlUnmarshallerContext>, IUnmarshaller<float, JsonUnmarshallerContext>
+    public class FloatUnmarshaller : IUnmarshaller<float, JsonUnmarshallerContext>
     {
         private FloatUnmarshaller() { }
 
-        private static FloatUnmarshaller _instance = new FloatUnmarshaller();
-
-        public static FloatUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static FloatUnmarshaller GetInstance()
-        {
-            return FloatUnmarshaller.Instance;
-        }
-
-        public float Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<float>.Unmarshall(context);
-        }
         public float Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<float>.Unmarshall(context);
@@ -180,7 +128,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for double fields
     /// </summary>
-    public class DoubleUnmarshaller : IUnmarshaller<double, XmlUnmarshallerContext>, IUnmarshaller<double, JsonUnmarshallerContext>
+    public class DoubleUnmarshaller : IUnmarshaller<double, JsonUnmarshallerContext>
     {
         private DoubleUnmarshaller() { }
 
@@ -194,16 +142,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-
-        public static DoubleUnmarshaller GetInstance()
-        {
-            return DoubleUnmarshaller.Instance;
-        }
-
-        public double Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<double>.Unmarshall(context);
-        }
         public double Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<double>.Unmarshall(context);
@@ -509,7 +447,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for ResponseMetadata
     /// </summary>
-    public class ResponseMetadataUnmarshaller : IUnmarshaller<ResponseMetadata, XmlUnmarshallerContext>, IUnmarshaller<ResponseMetadata, JsonUnmarshallerContext>
+    public class ResponseMetadataUnmarshaller : IUnmarshaller<ResponseMetadata, JsonUnmarshallerContext>
     {
         private ResponseMetadataUnmarshaller() { }
 
@@ -521,11 +459,6 @@ namespace Amazon.Runtime.Internal.Transform
             {
                 return _instance;
             }
-        }
-
-        public static ResponseMetadataUnmarshaller GetInstance()
-        {
-            return ResponseMetadataUnmarshaller.Instance;
         }
 
         public ResponseMetadata Unmarshall(XmlUnmarshallerContext context)
@@ -567,10 +500,9 @@ namespace Amazon.Runtime.Internal.Transform
     }
 
     public class KeyValueUnmarshaller<K, V, KUnmarshaller, VUnmarshaller> :
-    IUnmarshaller<KeyValuePair<K, V>, XmlUnmarshallerContext>, 
     IUnmarshaller<KeyValuePair<K, V>, JsonUnmarshallerContext>
-        where KUnmarshaller : IUnmarshaller<K, XmlUnmarshallerContext>, IUnmarshaller<K, JsonUnmarshallerContext>
-        where VUnmarshaller : IUnmarshaller<V, XmlUnmarshallerContext>, IUnmarshaller<V, JsonUnmarshallerContext>
+        where KUnmarshaller :IUnmarshaller<K, JsonUnmarshallerContext>
+        where VUnmarshaller : IUnmarshaller<V, JsonUnmarshallerContext>
     {
         private KUnmarshaller keyUnmarshaller;
         private VUnmarshaller valueUnmarshaller;
@@ -579,37 +511,6 @@ namespace Amazon.Runtime.Internal.Transform
         {
             this.keyUnmarshaller = keyUnmarshaller;
             this.valueUnmarshaller = valueUnmarshaller;
-        }
-
-        public KeyValuePair<K, V> Unmarshall(XmlUnmarshallerContext context)
-        {
-            K key = default(K);
-            V value = default(V);
-
-            int originalDepth = context.CurrentDepth;
-            int targetDepth = originalDepth + 1;
-
-            while (context.Read())
-            {
-                if (context.TestExpression("key", targetDepth))
-                {
-                    key = this.keyUnmarshaller.Unmarshall(context);
-                }
-                else if (context.TestExpression("name", targetDepth))
-                {
-                    key = this.keyUnmarshaller.Unmarshall(context);
-                }
-                else if (context.TestExpression("value", targetDepth))
-                {
-                    value = this.valueUnmarshaller.Unmarshall(context);
-                }
-                else if (context.IsEndElement && context.CurrentDepth < originalDepth)
-                {
-                    break;
-                }
-            }
-
-            return new KeyValuePair<K, V>(key, value);
         }
 
         public KeyValuePair<K, V> Unmarshall(JsonUnmarshallerContext context)
@@ -621,8 +522,8 @@ namespace Amazon.Runtime.Internal.Transform
         }
     }
 
-    public class ListUnmarshaller<I, IUnmarshaller> : IUnmarshaller<List<I>, XmlUnmarshallerContext>, IUnmarshaller<List<I>, JsonUnmarshallerContext>
-        where IUnmarshaller : IUnmarshaller<I, XmlUnmarshallerContext>, IUnmarshaller<I, JsonUnmarshallerContext>
+    public class ListUnmarshaller<I, IUnmarshaller> : IUnmarshaller<List<I>, JsonUnmarshallerContext>
+        where IUnmarshaller : IUnmarshaller<I, JsonUnmarshallerContext>
     {
         private IUnmarshaller iUnmarshaller;
 
@@ -631,25 +532,6 @@ namespace Amazon.Runtime.Internal.Transform
             this.iUnmarshaller = iUnmarshaller;
         }
 
-        public List<I> Unmarshall(XmlUnmarshallerContext context)
-        {
-            int originalDepth = context.CurrentDepth;
-            int targetDepth = originalDepth + 1;
-
-            var list = new List<I>();
-            while (context.Read())
-            {
-                if (context.IsStartElement)
-                {
-                    if (context.TestExpression("member", targetDepth))
-                    {
-                        var item = iUnmarshaller.Unmarshall(context);
-                        list.Add(item);
-                    }
-                }
-            }
-            return list;
-        }
         public List<I> Unmarshall(JsonUnmarshallerContext context)
         {
             context.Read(); // Read [ or null
@@ -669,9 +551,9 @@ namespace Amazon.Runtime.Internal.Transform
         }
     }
 
-    public class DictionaryUnmarshaller<TKey, TValue, TKeyUnmarshaller, TValueUnmarshaller> : IUnmarshaller<Dictionary<TKey, TValue>, XmlUnmarshallerContext>, IUnmarshaller<Dictionary<TKey, TValue>, JsonUnmarshallerContext>
-        where TKeyUnmarshaller : IUnmarshaller<TKey, XmlUnmarshallerContext>, IUnmarshaller<TKey, JsonUnmarshallerContext>
-        where TValueUnmarshaller : IUnmarshaller<TValue, XmlUnmarshallerContext>, IUnmarshaller<TValue, JsonUnmarshallerContext>
+    public class DictionaryUnmarshaller<TKey, TValue, TKeyUnmarshaller, TValueUnmarshaller> : IUnmarshaller<Dictionary<TKey, TValue>, JsonUnmarshallerContext>
+        where TKeyUnmarshaller : IUnmarshaller<TKey, JsonUnmarshallerContext>
+        where TValueUnmarshaller : IUnmarshaller<TValue, JsonUnmarshallerContext>
     {
         private KeyValueUnmarshaller<TKey, TValue, TKeyUnmarshaller, TValueUnmarshaller> KVUnmarshaller;
 
@@ -679,30 +561,6 @@ namespace Amazon.Runtime.Internal.Transform
         {
             KVUnmarshaller = new KeyValueUnmarshaller<TKey, TValue, TKeyUnmarshaller, TValueUnmarshaller>(kUnmarshaller, vUnmarshaller);
         }                
-
-        public Dictionary<TKey, TValue> Unmarshall(XmlUnmarshallerContext context)
-        {
-            var originalDepth = context.CurrentDepth;
-            var targetDepth = originalDepth + 1;
-
-            // If a dictionary is present in the response, use AlwaysSendDictionary,
-            // so if the response was empty, reusing the object in the request we will
-            // end up sending the same empty collection back.
-            var dictionary = new AlwaysSendDictionary<TKey, TValue>();
-            
-            while (context.Read())
-            {
-                if (context.IsEndElement && context.CurrentDepth < originalDepth)
-                {
-                    break;
-                }
-
-                var item = KVUnmarshaller.Unmarshall(context);
-                dictionary.Add(item.Key, item.Value);
-            }                        
-            
-            return dictionary;
-        }
 
         public Dictionary<TKey, TValue> Unmarshall(JsonUnmarshallerContext context)
         {
@@ -723,17 +581,5 @@ namespace Amazon.Runtime.Internal.Transform
             return dictionary;
 
         }
-    }
-
-    public static class UnmarshallerExtensions
-    {
-        public static void Add<TKey, TValue>(this Dictionary<TKey, TValue> dict, KeyValuePair<TKey, TValue> item)
-        {
-            dict.Add(item.Key, item.Value);
-        }
-        //public static void Add<T>(this List<T> list, List<T> items)
-        //{
-        //    list.AddRange(items);
-        //}
     }
 }
