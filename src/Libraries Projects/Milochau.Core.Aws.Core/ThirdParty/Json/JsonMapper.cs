@@ -17,8 +17,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
-using Amazon.Util;
 using Amazon.Util.Internal;
 
 namespace ThirdParty.Json.LitJson

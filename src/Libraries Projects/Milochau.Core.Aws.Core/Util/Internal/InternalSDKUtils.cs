@@ -14,11 +14,7 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Net;
-using Amazon.Runtime.Internal.Util;
 using Amazon.Util.Internal.PlatformServices;
 
 namespace Amazon.Util.Internal

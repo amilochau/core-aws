@@ -16,10 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using Amazon;
-using Amazon.Runtime;
 using Amazon.Runtime.Internal.Util;
 using Amazon.Util.Internal;
 

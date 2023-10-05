@@ -17,7 +17,6 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 
-using Amazon.Runtime;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.SimpleEmailV2.Endpoints

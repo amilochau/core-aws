@@ -13,13 +13,9 @@
  * permissions and limitations under the License.
  */
 
-using Amazon.Runtime.Internal;
 using System;
 using Amazon.Util;
-using System.Xml;
 using ThirdParty.Json.LitJson;
-using System.Text;
-using System.IO;
 
 namespace Amazon.Runtime.Internal.Transform
 {

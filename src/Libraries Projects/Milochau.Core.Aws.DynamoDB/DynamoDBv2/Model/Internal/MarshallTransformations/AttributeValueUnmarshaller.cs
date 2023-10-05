@@ -1,5 +1,4 @@
 ﻿using Amazon.Runtime.Internal.Transform;
-using System;
 using System.IO;
 using ThirdParty.Json.LitJson;
 

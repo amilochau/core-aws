@@ -15,7 +15,6 @@
 
 using Amazon.Util;
 using System;
-using System.Globalization;
 using System.Text;
 
 namespace Amazon.Runtime.Internal.Auth

@@ -14,13 +14,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
 using System.Text;
 using System.IO;
-
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
 using Amazon.Util;
 
 namespace Amazon.Lambda.Model

@@ -21,10 +21,7 @@
 using Amazon.Internal;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Threading;
-using ThirdParty.Json.LitJson;
 
 namespace Amazon
 {

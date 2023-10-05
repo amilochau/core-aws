@@ -14,11 +14,8 @@
  */
 
 using Amazon.Runtime;
-using Amazon.Runtime.Internal.Transform;
-using Amazon.XRay.Recorder.Core.Sampling;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;

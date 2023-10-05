@@ -18,7 +18,6 @@
  *  AWS SDK for .NET
  */
 using Amazon.Runtime;
-using Amazon.Util.Internal;
 using System;
 using System.Security.Cryptography;
 using System.Text;

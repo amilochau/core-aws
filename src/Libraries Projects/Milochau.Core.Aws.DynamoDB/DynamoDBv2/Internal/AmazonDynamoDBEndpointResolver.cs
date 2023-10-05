@@ -1,8 +1,6 @@
 ﻿using Amazon.Runtime.Endpoints;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime;
-using Amazon.Util;
-using Amazon;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Internal/AmazonDynamoDBEndpointResolver.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal

@@ -1,5 +1,4 @@
 ﻿using Amazon.Runtime.Internal.Transform;
-using System;
 using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/ConsumedCapacityUnmarshaller.cs

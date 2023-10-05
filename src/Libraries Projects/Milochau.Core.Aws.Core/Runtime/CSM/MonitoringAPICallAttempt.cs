@@ -13,12 +13,6 @@
  * permissions and limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using Amazon.Runtime;
-
 namespace Amazon.Runtime.Internal
 {
     /// <summary>

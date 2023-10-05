@@ -20,7 +20,6 @@
 
 using System;
 using System.Globalization;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Amazon.Util.Internal

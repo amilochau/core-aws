@@ -14,14 +14,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Net;
-using System.Xml;
 using System.IO;
 using Amazon.Util;
 using Amazon.Runtime.Internal.Util;
-using System.Globalization;
 
 namespace Amazon.Runtime.Internal.Transform
 {

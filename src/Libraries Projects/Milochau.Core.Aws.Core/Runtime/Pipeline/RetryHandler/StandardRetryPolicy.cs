@@ -14,12 +14,8 @@
 */
 
 using Amazon.Util;
-using AWSSDK.Runtime.Internal.Util;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Amazon.Runtime.Internal

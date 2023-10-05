@@ -13,8 +13,6 @@
  * permissions and limitations under the License.
  */
 
-using System.Collections;
-
 namespace Amazon.Util.Internal
 {
     /// <summary>

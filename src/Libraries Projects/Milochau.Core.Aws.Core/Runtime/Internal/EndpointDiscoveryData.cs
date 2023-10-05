@@ -12,11 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Amazon.Runtime.Internal.Auth;
 
 namespace Amazon.Runtime.Internal
 {

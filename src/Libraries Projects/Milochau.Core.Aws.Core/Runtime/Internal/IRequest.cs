@@ -15,9 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Amazon.Runtime.Endpoints;
-using Amazon.Runtime.Internal.Compression;
 using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Internal.Util;
 

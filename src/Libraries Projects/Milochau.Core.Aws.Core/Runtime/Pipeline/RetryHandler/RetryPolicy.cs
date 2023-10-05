@@ -19,7 +19,6 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
-using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Transform;

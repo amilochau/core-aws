@@ -21,7 +21,6 @@ using Amazon.Util.Internal;
 using System;
 using System.Globalization;
 using System.Net;
-using System.Reflection;
 using System.Text;
 
 namespace Amazon.Runtime.Internal

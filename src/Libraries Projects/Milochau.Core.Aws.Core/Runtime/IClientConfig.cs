@@ -15,8 +15,6 @@
 using System;
 using System.Net;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
-using Amazon.Util;
 using System.Net.Http;
 using Amazon.Runtime.Endpoints;
 

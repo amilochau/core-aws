@@ -13,12 +13,7 @@
 * permissions and limitations under the License.
 */
 
-using Amazon.Util;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Amazon.Runtime.Internal

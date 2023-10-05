@@ -22,8 +22,6 @@ using System.Text;
 using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
-using System.Threading.Tasks;
-using EndPoint = Amazon.XRay.Recorder.Core.Internal.Utils.EndPoint;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Emitters
 {

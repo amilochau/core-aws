@@ -22,9 +22,6 @@
 
 using System;
 using System.IO;
-using Amazon.Runtime;
-using System.Collections;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -14,7 +14,6 @@
  */
 
 using System.Collections.Generic;
-using Amazon.Runtime.Internal;
 
 namespace Amazon.Runtime.Internal
 {

@@ -1,7 +1,4 @@
-﻿
-using System.Globalization;
-
-namespace Amazon.Util.Internal.PlatformServices
+﻿namespace Amazon.Util.Internal.PlatformServices
 {
     public class EnvironmentInfo 
     {

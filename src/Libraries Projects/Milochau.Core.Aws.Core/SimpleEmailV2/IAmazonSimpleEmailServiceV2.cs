@@ -21,7 +21,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 using Amazon.Runtime;
 using Amazon.SimpleEmailV2.Model;

@@ -18,8 +18,6 @@ using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime.Internal.Util;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Amazon.Runtime
 {

@@ -14,13 +14,8 @@
  */
 using Amazon.Runtime;
 using Amazon.Runtime.Internal.Util;
-using Amazon.Util.Internal;
-using AWSSDK.Runtime.Internal.Util;
-using System;
-using System.Buffers;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 using ThirdParty.MD5;
 
 namespace Amazon.Util

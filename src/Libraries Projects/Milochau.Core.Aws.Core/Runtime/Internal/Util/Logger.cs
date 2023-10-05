@@ -14,11 +14,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
-using System.Text;
 using System.ComponentModel;
 
 namespace Amazon.Runtime.Internal.Util

@@ -16,12 +16,7 @@
 /*
  * Do not modify this file. This file is generated from the lambda-2015-03-31.normal.json service model.
  */
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using System.Text;
 using System.IO;
-using System.Net;
 
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;

@@ -17,9 +17,7 @@ using Amazon.Runtime.Internal.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ThirdParty.Json.LitJson;
 

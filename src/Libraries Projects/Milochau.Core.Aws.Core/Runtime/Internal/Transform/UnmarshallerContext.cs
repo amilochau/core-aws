@@ -16,10 +16,7 @@
 using Amazon.Util.Internal;
 using Amazon.Runtime.Internal.Util;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Xml;
 using ThirdParty.Ionic.Zlib;
 
 namespace Amazon.Runtime.Internal.Transform

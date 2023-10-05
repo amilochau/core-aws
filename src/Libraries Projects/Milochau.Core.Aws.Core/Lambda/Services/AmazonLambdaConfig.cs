@@ -17,7 +17,6 @@
  * Do not modify this file. This file is generated from the lambda-2015-03-31.normal.json service model.
  */
 
-using System;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Util.Internal;

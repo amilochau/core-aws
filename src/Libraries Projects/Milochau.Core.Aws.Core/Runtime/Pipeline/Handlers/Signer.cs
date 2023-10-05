@@ -14,9 +14,7 @@
  */
 
 using Amazon.Runtime.Internal.Auth;
-using Amazon.Runtime.Internal.Util;
 using Amazon.Util;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 

@@ -27,15 +27,8 @@ using System.Text;
 using System.Linq;
 using System.Net;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime;
 using Amazon.Util.Internal;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 
 namespace Amazon.Util
 {

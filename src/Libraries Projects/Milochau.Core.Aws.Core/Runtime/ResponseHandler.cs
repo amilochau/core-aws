@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Transform;
 

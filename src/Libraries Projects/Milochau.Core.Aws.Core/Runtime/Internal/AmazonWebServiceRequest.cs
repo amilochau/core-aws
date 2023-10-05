@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Auth;

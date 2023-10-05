@@ -21,12 +21,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 
 using Amazon.Util;
 using Amazon.Util.Internal;
-using System.Collections.Generic;
-using Amazon.Runtime;
 
 namespace Amazon
 {

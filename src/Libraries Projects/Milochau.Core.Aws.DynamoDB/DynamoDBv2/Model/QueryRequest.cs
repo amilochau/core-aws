@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/QueryRequest.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model

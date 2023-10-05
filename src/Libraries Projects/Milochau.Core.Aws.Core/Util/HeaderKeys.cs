@@ -20,8 +20,6 @@
  *
  */
 
-using System.Runtime.CompilerServices;
-
 namespace Amazon.Util
 {
     public abstract class HeaderKeys

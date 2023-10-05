@@ -21,8 +21,6 @@
  */
 using System;
 using System.Collections.Generic;
-
-using Amazon.Util.Internal;
 using System.Threading;
 
 namespace Amazon.Runtime

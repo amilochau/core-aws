@@ -17,12 +17,9 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 
-using System;
-using Amazon.SimpleEmailV2.Model;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Endpoints;
-using Amazon.Util;
 using Amazon.SimpleEmailV2.Endpoints;
 
 #pragma warning disable 1591

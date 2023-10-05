@@ -13,8 +13,6 @@
  * permissions and limitations under the License.
  */
 
-using System;
-using System.Linq;
 
 // @todo Here to simplify
 namespace Amazon.Runtime.Internal

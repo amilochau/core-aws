@@ -19,17 +19,9 @@ using System.Globalization;
 using Amazon.Runtime.Internal.Util;
 using System.Net.Http;
 using Amazon.Internal;
-using System.Collections.Generic;
-
-using System.Collections.Specialized;
-using System.Text;
 using System.Threading;
-
-using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Endpoints;
 using Amazon.Runtime.Internal;
-using System.ComponentModel.Design;
-using System.Runtime.InteropServices;
 
 namespace Amazon.Runtime
 {

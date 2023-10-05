@@ -18,12 +18,8 @@
  */
 
 
-using System;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Net;
 
 using Amazon.SimpleEmailV2.Model;
 using Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations;
@@ -31,7 +27,6 @@ using Amazon.SimpleEmailV2.Internal;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Auth;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Amazon.SimpleEmailV2
 {

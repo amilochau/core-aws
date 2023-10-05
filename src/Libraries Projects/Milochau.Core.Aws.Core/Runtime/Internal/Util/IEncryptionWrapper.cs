@@ -18,9 +18,6 @@
  *  AWS SDK for .NET
  */
 
-using System.IO;
-using System.Security.Cryptography;
-
 namespace Amazon.Runtime.Internal.Util
 {
     public interface IEncryptionWrapper

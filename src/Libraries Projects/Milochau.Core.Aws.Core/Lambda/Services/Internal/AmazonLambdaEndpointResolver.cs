@@ -17,12 +17,9 @@
  * Do not modify this file. This file is generated from the lambda-2015-03-31.normal.json service model.
  */
 
-using System;
-using Amazon.Lambda.Model;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Endpoints;
-using Amazon.Util;
 using Amazon.Lambda.Endpoints;
 
 #pragma warning disable 1591

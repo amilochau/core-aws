@@ -14,11 +14,7 @@
  */
 
 using Amazon.Util;
-using Amazon.Runtime.Internal.Util;
-using System.Globalization;
 using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Amazon.Runtime.Internal
 {

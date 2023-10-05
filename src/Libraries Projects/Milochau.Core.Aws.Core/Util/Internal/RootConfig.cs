@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-
-
-namespace Amazon.Util.Internal
+﻿namespace Amazon.Util.Internal
 {
     /// <summary>
     /// Root AWS config

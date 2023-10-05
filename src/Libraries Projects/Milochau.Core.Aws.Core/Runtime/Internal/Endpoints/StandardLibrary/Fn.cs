@@ -13,11 +13,9 @@
  * permissions and limitations under the License.
  */
 using Amazon.Runtime.Endpoints;
-using Amazon.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ThirdParty.Json.LitJson;
 

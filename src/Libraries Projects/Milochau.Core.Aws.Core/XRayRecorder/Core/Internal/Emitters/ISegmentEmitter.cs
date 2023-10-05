@@ -17,8 +17,6 @@
 
 using System;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
-using System.Threading.Tasks;
-using Amazon.XRay.Recorder.Core.Internal.Utils;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Emitters
 {

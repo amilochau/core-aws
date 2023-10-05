@@ -15,8 +15,6 @@
 // </copyright>
 //-----------------------------------------------------------------------------
 
-using Amazon.Runtime.Internal.Util;
-using Amazon.XRay.Recorder.Core.Sampling;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

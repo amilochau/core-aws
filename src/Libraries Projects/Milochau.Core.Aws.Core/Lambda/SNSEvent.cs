@@ -1,6 +1,5 @@
 namespace Amazon.Lambda.SNSEvents
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>

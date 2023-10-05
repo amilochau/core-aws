@@ -14,17 +14,13 @@
  */
 
 using Amazon.Runtime.Internal.Auth;
-using Amazon.Runtime.Internal.Transform;
 using Amazon.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Linq;
 using System.Threading;
-using Amazon.Util.Internal;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Util;
