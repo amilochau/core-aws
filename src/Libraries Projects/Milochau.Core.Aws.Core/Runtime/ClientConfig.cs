@@ -19,7 +19,6 @@ using System.Globalization;
 using Amazon.Runtime.Internal.Util;
 using System.Net.Http;
 using Amazon.Internal;
-using Amazon.Runtime.CredentialManagement;
 using System.Collections.Generic;
 
 using System.Collections.Specialized;
@@ -230,8 +229,6 @@ namespace Amazon.Runtime
         private string serviceURL = null;
         private string authRegion = null;
         private string authServiceName = null;
-        private string signatureVersion = "4";
-        private SigningAlgorithm signatureMethod = SigningAlgorithm.HmacSHA256;
         private bool readEntireResponse = false;
         private bool logResponse = false;
         private int bufferSize = AWSSDKUtils.DefaultBufferSize;
@@ -258,65 +255,12 @@ namespace Amazon.Runtime
         private const long DefaultMinCompressionSizeBytes = 10240;
         private bool didProcessServiceURL = false;
 
-        private CredentialProfileStoreChain credentialProfileStoreChain;
-
-        /// <summary>
-        /// Specifies the profile to be used. When this is set on the ClientConfig and that config is passed to 
-        /// the service client constructor the sdk will try to find the credentials associated with the Profile.Name property
-        /// If set, this will override AWS_PROFILE and AWSConfigs.ProfileName.
-        /// </summary>
-        public Profile Profile { get; set; }
-        private CredentialProfileStoreChain CredentialProfileStoreChain
-        {
-            get
-            {
-                if (credentialProfileStoreChain == null)
-                {
-                    if (Profile != null)
-                    {
-                        credentialProfileStoreChain = new CredentialProfileStoreChain(Profile.Location);
-                    }
-                    else
-                    {
-                        credentialProfileStoreChain = new CredentialProfileStoreChain();
-                    }
-
-                }
-                return credentialProfileStoreChain;
-            }
-            set
-            {
-                credentialProfileStoreChain = value;
-            }
-        }
-
         /// <summary>
         /// Gets Service Version
         /// </summary>
         public abstract string ServiceVersion
         {
             get;
-        }
-
-        /// <summary>
-        /// Gets and sets of the signatureMethod property.
-        /// </summary>
-        public SigningAlgorithm SignatureMethod
-        {
-            get { return this.signatureMethod; }
-            set { this.signatureMethod = value; }
-        }
-
-        /// <summary>
-        /// Gets and sets of the SignatureVersion property.
-        ///
-        /// Note: This property exists for backward compatibility but is no longer
-        /// used by any service other than S3.
-        /// </summary>
-        public string SignatureVersion
-        {
-            get { return this.signatureVersion; }
-            set { this.signatureVersion = value; }
         }
 
         /// <summary>
@@ -414,9 +358,7 @@ namespace Amazon.Runtime
             {
                 if (!didProcessServiceURL && this.serviceURL == null && IgnoreConfiguredEndpointUrls == false && ServiceId != null)
                 {
-
                     string serviceSpecificTransformedEnvironmentVariable = TransformServiceId.TransformServiceIdToEnvVariable(ServiceId);
-                    string transformedConfigServiceId = TransformServiceId.TransformServiceIdToConfigVariable(ServiceId);
 
                     if (Environment.GetEnvironmentVariable(serviceSpecificTransformedEnvironmentVariable) != null)
                     {
@@ -430,45 +372,8 @@ namespace Amazon.Runtime
                         this.ServiceURL = Environment.GetEnvironmentVariable(EnvironmentVariables.GLOBAL_ENDPOINT_ENVIRONMENT_VARIABLE);
                         Logger.GetLogger(GetType()).InfoFormat($"ServiceURL configured from global environment variable: {EnvironmentVariables.GLOBAL_ENDPOINT_ENVIRONMENT_VARIABLE}.");
                     }
-                    else
-                    {
-                        Dictionary<string, string> innerDictionary;
-                        string endpointUrlValue;
-                        CredentialProfile profile;
-                        if (Profile != null)
-                        {
-                            CredentialProfileStoreChain.TryGetProfile(Profile.Name, out profile);
-                        }
-                        else
-                        {
-                            CredentialProfileStoreChain.TryGetProfile(FallbackCredentialsFactory.GetProfileName(), out profile);
-                        }
-                        if (profile != null)
-                        {
-                            if (profile.NestedProperties.TryGetValue(transformedConfigServiceId, out innerDictionary))
-                            {
-                                if (innerDictionary.TryGetValue(SettingsConstants.EndpointUrl, out endpointUrlValue))
-                                {
-                                    Logger.GetLogger(GetType()).InfoFormat($"ServiceURL configured from service specific endpoint url in " +
-                                    $"profile {profile.Name} from key {transformedConfigServiceId}.");
-                                    didProcessServiceURL = true;
-                                    this.ServiceURL = endpointUrlValue;
-                                }
-
-                            }
-                            else if (!String.IsNullOrEmpty(profile.EndpointUrl))
-                            {
-                                Logger.GetLogger(GetType()).InfoFormat($"ServiceURL configured from global endpoint url" +
-                                    $"in profile {profile.Name} from key {SettingsConstants.EndpointUrl}.");
-                                didProcessServiceURL = true;
-                                this.ServiceURL = profile.EndpointUrl;
-                            }
-                        }
-
-                    }
                 }
                 return this.serviceURL;
-
             }
             set
             {
@@ -532,16 +437,6 @@ namespace Amazon.Runtime
             }
 
             return url;
-        }
-
-        /// <summary>
-        /// Given this client configuration, return a DNS suffix for service endpoint url.
-        /// </summary>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        public virtual string DetermineDnsSuffix()
-        {
-            var endpoint = regionEndpoint.GetEndpointForService(this);
-            return endpoint.DnsSuffix;
         }
 
         internal static string GetUrl(IClientConfig config, RegionEndpoint regionEndpoint)
@@ -1041,18 +936,6 @@ namespace Amazon.Runtime
         {
             if (RegionEndpoint == null && string.IsNullOrEmpty(this.ServiceURL))
                 throw new AmazonClientException("No RegionEndpoint or ServiceURL configured");
-        }
-
-        /// <summary>
-        /// Returns the current UTC now after clock correction for this endpoint.
-        /// </summary>
-        [Obsolete("Please use CorrectClockSkew.GetCorrectedUtcNowForEndpoint(string endpoint) instead.", false)]
-        public DateTime CorrectedUtcNow
-        {
-            get
-            {
-                return CorrectClockSkew.GetCorrectedUtcNowForEndpoint(DetermineServiceURL());
-            }
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace Amazon.Runtime.Internal
         protected virtual void PreInvoke(IExecutionContext executionContext)
         {
             ImmutableCredentials ic = null;
-            if (Credentials != null && !(Credentials is AnonymousAWSCredentials))
+            if (Credentials != null)
             {
                 using(executionContext.RequestContext.Metrics.StartEvent(Metric.CredentialsRequestTime))
                 {
@@ -83,7 +83,7 @@ namespace Amazon.Runtime.Internal
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
             ImmutableCredentials ic = null;
-            if (Credentials != null && !(Credentials is AnonymousAWSCredentials))
+            if (Credentials != null)
             {
                 using(executionContext.RequestContext.Metrics.StartEvent(Metric.CredentialsRequestTime))
                 {

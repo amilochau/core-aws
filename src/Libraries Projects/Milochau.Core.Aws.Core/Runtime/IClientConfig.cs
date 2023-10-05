@@ -75,12 +75,6 @@ namespace Amazon.Runtime
         ///     endpoint_url = http://localhost:8000
         /// </summary>
         string ServiceId { get; }
-        /// <summary>
-        /// Specifies the profile to be used. When this is set on the ClientConfig and that config is passed to 
-        /// the service client constructor the sdk will try to find the credentials associated with the Profile.Name property
-        /// If set, this will override AWS_PROFILE and AWSConfigs.ProfileName.
-        /// </summary>
-        Profile Profile { get; }
 
         /// <summary>
         /// Returns the <see cref="Amazon.Runtime.DefaultConfigurationMode"/> that will be used. If none is specified,
@@ -128,19 +122,6 @@ namespace Amazon.Runtime
         /// Gets Service Version
         /// </summary>
         string ServiceVersion { get; }
-
-        /// <summary>
-        /// Gets the signatureMethod property.
-        /// </summary>
-        SigningAlgorithm SignatureMethod { get; }
-
-        /// <summary>
-        /// Gets the SignatureVersion property.
-        ///
-        /// Note: This property exists for backward compatibility but is no longer
-        /// used by any service other than S3.
-        /// </summary>
-        string SignatureVersion { get; }
 
         /// <summary>
         /// Gets the AuthenticationRegion property.
@@ -310,22 +291,11 @@ namespace Amazon.Runtime
         string DetermineServiceURL();
 
         /// <summary>
-        /// Given this client configuration, return a DNS suffix for service endpoint url.
-        /// </summary>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        string DetermineDnsSuffix();
-
-        /// <summary>
         /// Performs validation on this config object.
         /// Throws exception if any of the required values are missing/invalid.
         /// </summary>
         /// <exception cref="Amazon.Runtime.AmazonClientException">The timeout specified is null.</exception>
         void Validate();
-
-        /// <summary>
-        /// Returns the clock skew adjusted utc now.  This value is affected by AWSConfigs.ManualClockCorrection
-        /// </summary>
-        DateTime CorrectedUtcNow { get; }
 
         /// <summary>
         /// Returns the calculated clock skew value for this config's service endpoint. If AWSConfigs.CorrectForClockSkew is false,

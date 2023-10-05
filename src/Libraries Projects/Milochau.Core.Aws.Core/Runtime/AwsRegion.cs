@@ -18,7 +18,6 @@ using System.Globalization;
 using Amazon.Runtime.Internal.Util;
 using System.Collections.Generic;
 using Amazon.Util;
-using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.Runtime
 {
@@ -65,8 +64,6 @@ namespace Amazon.Runtime
     /// </summary>
     public static class FallbackRegionFactory
     {
-        private static CredentialProfileStoreChain credentialProfileChain = new CredentialProfileStoreChain();
-
         private static object _lock = new object();
 
         static FallbackRegionFactory()

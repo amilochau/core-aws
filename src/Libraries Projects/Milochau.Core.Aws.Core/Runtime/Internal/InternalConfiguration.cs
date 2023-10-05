@@ -19,7 +19,6 @@ using Amazon.Runtime.Internal.Util;
 using System.Collections.Generic;
 using Amazon.Util;
 using System.Linq;
-using Amazon.Runtime.CredentialManagement;
 using System.ComponentModel;
 
 namespace Amazon.Runtime.Internal
@@ -57,7 +56,12 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         public EC2MetadataServiceEndpointMode? EC2MetadataServiceEndpointMode { get; set; }
 
-        /// <inheritdoc cref="CredentialProfile.DefaultConfigurationModeName"/>
+        /// <summary>
+        /// The desired <see cref="DefaultConfiguration.Name"/> that
+        /// <see cref="IDefaultConfigurationProvider"/> should use.
+        /// <para />
+        /// If this is null/empty, then the <see cref="DefaultConfigurationMode.Legacy"/> Mode will be used.
+        /// </summary>
         public string DefaultConfigurationModeName { get; set; }
 
         /// <summary>
@@ -195,83 +199,10 @@ namespace Amazon.Runtime.Internal
     }
 
     /// <summary>
-    /// Determines configuration values based on a <see cref="CredentialProfile"/> stored in an <see cref="ICredentialProfileSource"/>.
-    /// If the profile doesn't exist, the status will be logged and no value will be set in the configuration.
-    /// </summary>
-    public class ProfileInternalConfiguration : InternalConfiguration
-    {
-        private Logger _logger = Logger.GetLogger(typeof(ProfileInternalConfiguration));
-
-        /// <summary>
-        /// Attempts to construct an instance of <see cref="ProfileInternalConfiguration"/>.
-        /// If the AWS_PROFILE environment variable is set the instance will be constructed using that profile,
-        /// otherwise it will use the default profile.
-        ///
-        /// If the profile doesn't exist status will be logged and no value will be set in the configuration.
-        /// </summary>
-        /// <param name="source">The ICredentialProfileSource to read the profile from.</param>
-        public ProfileInternalConfiguration(ICredentialProfileSource source)
-        {
-            var profileName = FallbackCredentialsFactory.GetProfileName();
-            Setup(source, profileName);
-        }
-
-        private void Setup(ICredentialProfileSource source, string profileName)
-        {
-            CredentialProfile profile;
-            if (source.TryGetProfile(profileName, out profile))
-            {
-                DefaultConfigurationModeName = profile.DefaultConfigurationModeName;
-                EndpointDiscoveryEnabled = profile.EndpointDiscoveryEnabled;
-                RetryMode = profile.RetryMode;
-                MaxAttempts = profile.MaxAttempts;
-                EC2MetadataServiceEndpoint = profile.EC2MetadataServiceEndpoint;
-                EC2MetadataServiceEndpointMode = profile.EC2MetadataServiceEndpointMode;
-                UseDualstackEndpoint = profile.UseDualstackEndpoint;
-                UseFIPSEndpoint = profile.UseFIPSEndpoint;
-                IgnoreConfiguredEndpointUrls = profile.IgnoreConfiguredEndpointUrls;
-                DisableRequestCompression = profile.DisableRequestCompression;
-                RequestMinCompressionSizeBytes = profile.RequestMinCompressionSizeBytes;
-            }
-            else
-            {
-                _logger.InfoFormat("Unable to find a profile named '" + profileName + "' in store " + source.GetType());
-                return;
-            }
-
-            var items = new KeyValuePair<string, object>[]
-            {
-                new KeyValuePair<string, object>("defaults_mode", profile.DefaultConfigurationModeName),
-                new KeyValuePair<string, object>("endpoint_discovery_enabled", profile.EndpointDiscoveryEnabled),
-                new KeyValuePair<string, object>("retry_mode", profile.RetryMode),
-                new KeyValuePair<string, object>("max_attempts", profile.MaxAttempts),
-                new KeyValuePair<string, object>("ec2_metadata_service_endpoint", profile.EC2MetadataServiceEndpoint),
-                new KeyValuePair<string, object>("ec2_metadata_service_endpoint_mode", profile.EC2MetadataServiceEndpointMode),
-                new KeyValuePair<string, object>("use_dualstack_endpoint", profile.UseDualstackEndpoint),
-                new KeyValuePair<string, object>("use_fips_endpoint", profile.UseFIPSEndpoint),
-                new KeyValuePair<string,object>( "ignore_configured_endpoint_urls", profile.IgnoreConfiguredEndpointUrls),
-                new KeyValuePair<string, object>("endpoint_url", profile.EndpointUrl),
-                new KeyValuePair<string, object>("disable_request_compression", profile.DisableRequestCompression),
-                new KeyValuePair<string, object>("request_min_compression_size_bytes", profile.RequestMinCompressionSizeBytes)
-            };
-
-            foreach(var item in items)
-            {
-                _logger.InfoFormat(item.Value == null
-                ? $"There is no {item.Key} set in the profile named '{profileName}' in store {source.GetType()}"
-                : $"{item.Key} found in profile '{profileName}' in store {source.GetType()}"
-                );
-            }
-        }
-    }
-
-
-    /// <summary>
     /// Probing mechanism to determine the configuration values from various sources.
     /// </summary>
     public static class FallbackInternalConfigurationFactory
     {
-        private static CredentialProfileStoreChain _credentialProfileChain = new CredentialProfileStoreChain();
         private static InternalConfiguration _cachedConfiguration;
 
         static FallbackInternalConfigurationFactory()
@@ -291,7 +222,7 @@ namespace Amazon.Runtime.Internal
             //Preload configurations that are fast or pull all the values at the same time. Slower configurations
             //should be called for specific values dynamically.
             InternalConfiguration environmentVariablesConfiguration =  new EnvironmentVariableInternalConfiguration();
-            InternalConfiguration profileConfiguration = new ProfileInternalConfiguration(_credentialProfileChain);
+            InternalConfiguration profileConfiguration = new InternalConfiguration();
 
             _cachedConfiguration = new InternalConfiguration();
             var standardGenerators = new List<ConfigGenerator>

@@ -92,45 +92,6 @@ namespace Amazon.Util
             }
 
             /// <summary>
-            /// Computes a hash-based message authentication code
-            /// </summary>
-            /// <param name="data">Input to compute the hash code for</param>
-            /// <param name="key">Signing key</param>
-            /// <param name="algorithmName">Hashing algorithm to use</param>
-            /// <returns>Computed hash code</returns>
-            public string HMACSign(string data, string key, SigningAlgorithm algorithmName)
-            {
-                Encoding encoding = Encoding.UTF8;
-                int maxSize = encoding.GetMaxByteCount(data.Length);
-                byte[] buffer = ArrayPool<byte>.Shared.Rent(maxSize);
-
-                try
-                {
-                    int size = encoding.GetBytes(data, buffer);
-                    ArraySegment<byte> binaryData = new ArraySegment<byte>(buffer, 0, size);
-
-                    return HMACSign(binaryData, key, algorithmName);
-                }
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(buffer);
-                }
-            }
-
-            /// <summary>
-            /// Computes a SHA1 hash
-            /// </summary>
-            /// <param name="data">Input to compute the hash code for</param>
-            /// <returns>Computed hash code</returns>
-            public byte[] ComputeSHA1Hash(byte[] data)
-            {
-                using (var sha1 = new SHA1Managed())
-                {
-                    return sha1.ComputeHash(data);
-                }
-            }
-
-            /// <summary>
             /// Computes a SHA256 hash
             /// </summary>
             /// <param name="data">Input to compute the hash code for</param>
@@ -170,26 +131,6 @@ namespace Amazon.Util
             {
                 var hashed = new MD5Managed().ComputeHash(steam);
                 return hashed;
-            }
-
-            /// <summary>
-            /// Computes a CRC32 hash
-            /// </summary>
-            /// <param name="data">Data to hash</param>
-            /// <returns>CRC32 hash as a base64-encoded string</returns>
-            public string ComputeCRC32Hash(byte[] data)
-            {
-                return ChecksumCRTWrapper.Crc32(data);
-            }
-
-            /// <summary>
-            /// Computes a CRC32C hash
-            /// </summary>
-            /// <param name="data">Data to hash</param>
-            /// <returns>CRC32C hash as a base64-encoded string</returns>
-            public string ComputeCRC32CHash(byte[] data)
-            {
-                return ChecksumCRTWrapper.Crc32C(data);
             }
         }
     }

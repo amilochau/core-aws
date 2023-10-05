@@ -7,14 +7,6 @@ namespace Amazon.Runtime.Internal.Util
 {
     public static class TransformServiceId
     {
-
-        public static string TransformServiceIdToConfigVariable(string serviceId)
-        {
-            var lowercasedString = serviceId.ToLower();
-            var lowercasedAndUnderscoredString = lowercasedString.Replace(' ', '_');
-            return lowercasedAndUnderscoredString;
-           
-        }
         public static string TransformServiceIdToEnvVariable(string serviceId)
         {
             var uppercasedString = serviceId.ToUpper();
