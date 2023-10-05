@@ -64,22 +64,6 @@ namespace Amazon.Runtime.Internal.Auth
         }
 
         /// <summary>
-        /// ISO8601 formatted date that the signature was computed
-        /// </summary>
-        public string ISO8601Date
-        {
-            get { return AWS4Signer.FormatDateTime(_originalDateTime, AWSSDKUtils.ISO8601BasicDateFormat); }
-        }
-
-        /// <summary>
-        /// Original date/time that the signature was computed
-        /// </summary>
-        public DateTime DateTime
-        {
-            get { return _originalDateTime; }
-        }
-
-        /// <summary>
         /// The ;-delimited collection of header names that were included in the signature computation
         /// </summary>
         public string SignedHeaders

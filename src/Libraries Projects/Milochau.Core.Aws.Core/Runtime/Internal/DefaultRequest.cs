@@ -398,13 +398,6 @@ namespace Amazon.Runtime.Internal
         public bool? DisablePayloadSigning { get; set; }
 
         /// <summary>
-        /// If using SigV4a signing protocol, contains the resultant parts of the
-        /// signature that we may need to make use of if we elect to do a chunked
-        /// encoding upload.
-        /// </summary>
-        public AWS4aSigningResult AWS4aSignerResult { get; set; }
-
-        /// <summary>
         /// Determine whether to use a chunked encoding upload for the request
         /// (applies to Amazon S3 PutObject and UploadPart requests only).  If 
         /// DisablePayloadSigning is true, UseChunkEncoding will be automatically 

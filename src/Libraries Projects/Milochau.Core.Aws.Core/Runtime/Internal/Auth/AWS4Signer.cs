@@ -108,9 +108,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="awsSecretAccessKey">
         /// The AWS secret key for the account making the call, in clear text.
         /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
         public override void Sign(IRequest request, 
                                   IClientConfig clientConfig, 
                                   RequestMetrics metrics, 
@@ -142,9 +139,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="credentials">
         /// The AWS credentials for the account making the service call.
         /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
         public override void Sign(IRequest request, 
                                   IClientConfig clientConfig, 
                                   RequestMetrics metrics, 
@@ -174,9 +168,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="awsSecretAccessKey">
         /// The AWS secret key for the account making the call, in clear text.
         /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
         /// <remarks>
         /// Parameters passed as part of the resource path should be uri-encoded prior to
         /// entry to the signer. Parameters passed in the request.Parameters collection should
@@ -321,54 +312,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// <summary>
         /// Computes and returns an AWS4 signature for the specified canonicalized request
         /// </summary>
-        /// <param name="credentials"></param>
-        /// <param name="region"></param>
-        /// <param name="signedAt"></param>
-        /// <param name="service"></param>
-        /// <param name="signedHeaders"></param>
-        /// <param name="canonicalRequest"></param>
-        /// <returns></returns>
-        public static AWS4SigningResult ComputeSignature(ImmutableCredentials credentials,
-                                                         string region,
-                                                         DateTime signedAt,
-                                                         string service,
-                                                         string signedHeaders,
-                                                         string canonicalRequest)
-        {
-            return ComputeSignature(credentials.AccessKey,
-                                    credentials.SecretKey,
-                                    region,
-                                    signedAt,
-                                    service,
-                                    signedHeaders,
-                                    canonicalRequest);
-        }
-
-        /// <summary>
-        /// Computes and returns an AWS4 signature for the specified canonicalized request
-        /// </summary>
-        /// <param name="awsAccessKey"></param>
-        /// <param name="awsSecretAccessKey"></param>
-        /// <param name="region"></param>
-        /// <param name="signedAt"></param>
-        /// <param name="service"></param>
-        /// <param name="signedHeaders"></param>
-        /// <param name="canonicalRequest"></param>
-        /// <returns></returns>
-        public static AWS4SigningResult ComputeSignature(string awsAccessKey,
-                                                         string awsSecretAccessKey,
-                                                         string region,
-                                                         DateTime signedAt,
-                                                         string service,
-                                                         string signedHeaders,
-                                                         string canonicalRequest)
-        {
-            return ComputeSignature(awsAccessKey, awsSecretAccessKey, region, signedAt, service, signedHeaders, canonicalRequest, null);
-        }
-
-        /// <summary>
-        /// Computes and returns an AWS4 signature for the specified canonicalized request
-        /// </summary>
         /// <param name="awsAccessKey"></param>
         /// <param name="awsSecretAccessKey"></param>
         /// <param name="region"></param>
@@ -451,25 +394,6 @@ namespace Amazon.Runtime.Internal.Auth
                 if (ksecret != null)
                     Array.Clear(ksecret, 0, ksecret.Length);
             }
-        }
-
-        /// <summary>
-        /// If the caller has already set the x-amz-content-sha256 header with a pre-computed
-        /// content hash, or it is present as ContentStreamHash on the request instance, return
-        /// the value to be used in request canonicalization. 
-        /// If not set as a header or in the request, attempt to compute a hash based on
-        /// inspection of the style of the request content.
-        /// </summary>
-        /// <param name="request">Request to sign</param>
-        /// <param name="chunkedBodyHash">The fixed value to set for the x-amz-content-sha256 header for chunked requests</param>
-        /// <param name="signatureLength">Length of the signature for each chunk in a chuncked request, in bytes</param>
-        /// <returns>
-        /// The computed hash, whether already set in headers or computed here. Null
-        /// if we were not able to compute a hash.
-        /// </returns>
-        public static string SetRequestBodyHash(IRequest request, string chunkedBodyHash, int signatureLength)
-        {
-            return SetRequestBodyHash(request, true, chunkedBodyHash, signatureLength);
         }
 
         /// <summary>
@@ -716,61 +640,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="sortedHeaders">The full request headers, sorted into canonical order</param>
         /// <param name="canonicalQueryString">The query parameters for the request</param>
         /// <param name="precomputedBodyHash">
-        /// The hash of the binary request body if present. If not supplied, the routine
-        /// will look for the hash as a header on the request.
-        /// </param>
-        /// <returns>Canonicalised request as a string</returns>
-        protected static string CanonicalizeRequest(Uri endpoint,
-                                                    string resourcePath,
-                                                    string httpMethod,
-                                                    IDictionary<string, string> sortedHeaders,
-                                                    string canonicalQueryString,
-                                                    string precomputedBodyHash)
-        {
-            return CanonicalizeRequest(endpoint, resourcePath, httpMethod, sortedHeaders, canonicalQueryString, precomputedBodyHash, null);
-        }
-
-        /// <summary>
-        /// Computes and returns the canonical request
-        /// </summary>
-        /// <param name="endpoint">The endpoint URL</param>
-        /// <param name="resourcePath">the path of the resource being operated on</param>
-        /// <param name="httpMethod">The http method used for the request</param>
-        /// <param name="sortedHeaders">The full request headers, sorted into canonical order</param>
-        /// <param name="canonicalQueryString">The query parameters for the request</param>
-        /// <param name="precomputedBodyHash">
-        /// <param name="pathResources">The path resource values lookup to use to replace the keys within resourcePath</param>
-        /// The hash of the binary request body if present. If not supplied, the routine
-        /// will look for the hash as a header on the request.
-        /// </param>
-        /// <returns>Canonicalised request as a string</returns>
-        protected static string CanonicalizeRequest(Uri endpoint,
-                                                    string resourcePath,
-                                                    string httpMethod,
-                                                    IDictionary<string, string> sortedHeaders,
-                                                    string canonicalQueryString,
-                                                    string precomputedBodyHash,
-                                                    IDictionary<string, string> pathResources)
-        {
-            return CanonicalizeRequestHelper(endpoint,
-                resourcePath,
-                httpMethod,
-                sortedHeaders,
-                canonicalQueryString,
-                precomputedBodyHash,
-                pathResources,
-                true);
-        }
-
-        /// <summary>
-        /// Computes and returns the canonical request
-        /// </summary>
-        /// <param name="endpoint">The endpoint URL</param>
-        /// <param name="resourcePath">the path of the resource being operated on</param>
-        /// <param name="httpMethod">The http method used for the request</param>
-        /// <param name="sortedHeaders">The full request headers, sorted into canonical order</param>
-        /// <param name="canonicalQueryString">The query parameters for the request</param>
-        /// <param name="precomputedBodyHash">
         /// <param name="pathResources">The path resource values lookup to use to replace the keys within resourcePath</param>
         /// The hash of the binary request body if present. If not supplied, the routine
         /// will look for the hash as a header on the request.
@@ -922,11 +791,6 @@ namespace Amazon.Runtime.Internal.Auth
             return parametersToCanonicalize;
         }
 
-        protected static string CanonicalizeQueryParameters(string queryString)
-        {
-            return CanonicalizeQueryParameters(queryString, true);
-        }
-
         /// <summary>
         /// Computes and returns the canonicalized query string, if query parameters have been supplied.
         /// Parameters with no value will be canonicalized as 'param='. The expectation is that parameters
@@ -1032,239 +896,5 @@ namespace Amazon.Runtime.Internal.Auth
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// AWS4 protocol signer for Amazon S3 presigned urls.
-    /// </summary>
-    public class AWS4PreSignedUrlSigner : AWS4Signer
-    {
-        // 7 days is the maximum period for presigned url expiry with AWS4
-        public const Int64 MaxAWS4PreSignedUrlExpiry = 7 * 24 * 60 * 60;
-
-        public static readonly IEnumerable<string> ServicesUsingUnsignedPayload = new HashSet<string>()
-        {
-            "s3",
-            "s3-object-lambda",
-            "s3-outposts"
-        };
-
-        /// <summary>
-        /// Calculates and signs the specified request using the AWS4 signing protocol by using the
-        /// AWS account credentials given in the method parameters. The resulting signature is added
-        /// to the request headers as 'Authorization'.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Adding supporting data for the service call required by the signer (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="awsAccessKeyId">
-        /// The AWS public key for the account making the service call.
-        /// </param>
-        /// <param name="awsSecretAccessKey">
-        /// The AWS secret key for the account making the call, in clear text
-        /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
-        public override void Sign(IRequest request,
-                                  IClientConfig clientConfig,
-                                  RequestMetrics metrics,
-                                  string awsAccessKeyId,
-                                  string awsSecretAccessKey)
-        {
-            throw new InvalidOperationException("PreSignedUrl signature computation is not supported by this method; use SignRequest instead.");
-        }
-
-        /// <summary>
-        /// Calculates and signs the specified request using the AWS4 signing protocol by using the
-        /// AWS account credentials given in the method parameters. The resulting signature is added
-        /// to the request headers as 'Authorization'.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Adding supporting data for the service call required by the signer (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="credentials">
-        /// The AWS credentials for the account making the service call.
-        /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
-        public override void Sign(IRequest request,
-                                  IClientConfig clientConfig,
-                                  RequestMetrics metrics,
-                                  ImmutableCredentials credentials)
-        {
-            throw new InvalidOperationException("PreSignedUrl signature computation is not supported by this method; use SignRequest instead.");
-        }
-
-        /// <summary>
-        /// Calculates the AWS4 signature for a presigned url.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing. If the Expires parameter
-        /// is present, it is renamed to 'X-Amz-Expires' before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Adding supporting data for the service call required by the signer (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="awsAccessKeyId">
-        /// The AWS public key for the account making the service call.
-        /// </param>
-        /// <param name="awsSecretAccessKey">
-        /// The AWS secret key for the account making the call, in clear text
-        /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
-        /// <remarks>
-        /// Parameters passed as part of the resource path should be uri-encoded prior to
-        /// entry to the signer. Parameters passed in the request.Parameters collection should
-        /// be not be encoded; encoding will be done for these parameters as part of the 
-        /// construction of the canonical request.
-        /// </remarks>
-        public new AWS4SigningResult SignRequest(IRequest request,
-                                                 IClientConfig clientConfig,
-                                                 RequestMetrics metrics,
-                                                 string awsAccessKeyId,
-                                                 string awsSecretAccessKey)
-        {
-            var service = "s3";
-            if (!string.IsNullOrEmpty(request.OverrideSigningServiceName))
-                service = request.OverrideSigningServiceName;
-            return SignRequest(request, clientConfig, metrics, awsAccessKeyId, awsSecretAccessKey, service, null);
-        }
-
-        /// <summary>
-        /// Calculates the AWS4 signature for a presigned url.
-        /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing. If the Expires parameter
-        /// is present, it is renamed to 'X-Amz-Expires' before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Adding supporting data for the service call required by the signer (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        /// <param name="metrics">
-        /// Metrics for the request
-        /// </param>
-        /// <param name="awsAccessKeyId">
-        /// The AWS public key for the account making the service call.
-        /// </param>
-        /// <param name="awsSecretAccessKey">
-        /// The AWS secret key for the account making the call, in clear text
-        /// </param>
-        /// <param name="service">
-        /// The service to sign for
-        /// </param>
-        /// <param name="overrideSigningRegion">
-        /// The region to sign to, if null then the region the client is configured for will be used.
-        /// </param>
-        /// <exception cref="Amazon.Runtime.SignatureException">
-        /// If any problems are encountered while signing the request.
-        /// </exception>
-        /// <remarks>
-        /// Parameters passed as part of the resource path should be uri-encoded prior to
-        /// entry to the signer. Parameters passed in the request.Parameters collection should
-        /// be not be encoded; encoding will be done for these parameters as part of the 
-        /// construction of the canonical request.
-        ///
-        /// The X-Amz-Content-SHA256 is cleared out of the request.
-        /// If the request is for S3 then the UNSIGNED_PAYLOAD value is used to generate the canonical request.
-        /// If the request isn't for S3 then the empty body SHA is used to generate the canonical request.
-        /// </remarks>
-        public static AWS4SigningResult SignRequest(IRequest request,
-                                                 IClientConfig clientConfig,
-                                                 RequestMetrics metrics,
-                                                 string awsAccessKeyId,
-                                                 string awsSecretAccessKey,
-                                                 string service,
-                                                 string overrideSigningRegion)
-        {
-            if (service == "s3")
-            {
-                // Older versions of the S3 package can be used with newer versions of Core, this guarantees no double encoding will be used.
-                // The new behavior uses endpoint resolution rules, which are not present prior to 3.7.100
-                request.UseDoubleEncoding = false;
-            }
-
-            // clean up any prior signature in the headers if resigning
-            request.Headers.Remove(HeaderKeys.AuthorizationHeader);
-            if (!request.Headers.ContainsKey(HeaderKeys.HostHeader))
-            {
-                var hostHeader = request.Endpoint.Host;
-                if (!request.Endpoint.IsDefaultPort)
-                    hostHeader += ":" + request.Endpoint.Port;
-                request.Headers.Add(HeaderKeys.HostHeader, hostHeader);
-            }
-
-            var signedAt = CorrectClockSkew.GetCorrectedUtcNowForEndpoint(request.Endpoint.ToString());
-            var region = overrideSigningRegion ?? DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName, request.AlternateEndpoint, request);
-
-            // AWS4 presigned urls got S3 are expected to contain a 'UNSIGNED-PAYLOAD' magic string
-            // during signing (other services use the empty-body sha)
-            if (request.Headers.ContainsKey(HeaderKeys.XAmzContentSha256Header))
-                request.Headers.Remove(HeaderKeys.XAmzContentSha256Header);
-
-            var sortedHeaders = SortAndPruneHeaders(request.Headers);
-            var canonicalizedHeaderNames = CanonicalizeHeaderNames(sortedHeaders);
-
-            var parametersToCanonicalize = GetParametersToCanonicalize(request);
-            parametersToCanonicalize.Add(new KeyValuePair<string,string>(HeaderKeys.XAmzAlgorithm, AWS4AlgorithmTag));
-            var xAmzCredentialValue = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}/{3}/{4}",
-                                                       awsAccessKeyId,
-                                                       FormatDateTime(signedAt, AWSSDKUtils.ISO8601BasicDateFormat),
-                                                       region,
-                                                       service,
-                                                       Terminator);
-            parametersToCanonicalize.Add(new KeyValuePair<string,string>(HeaderKeys.XAmzCredential, xAmzCredentialValue));
-
-            parametersToCanonicalize.Add(new KeyValuePair<string,string>(HeaderKeys.XAmzDateHeader, FormatDateTime(signedAt, AWSSDKUtils.ISO8601BasicDateTimeFormat)));
-            parametersToCanonicalize.Add(new KeyValuePair<string,string>(HeaderKeys.XAmzSignedHeadersHeader, canonicalizedHeaderNames));
-
-            var canonicalQueryParams = CanonicalizeQueryParameters(parametersToCanonicalize);
-
-            var canonicalRequest = CanonicalizeRequest(request.Endpoint,
-                                                       request.ResourcePath,
-                                                       request.HttpMethod,
-                                                       sortedHeaders,
-                                                       canonicalQueryParams,
-                                                       ServicesUsingUnsignedPayload.Contains(service) ? UnsignedPayload : EmptyBodySha256,
-                                                       request.PathResources,
-                                                       request.UseDoubleEncoding);
-            if (metrics != null)
-                metrics.AddProperty(Metric.CanonicalRequest, canonicalRequest);
-
-            return ComputeSignature(awsAccessKeyId,
-                                    awsSecretAccessKey,
-                                    region,
-                                    signedAt,
-                                    service,
-                                    canonicalizedHeaderNames,
-                                    canonicalRequest,
-                                    metrics);
-        }
     }
 }

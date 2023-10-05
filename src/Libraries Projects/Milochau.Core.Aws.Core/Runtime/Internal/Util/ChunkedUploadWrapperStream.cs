@@ -43,7 +43,6 @@ namespace Amazon.Runtime.Internal.Util
         private const string CHUNK_STRING_TO_SIGN_PREFIX = "AWS4-HMAC-SHA256-PAYLOAD";
         private const string CHUNK_SIGNATURE_HEADER = ";chunk-signature=";
         public const int V4_SIGNATURE_LENGTH = 64;
-        public const int V4A_SIGNATURE_LENGTH = 144;
         private const string TRAILING_HEADER_SIGNATURE_KEY = "x-amz-trailer-signature";
         private const string TRAILING_HEADER_STRING_TO_SIGN_PREFIX = "AWS4-HMAC-SHA256-TRAILER";
 
@@ -89,13 +88,9 @@ namespace Amazon.Runtime.Internal.Util
         /// <param name="headerSigningResult">SigV4 or SigV4a signing result for the request's headers</param>
         internal ChunkedUploadWrapperStream(Stream stream, int wrappedStreamBufferSize, AWSSigningResultBase headerSigningResult) : base(stream)
         {
-            if (!(headerSigningResult is AWS4aSigningResult || headerSigningResult is AWS4SigningResult))
+            if (!(headerSigningResult is AWS4SigningResult))
             {
-                throw new AmazonClientException($"{nameof(ChunkedUploadWrapperStream)} was initialized without a SigV4 or SigV4a signing result.");
-            }
-            else if (headerSigningResult is AWS4aSigningResult)
-            {
-                Sigv4aSigner = new AWS4aSignerCRTWrapper();
+                throw new AmazonClientException($"{nameof(ChunkedUploadWrapperStream)} was initialized without a SigV4 signing result.");
             }
 
             HeaderSigningResult = headerSigningResult;
@@ -103,7 +98,7 @@ namespace Amazon.Runtime.Internal.Util
 
             _wrappedStreamBufferSize = wrappedStreamBufferSize;
             _inputBuffer = new byte[DefaultChunkSize];
-            _outputBuffer = new byte[CalculateChunkHeaderLength(DefaultChunkSize, HeaderSigningResult is AWS4aSigningResult ? V4A_SIGNATURE_LENGTH : V4_SIGNATURE_LENGTH)]; // header+data
+            _outputBuffer = new byte[CalculateChunkHeaderLength(DefaultChunkSize, V4_SIGNATURE_LENGTH)]; // header+data
 
             // if the wrapped stream implements encryption, switch to a read-and-copy
             // strategy for filling the chunk buffer
@@ -287,11 +282,6 @@ namespace Amazon.Runtime.Internal.Util
         private AWSSigningResultBase HeaderSigningResult { get; set; }
 
         /// <summary>
-        /// SigV4a signer
-        /// </summary>
-        private AWS4aSignerCRTWrapper Sigv4aSigner { get; set; }
-
-        /// <summary>
         /// Computed signature of the chunk prior to the one in-flight in hex,
         /// for either SigV4 or SigV4a
         /// </summary>
@@ -322,18 +312,7 @@ namespace Amazon.Runtime.Internal.Util
             chunkHeader.Append(dataLen.ToString("X", CultureInfo.InvariantCulture));
 
             string chunkSignature = "";
-            if (HeaderSigningResult is AWS4aSigningResult v4aHeaderSigningResult)
-            {
-                if (isFinalDataChunk)  // _inputBuffer still contains previous chunk, but this is the final 0 content chunk so sign null
-                {
-                    chunkSignature = Sigv4aSigner.SignChunk(null, PreviousChunkSignature, v4aHeaderSigningResult);
-                }
-                else
-                {
-                    chunkSignature = Sigv4aSigner.SignChunk(new MemoryStream(_inputBuffer), PreviousChunkSignature, v4aHeaderSigningResult);
-                }
-            }
-            else if (HeaderSigningResult is AWS4SigningResult v4HeaderSingingResult) // SigV4
+            if (HeaderSigningResult is AWS4SigningResult v4HeaderSingingResult) // SigV4
             {
                 var chunkStringToSign = BuildChunkedStringToSign(CHUNK_STRING_TO_SIGN_PREFIX, v4HeaderSingingResult.ISO8601DateTime,
                                                                     v4HeaderSingingResult.Scope, PreviousChunkSignature, dataLen, _inputBuffer);
@@ -344,14 +323,9 @@ namespace Amazon.Runtime.Internal.Util
             // For Sigv4a the chunk signature must be padded when being appended to the chunk metadata,
             // but not when being used as the input for the next chunk
             PreviousChunkSignature = chunkSignature;
-            if (HeaderSigningResult is AWS4aSigningResult)
-            {
-                chunkHeader.Append(CHUNK_SIGNATURE_HEADER + chunkSignature.PadRight(V4A_SIGNATURE_LENGTH, '*'));
-            }
-            else // SigV4
-            {
-                chunkHeader.Append(CHUNK_SIGNATURE_HEADER + chunkSignature);
-            }
+            // SigV4
+            chunkHeader.Append(CHUNK_SIGNATURE_HEADER + chunkSignature);
+
             // If we're sending a trailing checksum, update the rolling checksum with this chunk's raw data
             if (_hashAlgorithm != null)
             {
@@ -409,24 +383,18 @@ namespace Amazon.Runtime.Internal.Util
             }
 
             string chunkSignature;
-            if (HeaderSigningResult is AWS4SigningResult)
-            {
-                var sortedTrailingHeaders = AWS4Signer.SortAndPruneHeaders(_trailingHeaders);
-                var canonicalizedTrailingHeaders = AWS4Signer.CanonicalizeHeaders(sortedTrailingHeaders);
+            // SigV4
+            var sortedTrailingHeaders = AWS4Signer.SortAndPruneHeaders(_trailingHeaders);
+            var canonicalizedTrailingHeaders = AWS4Signer.CanonicalizeHeaders(sortedTrailingHeaders);
 
-                var chunkStringToSign =
-                    TRAILING_HEADER_STRING_TO_SIGN_PREFIX + "\n" +
-                    HeaderSigningResult.ISO8601DateTime + "\n" +
-                    HeaderSigningResult.Scope + "\n" +
-                    PreviousChunkSignature + "\n" +
-                    AWSSDKUtils.ToHex(AWS4Signer.ComputeHash(canonicalizedTrailingHeaders), true);
+            var chunkStringToSign =
+                TRAILING_HEADER_STRING_TO_SIGN_PREFIX + "\n" +
+                HeaderSigningResult.ISO8601DateTime + "\n" +
+                HeaderSigningResult.Scope + "\n" +
+                PreviousChunkSignature + "\n" +
+                AWSSDKUtils.ToHex(AWS4Signer.ComputeHash(canonicalizedTrailingHeaders), true);
 
-                chunkSignature = AWSSDKUtils.ToHex(AWS4Signer.SignBlob(((AWS4SigningResult)HeaderSigningResult).GetSigningKey(), chunkStringToSign), true);
-            }
-            else // SigV4a
-            {
-                chunkSignature = Sigv4aSigner.SignTrailingHeaderChunk(_trailingHeaders, PreviousChunkSignature, (AWS4aSigningResult)HeaderSigningResult).PadRight(V4A_SIGNATURE_LENGTH, '*');
-            }
+            chunkSignature = AWSSDKUtils.ToHex(AWS4Signer.SignBlob(((AWS4SigningResult)HeaderSigningResult).GetSigningKey(), chunkStringToSign), true);
 
             var chunk = new StringBuilder();
             // The order here must match the order of keys sent already in the X-Amz-Trailer header.
@@ -487,7 +455,7 @@ namespace Amazon.Runtime.Internal.Util
                 {
                     return 0;
                 }
-                return ComputeChunkedContentLength(BaseStream.Length, HeaderSigningResult is AWS4aSigningResult ? V4A_SIGNATURE_LENGTH : V4_SIGNATURE_LENGTH, _trailingHeaders, _trailingChecksum);
+                return ComputeChunkedContentLength(BaseStream.Length, V4_SIGNATURE_LENGTH, _trailingHeaders, _trailingChecksum);
             }
         }
 

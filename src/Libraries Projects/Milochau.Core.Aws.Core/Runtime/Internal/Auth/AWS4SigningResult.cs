@@ -86,23 +86,5 @@ namespace Amazon.Runtime.Internal.Auth
                 return authorizationHeader.ToString();
             }
         }
-
-        /// <summary>
-        /// Returns the signature in a form usable as a set of query string parameters.
-        /// </summary>
-        public string ForQueryParameters
-        {
-            get
-            {
-                var authParams = new StringBuilder()
-                    .AppendFormat("{0}={1}", AWSSDKUtils.UrlEncode(HeaderKeys.XAmzAlgorithm, false), AWSSDKUtils.UrlEncode(AWS4Signer.AWS4AlgorithmTag, false))
-                    .AppendFormat("&{0}={1}", AWSSDKUtils.UrlEncode(HeaderKeys.XAmzCredential, false), AWSSDKUtils.UrlEncode(string.Format(CultureInfo.InvariantCulture, "{0}/{1}", AccessKeyId, Scope), false))
-                    .AppendFormat("&{0}={1}", AWSSDKUtils.UrlEncode(HeaderKeys.XAmzDateHeader, false), AWSSDKUtils.UrlEncode(ISO8601DateTime, false))
-                    .AppendFormat("&{0}={1}", AWSSDKUtils.UrlEncode(HeaderKeys.XAmzSignedHeadersHeader, false), AWSSDKUtils.UrlEncode(SignedHeaders, false))
-                    .AppendFormat("&{0}={1}", AWSSDKUtils.UrlEncode(HeaderKeys.XAmzSignature, false), AWSSDKUtils.UrlEncode(Signature, false));
-
-                return authParams.ToString();
-            }
-        }
     }
 }

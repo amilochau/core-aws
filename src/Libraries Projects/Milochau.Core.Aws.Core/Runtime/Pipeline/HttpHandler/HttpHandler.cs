@@ -329,7 +329,7 @@ namespace Amazon.Runtime.Internal
 
         private static System.IO.Stream GetInputStream(IRequestContext requestContext, System.IO.Stream originalStream, IRequest wrappedRequest)
         {
-            var requestHasConfigForChunkStream = wrappedRequest.UseChunkEncoding && (wrappedRequest.AWS4SignerResult != null || wrappedRequest.AWS4aSignerResult != null);
+            var requestHasConfigForChunkStream = wrappedRequest.UseChunkEncoding && wrappedRequest.AWS4SignerResult != null;
             var hasTransferEncodingHeader = wrappedRequest.Headers.ContainsKey(HeaderKeys.TransferEncodingHeader);
             var isTransferEncodingHeaderChunked = hasTransferEncodingHeader && wrappedRequest.Headers[HeaderKeys.TransferEncodingHeader] == "chunked";
             var hasTrailingHeaders = wrappedRequest.TrailingHeaders?.Count > 0;
@@ -343,15 +343,7 @@ namespace Amazon.Runtime.Internal
             // which contains the header signature that is the input to the first chunk signature.
             if (requestHasConfigForChunkStream || isTransferEncodingHeaderChunked)
             {
-                AWSSigningResultBase signingResult;
-                if (wrappedRequest.AWS4aSignerResult != null)
-                {
-                    signingResult = wrappedRequest.AWS4aSignerResult;
-                }
-                else
-                {
-                    signingResult = wrappedRequest.AWS4SignerResult;
-                }
+                AWSSigningResultBase signingResult = wrappedRequest.AWS4SignerResult;
                 if (signingResult != null)
                 {
                     if (hasTrailingHeaders)
