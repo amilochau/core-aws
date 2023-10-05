@@ -3,7 +3,7 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.SNSEvents;
 using Amazon.SimpleEmail;
-//using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2;
@@ -22,7 +22,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         public static readonly int handlerChoice = 0;
         private static async Task Main()
         {
-            //AWSSDKHandler.RegisterXRayForAllServices();
+            AWSSDKHandler.RegisterXRayForAllServices();
 
             switch (handlerChoice)
             {

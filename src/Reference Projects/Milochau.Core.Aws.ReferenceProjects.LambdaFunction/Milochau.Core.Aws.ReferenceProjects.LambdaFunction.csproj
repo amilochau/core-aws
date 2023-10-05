@@ -27,12 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--
-    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
-  -->
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
@@ -40,10 +34,6 @@
 
   <ItemGroup>
     <TrimmerRootAssembly Include="Milochau.Core.Aws.Core" />
-    <!--
-    <TrimmerRootAssembly Include="AWSXRayRecorder.Core" />
-    <TrimmerRootAssembly Include="AWSXRayRecorder.Handlers.AwsSdk" />
-    -->
     <TrimmerRootAssembly Include="bootstrap" />
   </ItemGroup>
 
