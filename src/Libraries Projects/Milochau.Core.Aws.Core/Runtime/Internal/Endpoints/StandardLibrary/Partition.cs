@@ -92,42 +92,6 @@ namespace Amazon.Runtime.Internal.Endpoints.StandardLibrary
         private static Dictionary<string, PartitionAttributesShape> _partitionsByRegex = new Dictionary<string, PartitionAttributesShape>();
         private static PartitionAttributesShape _defaultPartition;
 
-        /// <summary>
-        /// Override partitions data from json file
-        /// </summary>
-        public static void LoadPartitions(string partitionsFile)
-        {
-            if (!File.Exists(partitionsFile))
-            {
-                throw new AmazonClientException($"Can't find partitions file: {partitionsFile}");
-            }
-            _locker.EnterWriteLock();
-            try
-            {
-                var json = File.ReadAllText(partitionsFile);
-                var partitions = JsonMapper.ToObject<PartitionFunctionShape>(json);
-                _partitionsByRegionName.Clear();
-                _partitionsByRegex.Clear();
-                _defaultPartition = null;
-                foreach (var partition in partitions.partitions)
-                {
-                    if (partition.id == "aws")
-                    {
-                        _defaultPartition = partition.outputs;
-                    }
-                    _partitionsByRegex.Add(partition.regionRegex, partition.outputs);
-                    foreach (var region in partition.regions.Keys)
-                    {
-                        _partitionsByRegionName.Add(region, partition.outputs);
-                    }
-                }
-            }
-            finally
-            {
-                _locker.ExitWriteLock();
-            }
-        }
-
         internal static Partition GetPartitionByRegion(string region)
         {
             _locker.EnterReadLock();

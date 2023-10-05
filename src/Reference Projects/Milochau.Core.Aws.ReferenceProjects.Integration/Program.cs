@@ -1,6 +1,6 @@
 ﻿using Amazon.Lambda;
 using Amazon.Lambda.TestUtilities;
-using Amazon.SimpleEmail;
+using Amazon.SimpleEmailV2;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +40,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
                 var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
                 var dynamoDbDataAccess = new LambdaFunction.DataAccess.DynamoDbDataAccess(new AmazonDynamoDBClient());
                 var emailsLambdaDataAccess = new LambdaFunction.DataAccess.EmailsLambdaDataAccess(new AmazonLambdaClient());
-                var sesDataAccess = new LambdaFunction.DataAccess.SesDataAccess(new AmazonSimpleEmailServiceClient());
+                var sesDataAccess = new LambdaFunction.DataAccess.SesDataAccess(new AmazonSimpleEmailServiceV2Client());
                 
                 var proxyResponse = await LambdaFunction.Function.DoAsync(proxyRequest, new TestLambdaContext(), dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
                 return ApiGatewayHelpers.BuildEmptyResult(proxyResponse);

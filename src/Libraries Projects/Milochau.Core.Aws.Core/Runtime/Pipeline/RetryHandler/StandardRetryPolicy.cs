@@ -178,16 +178,7 @@ namespace Amazon.Runtime.Internal
                 CapacityManagerInstance.ReleaseCapacity(requestContext.LastCapacityType, RetryCapacity);
             }
         }
-        /// <summary>
-        /// Perform the processor-bound portion of the RetryForException logic.
-        /// This is shared by the sync, async, and APM versions of the RetryForException method.
-        /// </summary>
-        /// <param name="exception">The exception thrown by the previous request.</param>
-        /// <returns>Return true if the request should be retried.</returns>
-        protected bool RetryForExceptionSync(Exception exception)
-        {
-            return RetryForExceptionSync(exception, null);
-        }
+
         /// <summary>
         /// Perform the processor-bound portion of the RetryForException logic.
         /// This is shared by the sync, async, and APM versions of the RetryForException method.

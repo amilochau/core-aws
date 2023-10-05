@@ -410,48 +410,4 @@ namespace Amazon.Runtime.Internal.Util
 
         #endregion
     }
-
-    /// <summary>
-    /// A wrapper stream that calculates an MD5 hash of the base stream as it
-    /// is being read or written.
-    /// The calculated hash is only available after the stream is closed or
-    /// CalculateHash is called. After calling CalculateHash, any further reads
-    /// on the streams will not change the CalculatedHash.
-    /// If an ExpectedHash is specified and is not equal to the calculated hash,
-    /// Close or CalculateHash methods will throw an AmazonClientException.
-    /// If base stream's position is not 0 or HashOnReads is true and the entire stream is
-    /// not read, the CalculatedHash will be set to an empty byte array and
-    /// comparison to ExpectedHash will not be made.
-    /// </summary>
-    /// <exception cref="Amazon.Runtime.AmazonClientException">
-    /// Exception thrown during Close() or CalculateHash(), if ExpectedHash is set and
-    /// is different from CalculateHash that the stream calculates, provided that
-    /// CalculatedHash is not a zero-length byte array.
-    /// </exception>
-    public class MD5Stream : HashStream<HashingWrapperMD5>
-    {
-        private Logger _logger;
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes an MD5Stream with a base stream.
-        /// </summary>
-        /// <param name="baseStream">Stream to calculate hash for.</param>
-        /// <param name="expectedHash">
-        /// Expected hash. Will be compared against calculated hash on stream close.
-        /// Pass in null to disable check.
-        /// </param>
-        /// <param name="expectedLength">
-        /// Expected length of the stream. If the reading stops before reaching this
-        /// position, CalculatedHash will be set to empty array.
-        /// </param>
-        public MD5Stream(Stream baseStream, byte[] expectedHash, long expectedLength)
-            : base(baseStream, expectedHash, expectedLength)
-        {
-            _logger = Logger.GetLogger(this.GetType());
-        }
-#endregion
-
-    }
 }

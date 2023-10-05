@@ -87,23 +87,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static BatchWriteItemRequestMarshaller _instance = new BatchWriteItemRequestMarshaller();
-
-        internal static BatchWriteItemRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static BatchWriteItemRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static BatchWriteItemRequestMarshaller Instance { get; } = new BatchWriteItemRequestMarshaller();
     }
 }

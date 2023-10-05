@@ -90,13 +90,6 @@ namespace Amazon.Runtime.Internal.Util
         #endregion
     }
 
-    public class HashingWrapperMD5 : HashingWrapper
-    {
-        public HashingWrapperMD5()
-            : base(typeof(MD5Managed).FullName)
-        { }
-    }
-
     public partial class HashingWrapper : IHashingWrapper
     {
         public HashingWrapper(string algorithmName)

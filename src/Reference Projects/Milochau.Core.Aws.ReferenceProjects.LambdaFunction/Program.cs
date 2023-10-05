@@ -2,7 +2,7 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.SNSEvents;
-using Amazon.SimpleEmail;
+using Amazon.SimpleEmailV2;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
@@ -55,7 +55,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
                 using var lambdaClient = new AmazonLambdaClient();
                 var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-                var simpleEmailServiceClient = new AmazonSimpleEmailServiceClient();
+                var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
                 var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
 
                 response = await DoAsync(request, context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
@@ -87,7 +87,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
             using var lambdaClient = new AmazonLambdaClient();
             var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-            var simpleEmailServiceClient = new AmazonSimpleEmailServiceClient();
+            var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
             var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
 
             await DoAsync(request, context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
@@ -103,7 +103,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
                 using var lambdaClient = new AmazonLambdaClient();
                 var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-                var simpleEmailServiceClient = new AmazonSimpleEmailServiceClient();
+                var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
                 var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
 
                 await DoAsync(new(), context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
@@ -126,7 +126,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
             using var lambdaClient = new AmazonLambdaClient();
             var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-            var simpleEmailServiceClient = new AmazonSimpleEmailServiceClient();
+            var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
             var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
 
             foreach (var record in request.Records)
@@ -147,7 +147,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 return proxyResponse;
             }
 
-            //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
+            // await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             await dynamoDbDataAccess.GetMessageAsync(cancellationToken);
 
             await Task.CompletedTask;

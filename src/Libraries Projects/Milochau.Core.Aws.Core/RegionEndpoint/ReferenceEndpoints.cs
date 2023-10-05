@@ -80,6 +80,27 @@ namespace Amazon.Internal
                             }
                         },
                         {
+                            "email", new EndpointsPartitionService
+                            {
+                                Endpoints = new Dictionary<string, EndpointsPartitionDefaults>
+                                {
+                                    { "eu-west-3", new EndpointsPartitionDefaults() },
+                                    { "us-east-1", new EndpointsPartitionDefaults
+                                        {
+                                            Variants = new List<EndpointsPartitionDefaultsVariant>
+                                            {
+                                                new EndpointsPartitionDefaultsVariant
+                                                {
+                                                    Hostname = "email-fips.us-east-1.amazonaws.com",
+                                                    Tags = new List<string> { "fips" },
+                                                }
+                                            }
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                        {
                             "lambda",
                             new EndpointsPartitionService
                             {

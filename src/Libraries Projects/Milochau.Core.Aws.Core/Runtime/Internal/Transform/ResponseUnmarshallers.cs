@@ -30,11 +30,6 @@ namespace Amazon.Runtime.Internal.Transform
     /// </summary>
     public abstract class ResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, UnmarshallerContext>
     {
-        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, RequestMetrics metrics, bool isException)
-        {
-            return CreateContext(response, readEntireResponse, stream, metrics, isException, null);
-        }
-
         public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, RequestMetrics metrics, bool isException, IRequestContext requestContext)
         {
             if (response == null)
@@ -97,11 +92,6 @@ namespace Amazon.Runtime.Internal.Transform
 
 #endregion
 
-        public static string GetDefaultErrorMessage<T>() where T : Exception
-        {
-            return string.Format(CultureInfo.InvariantCulture, "An exception of type {0}, please check the error log for mode details.", typeof(T).Name);
-        }
-
         protected abstract UnmarshallerContext ConstructUnmarshallerContext(
            Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException); 
         
@@ -111,95 +101,6 @@ namespace Amazon.Runtime.Internal.Transform
         protected virtual bool ShouldReadEntireResponse(IWebResponseData response, bool readEntireResponse)
         {
             return readEntireResponse;
-        }
-    }
-
-    /// <summary>
-    /// Class for unmarshalling XML service responses.
-    /// </summary>
-    public abstract class XmlResponseUnmarshaller : ResponseUnmarshaller
-    {
-        public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
-        {
-            XmlUnmarshallerContext context = input as XmlUnmarshallerContext;
-            if (context == null)
-                throw new InvalidOperationException("Unsupported UnmarshallerContext");
-
-            AmazonWebServiceResponse response = this.Unmarshall(context);
-
-            if (context.ResponseData.IsHeaderPresent(HeaderKeys.RequestIdHeader) &&
-                !string.IsNullOrEmpty(context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader)))
-            {
-                if (response.ResponseMetadata == null)
-                    response.ResponseMetadata = new ResponseMetadata();
-                response.ResponseMetadata.RequestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
-            }
-            else if (context.ResponseData.IsHeaderPresent(HeaderKeys.XAmzRequestIdHeader) &&
-                !string.IsNullOrEmpty(context.ResponseData.GetHeaderValue(HeaderKeys.XAmzRequestIdHeader)))
-            {
-                if (response.ResponseMetadata == null)
-                    response.ResponseMetadata = new ResponseMetadata();
-                response.ResponseMetadata.RequestId = context.ResponseData.GetHeaderValue(HeaderKeys.XAmzRequestIdHeader);
-            }
-
-            return response;
-        }
-        public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
-        {
-            XmlUnmarshallerContext context = input as XmlUnmarshallerContext;
-            if (context == null)
-                throw new InvalidOperationException("Unsupported UnmarshallerContext");
-
-            return this.UnmarshallException(context, innerException, statusCode);
-        }
-
-        public abstract AmazonWebServiceResponse Unmarshall(XmlUnmarshallerContext input);
-
-        public abstract AmazonServiceException UnmarshallException(XmlUnmarshallerContext input, Exception innerException, HttpStatusCode statusCode);
-
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException)
-        {
-            return new XmlUnmarshallerContext(responseStream, maintainResponseBody, response, isException, null);
-        }
-
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException, IRequestContext requestContext)
-        {
-            return new XmlUnmarshallerContext(responseStream, maintainResponseBody, response, isException, requestContext);
-        }
-    }
-
-    /// <summary>
-    /// Class for unmarshalling EC2 service responses.
-    /// </summary>
-    public abstract class EC2ResponseUnmarshaller : XmlResponseUnmarshaller
-    {
-        public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
-        {
-            // Unmarshall response
-            var response = base.Unmarshall(input);
-
-            // Make sure ResponseMetadata is set
-            if (response.ResponseMetadata == null)
-                response.ResponseMetadata = new ResponseMetadata();
-
-            // Populate RequestId
-            var ec2UnmarshallerContext = input as EC2UnmarshallerContext;
-            if (ec2UnmarshallerContext != null && !string.IsNullOrEmpty(ec2UnmarshallerContext.RequestId))
-            {
-                response.ResponseMetadata.RequestId = ec2UnmarshallerContext.RequestId;
-            }
-
-            return response;
-        }
-
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException)
-        {
-            return new EC2UnmarshallerContext(responseStream, maintainResponseBody, response, isException, null);
-        }
-
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException, IRequestContext requestContext)
-        {
-            return new EC2UnmarshallerContext(responseStream, maintainResponseBody, response, isException, requestContext);
         }
     }
 

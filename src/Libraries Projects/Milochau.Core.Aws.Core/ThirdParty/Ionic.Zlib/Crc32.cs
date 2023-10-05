@@ -199,32 +199,6 @@ namespace ThirdParty.Ionic.Zlib
         private Int64 _length = 0;
 
         /// <summary>
-        /// Gets the total number of bytes run through the CRC32 calculator.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This is either the total number of bytes read, or the total number
-        /// of bytes written, depending on the direction of this stream.
-        /// </remarks>
-        public Int64 TotalBytesSlurped
-        {
-            get { return _Crc32.TotalBytesRead; }
-        }
-
-
-        /// <summary>
-        /// The constructor.
-        /// </summary>
-        /// <param name="stream">The underlying stream</param>
-        public CrcCalculatorStream(System.IO.Stream stream)
-            : base()
-        {
-            _InnerStream = stream;
-            _Crc32 = new CRC32();
-
-        }
-
-        /// <summary>
         /// The constructor.
         /// </summary>
         /// <param name="stream">The underlying stream</param>

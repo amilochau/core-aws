@@ -26,12 +26,6 @@ namespace Amazon.Runtime.Internal.Transform
 {
     static class SimpleTypeUnmarshaller<T>
     {
-        public static T Unmarshall(XmlUnmarshallerContext context)
-        {
-            string text = context.ReadText();
-            return (T)Convert.ChangeType(text, typeof(T), CultureInfo.InvariantCulture);
-        }
-
         public static T Unmarshall(JsonUnmarshallerContext context)
         {
             context.Read();
@@ -69,11 +63,9 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for nullable int fields. Implemented only for JSON context
     /// to handle cases where value can be null e.g. {'Priority': null}.
-    /// This unmarshaller is not implemented for XML context, as XML responses
-    /// will null elements (xsi:nil='true') will be skipped by the XML parser.
     /// </summary>
     public class NullableIntUnmarshaller : IUnmarshaller<int?, JsonUnmarshallerContext>
-    {   
+    {
         private NullableIntUnmarshaller() { }
 
         public int? Unmarshall(JsonUnmarshallerContext context)
@@ -151,29 +143,12 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for decimal fields
     /// </summary>
-    public class DecimalUnmarshaller : IUnmarshaller<decimal, XmlUnmarshallerContext>, IUnmarshaller<decimal, JsonUnmarshallerContext>
+    public class DecimalUnmarshaller : IUnmarshaller<decimal, JsonUnmarshallerContext>
     {
         private DecimalUnmarshaller() { }
 
         private static DecimalUnmarshaller _instance = new DecimalUnmarshaller();
 
-        public static DecimalUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static DecimalUnmarshaller GetInstance()
-        {
-            return DecimalUnmarshaller.Instance;
-        }
-
-        public decimal Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<decimal>.Unmarshall(context);
-        }
         public decimal Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<decimal>.Unmarshall(context);
@@ -183,7 +158,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for bool fields
     /// </summary>
-    public class BoolUnmarshaller : IUnmarshaller<bool, XmlUnmarshallerContext>, IUnmarshaller<bool, JsonUnmarshallerContext>
+    public class BoolUnmarshaller : IUnmarshaller<bool, JsonUnmarshallerContext>
     {
         private BoolUnmarshaller() { }
 
@@ -197,15 +172,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-        public static BoolUnmarshaller GetInstance()
-        {
-            return BoolUnmarshaller.Instance;
-        }
-
-        public bool Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<bool>.Unmarshall(context);
-        }
         public bool Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<bool>.Unmarshall(context);
@@ -215,7 +181,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for string fields
     /// </summary>
-    public class StringUnmarshaller : IUnmarshaller<string, XmlUnmarshallerContext>, IUnmarshaller<string, JsonUnmarshallerContext>
+    public class StringUnmarshaller : IUnmarshaller<string, JsonUnmarshallerContext>
     {
         private StringUnmarshaller() { }
 
@@ -234,10 +200,6 @@ namespace Amazon.Runtime.Internal.Transform
             return StringUnmarshaller.Instance;
         }
 
-        public string Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<string>.Unmarshall(context);
-        }
         public string Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<string>.Unmarshall(context);
@@ -247,29 +209,10 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for byte fields
     /// </summary>
-    public class ByteUnmarshaller : IUnmarshaller<byte, XmlUnmarshallerContext>, IUnmarshaller<byte, JsonUnmarshallerContext>
+    public class ByteUnmarshaller : IUnmarshaller<byte, JsonUnmarshallerContext>
     {
         private ByteUnmarshaller() { }
 
-        private static ByteUnmarshaller _instance = new ByteUnmarshaller();
-
-        public static ByteUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static ByteUnmarshaller GetInstance()
-        {
-            return ByteUnmarshaller.Instance;
-        }
-
-        public byte Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<byte>.Unmarshall(context);
-        }
         public byte Unmarshall(JsonUnmarshallerContext context)
         {
             return SimpleTypeUnmarshaller<byte>.Unmarshall(context);
@@ -279,30 +222,11 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for DateTime fields
     /// </summary>
-    public class DateTimeUnmarshaller : IUnmarshaller<DateTime, XmlUnmarshallerContext>, IUnmarshaller<DateTime, JsonUnmarshallerContext>
+    public class DateTimeUnmarshaller : IUnmarshaller<DateTime, JsonUnmarshallerContext>
     {
         private DateTimeUnmarshaller() { }
 
         private static DateTimeUnmarshaller _instance = new DateTimeUnmarshaller();
-
-        public static DateTimeUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static DateTimeUnmarshaller GetInstance()
-        {
-            return DateTimeUnmarshaller.Instance;
-        }
-
-        public DateTime Unmarshall(XmlUnmarshallerContext context)
-        {
-            string text = context.ReadText();
-            return UnmarshallInternal(text, treatAsNullable: false).Value;
-        }
 
         public DateTime Unmarshall(JsonUnmarshallerContext context)
         {
@@ -342,27 +266,10 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for nullable DateTime fields. Implemented only for JSON context
     /// to handle cases where value can be null e.g. {'Priority': null}.
-    /// This unmarshaller is not implemented for XML context, as XML responses
-    /// will null elements (xsi:nil='true') will be skipped by the XML parser.
     /// </summary>
     public class NullableDateTimeUnmarshaller : IUnmarshaller<DateTime?, JsonUnmarshallerContext>
     {
         private NullableDateTimeUnmarshaller() { }
-
-        private static NullableDateTimeUnmarshaller _instance = new NullableDateTimeUnmarshaller();
-
-        public static NullableDateTimeUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static NullableDateTimeUnmarshaller GetInstance()
-        {
-            return NullableDateTimeUnmarshaller.Instance;
-        }
 
         public DateTime? Unmarshall(JsonUnmarshallerContext context)
         {
@@ -372,29 +279,10 @@ namespace Amazon.Runtime.Internal.Transform
         }
     }
 
-    public class DateTimeEpochLongMillisecondsUnmarshaller : IUnmarshaller<DateTime, XmlUnmarshallerContext>, IUnmarshaller<DateTime, JsonUnmarshallerContext>
+    public class DateTimeEpochLongMillisecondsUnmarshaller : IUnmarshaller<DateTime, JsonUnmarshallerContext>
     {
         private DateTimeEpochLongMillisecondsUnmarshaller() { }
 
-        private static DateTimeEpochLongMillisecondsUnmarshaller _instance = new DateTimeEpochLongMillisecondsUnmarshaller();
-
-        public static DateTimeEpochLongMillisecondsUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
-        public static DateTimeEpochLongMillisecondsUnmarshaller GetInstance()
-        {
-            return DateTimeEpochLongMillisecondsUnmarshaller.Instance;
-        }
-
-        public DateTime Unmarshall(XmlUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<DateTime>.Unmarshall(context);
-        }
         public DateTime Unmarshall(JsonUnmarshallerContext context)
         {
             long millseconds = LongUnmarshaller.Instance.Unmarshall(context);
@@ -406,7 +294,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// <summary>
     /// Unmarshaller for MemoryStream fields
     /// </summary>
-    public class MemoryStreamUnmarshaller : IUnmarshaller<MemoryStream, XmlUnmarshallerContext>, IUnmarshaller<MemoryStream, JsonUnmarshallerContext>
+    public class MemoryStreamUnmarshaller : IUnmarshaller<MemoryStream, JsonUnmarshallerContext>
     {
         private MemoryStreamUnmarshaller() { }
 
@@ -418,18 +306,6 @@ namespace Amazon.Runtime.Internal.Transform
             {
                 return _instance;
             }
-        }
-
-        public static MemoryStreamUnmarshaller GetInstance()
-        {
-            return MemoryStreamUnmarshaller.Instance;
-        }
-
-        public MemoryStream Unmarshall(XmlUnmarshallerContext context)
-        {
-            byte[] bytes = Convert.FromBase64String(context.ReadText());
-            MemoryStream stream = new MemoryStream(bytes);
-            return stream;
         }
 
         public MemoryStream Unmarshall(JsonUnmarshallerContext context)
@@ -461,26 +337,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-        public ResponseMetadata Unmarshall(XmlUnmarshallerContext context)
-        {
-            ResponseMetadata metadata = new ResponseMetadata();
-
-            int depth = context.CurrentDepth;
-
-            while (depth <= context.CurrentDepth)
-            {
-                context.Read();
-                if (context.IsStartElement)
-                {
-                    if (context.TestExpression("ResponseMetadata/RequestId"))
-                        metadata.RequestId = StringUnmarshaller.GetInstance().Unmarshall(context);
-                    else
-                        metadata.Metadata.Add(context.CurrentPath.Substring(context.CurrentPath.LastIndexOf('/') + 1), StringUnmarshaller.GetInstance().Unmarshall(context));
-                }
-            }
-
-            return metadata;
-        }
         public ResponseMetadata Unmarshall(JsonUnmarshallerContext context)
         {
             ResponseMetadata metadata = new ResponseMetadata();

@@ -1,5 +1,4 @@
-﻿using Amazon.SimpleEmail;
-using Amazon.SimpleEmail.Model;
+﻿using Amazon.SimpleEmailV2;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -18,33 +17,39 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         public static string FromAddress { get; set; } = Environment.GetEnvironmentVariable("FROM_ADDRESS")!;
         public static string ConventionsPrefix { get; set; } = Environment.GetEnvironmentVariable("CONVENTION__PREFIX")!;
 
-        private readonly IAmazonSimpleEmailService amazonSimpleEmailService;
+        private readonly IAmazonSimpleEmailServiceV2 amazonSimpleEmailServiceV2;
 
-        public SesDataAccess(IAmazonSimpleEmailService amazonSimpleEmailService)
+        public SesDataAccess(IAmazonSimpleEmailServiceV2 amazonSimpleEmailServiceV2)
         {
-            this.amazonSimpleEmailService = amazonSimpleEmailService;
+            this.amazonSimpleEmailServiceV2 = amazonSimpleEmailServiceV2;
         }
 
         public async Task SendEmailAsync(FunctionRequest emailRequest, CancellationToken cancellationToken)
         {
-            var response = await amazonSimpleEmailService.SendTemplatedEmailAsync(new SendTemplatedEmailRequest
+            var response = await amazonSimpleEmailServiceV2.SendEmailAsync(new Amazon.SimpleEmailV2.Model.SendEmailRequest
             {
-                Source = "noreply@dev.milochau.com",
-                Destination = new Destination
+                FromEmailAddress = "noreply@dev.milochau.com",
+                Destination = new Amazon.SimpleEmailV2.Model.Destination
                 {
                     ToAddresses = new List<string> { "aaa@outlook.com" },
                 },
-                Template = $"emails-dev-template-contacts-summary",
-                TemplateData = JsonSerializer.Serialize(new EmailRequestContent
+                Content = new Amazon.SimpleEmailV2.Model.EmailContent
                 {
-                    Messages = new List<EmailRequestContentMessage>
+                    Template = new Amazon.SimpleEmailV2.Model.Template
                     {
-                        new EmailRequestContentMessage
+                        TemplateName = "emails-dev-template-contacts-summary",
+                        TemplateData = JsonSerializer.Serialize(new EmailRequestContent
                         {
-                            Message = "Ok"
-                        }
+                            Messages = new List<EmailRequestContentMessage>
+                            {
+                                new EmailRequestContentMessage
+                                {
+                                    Message = "Ok"
+                                }
+                            }
+                        }, ApplicationJsonSerializerContext.Default.EmailRequestContent),
                     }
-                }, ApplicationJsonSerializerContext.Default.EmailRequestContent),
+                }
             }, cancellationToken);
         }
     }
