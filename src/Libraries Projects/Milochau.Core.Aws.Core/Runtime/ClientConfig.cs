@@ -209,9 +209,7 @@ namespace Amazon.Runtime
         // Represents max timeout.
         public static readonly TimeSpan MaxTimeout = TimeSpan.FromMilliseconds(int.MaxValue);
 
-        private IDefaultConfigurationProvider _defaultConfigurationProvider;
         private string serviceId = null;
-        private DefaultConfigurationMode? defaultConfigurationMode;
         private RegionEndpoint regionEndpoint = null;
         private bool probeForRegionEndpoint = true;
         private bool throttleRetries = true;
@@ -240,7 +238,6 @@ namespace Amazon.Runtime
         private RequestRetryMode? retryMode = null;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
-        private const int MaxRetriesLegacyDefault = 4;
         private const long DefaultMinCompressionSizeBytes = 10240;
 
         /// <summary>
@@ -293,7 +290,7 @@ namespace Amazon.Runtime
             }
             set
             {
-                this.defaultConfigurationBackingField = null;
+                this.DefaultConfiguration = null;
                 this.regionEndpoint = value;
                 this.probeForRegionEndpoint = this.regionEndpoint == null;
 
@@ -408,9 +405,7 @@ namespace Amazon.Runtime
         /// variable, max_attempts in the shared configuration file, or by setting a
         /// value directly on this property. When using AWS_MAX_ATTEMPTS or max_attempts
         /// the value returned from this property will be one less than the value entered
-        /// because this flag is the number of retry requests, not total requests. To 
-        /// learn more about the RetryMode property that affects the values returned by 
-        /// this flag, see <see cref="RetryMode"/>.
+        /// because this flag is the number of retry requests, not total requests.
         /// </summary>
         public int MaxErrorRetry
         {
@@ -418,13 +413,6 @@ namespace Amazon.Runtime
             {
                 if (!this.maxRetries.HasValue)
                 {
-                    //For legacy mode there was no MaxAttempts shared config or 
-                    //environment variables so use the legacy default value.
-                    if (RetryMode == RequestRetryMode.Legacy)
-                    {
-                        return MaxRetriesLegacyDefault;
-                    }
-
                     //For standard and adaptive modes first check the environment variables
                     //and shared config for a value. Otherwise default to the new default value.
                     //In the shared config or environment variable MaxAttempts is the total number 
@@ -557,42 +545,7 @@ namespace Amazon.Runtime
             set { this.disableLogging = value; }
         }
 
-        /// <summary>
-        /// Specify a <see cref="Amazon.Runtime.DefaultConfigurationMode"/> to use.
-        /// <para />
-        /// Returns the <see cref="Amazon.Runtime.DefaultConfigurationMode"/> that will be used. If none is specified,
-        /// than the correct one is computed by <see cref="IDefaultConfigurationProvider"/>.
-        /// </summary>
-        public DefaultConfigurationMode DefaultConfigurationMode
-        {
-            get
-            {
-                if (this.defaultConfigurationMode.HasValue)
-                    return this.defaultConfigurationMode.Value;
-
-                return DefaultConfiguration.Name;
-            }
-            set
-            {
-                this.defaultConfigurationMode = value;
-                defaultConfigurationBackingField = null;
-            }
-        }
-
-        private IDefaultConfiguration defaultConfigurationBackingField;
-        protected IDefaultConfiguration DefaultConfiguration
-        {
-            get
-            {
-                if (defaultConfigurationBackingField != null)
-                    return defaultConfigurationBackingField;
-
-                defaultConfigurationBackingField =
-                    _defaultConfigurationProvider.GetDefaultConfiguration(RegionEndpoint, defaultConfigurationMode);
-
-                return defaultConfigurationBackingField;
-            }
-        }
+        protected IDefaultConfiguration DefaultConfiguration { get; private set; }
 
         /// <summary>
         /// Credentials to use with a proxy.
@@ -613,40 +566,14 @@ namespace Amazon.Runtime
         }
 
         #region Constructor 
-        protected ClientConfig(IDefaultConfigurationProvider defaultConfigurationProvider)
+
+        protected ClientConfig(IDefaultConfiguration defaultConfiguration)
         {
-            _defaultConfigurationProvider = defaultConfigurationProvider;
+            DefaultConfiguration = defaultConfiguration;
 
             Initialize();
         }
 
-        public ClientConfig() : this(new LegacyOnlyDefaultConfigurationProvider())
-        {
-            this.defaultConfigurationBackingField = _defaultConfigurationProvider.GetDefaultConfiguration(null, null);
-            this.defaultConfigurationMode = this.defaultConfigurationBackingField.Name;
-        }
-
-        /// <summary>
-        /// Specialized <see cref="IDefaultConfigurationProvider"/> that is only meant to provide backwards
-        /// compatibility for the obsolete <see cref="ClientConfig"/> constructor.
-        /// </summary>
-        private class LegacyOnlyDefaultConfigurationProvider : IDefaultConfigurationProvider
-        {
-            public IDefaultConfiguration GetDefaultConfiguration(RegionEndpoint clientRegion, DefaultConfigurationMode? requestedConfigurationMode = null)
-            {
-                if (requestedConfigurationMode.HasValue &&
-                    requestedConfigurationMode.Value != Runtime.DefaultConfigurationMode.Legacy)
-                    throw new AmazonClientException($"This ClientConfig only supports {Runtime.DefaultConfigurationMode.Legacy}");
-
-                return new DefaultConfiguration
-                {
-                    Name = Runtime.DefaultConfigurationMode.Legacy,
-                    RetryMode = RequestRetryMode.Legacy,
-                    S3UsEast1RegionalEndpoint = S3UsEast1RegionalEndpointValue.Legacy,
-                    StsRegionalEndpoints = StsRegionalEndpointsValue.Legacy
-                };
-            }
-        }
         #endregion
 
         protected virtual void Initialize()
@@ -694,10 +621,6 @@ namespace Amazon.Runtime
         /// </summary>
         internal CancellationToken BuildDefaultCancellationToken()
         {
-            // legacy mode never had a working cancellation token, so keep it to default()
-            if (DefaultConfiguration.Name == Runtime.DefaultConfigurationMode.Legacy)
-                return default(CancellationToken);
-
             // TimeToFirstByteTimeout is not a perfect match with HttpWebRequest/HttpClient.Timeout.  However, given
             // that both are configured to only use Timeout until the Response Headers are downloaded, this value
             // provides a reasonable default value.
@@ -747,21 +670,6 @@ namespace Amazon.Runtime
                 return this.useFIPSEndpoint.Value;
             }
             set { useFIPSEndpoint = value; }
-        }
-        /// <summary>
-        /// If set to true the SDK will ignore the configured endpointUrls in the config file or in the environment variables.
-        /// By default it is set to false.
-        /// </summary>
-        public bool IgnoreConfiguredEndpointUrls
-        {
-            get
-            {
-                if (!this.ignoreConfiguredEndpointUrls.HasValue)
-                    return FallbackInternalConfigurationFactory.IgnoreConfiguredEndpointUrls ?? false;
-
-                return this.ignoreConfiguredEndpointUrls.Value;
-            }
-            set { ignoreConfiguredEndpointUrls = value; }
         }
         /// <summary>
         /// Controls whether request payloads are automatically compressed for supported operations.
@@ -893,27 +801,6 @@ namespace Amazon.Runtime
         {
             get { return this.endpointDiscoveryCacheLimit; }
             set { this.endpointDiscoveryCacheLimit = value; }
-        }
-
-        /// <summary>
-        /// Returns the flag indicating the current mode in use for request 
-        /// retries and influences the value returned from <see cref="MaxErrorRetry"/>.
-        /// The default value is RequestRetryMode.Legacy. This flag can be configured
-        /// by using the AWS_RETRY_MODE environment variable, retry_mode in the
-        /// shared configuration file, or by setting this value directly.
-        /// </summary>
-        public RequestRetryMode RetryMode
-        {
-            get
-            {
-                if (!this.retryMode.HasValue)
-                {
-                    return FallbackInternalConfigurationFactory.RetryMode ?? DefaultConfiguration.RetryMode;
-                }
-
-                return this.retryMode.Value;
-            }
-            set { this.retryMode = value; }
         }
 
         /// <summary>

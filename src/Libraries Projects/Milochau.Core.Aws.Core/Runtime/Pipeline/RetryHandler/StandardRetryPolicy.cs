@@ -66,17 +66,6 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         public int MaxBackoffInMilliseconds { get; set; } = 20000;
 
-
-        /// <summary>
-        /// Constructor for StandardRetryPolicy.
-        /// </summary>
-        /// <param name="maxRetries">The maximum number of retries before throwing
-        /// back a exception. This does not count the initial request.</param>
-        public StandardRetryPolicy(int maxRetries)
-        {
-            this.MaxRetries = maxRetries;
-        }
-
         /// <summary>
         /// Constructor for StandardRetryPolicy.
         /// </summary>
@@ -112,18 +101,6 @@ namespace Amazon.Runtime.Internal
         public override bool RetryForException(IExecutionContext executionContext, Exception exception)
         {
             return RetryForExceptionSync(exception, executionContext);
-        }
-
-        /// <summary>
-        /// Virtual method that gets called when a retry request is initiated. If retry throttling is
-        /// enabled, the value returned is true if the required capacity is retured, false otherwise. 
-        /// If retry throttling is disabled, true is returned.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override bool OnRetry(IExecutionContext executionContext)
-        {
-            return OnRetry(executionContext, false, false);
         }
 
         /// <summary>

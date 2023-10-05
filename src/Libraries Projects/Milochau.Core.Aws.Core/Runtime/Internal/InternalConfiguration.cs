@@ -34,11 +34,6 @@ namespace Amazon.Runtime.Internal
         public bool? EndpointDiscoveryEnabled { get; set; }
         
         /// <summary>
-        /// The retry mode to use: Legacy, Standard, or Adaptive.
-        /// </summary>
-        public RequestRetryMode? RetryMode { get; set; }
-        
-        /// <summary>
         /// The max number of request attempts.
         /// </summary>
         public int? MaxAttempts { get; set; }
@@ -52,14 +47,6 @@ namespace Amazon.Runtime.Internal
         /// Internet protocol version to be used for communicating with the EC2 Instance Metadata Service
         /// </summary>
         public EC2MetadataServiceEndpointMode? EC2MetadataServiceEndpointMode { get; set; }
-
-        /// <summary>
-        /// The desired <see cref="DefaultConfiguration.Name"/> that
-        /// <see cref="IDefaultConfigurationProvider"/> should use.
-        /// <para />
-        /// If this is null/empty, then the <see cref="DefaultConfigurationMode.Legacy"/> Mode will be used.
-        /// </summary>
-        public string DefaultConfigurationModeName { get; set; }
 
         /// <summary>
         /// Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
@@ -103,7 +90,6 @@ namespace Amazon.Runtime.Internal
 
         public const string ENVIRONMENT_VARIABLE_AWS_ENABLE_ENDPOINT_DISCOVERY = "AWS_ENABLE_ENDPOINT_DISCOVERY";
         public const string ENVIRONMENT_VARIABLE_AWS_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
-        public const string ENVIRONMENT_VARIABLE_AWS_RETRY_MODE = "AWS_RETRY_MODE";
         public const string ENVIRONMENT_VARIABLE_AWS_EC2_METADATA_SERVICE_ENDPOINT = "AWS_EC2_METADATA_SERVICE_ENDPOINT";
         public const string ENVIRONMENT_VARIABLE_AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE = "AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE";
         public const string ENVIRONMENT_VARIABLE_AWS_USE_DUALSTACK_ENDPOINT = "AWS_USE_DUALSTACK_ENDPOINT";
@@ -123,7 +109,6 @@ namespace Amazon.Runtime.Internal
         {
             EndpointDiscoveryEnabled = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_ENABLE_ENDPOINT_DISCOVERY, s => (bool)new BooleanConverter().ConvertFromString(s));
             MaxAttempts = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_MAX_ATTEMPTS, s => (int)new Int32Converter().ConvertFromString(s));
-            RetryMode = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_RETRY_MODE, s => (RequestRetryMode)new EnumConverter(typeof(RequestRetryMode)).ConvertFromString(s));
             EC2MetadataServiceEndpoint = GetEC2MetadataEndpointEnvironmentVariable();
             EC2MetadataServiceEndpointMode = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE, s => (EC2MetadataServiceEndpointMode)new EnumConverter(typeof(EC2MetadataServiceEndpointMode)).ConvertFromString(s));
             UseDualstackEndpoint = GetEnvironmentVariable(ENVIRONMENT_VARIABLE_AWS_USE_DUALSTACK_ENDPOINT, s => (bool)new BooleanConverter().ConvertFromString(s));
@@ -229,9 +214,7 @@ namespace Amazon.Runtime.Internal
             };
 
             //Find the priority first ordered config value for each property
-            _cachedConfiguration.DefaultConfigurationModeName = SeekString(standardGenerators, c => c.DefaultConfigurationModeName, defaultValue: null);
             _cachedConfiguration.EndpointDiscoveryEnabled = SeekValue(standardGenerators, (c) => c.EndpointDiscoveryEnabled);
-            _cachedConfiguration.RetryMode = SeekValue(standardGenerators, (c) => c.RetryMode);
             _cachedConfiguration.MaxAttempts = SeekValue(standardGenerators, (c) => c.MaxAttempts);
             _cachedConfiguration.EC2MetadataServiceEndpoint = SeekString(standardGenerators, (c) => c.EC2MetadataServiceEndpoint);
             _cachedConfiguration.EC2MetadataServiceEndpointMode = SeekValue(standardGenerators, (c) => c.EC2MetadataServiceEndpointMode);
@@ -288,18 +271,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Flag that specifies which retry mode to use or if retry mode has 
-        /// not been set.
-        /// </summary>
-        public static RequestRetryMode? RetryMode
-        {
-            get
-            {
-                return _cachedConfiguration.RetryMode;
-            }
-        }
-
-        /// <summary>
         /// Flag that specifies the max number of request attempts or if max 
         /// attempts has not been set.
         /// </summary>
@@ -330,15 +301,6 @@ namespace Amazon.Runtime.Internal
             get
             {
                 return _cachedConfiguration.EC2MetadataServiceEndpointMode;
-            }
-        }
-
-        /// <inheritdoc cref="InternalConfiguration.DefaultConfigurationModeName"/>
-        public static string DefaultConfigurationModeName
-        {
-            get
-            {
-                return _cachedConfiguration.DefaultConfigurationModeName;
             }
         }
 

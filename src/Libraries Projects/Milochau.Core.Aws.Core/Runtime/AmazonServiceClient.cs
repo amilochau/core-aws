@@ -326,21 +326,7 @@ namespace Amazon.Runtime
             errorCallbackHandler.OnError = this.ProcessExceptionHandlers;
 
             //Determine which retry policy to use based on the retry mode
-            RetryPolicy retryPolicy;
-            switch (Config.RetryMode)
-            {
-                case RequestRetryMode.Adaptive:
-                    retryPolicy = new AdaptiveRetryPolicy(Config);
-                    break;
-                case RequestRetryMode.Standard:
-                    retryPolicy = new StandardRetryPolicy(Config);
-                    break;
-                case RequestRetryMode.Legacy:
-                    retryPolicy = new DefaultRetryPolicy(Config);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown retry mode");
-            }
+            RetryPolicy retryPolicy = new StandardRetryPolicy(Config);
 
             // Build default runtime pipeline.
             RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>

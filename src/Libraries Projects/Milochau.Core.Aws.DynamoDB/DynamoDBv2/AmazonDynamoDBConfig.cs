@@ -30,7 +30,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// Default constructor
         /// </summary>
         public AmazonDynamoDBConfig()
-            : base(new Amazon.Runtime.Internal.DefaultConfigurationProvider(AmazonDynamoDBDefaultConfiguration.GetAllConfigurations()))
+            : base(AmazonDynamoDBDefaultConfiguration.Standard)
         {
             base.ServiceId = "DynamoDB";
             this.AuthenticationServiceName = "dynamodb";
@@ -70,6 +70,5 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
                 return _userAgent;
             }
         }
-
     }
 }

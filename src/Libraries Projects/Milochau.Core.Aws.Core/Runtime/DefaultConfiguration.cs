@@ -41,15 +41,6 @@ namespace Amazon.Runtime
     public interface IDefaultConfiguration
     {
         /// <summary>
-        /// Identifies a specific configuration mode. Example legacy, mobile, cross-region, etc
-        /// </summary>
-        DefaultConfigurationMode Name { get; }
-        /// <summary>
-        /// A retry mode specifies how the SDK attempts retries.
-        /// See https://docs.aws.amazon.com/sdkref/latest/guide/setting-global-retry_mode.html
-        /// </summary>
-        RequestRetryMode RetryMode { get; }
-        /// <summary>
         /// Specifies how the SDK determines the AWS service endpoint that it uses to talk to the AWS Security Token Service (AWS STS).
         /// See https://docs.aws.amazon.com/sdkref/latest/guide/setting-global-sts_regional_endpoints.html
         /// </summary>
@@ -82,13 +73,8 @@ namespace Amazon.Runtime
     }
 
     /// <inheritdoc cref="IDefaultConfiguration"/>
-    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class DefaultConfiguration : IDefaultConfiguration
     {
-        /// <inheritdoc />
-        public DefaultConfigurationMode Name { get; set; }
-        /// <inheritdoc />
-        public RequestRetryMode RetryMode { get; set; }
         /// <inheritdoc />
         public StsRegionalEndpointsValue StsRegionalEndpoints { get; set; }
         /// <inheritdoc />

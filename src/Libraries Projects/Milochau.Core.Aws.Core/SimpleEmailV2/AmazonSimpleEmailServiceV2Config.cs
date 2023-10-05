@@ -39,7 +39,7 @@ namespace Amazon.SimpleEmailV2
         /// Default constructor
         /// </summary>
         public AmazonSimpleEmailServiceV2Config()
-            : base(new Amazon.Runtime.Internal.DefaultConfigurationProvider(AmazonSimpleEmailServiceV2DefaultConfiguration.GetAllConfigurations()))
+            : base(AmazonSimpleEmailServiceV2DefaultConfiguration.Standard)
         {
             base.ServiceId = "SESv2";
             this.AuthenticationServiceName = "ses";
@@ -78,6 +78,5 @@ namespace Amazon.SimpleEmailV2
                 return _userAgent;
             }
         }
-
     }
 }

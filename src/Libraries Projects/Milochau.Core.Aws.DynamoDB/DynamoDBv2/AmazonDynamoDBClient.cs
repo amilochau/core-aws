@@ -46,10 +46,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// <param name="pipeline">Runtime pipeline for the current client.</param>
         protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
         {
-            if (this.Config.RetryMode == RequestRetryMode.Legacy)
-            {
-                pipeline.ReplaceHandler<RetryHandler>(new RetryHandler(new DynamoDBRetryPolicy(this.Config)));
-            }
             pipeline.RemoveHandler<EndpointResolver>();
             pipeline.AddHandlerAfter<Marshaller>(new AmazonDynamoDBEndpointResolver());
         }

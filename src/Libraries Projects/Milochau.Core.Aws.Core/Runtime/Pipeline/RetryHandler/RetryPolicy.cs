@@ -258,17 +258,6 @@ namespace Amazon.Runtime
         }
         
         /// <summary>
-         /// Virtual method that gets called before a retry request is initiated. The value 
-         /// returned is True by default(retry throttling feature is disabled).
-         /// </summary>
-         /// <param name="executionContext">The execution context which contains both the
-         /// requests and response context.</param>
-         public virtual bool OnRetry(IExecutionContext executionContext)
-         {
-             return true;
-         }
-         
-        /// <summary>
         /// Virtual method that gets called before a retry request is initiated. The value 
         /// returned is True by default(retry throttling feature is disabled).
         /// </summary>
@@ -628,6 +617,5 @@ namespace Amazon.Runtime
         {
             return $"http:{config.UseHttp}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{config.UseFIPSEndpoint}.ipv6:{config.UseDualstackEndpoint}";
         }
-
     }
 }

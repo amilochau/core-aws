@@ -59,11 +59,6 @@ namespace Amazon.Runtime
     public partial interface IClientConfig
     {
         /// <summary>
-        /// If set to true the SDK will ignore the configured endpointUrls in the config file or in the environment variables.
-        /// By default it is set to false.
-        /// </summary>
-        bool IgnoreConfiguredEndpointUrls { get; }
-        /// <summary>
         /// The serviceId for the service, which is specified in the metadata in the ServiceModel.
         /// The transformed value of the service ID (replace any spaces in the service ID 
         /// with underscores and uppercase all letters) is used to set service-specific endpoint urls.
@@ -73,12 +68,6 @@ namespace Amazon.Runtime
         ///     endpoint_url = http://localhost:8000
         /// </summary>
         string ServiceId { get; }
-
-        /// <summary>
-        /// Returns the <see cref="Amazon.Runtime.DefaultConfigurationMode"/> that will be used. If none is specified,
-        /// than the correct one is computed by <see cref="IDefaultConfigurationProvider"/>.
-        /// </summary>
-        DefaultConfigurationMode DefaultConfigurationMode { get; }
 
         /// <summary>
         /// Gets the RegionEndpoint property. The region constant to use that 
@@ -186,9 +175,7 @@ namespace Amazon.Runtime
         /// variable, max_attempts in the shared configuration file, or by setting a
         /// value directly on this property. When using AWS_MAX_ATTEMPTS or max_attempts
         /// the value returned from this property will be one less than the value entered
-        /// because this flag is the number of retry requests, not total requests. To 
-        /// learn more about the RetryMode property that affects the values returned by 
-        /// this flag, see <see cref="RetryMode"/>.
+        /// because this flag is the number of retry requests, not total requests.
         /// </summary>
         int MaxErrorRetry { get; }
 
@@ -299,15 +286,6 @@ namespace Amazon.Runtime
         /// </summary>
         int EndpointDiscoveryCacheLimit { get; }
 
-        /// <summary>
-        /// Returns the flag indicating the current mode in use for request 
-        /// retries and influences the value returned from <see cref="MaxErrorRetry"/>.
-        /// The default value is RequestRetryMode.Legacy. This flag can be configured
-        /// by using the AWS_RETRY_MODE environment variable, retry_mode in the
-        /// shared configuration file, or by setting this value directly.
-        /// </summary>
-        RequestRetryMode RetryMode { get; }
-                
         /// <summary>
         /// Under Adaptive retry mode, this flag determines if the client should wait for
         /// a send token to become available or don't block and fail the request immediately

@@ -456,13 +456,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             _recorder.AddHttpInformation("response", responseAttributes);
 
             subsegment.Aws["request_id"] = ex.RequestId;
-
-            // AmazonId2 property in AmazonS3Exception corresponds to the x-amz-id-2 Http header
-            var property = ex.GetType().GetProperty("AmazonId2");
-            if (property != null)
-            {
-                subsegment.Aws["id_2"] = (string)property.GetValue(ex, null);
-            }
         }
 
         private void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, IDictionary<string, object> aws)
@@ -727,8 +720,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         private ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
    
         public bool RegisterAll { get => registerAll; set => registerAll = value; }
-        public string Path { get; set; } // TODO :: This is not used anymore, remove in next breaking change
-        public XRayPipelineHandler XRayPipelineHandler { get; set; } = null; // TODO :: This is not used anymore, remove in next breaking change
         public AWSServiceHandlerManifest AWSServiceHandlerManifest { get; set; } = null;
 
         public void Customize(Type serviceClientType, RuntimePipeline pipeline)
