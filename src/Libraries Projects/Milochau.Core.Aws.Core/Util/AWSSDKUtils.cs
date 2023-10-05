@@ -173,79 +173,6 @@ namespace Amazon.Util
 
 #region Internal Methods
 
-        /// <summary>
-        /// Returns an extension of a path.
-        /// This has the same behavior as System.IO.Path.GetExtension, but does not
-        /// check the path for invalid characters.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string GetExtension(string path)
-        {
-            if (path == null)
-                return null;
-            int length = path.Length;
-            int index = length;
-
-            while (--index >= 0)
-            {
-                char ch = path[index];
-                if (ch == '.')
-                {
-                    if (index != length - 1)
-                        return path.Substring(index, length - index);
-                    else
-                        return string.Empty;
-                }
-                else if (IsPathSeparator(ch))
-                    break;
-            }
-            return string.Empty;
-        }
-
-        // Checks if the character is one \ / :
-        private static bool IsPathSeparator(char ch)
-        {
-            return (ch == '\\' ||
-                    ch == '/' ||
-                    ch == ':');
-        }
-
-        /*
-         * Determines the string to be signed based on the input parameters for
-         * AWS Signature Version 2
-         */
-        internal static string CalculateStringToSignV2(ParameterCollection parameterCollection, string serviceUrl)
-        {
-            StringBuilder data = new StringBuilder("POST\n", 512);
-            var sortedParameters = parameterCollection.GetSortedParametersList();
-            Uri endpoint = new Uri(serviceUrl);
-
-            data.Append(endpoint.Host);
-            data.Append("\n");
-            string uri = endpoint.AbsolutePath;
-            if (uri == null || uri.Length == 0)
-            {
-                uri = "/";
-            }
-
-            data.Append(AWSSDKUtils.UrlEncode(uri, true));
-            data.Append("\n");
-            foreach (KeyValuePair<string, string> pair in sortedParameters)
-            {
-                if (pair.Value != null)
-                {
-                    data.Append(AWSSDKUtils.UrlEncode(pair.Key, false));
-                    data.Append("=");
-                    data.Append(AWSSDKUtils.UrlEncode(pair.Value, false));
-                    data.Append("&");
-                }
-            }
-
-            string result = data.ToString();
-            return result.Remove(result.Length - 1);
-        }
-
         /**
          * Convert request parameters to Url encoded query string
          */
@@ -304,107 +231,6 @@ namespace Amazon.Util
                 return string.Empty;
 
             return result.Remove(result.Length - 1);
-        }
-
-        /// <summary>
-        /// Returns the canonicalized resource path for the service endpoint with single URL encoded path segments.
-        /// </summary>
-        /// <param name="endpoint">Endpoint URL for the request</param>
-        /// <param name="resourcePath">Resource path for the request</param>
-        /// <remarks>
-        /// If resourcePath begins or ends with slash, the resulting canonicalized
-        /// path will follow suit.
-        /// </remarks>
-        /// <returns>Canonicalized resource path for the endpoint</returns>
-        [Obsolete("Use CanonicalizeResourcePathV2 instead")]
-        public static string CanonicalizeResourcePath(Uri endpoint, string resourcePath)
-        {
-            // This overload is kept for backward compatibility in existing code bases.
-            return CanonicalizeResourcePath(endpoint, resourcePath, false, null, DefaultMarshallerVersion);
-        }
-
-        /// <summary>
-        /// Returns the canonicalized resource path for the service endpoint
-        /// </summary>
-        /// <param name="endpoint">Endpoint URL for the request</param>
-        /// <param name="resourcePath">Resource path for the request</param>
-        /// <param name="detectPreEncode">If true pre URL encode path segments if necessary.
-        /// S3 is currently the only service that does not expect pre URL encoded segments.</param>
-        /// <remarks>
-        /// If resourcePath begins or ends with slash, the resulting canonicalized
-        /// path will follow suit.
-        /// </remarks>
-        /// <returns>Canonicalized resource path for the endpoint</returns>
-        [Obsolete("Use CanonicalizeResourcePathV2 instead")]
-        public static string CanonicalizeResourcePath(Uri endpoint, string resourcePath, bool detectPreEncode)
-        {
-            // This overload is kept for backward compatibility in existing code bases.
-            return CanonicalizeResourcePath(endpoint, resourcePath, detectPreEncode, null, DefaultMarshallerVersion);
-        }
-
-        /// <summary>
-        /// Returns the canonicalized resource path for the service endpoint
-        /// </summary>
-        /// <param name="endpoint">Endpoint URL for the request</param>
-        /// <param name="resourcePath">Resource path for the request</param>
-        /// <param name="detectPreEncode">If true pre URL encode path segments if necessary.
-        /// S3 is currently the only service that does not expect pre URL encoded segments.</param>
-        /// <param name="pathResources">Dictionary of key/value parameters containing the values for the ResourcePath key replacements</param>
-        /// <param name="marshallerVersion">The version of the marshaller that constructed the request object.</param>
-        /// <remarks>
-        /// If resourcePath begins or ends with slash, the resulting canonicalized
-        /// path will follow suit.
-        /// </remarks>
-        /// <returns>Canonicalized resource path for the endpoint</returns>
-        [Obsolete("Use CanonicalizeResourcePathV2 instead")]
-        public static string CanonicalizeResourcePath(Uri endpoint, string resourcePath, bool detectPreEncode, IDictionary<string, string> pathResources, int marshallerVersion)
-        {
-            if (endpoint != null)
-            {
-                var path = endpoint.AbsolutePath;
-                if (string.IsNullOrEmpty(path) || string.Equals(path, Slash, StringComparison.Ordinal))
-                    path = string.Empty;
-
-                if (!string.IsNullOrEmpty(resourcePath) && resourcePath.StartsWith(Slash, StringComparison.Ordinal))
-                    resourcePath = resourcePath.Substring(1);
-
-                if (!string.IsNullOrEmpty(resourcePath))
-                    path = path + Slash + resourcePath;
-
-                resourcePath = path;
-            }
-
-            if (string.IsNullOrEmpty(resourcePath))
-                return Slash;
-
-            IEnumerable<string> encodedSegments = AWSSDKUtils.SplitResourcePathIntoSegments(resourcePath, pathResources);
-            
-            var pathWasPreEncoded = false;
-            if (detectPreEncode)
-            {
-                if (endpoint == null)
-                    throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
-
-                // S3 is a special case.  For S3 skip the pre encode.
-                // For everything else URL pre encode the resource path segments.
-                if (!S3Uri.IsS3Uri(endpoint))
-                {
-                    encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
-                    
-                    pathWasPreEncoded = true;
-                }
-            }
-
-            var canonicalizedResourcePath = AWSSDKUtils.JoinResourcePathSegments(encodedSegments, false);
-
-            // Get the logger each time (it's cached) because we shouldn't store it in a static variable.
-            Logger.GetLogger(typeof(AWSSDKUtils)).DebugFormat("{0} encoded {1}{2} for canonicalization: {3}",
-                pathWasPreEncoded ? "Double" : "Single",
-                resourcePath,
-                endpoint == null ? "" : " with endpoint " + endpoint.AbsoluteUri,
-                canonicalizedResourcePath);
-
-            return canonicalizedResourcePath;
         }
 
         /// <summary>
@@ -527,18 +353,6 @@ namespace Amazon.Util
         /// </summary>
         /// <param name="resourcePath">The patterned resourcePath</param>
         /// <param name="pathResources">The key/value lookup for the patterned resourcePath</param>
-        /// <returns>A segmented encoded URL</returns>
-        public static string ResolveResourcePath(string resourcePath, IDictionary<string, string> pathResources)
-        {
-            return ResolveResourcePath(resourcePath, pathResources, true);
-        }
-
-        /// <summary>
-        /// Takes a patterned resource path and resolves it using the key/value path resources into
-        /// a segmented encoded URL.
-        /// </summary>
-        /// <param name="resourcePath">The patterned resourcePath</param>
-        /// <param name="pathResources">The key/value lookup for the patterned resourcePath</param>
         /// <param name="skipEncodingValidPathChars">If true valid path characters {/+:} are not encoded</param>
         /// <returns>A segmented encoded URL</returns>
         public static string ResolveResourcePath(string resourcePath, IDictionary<string, string> pathResources, bool skipEncodingValidPathChars)
@@ -549,30 +363,6 @@ namespace Amazon.Util
             }
 
             return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
-        }
-
-        /// <summary>
-        /// Returns a new string created by joining each of the strings in the
-        /// specified list together, with a comma between them.
-        /// </summary>
-        /// <parma name="strings">The list of strings to join into a single, comma delimited
-        /// string list.</parma>
-        /// <returns> A new string created by joining each of the strings in the
-        /// specified list together, with a comma between strings.</returns>
-        public static String Join(List<String> strings)
-        {
-            StringBuilder result = new StringBuilder();
-
-            Boolean first = true;
-            foreach (String s in strings)
-            {
-                if (!first) result.Append(", ");
-
-                result.Append(s);
-                first = false;
-            }
-
-            return result.ToString();
         }
 
         /// <summary>
@@ -627,40 +417,9 @@ namespace Amazon.Util
             }
         }
 
-        /// <summary>
-        /// Utility method for converting Unix epoch seconds to DateTime structure.
-        /// </summary>
-        /// <param name="seconds">The number of seconds since January 1, 1970.</param>
-        /// <returns>Converted DateTime structure</returns>
-        public static DateTime ConvertFromUnixEpochSeconds(int seconds)
-        {
-            return new DateTime(seconds * 10000000L + EPOCH_START.Ticks, DateTimeKind.Utc).ToLocalTime();
-        }
-
-        /// <summary>
-        /// Utility method for converting Unix epoch milliseconds to DateTime structure.
-        /// </summary>
-        /// <param name="milliseconds">The number of milliseconds since January 1, 1970.</param>
-        /// <returns>Converted DateTime structure</returns>
-        public static DateTime ConvertFromUnixEpochMilliseconds(long milliseconds)
-        {
-            return new DateTime(milliseconds * 10000L + EPOCH_START.Ticks, DateTimeKind.Utc).ToLocalTime();
-        }
-
-        public static int ConvertToUnixEpochSeconds(DateTime dateTime)
-        {
-            return Convert.ToInt32(GetTimeSpanInTicks(dateTime).TotalSeconds);
-        }
-
         public static string ConvertToUnixEpochSecondsString(DateTime dateTime)
         {
             return Convert.ToInt64(GetTimeSpanInTicks(dateTime).TotalSeconds).ToString(CultureInfo.InvariantCulture);
-        }
-
-        [Obsolete("This method isn't named correctly: it returns seconds instead of milliseconds. Use ConvertToUnixEpochSecondsDouble instead.", false)]
-        public static double ConvertToUnixEpochMilliSeconds(DateTime dateTime)
-        {
-            return ConvertToUnixEpochSecondsDouble(dateTime);
         }
 
         public static double ConvertToUnixEpochSecondsDouble(DateTime dateTime)
@@ -736,38 +495,6 @@ namespace Amazon.Util
 
                 return _dispatcher;
             }
-        }
-
-        /// <summary>
-        /// Parses a query string of a URL and returns the parameters as a string-to-string dictionary.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static Dictionary<string, string> ParseQueryParameters(string url)
-        {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-
-            if (!string.IsNullOrEmpty(url))
-            {
-                int queryIndex = url.IndexOf('?');
-                if (queryIndex >= 0)
-                {
-                    string queryString = url.Substring(queryIndex + 1);
-                    string[] kvps = queryString.Split(new char[] { '&' }, StringSplitOptions.None);
-                    foreach (string kvp in kvps)
-                    {
-                        if (string.IsNullOrEmpty(kvp))
-                            continue;
-
-                        string[] nameValuePair = kvp.Split(new char[] { '=' }, 2);
-                        string name = nameValuePair[0];
-                        string value = nameValuePair.Length == 1 ? null : nameValuePair[1];
-                        parameters[name] = value;
-                    }
-                }
-            }
-
-            return parameters;
         }
 
         internal static bool AreEqual(object[] itemsA, object[] itemsB)
@@ -862,105 +589,6 @@ namespace Amazon.Util
 #endregion
 
 #region Public Methods and Properties
-
-        /// <summary>
-        /// Formats the current date as a GMT timestamp
-        /// </summary>
-        /// <returns>A GMT formatted string representation
-        /// of the current date and time
-        /// </returns>
-        public static string FormattedCurrentTimestampGMT
-        {
-            get
-            {
-#pragma warning disable CS0618 // Type or member is obsolete
-                DateTime dateTime = AWSSDKUtils.CorrectedUtcNow;
-#pragma warning restore CS0618 // Type or member is obsolete
-                return dateTime.ToString(GMTDateFormat, CultureInfo.InvariantCulture);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Formats the current date as ISO 8601 timestamp
-        /// </summary>
-        /// <returns>An ISO 8601 formatted string representation
-        /// of the current date and time
-        /// </returns>
-        public static string FormattedCurrentTimestampISO8601
-        {
-            get
-            {
-                return GetFormattedTimestampISO8601(0);
-            }
-        }
-
-        /// <summary>
-        /// Gets the ISO8601 formatted timestamp that is minutesFromNow
-        /// in the future.
-        /// </summary>
-        /// <param name="minutesFromNow">The number of minutes from the current instant
-        /// for which the timestamp is needed.</param>
-        /// <returns>The ISO8601 formatted future timestamp.</returns>
-        public static string GetFormattedTimestampISO8601(int minutesFromNow)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            return GetFormattedTimestampISO8601(AWSSDKUtils.CorrectedUtcNow.AddMinutes(minutesFromNow));
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
-        internal static string GetFormattedTimestampISO8601(IClientConfig config)
-        {
-            return GetFormattedTimestampISO8601(config.CorrectedUtcNow);
-        }
-
-        private static string GetFormattedTimestampISO8601(DateTime dateTime)
-        {
-            DateTime formatted = new DateTime(
-                dateTime.Year,
-                dateTime.Month,
-                dateTime.Day,
-                dateTime.Hour,
-                dateTime.Minute,
-                dateTime.Second,
-                dateTime.Millisecond,
-                DateTimeKind.Local
-                );
-            return formatted.ToString(
-                AWSSDKUtils.ISO8601DateFormat,
-                CultureInfo.InvariantCulture
-                );
-        }
-
-        /// <summary>
-        /// Formats the current date as ISO 8601 timestamp
-        /// </summary>
-        /// <returns>An ISO 8601 formatted string representation
-        /// of the current date and time
-        /// </returns>
-        public static string FormattedCurrentTimestampRFC822
-        {
-            get
-            {
-                return GetFormattedTimestampRFC822(0);
-            }
-        }
-
-        /// <summary>
-        /// Gets the RFC822 formatted timestamp that is minutesFromNow
-        /// in the future.
-        /// </summary>
-        /// <param name="minutesFromNow">The number of minutes from the current instant
-        /// for which the timestamp is needed.</param>
-        /// <returns>The ISO8601 formatted future timestamp.</returns>
-        public static string GetFormattedTimestampRFC822(int minutesFromNow)
-        {
-#pragma warning disable CS0612 // Type or member is obsolete
-            DateTime dateTime = AWSSDKUtils.CorrectedUtcNow.AddMinutes(minutesFromNow);
-#pragma warning restore CS0612 // Type or member is obsolete
-            return dateTime.ToString(AWSSDKUtils.RFC822DateFormat, CultureInfo.InvariantCulture);
-        }
 
         /// <summary>
         /// Determines whether the given string is an absolute path to a root.
@@ -1200,28 +828,6 @@ namespace Amazon.Util
             return hash;
         }
 
-        /// <remarks> 
-        /// Note, this was called directly from service packages prior to compression support
-        /// being added shortly after 3.7.200. It's important to preserve the signature and functionality
-        /// until the next minor version for those older 3.7.* service packages.
-        /// </remarks>
-        /// <summary>
-        /// Generates an MD5 Digest for the string-based content
-        /// </summary>
-        /// <param name="content">The content for which the MD5 Digest needs
-        /// to be computed.
-        /// </param>
-        /// <param name="fBase64Encode">Whether the returned checksum should be
-        /// base64 encoded.
-        /// </param>
-        /// <returns>A string representation of the hash with or w/o base64 encoding
-        /// </returns>
-        public static string GenerateChecksumForContent(string content, bool fBase64Encode)
-        {
-            // Convert the input string to a byte array and compute the hash.
-            return GenerateChecksumForBytes(Encoding.UTF8.GetBytes(content), fBase64Encode);
-        }
-
         /// <summary>
         /// Generates an MD5 Digest for the given byte array
         /// </summary>
@@ -1254,41 +860,6 @@ namespace Amazon.Util
         public static void Sleep(TimeSpan ts)
         {
             Sleep((int)ts.TotalMilliseconds);
-        }
-
-        /// <summary>
-        /// Convert bytes to a hex string
-        /// </summary>
-        /// <param name="value">Bytes to convert.</param>
-        /// <returns>Hexadecimal string representing the byte array.</returns>
-        public static string BytesToHexString(byte[] value)
-        {
-            string hex = BitConverter.ToString(value);
-            hex = hex.Replace("-", string.Empty);
-            return hex;
-        }
-
-        /// <summary>
-        /// Convert a hex string to bytes
-        /// </summary>
-        /// <param name="hex">Hexadecimal string</param>
-        /// <returns>Byte array corresponding to the hex string.</returns>
-        public static byte[] HexStringToBytes(string hex)
-        {
-            if (string.IsNullOrEmpty(hex) || hex.Length % 2 == 1)
-                throw new ArgumentOutOfRangeException("hex");
-
-            int count = 0;
-            byte[] buffer = new byte[hex.Length / 2];
-            for (int i = 0; i < hex.Length; i += 2)
-            {
-                string sub = hex.Substring(i, 2);
-                byte b = Convert.ToByte(sub, 16);
-                buffer[count] = b;
-                count++;
-            }
-
-            return buffer;
         }
 
         /// <summary>
@@ -1341,32 +912,6 @@ namespace Amazon.Util
                 c == '\u202D' || // LRO
                 c == '\u202E'    // RLO
             );
-        }
-
-        public static string DownloadStringContent(Uri uri)
-        {
-            return DownloadStringContent(uri, TimeSpan.Zero, null);
-        }
-
-        public static string DownloadStringContent(Uri uri, TimeSpan timeout)
-        {
-            return DownloadStringContent(uri, timeout, null);
-        }
-
-        public static string DownloadStringContent(Uri uri, IWebProxy proxy)
-        {
-            return DownloadStringContent(uri, TimeSpan.Zero, proxy);
-        }                
-
-        public static string DownloadStringContent(Uri uri, TimeSpan timeout, IWebProxy proxy)
-        {
-            using (var client = CreateClient(uri, timeout, proxy, null))
-            {
-                return AsyncHelpers.RunSync<string>(() =>
-                {
-                    return client.GetStringAsync(uri);
-                }); 
-            }
         }
 
         /// <summary>
@@ -1444,11 +989,6 @@ namespace Amazon.Util
             }
                                 
             return client;
-        }
-
-        public static Stream OpenStream(Uri uri)
-        {
-            return OpenStream(uri, null);
         }
 
         public static Stream OpenStream(Uri uri, IWebProxy proxy)
@@ -1555,55 +1095,6 @@ namespace Amazon.Util
 
         }
 
-        /// <summary>
-        /// This method allows to check whether a property of an object returned by a service call
-        /// is set. This method is needed to discriminate whether a field is not set (not present in
-        /// the service response) or if it is set to the default value for its type. Using this
-        /// method is not required for nullable properties (non-ValueType and Nullable) because
-        /// they will be simply set to null when not included in the service response.
-        /// This method can also be used on objects used as part of service requests.
-        /// This method doesn't support objects that are part of the S3 service model.
-        /// </summary>
-        /// <param name="awsServiceObject">An object that is used in an AWS service request or is
-        /// returned as part of an AWS service response.</param>
-        /// <param name="propertyName">The name of the property of awsServiceObject to check.</param>
-        /// <returns>True if the property is set, otherwise false.</returns>
-        public static bool IsPropertySet(object awsServiceObject, string propertyName)
-        {
-            var type = awsServiceObject.GetType();
-            var nameSpace = type.Namespace;
-
-            if (!nameSpace.StartsWith("Amazon.", StringComparison.Ordinal) || !nameSpace.EndsWith(".Model", StringComparison.Ordinal))
-            {
-                throw new ArgumentException("IsPropertySet can be used only on Amazon Model classes");
-            }
-            else if (nameSpace == "Amazon.S3.Model")
-            {
-                throw new ArgumentException("IsPropertySet doesn't support S3");
-            }
-
-            var key = new IsSetMethodsCacheKey(type, propertyName);
-
-            //We cache the result of GetIsPropertySetMethodInfo even if it is null
-            var method = IsSetMethodsCache.GetOrAdd(key, (k) => k.Type.GetMethod("IsSet" + k.PropertyName,
-                                                                                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-                                                                                 null,
-                                                                                 new Type[0],
-                                                                                 new ParameterModifier[0]));
-            if (method == null)
-            {
-                throw new ArgumentException("Could not find an IsSet method for property " + key);
-            }
-
-            object result = method.Invoke(awsServiceObject, new object[0]);
-
-            if (!(result is bool))
-            {
-                throw new ArgumentException("The IsSet method for property " + key + " didn't return a bool");
-            }
-
-            return (bool)result;
-        }
 #endregion
 
 #region Private Methods, Static Fields and Classes
@@ -1681,11 +1172,6 @@ namespace Amazon.Util
                 nextTick = _maxDelay.Ticks;
             }
             return new TimeSpan(nextTick);
-        }
-
-        public void Reset()
-        {
-            _count = 0;
         }
     }
 }

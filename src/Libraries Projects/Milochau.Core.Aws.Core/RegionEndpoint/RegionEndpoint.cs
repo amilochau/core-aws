@@ -88,7 +88,7 @@ namespace Amazon
             {
                 lock (_hashBySystemName)
                 {
-                    if (_hashBySystemName.TryGetValue(systemName, out regionEndpoint))
+                    if (_hashBySystemName.TryGetValue(systemName, out regionEndpoint)) // @todo how do we have this dictionary with values??
                         return regionEndpoint;
                 }
 
@@ -117,26 +117,7 @@ namespace Amazon
             {
                 if (_regionEndpointProvider == null)
                 {
-                    // If the existing customer provided the endpoints.json file via
-                    // <aws endpointDefinition=""/>, it's in v2 format.  We we will create
-                    // a v2 provider which does a fall through during LoadEndpointDefinitions()
-                    // and loads from the override file provided by the user.
-                    //
-                    // Else, we are loading from the assembly resource.  In which case we use the 
-                    // latest provider.
-                    //
-                    // It's actually a bug that _regionEndpointProvider is a static member variable
-                    // since the IEndpointProvider should respect the AWSConfigs.EndpointDefinition
-                    // _at_ the time of the service client instantiation.  However, since this is
-                    // the existing behavior with v2 endpoint file format, we will preserve this behavior as is.
-                    if (!string.IsNullOrEmpty(AWSConfigs.EndpointDefinition))
-                    {
-                        _regionEndpointProvider = new RegionEndpointProviderV2();
-                    }
-                    else
-                    {
-                        _regionEndpointProvider = new RegionEndpointProviderV3();
-                    }
+                    _regionEndpointProvider = new RegionEndpointProviderV3();
                 }
                 return _regionEndpointProvider;
             }

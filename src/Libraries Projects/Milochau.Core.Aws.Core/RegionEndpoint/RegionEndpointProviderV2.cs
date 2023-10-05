@@ -266,7 +266,7 @@ namespace Amazon.Internal
 
             static void LoadEndpointDefinitions()
             {
-                LoadEndpointDefinitions(AWSConfigs.EndpointDefinition);
+                LoadEndpointDefinitions(null);
             }
 
             public static void LoadEndpointDefinitions(string endpointsPath)
@@ -392,17 +392,6 @@ namespace Amazon.Internal
                     int delay = (int)(Math.Pow(4, retries) * 100);
                     delay = Math.Min(delay, 30 * 1000);
                     Util.AWSSDKUtils.Sleep(delay);
-                }
-            }
-            /// <summary>
-            /// This is a testing method and should not be called by production applications.
-            /// </summary>
-            public static void UnloadEndpointDefinitions()
-            {
-                lock (LOCK_OBJECT)
-                {
-                    _documentEndpoints.Clear();
-                    RegionEndpoint.loaded = false;
                 }
             }
             #endregion

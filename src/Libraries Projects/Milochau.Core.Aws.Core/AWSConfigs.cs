@@ -72,20 +72,8 @@ namespace Amazon
     {
         #region Private static members
 
-        private static char[] validSeparators = new char[] { ' ', ',' };
-
         // Tests can override this DateTime source.
         internal static Func<DateTime> utcNowSource = GetUtcNow;
-
-        // Deprecated configs
-        internal static string _awsRegion = GetConfig(AWSRegionKey);
-        internal static LoggingOptions _logging = GetLoggingSetting();
-        internal static ResponseLoggingOption _responseLogging = GetConfigEnum<ResponseLoggingOption>(ResponseLoggingKey);
-        internal static bool _logMetrics = GetConfigBool(LogMetricsKey);
-        internal static string _endpointDefinition = GetConfig(EndpointDefinitionKey);
-        internal static string _awsProfileName = GetConfig(AWSProfileNameKey);
-        internal static string _awsAccountsLocation = GetConfig(AWSProfilesLocationKey);
-        internal static bool _useSdkCache = GetConfigBool(UseSdkCacheKey, defaultValue: true);
 
         // New config section
         private static RootConfig _rootConfig = new RootConfig();
@@ -143,72 +131,7 @@ namespace Amazon
         }
         #endregion
 
-        #region Region
-
-        /// <summary>
-        /// Key for the AWSRegion property.
-        /// <seealso cref="Amazon.AWSConfigs.AWSRegion"/>
-        /// </summary>
-        public const string AWSRegionKey = "AWSRegion";
-
-        /// <summary>
-        /// Configures the default AWS region for clients which have not explicitly specified a region.
-        /// Changes to this setting will only take effect for newly constructed instances of AWS clients.
-        /// 
-        /// This setting can be configured through the App.config. For example:
-        /// <code>
-        /// &lt;configSections&gt;
-        ///   &lt;section name="aws" type="Amazon.AWSSection, AWSSDK.Core"/&gt;
-        /// &lt;/configSections&gt;
-        /// &lt;aws region="us-west-2" /&gt;
-        /// </code>
-        /// </summary>
-        public static string AWSRegion
-        {
-            get { return _rootConfig.Region; }
-            set { _rootConfig.Region = value; }
-        }
-
-        #endregion
-
-        #region Account Name
-
-        /// <summary>
-        /// Key for the AWSProfileName property.
-        /// <seealso cref="Amazon.AWSConfigs.AWSProfileName"/>
-        /// </summary>
-        public const string AWSProfileNameKey = "AWSProfileName";
-
-        /// <summary>
-        /// Profile name for stored AWS credentials that will be used to make service calls.
-        /// Changes to this setting will only take effect in newly-constructed clients.
-        /// <para>
-        /// To reference the account from an application's App.config or Web.config use the AWSProfileName setting.
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSProfileName" value="development"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        /// </para>
-        /// </summary>
-        public static string AWSProfileName
-        {
-            get { return _rootConfig.ProfileName; }
-            set { _rootConfig.ProfileName = value; }
-        }
-
-        #endregion
-
         #region Accounts Location
-
-        /// <summary>
-        /// Key for the AWSProfilesLocation property.
-        /// <seealso cref="Amazon.AWSConfigs.LogMetrics"/>
-        /// </summary>
-        public const string AWSProfilesLocationKey = "AWSProfilesLocation";
 
         /// <summary>
         /// Location of the credentials file shared with other AWS SDKs.
@@ -235,143 +158,7 @@ namespace Amazon
 
         #endregion
 
-        #region Logging
-
-        /// <summary>
-        /// Key for the Logging property.
-        /// <seealso cref="Amazon.AWSConfigs.Logging"/>
-        /// </summary>
-        public const string LoggingKey = "AWSLogging";
-
-        /// <summary>
-        /// Configures how the SDK should log events, if at all.
-        /// Changes to this setting will only take effect in newly-constructed clients.
-        /// 
-        /// The setting can be configured through App.config, for example:
-        /// <code>
-        /// &lt;appSettings&gt;
-        ///   &lt;add key="AWSLogging" value="log4net"/&gt;
-        /// &lt;/appSettings&gt;
-        /// </code>
-        /// </summary>
-        [Obsolete("This property is obsolete. Use LoggingConfig.LogTo instead.")]
-        public static LoggingOptions Logging
-        {
-            get { return _rootConfig.Logging.LogTo; }
-            set { _rootConfig.Logging.LogTo = value; }
-        }
-
-        private static LoggingOptions GetLoggingSetting()
-        {
-            string value = GetConfig(LoggingKey);
-            if (string.IsNullOrEmpty(value))
-                return LoggingOptions.None;
-
-            string[] settings = value.Split(validSeparators, StringSplitOptions.RemoveEmptyEntries);
-            if (settings == null || settings.Length == 0)
-                return LoggingOptions.None;
-
-            LoggingOptions totalSetting = LoggingOptions.None;
-            foreach (string setting in settings)
-            {
-                LoggingOptions l = ParseEnum<LoggingOptions>(setting);
-                totalSetting |= l;
-            }
-            return totalSetting;
-        }
-
-        #endregion
-
-        #region Response Logging
-
-        /// <summary>
-        /// Key for the ResponseLogging property.
-        /// 
-        /// <seealso cref="Amazon.AWSConfigs.ResponseLogging"/>
-        /// </summary>
-        public const string ResponseLoggingKey = "AWSResponseLogging";
-
-        /// <summary>
-        /// Configures when the SDK should log service responses.
-        /// Changes to this setting will take effect immediately.
-        /// 
-        /// The setting can be configured through App.config, for example:
-        /// <code>
-        /// &lt;appSettings&gt;
-        ///   &lt;add key="AWSResponseLogging" value="OnError"/&gt;
-        /// &lt;/appSettings&gt;
-        /// </code>
-        /// </summary>
-        [Obsolete("This property is obsolete. Use LoggingConfig.LogResponses instead.")]
-        public static ResponseLoggingOption ResponseLogging
-        {
-            get { return _rootConfig.Logging.LogResponses; }
-            set { _rootConfig.Logging.LogResponses = value; }
-        }
-
-        #endregion
-
-        #region Log Metrics
-
-        /// <summary>
-        /// Key for the LogMetrics property.
-        /// <seealso cref="Amazon.AWSConfigs.LogMetrics"/>
-        /// </summary>
-        public const string LogMetricsKey = "AWSLogMetrics";
-
-        /// <summary>
-        /// Configures if the SDK should log performance metrics.
-        /// This setting configures the default LogMetrics property for all clients/configs.
-        /// Changes to this setting will only take effect in newly-constructed clients.
-        /// 
-        /// The setting can be configured through App.config, for example:
-        /// <code>
-        /// &lt;appSettings&gt;
-        ///   &lt;add key="AWSLogMetrics" value="true"/&gt;
-        /// &lt;/appSettings&gt;
-        /// </code>
-        /// </summary>
-        [Obsolete("This property is obsolete. Use LoggingConfig.LogMetrics instead.")]
-        public static bool LogMetrics
-        {
-            get { return _rootConfig.Logging.LogMetrics; }
-            set { _rootConfig.Logging.LogMetrics = value; }
-        }
-
-        #endregion
-
-        #region Endpoint Configuration
-
-        /// <summary>
-        /// Key for the EndpointDefinition property.
-        /// <seealso cref="Amazon.AWSConfigs.EndpointDefinition"/>
-        /// </summary>
-        public const string EndpointDefinitionKey = "AWSEndpointDefinition";
-
-        /// <summary>
-        /// Configures if the SDK should use a custom configuration file that defines the regions and endpoints.
-        /// <code>
-        /// &lt;configSections&gt;
-        ///   &lt;section name="aws" type="Amazon.AWSSection, AWSSDK.Core"/&gt;
-        /// &lt;/configSections&gt;
-        /// &lt;aws endpointDefinition="c:\config\endpoints.json" /&gt;
-        /// </code>
-        /// </summary>
-        public static string EndpointDefinition
-        {
-            get { return _rootConfig.EndpointDefinition; }
-            set { _rootConfig.EndpointDefinition = value; }
-        }
-
-        #endregion
-
         #region SDK Cache
-
-        /// <summary>
-        /// Key for the UseSdkCache property.
-        /// <seealso cref="Amazon.AWSConfigs.UseSdkCache"/>
-        /// </summary>
-        public const string UseSdkCacheKey = "AWSCache";
 
         /// <summary>
         /// Configures if the SDK Cache should be used, the default value is true.
@@ -438,24 +225,6 @@ namespace Amazon
             set { _rootConfig.UseAlternateUserAgentHeader = value; }
         }
 
-        /// <summary>
-        /// Configuration for the region endpoint section of AWS configuration.
-        /// Changes may not take effect until a new client is constructed.
-        /// 
-        /// Example section:
-        /// <code>
-        /// &lt;configSections&gt;
-        ///   &lt;section name="aws" type="Amazon.AWSSection, AWSSDK.Core"/&gt;
-        /// &lt;/configSections&gt;
-        /// &lt;aws region="us-west-2" /&gt;
-        /// </code>
-        /// </summary>
-        public static RegionEndpoint RegionEndpoint
-        {
-            get { return _rootConfig.RegionEndpoint; }
-            set { _rootConfig.RegionEndpoint = value; }
-        }
-
         public static CSMConfig CSMConfig
         {
             get { return _rootConfig.CSMConfig; }
@@ -503,57 +272,6 @@ namespace Amazon
         #endregion
 
         #region Private general methods
-
-        private static bool GetConfigBool(string name, bool defaultValue = false)
-        {
-            string value = GetConfig(name);
-            bool result;
-            if (bool.TryParse(value, out result))
-                return result;
-            return defaultValue;
-        }
-
-        private static T GetConfigEnum<T>(string name)
-        {
-            var type = TypeFactory.GetTypeInfo(typeof(T));
-            if (!type.IsEnum) throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Type {0} must be enum", type.FullName));
-
-            string value = GetConfig(name);
-            if (string.IsNullOrEmpty(value))
-                return default(T);
-            T result = ParseEnum<T>(value);
-            return result;
-        }
-
-        private static T ParseEnum<T>(string value)
-        {
-            T t;
-            if (TryParseEnum<T>(value, out t))
-                return t;
-            Type type = typeof(T);
-            string messageFormat = "Unable to parse value {0} as enum of type {1}. Valid values are: {2}";
-            string enumNames = string.Join(", ", Enum.GetNames(type));
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, messageFormat, value, type.FullName, enumNames));
-        }
-
-        private static bool TryParseEnum<T>(string value, out T result)
-        {
-            result = default(T);
-
-            if (string.IsNullOrEmpty(value))
-                return false;
-
-            try
-            {
-                T t = (T)Enum.Parse(typeof(T), value, true);
-                result = t;
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
-        }
 
         /// <summary>
         /// This method should never be called directly.

@@ -70,21 +70,6 @@ namespace Amazon.Runtime.CredentialManagement
         /// <returns>True if the profile was found, false otherwise.</returns>
         public bool TryGetProfile(string profileName, out CredentialProfile profile)
         {
-            if (string.IsNullOrEmpty(ProfilesLocation) && UserCrypto.IsUserCryptAvailable)
-            {
-                var netCredentialsFile = new NetSDKCredentialsFile();
-                if (netCredentialsFile.TryGetProfile(profileName, out profile))
-                {
-                    return true;
-                }
-            }
-
-            var sharedCredentialsFile = new SharedCredentialsFile(ProfilesLocation);
-            if (sharedCredentialsFile.TryGetProfile(profileName, out profile))
-            {
-                return true;
-            }
-
             profile = null;
             return false;
         }

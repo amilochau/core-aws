@@ -33,14 +33,12 @@ namespace Amazon.Runtime
         internal const string AWS_PROFILE_ENVIRONMENT_VARIABLE = "AWS_PROFILE";
         internal const string DefaultProfileName = "default";
 
-        private static readonly CredentialProfileStoreChain credentialProfileChain = new CredentialProfileStoreChain();
         static FallbackCredentialsFactory()
         {
             Reset();
         }
 
         public delegate AWSCredentials CredentialsGenerator();
-        public static List<CredentialsGenerator> CredentialsGenerators { get; set; }
 
         public static void Reset()
         {
@@ -53,14 +51,6 @@ namespace Amazon.Runtime
             {
                 cachedCredentialsLock.EnterWriteLock();
                 cachedCredentials = null;
-                CredentialsGenerators = new List<CredentialsGenerator>
-                {
-                    () => AssumeRoleWithWebIdentityCredentials.FromEnvironmentVariables(),
-                    // Attempt to load the default profile.  It could be Basic, Session, AssumeRole, or SAML.
-                    () => GetAWSCredentials(credentialProfileChain),
-                    () => new EnvironmentVariablesAWSCredentials(), // Look for credentials set in environment vars.
-                    () => ECSEC2CredentialsWrapper(proxy), // either get ECS credentials or instance profile credentials
-                };
             }
             finally
             {
@@ -70,61 +60,12 @@ namespace Amazon.Runtime
 
         internal static string GetProfileName()
         {
-            var profileName = AWSConfigs.AWSProfileName;
-
-            if (string.IsNullOrEmpty(profileName?.Trim()))
-                profileName = Environment.GetEnvironmentVariable(AWS_PROFILE_ENVIRONMENT_VARIABLE);
-
-            if (string.IsNullOrEmpty(profileName?.Trim()))
-                profileName = DefaultProfileName;
-
-            return profileName;
-        }
-
-        private static AWSCredentials GetAWSCredentials(ICredentialProfileSource source)
-        {
-            var profileName = GetProfileName();
-
-            CredentialProfile profile;
-            if (source.TryGetProfile(profileName, out profile))
-                return profile.GetAWSCredentials(source, true);
-
-            throw new AmazonClientException($"Unable to find the \"{ profileName }\" profile in CredentialProfileStoreChain.");
-        }
-
-        /// If either AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or AWS_CONTAINER_CREDENTIALS_FULL_URI environment variables are set, we want to attempt to retrieve credentials
-        /// using ECS endpoint instead of referring to instance profile credentials.
-        private static AWSCredentials ECSEC2CredentialsWrapper(IWebProxy proxy)
-        {
-            try
-            {
-                var relativeUri = Environment.GetEnvironmentVariable(ECSTaskCredentials.ContainerCredentialsURIEnvVariable);
-                if (!string.IsNullOrEmpty(relativeUri))
-                {
-                    return new ECSTaskCredentials(proxy);
-                }
-
-                var fullUri = Environment.GetEnvironmentVariable(ECSTaskCredentials.ContainerCredentialsFullURIEnvVariable);
-                if (!string.IsNullOrEmpty(fullUri))
-                {
-                    return new ECSTaskCredentials(proxy);
-                }
-            }
-            catch (SecurityException e)
-            {
-                Logger.GetLogger(typeof(ECSTaskCredentials)).Error(e, $"Failed to access environment variables {ECSTaskCredentials.ContainerCredentialsURIEnvVariable} and {ECSTaskCredentials.ContainerCredentialsFullURIEnvVariable}." +
-                    $" Either {ECSTaskCredentials.ContainerCredentialsURIEnvVariable} or {ECSTaskCredentials.ContainerCredentialsFullURIEnvVariable} environment variables must be set.");
-            }
-            return DefaultInstanceProfileAWSCredentials.Instance;
+            // @todo here to simplify
+            return DefaultProfileName;
         }
 
         private static AWSCredentials cachedCredentials;
         public static AWSCredentials GetCredentials()
-        {
-            return GetCredentials(false);
-        }
-
-        public static AWSCredentials GetCredentials(bool fallbackToAnonymous)
         {
             try
             {
@@ -148,54 +89,30 @@ namespace Amazon.Runtime
                 }
                 
                 List<Exception> errors = new List<Exception>();
-                foreach (CredentialsGenerator generator in CredentialsGenerators)
+                try
                 {
-                    try
-                    {
-                        cachedCredentials = generator();
-                    }
-                    // Breaking the FallbackCredentialFactory chain in case a ProcessAWSCredentialException exception 
-                    // is encountered. ProcessAWSCredentialException is thrown by the ProcessAWSCredential provider
-                    // when an exception is encountered when running a user provided process to obtain Basic/Session 
-                    // credentials. The motivation behind this is that, if the user has provided a process to be run
-                    // he expects to use the credentials obtained by running the process. Therefore the exception is
-                    // surfaced to the user.
-                    catch (ProcessAWSCredentialException)
-                    {
-                        throw;
-                    }
-                    catch (Exception e)
-                    {
-                        cachedCredentials = null;
+                    cachedCredentials = new EnvironmentVariablesAWSCredentials();
+                }
+                // Breaking the FallbackCredentialFactory chain in case a ProcessAWSCredentialException exception 
+                // is encountered. ProcessAWSCredentialException is thrown by the ProcessAWSCredential provider
+                // when an exception is encountered when running a user provided process to obtain Basic/Session 
+                // credentials. The motivation behind this is that, if the user has provided a process to be run
+                // he expects to use the credentials obtained by running the process. Therefore the exception is
+                // surfaced to the user.
+                catch (ProcessAWSCredentialException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    cachedCredentials = null;
 
-                        errors.Add(e);
-                    }
-
-                    if (cachedCredentials != null)
-                        break;
+                    errors.Add(e);
                 }
 
                 if (cachedCredentials == null)
                 {
-                    if (fallbackToAnonymous)
-                    {
-                        return new AnonymousAWSCredentials();
-                    }
-
-                    using (StringWriter writer = new StringWriter(CultureInfo.InvariantCulture))
-                    {
-                        writer.WriteLine("Unable to find credentials");
-                        writer.WriteLine();
-                        for (int i = 0; i < errors.Count; i++)
-                        {
-                            Exception e = errors[i];
-                            writer.WriteLine("Exception {0} of {1}:", i + 1, errors.Count);
-                            writer.WriteLine(e.ToString());
-                            writer.WriteLine();
-                        }
-
-                        throw new AmazonServiceException(writer.ToString());
-                    }
+                    throw new AmazonServiceException("Unable to find credentials");
                 }
 
                 return cachedCredentials;

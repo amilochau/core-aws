@@ -117,19 +117,6 @@ namespace Amazon.Runtime
             PreemptExpiryTime = TimeSpan.FromMinutes(PREEMPT_EXPIRY_MINUTES);
         }
 
-        /// <summary>
-        /// Creates an instance of <see cref="AssumeRoleWithWebIdentityCredentials"/> from environment variables.
-        /// </summary>
-        /// <exception>Throws an <see cref="InvalidOperationException"/> if the needed environment variables are not set.</exception>
-        /// <returns>The new credentials.</returns>
-        public static AssumeRoleWithWebIdentityCredentials FromEnvironmentVariables()
-        {
-            var webIdentityTokenFile = Environment.GetEnvironmentVariable(WebIdentityTokenFileEnvVariable);
-            var roleArn = Environment.GetEnvironmentVariable(RoleArnEnvVariable);
-            var roleSessionName = Environment.GetEnvironmentVariable(RoleSessionNameEnvVariable);
-            return new AssumeRoleWithWebIdentityCredentials(webIdentityTokenFile, roleArn, roleSessionName);
-        }
-
         protected override CredentialsRefreshState GenerateNewCredentials()
         {
             string token = null;

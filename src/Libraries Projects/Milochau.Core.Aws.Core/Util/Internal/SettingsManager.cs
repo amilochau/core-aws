@@ -132,7 +132,7 @@ namespace Amazon.Util.Internal
         /// <returns></returns>
         public bool TryGetObjectByProperty(string propertyName, string value, out string uniqueKey, out Dictionary<string, string> properties)
         {
-            var settings = GetSettings();
+            var settings = GetSettings(); // @todo here to simplify - always empty as no local JSON file
             SettingsCollection.ObjectSettings objectSettings;
             properties = null;
             uniqueKey = null;
