@@ -18,7 +18,6 @@
  */
 
 using Amazon.Runtime;
-using Amazon.Runtime.Internal;
 using Amazon.Util.Internal;
 using Amazon.SimpleEmailV2.Internal;
 

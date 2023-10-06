@@ -15,8 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Amazon.Runtime.Endpoints;
-using Amazon.Runtime.Internal.Auth;
 
 namespace Amazon.Runtime.Internal
 {
@@ -31,14 +29,6 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public interface IRequest
     {
-        /// <summary>
-        /// The name of the request
-        /// </summary>
-        string RequestName
-        {
-            get;
-        }
-
         /// <summary>
         /// Returns a dictionary of the headers included in this request.
         /// </summary>
@@ -129,17 +119,6 @@ namespace Amazon.Runtime.Internal
         void AddPathResource(string key, string value);
 
         /// <summary>
-        /// Gets and Sets the version number for the marshaller used to create this request. The version number
-        /// is used to support backward compatible changes that would otherwise be breaking changes when a 
-        /// newer core is used with an older service assembly.
-        /// </summary>
-        int MarshallerVersion
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets and Sets the content for this request.
         /// </summary>
         byte[] Content
@@ -147,11 +126,6 @@ namespace Amazon.Runtime.Internal
             get;
             set;
         }
-
-        /// <summary>
-        /// Gets the header value from the request.
-        /// </summary>
-        string GetHeaderValue(string headerName);
 
         /// <summary>
         /// Flag that signals that Content was and should be set
@@ -211,25 +185,6 @@ namespace Amazon.Runtime.Internal
             get;
         }
 
-        /// <summary>
-        /// Host prefix value to prepend to the endpoint for this request, if any. 
-        /// </summary>
-        string HostPrefix
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and 
-        /// an empty response object will be returned.
-        /// </summary>
-        bool Suppress404Exceptions
-        {
-            get;
-            set;
-        }
-
         /// <summary>      
         /// <para><b>WARNING: Setting DisablePayloadSigning to true disables the SigV4 payload signing 
         /// data integrity check on this request.</b></para>  
@@ -252,24 +207,6 @@ namespace Amazon.Runtime.Internal
             get;
             set;
         }
-
-        /// <summary>
-        /// Determine whether to use a chunked encoding upload for the request
-        /// (applies to Amazon S3 PutObject and UploadPart requests only). If 
-        /// DisablePayloadSigning is true, UseChunkEncoding will be automatically 
-        /// set to false.
-        /// </summary>
-        bool UseChunkEncoding
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The authentication region to use for the request.
-        /// Set from Config.AuthenticationRegion.
-        /// </summary>
-        string AuthenticationRegion { get; set; }
 
         /// <summary>
         /// The region in which the service request was signed.
@@ -296,24 +233,9 @@ namespace Amazon.Runtime.Internal
         bool HasRequestBody();
 
         /// <summary>
-        /// The checksum algorithm that was selected to validate this request's integrity
-        /// </summary>
-        CoreChecksumAlgorithm SelectedChecksum { get; set; }
-
-        /// <summary>
         /// Returns a dictionary of the trailing headers included
         /// after this request's content.
         /// </summary>
         IDictionary<string, string> TrailingHeaders { get; }
-
-        /// <summary>
-        /// Determine whether to use double encoding for request's signer.
-        /// </summary>
-        bool UseDoubleEncoding { get; set; }
-
-        /// <summary>
-        /// Custom endpoint attributes
-        /// </summary>
-        IPropertyBag EndpointAttributes { get; set; }
     }
 }

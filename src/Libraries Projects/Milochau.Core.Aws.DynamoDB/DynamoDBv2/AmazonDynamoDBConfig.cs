@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using Amazon.Runtime;
+﻿using Amazon.Runtime;
 using Amazon.Util.Internal;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal;
 

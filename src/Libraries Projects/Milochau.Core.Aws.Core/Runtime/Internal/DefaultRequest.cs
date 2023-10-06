@@ -16,9 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Amazon.Runtime.Internal.Util;
-using Amazon.Runtime.Internal.Auth;
 using Amazon.Util;
-using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime.Internal
 {
@@ -31,25 +29,9 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class DefaultRequest : IRequest
     {
-        readonly ParameterCollection parametersCollection;
-        readonly IDictionary<string, string> parametersFacade;
-        readonly IDictionary<string, string> headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        readonly IDictionary<string, string> trailingHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        readonly IDictionary<string, string> subResources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        readonly IDictionary<string, string> pathResources = new Dictionary<string, string>(StringComparer.Ordinal);
-
-        Uri endpoint;
-        string resourcePath;
-        string serviceName;
-        readonly AmazonWebServiceRequest originalRequest;
-        byte[] content;
         Stream contentStream;
         string contentStreamHash;
-        string httpMethod = "POST";
         bool useQueryString = false;
-        string requestName;
-        long originalStreamLength;
-        int marshallerVersion = 2; //2 is the default version and must be used whenever a version is not specified in the marshaller.
 
         /// <summary>
         /// Constructs a new DefaultRequest with the specified service name and the
@@ -62,39 +44,17 @@ namespace Amazon.Runtime.Internal
             if (request == null) throw new ArgumentNullException("request");
             if (string.IsNullOrEmpty(serviceName)) throw new ArgumentNullException("serviceName");
 
-            this.serviceName = serviceName;
-            this.originalRequest = request;
-            this.requestName = this.originalRequest.GetType().Name;
-            this.HostPrefix = string.Empty;
+            this.ServiceName = serviceName;
+            this.OriginalRequest = request;
 
-            parametersCollection = new ParameterCollection();
-            parametersFacade = new ParametersDictionaryFacade(parametersCollection);
+            ParameterCollection = new ParameterCollection();
+            Parameters = new ParametersDictionaryFacade(ParameterCollection);
         }
-
-
-        /// <summary>
-        /// The name of the request
-        /// </summary>
-        public string RequestName
-        {
-            get { return this.requestName; }
-        }
-
 
         /// <summary>
         /// Gets and sets the type of http request to make, whether it should be POST,GET or DELETE
         /// </summary>
-        public string HttpMethod
-        {
-            get
-            {
-                return this.httpMethod;
-            }
-            set
-            {
-                this.httpMethod = value;
-            }
-        }
+        public string HttpMethod { get; set; } = "POST";
 
         /// <summary>
         /// Gets and sets a flag that indicates whether the request is sent as a query string instead of the request body.
@@ -117,47 +77,22 @@ namespace Amazon.Runtime.Internal
         /// Returns the original, user facing request object which this internal
         /// request object is representing.
         /// </summary>
-        public AmazonWebServiceRequest OriginalRequest
-        {
-            get
-            {
-                return originalRequest;
-            }
-        }
+        public AmazonWebServiceRequest OriginalRequest { get; }
 
         /// <summary>
         /// Returns a dictionary of the headers included in this request.
         /// </summary>
-        public IDictionary<string, string> Headers
-        {
-            get
-            {
-                return this.headers;
-            }
-        }
-
+        public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Returns a dictionary of the parameters included in this request.
         /// </summary>
-        public IDictionary<string, string> Parameters
-        {
-            get
-            {
-                return this.parametersFacade;
-            }
-        }
+        public IDictionary<string, string> Parameters { get; }
 
         /// <summary>
         /// Collection of parameters included in this request.
         /// </summary>
-        public ParameterCollection ParameterCollection
-        {
-            get
-            {
-                return this.parametersCollection;
-            }
-        }
+        public ParameterCollection ParameterCollection { get; }
 
         /// <summary>
         /// Returns the subresources that should be appended to the resource path.
@@ -165,43 +100,17 @@ namespace Amazon.Runtime.Internal
         /// characters, making string-splitting of a resource path potentially 
         /// hazardous.
         /// </summary>
-        public IDictionary<string, string> SubResources
-        {
-            get
-            {
-                return this.subResources;
-            }
-        }
+        public IDictionary<string, string> SubResources { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets and Sets the endpoint for this request.
         /// </summary>
-        public Uri Endpoint
-        {
-            get
-            {
-                return this.endpoint;
-            }
-            set
-            {
-                this.endpoint = value;
-            }
-        }
+        public Uri Endpoint { get; set; }
 
         /// <summary>
         /// Gets and Sets the resource path added on to the endpoint.
         /// </summary>
-        public string ResourcePath
-        {
-            get
-            {
-                return this.resourcePath;
-            }
-            set
-            {
-                this.resourcePath = value;
-            }
-        }
+        public string ResourcePath { get; set; }
 
         /// <summary>
         /// Returns the path resources that should be used within the resource path.
@@ -209,13 +118,7 @@ namespace Amazon.Runtime.Internal
         /// characters, making string-splitting of a resource path potentially 
         /// hazardous.
         /// </summary>
-        public IDictionary<string, string> PathResources
-        {
-            get
-            {
-                return this.pathResources;
-            }
-        }
+        public IDictionary<string, string> PathResources { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
         /// <summary>
         /// Adds a new entry to the PathResources collection for the request
@@ -228,39 +131,9 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Gets and Sets the version number for the marshaller used to create this request. The version number
-        /// is used to support backward compatible changes that would otherwise be breaking changes when a 
-        /// newer core is used with an older service assembly.
-        /// Versions:
-        ///     1 - Legacy version (no longer supported)
-        ///     2 - Default version. Support for path segments
-        /// </summary>
-        public int MarshallerVersion
-        {
-            get
-            {
-                return this.marshallerVersion;
-            }
-            set
-            {
-                this.marshallerVersion = value;
-            }
-        }
-
-        /// <summary>
         /// Gets and Sets the content for this request.
         /// </summary>
-        public byte[] Content
-        {
-            get
-            {
-                return this.content;
-            }
-            set
-            {
-                this.content = value;
-            }
-        }
+        public byte[] Content { get; set; }
 
         /// <summary>
         /// Flag that signals that Content was and should be set
@@ -292,11 +165,7 @@ namespace Amazon.Runtime.Internal
         /// If ContentStream is null or does not support seek, this propery
         /// should be equal to -1.
         /// </summary>
-        public long OriginalStreamPosition
-        {
-            get { return this.originalStreamLength; }
-            set { this.originalStreamLength = value; }
-        }
+        public long OriginalStreamPosition { get; set; }
 
         /// <summary>
         /// Computes the SHA 256 hash of the content stream. If the stream is not
@@ -327,28 +196,7 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// The name of the service to which this request is being sent.
         /// </summary>
-        public string ServiceName
-        {
-            get
-            {
-                return this.serviceName;
-            }
-        }
-
-        /// <summary>
-        /// Host prefix value to prepend to the endpoint for this request, if any.
-        /// </summary>
-        public string HostPrefix { get; set; }
-
-        /// <summary>
-        /// Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and 
-        /// an empty response object will be returned.
-        /// </summary>
-        public bool Suppress404Exceptions
-        {
-            get;
-            set;
-        }
+        public string ServiceName { get; }
 
         /// <summary>      
         /// <para><b>WARNING: Setting DisablePayloadSigning to true disables the SigV4 payload signing 
@@ -370,28 +218,6 @@ namespace Amazon.Runtime.Internal
         public bool? DisablePayloadSigning { get; set; }
 
         /// <summary>
-        /// Determine whether to use a chunked encoding upload for the request
-        /// (applies to Amazon S3 PutObject and UploadPart requests only).  If 
-        /// DisablePayloadSigning is true, UseChunkEncoding will be automatically 
-        /// set to false.
-        /// </summary>
-        public bool UseChunkEncoding { get; set; }
-
-        /// <summary>
-        /// Determine whether to use double encoding for request's signer.
-        /// Propagated from the endpoint's authSchemes.
-        /// Default value is "true".
-        /// Currently only S3 and S3 Control will disable double encoding.
-        /// </summary>
-        public bool UseDoubleEncoding { get; set; } = true;
-
-        /// <summary>
-        /// The authentication region to use for the request.
-        /// Set from Config.AuthenticationRegion.
-        /// </summary>
-        public string AuthenticationRegion { get; set; }
-
-        /// <summary>
         /// The region in which the service request was signed.
         /// </summary>
         public string DeterminedSigningRegion { get; set; }
@@ -404,15 +230,10 @@ namespace Amazon.Runtime.Internal
         public string OverrideSigningServiceName { get; set; }
 
         /// <summary>
-        /// The checksum algorithm that was selected to validate this request's integrity
-        /// </summary>
-        public CoreChecksumAlgorithm SelectedChecksum { get; set; }
-
-        /// <summary>
         /// Returns a dictionary of the trailing headers included
         /// after this request's content.
         /// </summary>
-        public IDictionary<string, string> TrailingHeaders => this.trailingHeaders;
+        public IDictionary<string, string> TrailingHeaders { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Checks if the request stream can be rewinded.
@@ -456,19 +277,5 @@ namespace Amazon.Runtime.Internal
             var hasContent = this.HasRequestData();
             return (isPutPost && hasContent);
         }
-
-        public string GetHeaderValue(string headerName)
-        {
-            string headerValue;
-            if (headers.TryGetValue(headerName, out headerValue))
-                return headerValue;
-
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Custom endpoint attributes
-        /// </summary>
-        public IPropertyBag EndpointAttributes { get; set; }
     }
 }

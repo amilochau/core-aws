@@ -12,7 +12,6 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-using System;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
@@ -68,22 +67,5 @@ namespace Amazon.Runtime
         /// because this flag is the number of retry requests, not total requests.
         /// </summary>
         int MaxErrorRetry { get; }
-
-        /// <summary>
-        /// Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
-        /// for the configured region.
-        /// </summary>
-        /// <remarks>
-        /// Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
-        /// that the service actually supports a dualstack endpoint in the configured region before enabling 
-        /// this option for a service.
-        /// </remarks>
-        bool UseDualstackEndpoint { get; }
-
-        /// <summary>
-        /// Configures the endpoint calculation to go to a FIPS (https://aws.amazon.com/compliance/fips/) endpoint
-        /// for the configured region.
-        /// </summary>
-        bool UseFIPSEndpoint { get; }
     }
 }

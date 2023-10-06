@@ -27,7 +27,7 @@ namespace Amazon.Util
     {
         partial class CryptoUtil : ICryptoUtil
         {
-            public byte[] HMACSignBinary(byte[] data, byte[] key, SigningAlgorithm algorithmName)
+            public byte[] HMACSignBinary(byte[] data, byte[] key)
             {
                 if (key == null || key.Length == 0)
                     throw new ArgumentNullException("key", "Please specify a Secret Signing Key.");
@@ -35,9 +35,7 @@ namespace Amazon.Util
                 if (data == null || data.Length == 0)
                     throw new ArgumentNullException("data", "Please specify data to sign.");
 
-                KeyedHashAlgorithm algorithm = CreateKeyedHashAlgorithm(algorithmName);
-                if (null == algorithm)
-                    throw new InvalidOperationException("Please specify a KeyedHashAlgorithm to use.");
+                KeyedHashAlgorithm algorithm = new HMACSHA256();
 
                 try
                 {
@@ -50,25 +48,6 @@ namespace Amazon.Util
                     algorithm.Dispose();
                 }
             }
-
-            static KeyedHashAlgorithm CreateKeyedHashAlgorithm(SigningAlgorithm algorithmName)
-            {
-                KeyedHashAlgorithm algorithm;
-                switch (algorithmName)
-                {
-                    case SigningAlgorithm.HmacSHA256:
-                        algorithm = new HMACSHA256();
-                        break;
-                    case SigningAlgorithm.HmacSHA1:
-                        algorithm = new HMACSHA1();
-                        break;
-                    default:
-                        throw new Exception(string.Format("KeyedHashAlgorithm {0} was not found.", algorithmName.ToString()));
-                }
-
-                return algorithm;
-            }
-
 
             [ThreadStatic]
             private static HashAlgorithm _hashAlgorithm = null;

@@ -46,21 +46,8 @@ namespace Amazon.Internal
         /// Retrieves the endpoint for the given service in the current region
         /// </summary>
         /// <param name="serviceName">Name of the service in endpoints.json</param>
-        /// <param name="options"> Specify additional requirements on the <see cref="RegionEndpoint.Endpoint"/> to be returned.</param>
         /// <returns>Matching endpoint from endpoints.json, or a computed endpoint if possible</returns>
-        public RegionEndpoint.Endpoint GetEndpointForService(string serviceName, GetEndpointForServiceOptions options)
-        {
-            var variants = BuildVariantHashSet(options);
-            return GetEndpointForService(serviceName, variants);
-        }
-
-        /// <summary>
-        /// Retrieves the endpoint for the given service in the current region
-        /// </summary>
-        /// <param name="serviceName">Name of the service in endpoints.json</param>
-        /// <param name="variants">Set of tags describing an endpoint variant</param>
-        /// <returns>Matching endpoint from endpoints.json, or a computed endpoint if possible</returns>
-        public RegionEndpoint.Endpoint GetEndpointForService(string serviceName, HashSet<string> variants)
+        public RegionEndpoint.Endpoint GetEndpointForService(string serviceName)
         {
             RegionEndpoint.Endpoint endpointObject = null;
 
@@ -79,14 +66,8 @@ namespace Amazon.Internal
                     _servicesLoaded = true;
                 }
 
-                if (!_serviceMap.TryGetEndpoint(serviceName, variants, out endpointObject))
+                if (!_serviceMap.TryGetEndpoint(serviceName, out endpointObject))
                 {
-                    // For all current variants (dual-stack and FIPS) SDKs cannot
-                    // fall back to normal endpoints and must raise an error.
-                    if (variants?.Count > 0)
-                    {
-                        throw new AmazonClientException($"Requested endpoint for {serviceName} with variants [{string.Join(", ", variants.ToArray())}] could not be found.");
-                    }
                     // Do a fallback of creating an unknown endpoint based on the
                     // current region's hostname template.
                     endpointObject = CreateUnknownEndpoint(serviceName);
@@ -252,35 +233,6 @@ namespace Amazon.Internal
             return authRegion;
         }
 
-        /// <summary>
-        /// Builds the set used to identify a specific endpoint variant
-        /// </summary>
-        /// <param name="dualStack">Whether to use a dualstack (IPv6 enabled) endpoint</param>
-        /// <param name="fips">Whether to use a FIPS-compliant endpoint</param>
-        /// <returns>Set used to identify the combined variant in endpoints.json</returns>
-        private static HashSet<string> BuildVariantHashSet(GetEndpointForServiceOptions options)
-        {
-            options = options ?? new GetEndpointForServiceOptions();
-
-            if (!options.DualStack && !options.FIPS)
-            {
-                return null;
-            }
-
-            var variants = new HashSet<string>();
-
-            if (options.DualStack)
-            {
-                variants.Add("dualstack");
-            }
-            if (options.FIPS)
-            {
-                variants.Add("fips");
-            }
-
-            return variants;
-        }
-
         class ServiceMap
         {
             /// <summary>
@@ -309,24 +261,9 @@ namespace Amazon.Internal
                 }
             }
 
-            public bool TryGetEndpoint(string serviceName, HashSet<string> variants, out RegionEndpoint.Endpoint endpoint)
+            public bool TryGetEndpoint(string serviceName, out RegionEndpoint.Endpoint endpoint)
             {
-                if (variants == null || variants.Count == 0)
-                {
-                    return _serviceMap.TryGetValue(serviceName, out endpoint);
-                }
-                else
-                {
-                    if (!_variantMap.ContainsKey(serviceName))
-                    {
-                        endpoint = default(RegionEndpoint.Endpoint);
-                        return false;
-                    }
-                    else
-                    {
-                        return _variantMap[serviceName].TryGetValue(variants, out endpoint);
-                    }
-                }
+                return _serviceMap.TryGetValue(serviceName, out endpoint);
             }
         }
     }

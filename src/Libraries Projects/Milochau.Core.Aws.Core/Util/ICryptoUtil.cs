@@ -22,6 +22,6 @@ namespace Amazon.Util
         byte[] ComputeSHA256Hash(byte[] data);
         byte[] ComputeSHA256Hash(Stream steam);
 
-        byte[] HMACSignBinary(byte[] data, byte[] key, SigningAlgorithm algorithmName);
+        byte[] HMACSignBinary(byte[] data, byte[] key);
     }
 }

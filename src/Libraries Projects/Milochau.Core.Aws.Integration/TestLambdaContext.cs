@@ -1,6 +1,4 @@
-﻿using System;
-
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.Core;
 
 namespace Amazon.Lambda.TestUtilities
 {

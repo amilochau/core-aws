@@ -36,7 +36,7 @@ namespace Amazon.Runtime.Internal.Util
         /// <param name="checksumAlgorithm">Trailing checksum</param>
         /// <param name="baseStreamLength">Length of the base stream in bytes</param>
         /// <returns>Length of a TrailingChecksumWrapperStream with given parameters, in bytes</returns>
-        public static long CalculateLength(IDictionary<string, string> trailingHeaders, CoreChecksumAlgorithm checksumAlgorithm, long baseStreamLength)
+        public static long CalculateLength(IDictionary<string, string> trailingHeaders, long baseStreamLength)
         {
             var prefixLength = baseStreamLength.ToString("X", CultureInfo.InvariantCulture).Length;
             var trailingHeaderLength = 0;
@@ -45,15 +45,7 @@ namespace Amazon.Runtime.Internal.Util
             {
                 foreach (var key in trailingHeaders.Keys)
                 {
-                    if (checksumAlgorithm != CoreChecksumAlgorithm.NONE && ChecksumUtils.GetChecksumHeaderKey(checksumAlgorithm) == key)
-                    {
-                        trailingHeaderLength += key.Length +
-                            CryptoUtilFactory.GetChecksumBase64Length(checksumAlgorithm) + HEADER_ROW_PADDING_LENGTH;
-                    }
-                    else
-                    {
-                        trailingHeaderLength += key.Length + trailingHeaders[key].Length + HEADER_ROW_PADDING_LENGTH;
-                    }
+                    trailingHeaderLength += key.Length + trailingHeaders[key].Length + HEADER_ROW_PADDING_LENGTH;
                 }
             }
 

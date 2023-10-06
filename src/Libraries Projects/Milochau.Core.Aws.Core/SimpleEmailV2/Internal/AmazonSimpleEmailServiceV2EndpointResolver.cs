@@ -20,7 +20,6 @@
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Endpoints;
-using Amazon.SimpleEmailV2.Endpoints;
 
 #pragma warning disable 1591
 
@@ -35,21 +34,13 @@ namespace Amazon.SimpleEmailV2.Internal
     /// </summary>
     public class AmazonSimpleEmailServiceV2EndpointResolver : BaseEndpointResolver
     {
-        protected override void ServiceSpecificHandler(IExecutionContext executionContext, EndpointParameters parameters)
-        {
-
-            InjectHostPrefix(executionContext.RequestContext);
-        }
-
         protected override EndpointParameters MapEndpointsParameters(IRequestContext requestContext)
         {
             var config = (AmazonSimpleEmailServiceV2Config)requestContext.ClientConfig;
-            var result = new SimpleEmailServiceV2EndpointParameters();
-            result.Region = config.RegionEndpoint?.SystemName;
-            result.UseDualStack = config.UseDualstackEndpoint;
-            result.UseFIPS = config.UseFIPSEndpoint;
-
-            return result;
+            return new EndpointParameters
+            {
+                Region = config.RegionEndpoint?.SystemName
+            };
         }
     }
 }

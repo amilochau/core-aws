@@ -18,7 +18,8 @@ namespace Amazon.Runtime.Endpoints
     /// Base class for endpoint parameters.
     /// Used for endpoint resolution.
     /// </summary>
-    public class EndpointParameters : PropertyBag
+    public class EndpointParameters
     {
+        public string Region { get; set; }
     }
 }

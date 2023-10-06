@@ -54,12 +54,10 @@ namespace Amazon.Util
 
 #region Public Constants
 
-
         /// <summary>
         /// The user agent string header
         /// </summary>
         public const string UserAgentHeader = "User-Agent";
-
 
         /// <summary>
         /// The Set of accepted and valid Url characters per RFC3986. 
@@ -203,7 +201,7 @@ namespace Amazon.Util
         /// <param name="pathResources">Dictionary of key/value parameters containing the values for the ResourcePath key replacements.</param>
         /// <remarks>If resourcePath begins or ends with slash, the resulting canonicalized path will follow suit.</remarks>
         /// <returns>Canonicalized resource path for the endpoint.</returns>
-        public static string CanonicalizeResourcePathV2(Uri endpoint, string resourcePath, bool encode, IDictionary<string, string> pathResources)
+        public static string CanonicalizeResourcePathV2(Uri endpoint, string resourcePath, IDictionary<string, string> pathResources)
         {
             if (endpoint != null)
             {
@@ -225,13 +223,10 @@ namespace Amazon.Util
 
             IEnumerable<string> encodedSegments = AWSSDKUtils.SplitResourcePathIntoSegments(resourcePath, pathResources);
 
-            if (encode)
-            {
-                if (endpoint == null)
-                    throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
+            if (endpoint == null)
+                throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
 
-                encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
-            }
+            encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
 
             return AWSSDKUtils.JoinResourcePathSegments(encodedSegments, false);
         }
@@ -514,45 +509,6 @@ namespace Amazon.Util
             }
 
             return encoded.ToString();
-        }
-
-        /// <summary>
-        /// URL encodes a string per the specified RFC with the exception of preserving the encoding of previously encoded slashes.
-        /// If the path property is specified, the accepted path characters {/+:} are not encoded. 
-        /// </summary>
-        /// <param name="data">The string to encode</param>
-        /// <param name="path">Whether the string is a URL path or not</param>
-        /// <returns>The encoded string with any previously encoded %2F preserved</returns>
-        public static string ProtectEncodedSlashUrlEncode(string data, bool path)
-        {
-            if (string.IsNullOrEmpty(data))
-            {
-                return data;
-            }
-
-            var index = 0;
-            var sb = new StringBuilder();
-            var findIndex = data.IndexOf(EncodedSlash, index, StringComparison.OrdinalIgnoreCase);
-            while (findIndex != -1)
-            {
-                sb.Append(UrlEncode(data.Substring(index, findIndex - index), path));
-                sb.Append(EncodedSlash);
-                index = findIndex + EncodedSlash.Length;
-                findIndex = data.IndexOf(EncodedSlash, index, StringComparison.OrdinalIgnoreCase);
-            }            
-
-            //If encoded slash was not found return the original data
-            if(index == 0)
-            {
-                return UrlEncode(data, path);
-            }
-
-            if(data.Length > index)
-            {
-                sb.Append(UrlEncode(data.Substring(index), path));
-            }
-            
-            return sb.ToString();
         }
 
         /// <summary>

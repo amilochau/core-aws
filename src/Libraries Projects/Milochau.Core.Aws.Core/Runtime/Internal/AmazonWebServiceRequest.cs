@@ -15,9 +15,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
-
 namespace Amazon.Runtime
 {
     public abstract partial class AmazonWebServiceRequest

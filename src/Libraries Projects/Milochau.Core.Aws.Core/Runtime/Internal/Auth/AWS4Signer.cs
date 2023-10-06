@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using Amazon.Internal;
 using Amazon.Util;
 using Amazon.Runtime.Internal.Util;
 
@@ -53,8 +52,6 @@ namespace Amazon.Runtime.Internal.Auth
 
         public const string UnsignedPayload = "UNSIGNED-PAYLOAD";
         public const string UnsignedPayloadWithTrailer = "STREAMING-UNSIGNED-PAYLOAD-TRAILER";
-
-        const SigningAlgorithm SignerAlgorithm = SigningAlgorithm.HmacSHA256;
 
         private static IEnumerable<string> _headersToIgnoreWhenSigning = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
             HeaderKeys.XAmznTraceIdHeader,
@@ -181,14 +178,8 @@ namespace Amazon.Runtime.Internal.Auth
             var signedAt = InitializeHeaders(request.Headers, request.Endpoint);
             
             var serviceSigningName = !string.IsNullOrEmpty(request.OverrideSigningServiceName) ? request.OverrideSigningServiceName : clientConfig.AuthenticationServiceName;
-            if (serviceSigningName == "s3")
-            {
-                // Older versions of the S3 package can be used with newer versions of Core, this guarantees no double encoding will be used.
-                // The new behavior uses endpoint resolution rules, which are not present prior to 3.7.100
-                request.UseDoubleEncoding = false;
-            }
 
-            request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName, request);
+            request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName);
             SetXAmzTrailerHeader(request.Headers, request.TrailingHeaders);
 
             var parametersToCanonicalize = GetParametersToCanonicalize(request);
@@ -208,8 +199,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                        sortedHeaders,
                                                        canonicalParameters,
                                                        bodyHash,
-                                                       request.PathResources,
-                                                       request.UseDoubleEncoding);
+                                                       request.PathResources);
 
             return ComputeSignature(awsAccessKeyId,
                                     awsSecretAccessKey,
@@ -342,7 +332,7 @@ namespace Amazon.Runtime.Internal.Auth
                                         service);
 
             var stringToSign = stringToSignBuilder.ToString();
-            var signature = ComputeKeyedHash(SignerAlgorithm, key, stringToSign);
+            var signature = ComputeKeyedHash(key, stringToSign);
             return new AWS4SigningResult(awsAccessKey, signedAt, signedHeaders, scope, key, signature);
         }
 
@@ -373,10 +363,10 @@ namespace Amazon.Runtime.Internal.Auth
             {
                 ksecret = (Scheme + awsSecretAccessKey).ToCharArray();
 
-                var hashDate = ComputeKeyedHash(SignerAlgorithm, Encoding.UTF8.GetBytes(ksecret), Encoding.UTF8.GetBytes(date));
-                var hashRegion = ComputeKeyedHash(SignerAlgorithm, hashDate, Encoding.UTF8.GetBytes(region));
-                var hashService = ComputeKeyedHash(SignerAlgorithm, hashRegion, Encoding.UTF8.GetBytes(service));
-                return ComputeKeyedHash(SignerAlgorithm, hashService, TerminatorBytes);
+                var hashDate = ComputeKeyedHash(Encoding.UTF8.GetBytes(ksecret), Encoding.UTF8.GetBytes(date));
+                var hashRegion = ComputeKeyedHash(hashDate, Encoding.UTF8.GetBytes(region));
+                var hashService = ComputeKeyedHash(hashRegion, Encoding.UTF8.GetBytes(service));
+                return ComputeKeyedHash(hashService, TerminatorBytes);
             }
             finally
             {
@@ -416,7 +406,7 @@ namespace Amazon.Runtime.Internal.Auth
                     // Substitute the originally declared content length with the inflated length due to trailing headers
                     var originalContentLength = long.Parse(request.Headers[HeaderKeys.ContentLengthHeader], CultureInfo.InvariantCulture);
                     request.Headers[HeaderKeys.ContentLengthHeader]
-                        = TrailingHeadersWrapperStream.CalculateLength(request.TrailingHeaders, request.SelectedChecksum, originalContentLength).ToString(CultureInfo.InvariantCulture);
+                        = TrailingHeadersWrapperStream.CalculateLength(request.TrailingHeaders, originalContentLength).ToString(CultureInfo.InvariantCulture);
 
                     SetContentEncodingHeader(request);
 
@@ -431,39 +421,18 @@ namespace Amazon.Runtime.Internal.Auth
             // if the body hash has been precomputed and already placed in the header, just extract and return it
             string computedContentHash;
             var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out computedContentHash);
-            if (shaHeaderPresent && !request.UseChunkEncoding)
+            if (shaHeaderPresent)
                 return computedContentHash;
 
             // otherwise continue to calculate the hash and set it in the headers before returning
-            if (request.UseChunkEncoding)
-            {
-                computedContentHash = chunkedBodyHash;
-
-                if (request.Headers.ContainsKey(HeaderKeys.ContentLengthHeader))
-                {
-                    // Set X-Amz-Decoded-Content-Length with the true size of the data
-                    request.Headers[HeaderKeys.XAmzDecodedContentLengthHeader] = request.Headers[HeaderKeys.ContentLengthHeader];
-
-                    // Substitute the originally declared content length with the inflated length due to chunking metadata and/or trailing headers
-                    var originalContentLength = long.Parse(request.Headers[HeaderKeys.ContentLengthHeader], CultureInfo.InvariantCulture);
-                    request.Headers[HeaderKeys.ContentLengthHeader]
-                        = ChunkedUploadWrapperStream.ComputeChunkedContentLength(originalContentLength, signatureLength, request.TrailingHeaders, request.SelectedChecksum).ToString(CultureInfo.InvariantCulture);
-                }
-
-                SetContentEncodingHeader(request);
-            }
+            if (request.ContentStream != null)
+                computedContentHash = request.ComputeContentStreamHash();
             else
             {
-                if (request.ContentStream != null)
-                    computedContentHash = request.ComputeContentStreamHash();
-                else
-                {
-                    byte[] payloadBytes = AWSSDKUtils.GetRequestPayloadBytes(request, request.UseQueryString);
-                    byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
-                    computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
-                }
+                byte[] payloadBytes = AWSSDKUtils.GetRequestPayloadBytes(request, request.UseQueryString);
+                byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
+                computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
             }
-
 
             // set the header if needed and return it
             return SetPayloadSignatureHeader(request, computedContentHash ?? UnsignedPayload);
@@ -489,9 +458,9 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
-        public static byte[] ComputeKeyedHash(SigningAlgorithm algorithm, byte[] key, string data)
+        public static byte[] ComputeKeyedHash(byte[] key, string data)
         {
-            return ComputeKeyedHash(algorithm, key, Encoding.UTF8.GetBytes(data));
+            return ComputeKeyedHash(key, Encoding.UTF8.GetBytes(data));
         }
 
         /// <summary>
@@ -501,9 +470,9 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
-        public static byte[] ComputeKeyedHash(SigningAlgorithm algorithm, byte[] key, byte[] data)
+        public static byte[] ComputeKeyedHash(byte[] key, byte[] data)
         {
-            return CryptoUtilFactory.CryptoInstance.HMACSignBinary(data, key, algorithm);
+            return CryptoUtilFactory.CryptoInstance.HMACSignBinary(data, key);
         }
 
         /// <summary>
@@ -539,18 +508,9 @@ namespace Amazon.Runtime.Internal.Auth
             return payloadHash;
         }
 
-        public static string DetermineSigningRegion(IClientConfig clientConfig, 
-                                                    string serviceName,
-                                                    IRequest request)
+        public static string DetermineSigningRegion(IClientConfig clientConfig, string serviceName)
         {
             string authenticationRegion = null;
-            // We always have request.AuthenticationRegion defined, as per 
-            // Amazon.Runtime.Internal.BaseEndpointResolver implementation.
-            // request.AuthenticationRegion value is set either based on endpoint rules or
-            // overriden by clientConfig.AuthenticationRegion if defined.
-            // Normally, users should only override clientConfig.AuthenticationRegion value for non-AWS services
-            if (request != null && request.AuthenticationRegion != null)
-                authenticationRegion = request.AuthenticationRegion;
 
             if (!string.IsNullOrEmpty(authenticationRegion))
                 return authenticationRegion.ToLowerInvariant();
@@ -558,7 +518,7 @@ namespace Amazon.Runtime.Internal.Auth
             var endpoint = clientConfig.RegionEndpoint;
             if (endpoint != null)
             {
-                var serviceEndpoint = endpoint.GetEndpointForService(serviceName, clientConfig.ToGetEndpointForServiceOptions());
+                var serviceEndpoint = endpoint.GetEndpointForService(serviceName);
                 if (!string.IsNullOrEmpty(serviceEndpoint.AuthRegion))
                     return serviceEndpoint.AuthRegion;
 
@@ -594,8 +554,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
                                                     string precomputedBodyHash,
-                                                    IDictionary<string, string> pathResources,
-                                                    bool doubleEncode)
+                                                    IDictionary<string, string> pathResources)
         {
             return CanonicalizeRequestHelper(endpoint,
                 resourcePath,
@@ -603,8 +562,7 @@ namespace Amazon.Runtime.Internal.Auth
                 sortedHeaders,
                 canonicalQueryString,
                 precomputedBodyHash,
-                pathResources,
-                doubleEncode);
+                pathResources);
         }
 
         private static string CanonicalizeRequestHelper(Uri endpoint,
@@ -613,12 +571,11 @@ namespace Amazon.Runtime.Internal.Auth
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
                                                     string precomputedBodyHash,
-                                                    IDictionary<string, string> pathResources,
-                                                    bool doubleEncode)
+                                                    IDictionary<string, string> pathResources)
         {
             var canonicalRequest = new StringBuilder();
             canonicalRequest.AppendFormat("{0}\n", httpMethod);
-            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(endpoint, resourcePath, doubleEncode, pathResources));
+            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(endpoint, resourcePath, pathResources));
             canonicalRequest.AppendFormat("{0}\n", canonicalQueryString);
 
             canonicalRequest.AppendFormat("{0}\n", CanonicalizeHeaders(sortedHeaders));

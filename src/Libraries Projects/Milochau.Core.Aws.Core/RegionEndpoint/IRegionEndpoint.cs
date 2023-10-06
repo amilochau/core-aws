@@ -19,8 +19,6 @@
  *
  */
 
-using System;
-
 namespace Amazon.Internal
 {
     public interface IRegionEndpoint
@@ -38,10 +36,7 @@ namespace Amazon.Internal
         /// The services system name. Service system names can be obtained from the
         /// RegionEndpointServiceName member of the ClientConfig-derived class for the service.
         /// </param>
-        /// <param name="options">
-        /// Specify additional requirements on the <see cref="RegionEndpoint.Endpoint"/> to be returned.
-        /// </param>
-        RegionEndpoint.Endpoint GetEndpointForService(string serviceName, GetEndpointForServiceOptions options);
+        RegionEndpoint.Endpoint GetEndpointForService(string serviceName);
     }
 
     public interface IRegionEndpointProvider

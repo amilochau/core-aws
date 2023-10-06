@@ -13,9 +13,6 @@
  * permissions and limitations under the License.
  */
 using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime.Internal
@@ -25,7 +22,7 @@ namespace Amazon.Runtime.Internal
     /// Collects values for EndpointParameters and then resolves endpoint via global or service-specific EndpointProvider.
     /// Responsible for setting authentication and http headers provided by resolved endpoint.
     /// </summary>
-    public class BaseEndpointResolver : PipelineHandler
+    public abstract class BaseEndpointResolver : PipelineHandler
     {
         public override System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
@@ -45,13 +42,6 @@ namespace Amazon.Runtime.Internal
 
             var endpoint = GetEndpoint(executionContext, parameters);
             requestContext.Request.Endpoint = new Uri(endpoint.URL);
-            requestContext.Request.EndpointAttributes = endpoint.Attributes;
-
-            // set authentication parameters and headers
-            SetAuthenticationAndHeaders(requestContext.Request, endpoint);
-
-            // service-specific handling, code-generated
-            ServiceSpecificHandler(executionContext, parameters);
         }
 
         private Endpoint GetEndpoint(IExecutionContext executionContext, EndpointParameters parameters)
@@ -74,108 +64,8 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Service-specific handling, we code-gen override per service.
-        /// </summary>
-        protected virtual void ServiceSpecificHandler(IExecutionContext executionContext, EndpointParameters parameters)
-        {
-        }
-
-        private static readonly string[] SupportedAuthSchemas = { "sigv4", "sigv4a" };
-        private static void SetAuthenticationAndHeaders(IRequest request, Endpoint endpoint)
-        {
-            if (endpoint.Attributes != null)
-            {
-                var authSchemes = (IList)endpoint.Attributes["authSchemes"];
-                if (authSchemes != null)
-                {
-                    var schemaFound = false;
-                    foreach (PropertyBag schema in authSchemes)
-                    {
-                        var schemaName = (string)schema["name"];
-                        if (SupportedAuthSchemas.Contains(schemaName))
-                        {
-                            switch (schemaName)
-                            {
-                                case "sigv4":
-                                    {
-                                        var signingRegion = (string)schema["signingRegion"];
-                                        if (!string.IsNullOrEmpty(signingRegion))
-                                        {
-                                            request.AuthenticationRegion = signingRegion;
-                                        }
-
-                                        ApplyCommonSchema(request, schema);
-                                        break;
-                                    }
-                                case "sigv4a":
-                                    {
-                                        var signingRegions = ((List<object>)schema["signingRegionSet"]).OfType<string>().ToArray();
-                                        var authenticationRegion = string.Join(",", signingRegions);
-                                        if (!string.IsNullOrEmpty(authenticationRegion))
-                                        {
-                                            request.AuthenticationRegion = authenticationRegion;
-                                        }
-
-                                        ApplyCommonSchema(request, schema);
-                                        break;
-                                    }
-                            }
-                            schemaFound = true;
-                            break;
-                        }
-                    }
-                    if (!schemaFound && authSchemes.Count > 0)
-                    {
-                        throw new AmazonClientException("Cannot find supported authentication schema");
-                    }
-                }
-            }
-
-            if (endpoint.Headers != null)
-            {
-                foreach (var header in endpoint.Headers)
-                {
-                    request.Headers[header.Key] = string.Join(",", header.Value.ToArray());
-                }
-            }
-        }
-
-        private static void ApplyCommonSchema(IRequest request, PropertyBag schema)
-        {
-            var signingName = (string)schema["signingName"];
-            if (!string.IsNullOrEmpty(signingName))
-            {
-                request.OverrideSigningServiceName = signingName;
-            }
-
-            var disableDoubleEncoding = schema["disableDoubleEncoding"];
-            if (disableDoubleEncoding != null)
-            {
-                request.UseDoubleEncoding = !(bool)disableDoubleEncoding;
-            }
-        }
-
-        /// <summary>
-        /// Inject host prefix into request endpoint.
-        /// </summary>
-        protected static void InjectHostPrefix(IRequestContext requestContext)
-        {
-            if (string.IsNullOrEmpty(requestContext.Request.HostPrefix))
-            {
-                return;
-            }
-
-            var hostPrefixUri = new UriBuilder(requestContext.Request.Endpoint);
-            hostPrefixUri.Host = requestContext.Request.HostPrefix + hostPrefixUri.Host;
-            requestContext.Request.Endpoint = hostPrefixUri.Uri;
-        }
-
-        /// <summary>
         /// Service-specific mapping of endpoints parameters, we code-gen override per service.
         /// </summary>
-        protected virtual EndpointParameters MapEndpointsParameters(IRequestContext requestContext)
-        {
-            return null;
-        }
+        protected abstract EndpointParameters MapEndpointsParameters(IRequestContext requestContext);
     }
 }

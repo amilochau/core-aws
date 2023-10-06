@@ -19,7 +19,6 @@
 using System.IO;
 
 using Amazon.Runtime;
-using Amazon.Runtime.Internal;
 
 namespace Amazon.Lambda.Model
 {

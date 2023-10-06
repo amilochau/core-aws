@@ -12,9 +12,6 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-using System;
-using System.Globalization;
-using Amazon.Internal;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
@@ -32,9 +29,6 @@ namespace Amazon.Runtime
 
         private RegionEndpoint regionEndpoint = null;
         private bool probeForRegionEndpoint = true;
-        private string authServiceName = null;
-        private bool? useDualstackEndpoint;
-        private bool? useFIPSEndpoint;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
 
@@ -68,16 +62,6 @@ namespace Amazon.Runtime
             {
                 this.regionEndpoint = value;
                 this.probeForRegionEndpoint = this.regionEndpoint == null;
-
-                // legacy support for initial pseudo regions - convert to base Region 
-                // and set FIPSEndpoint to true
-                if (!string.IsNullOrEmpty(value?.SystemName) &&
-                    (value.SystemName.Contains("fips-") || value.SystemName.Contains("-fips")))
-                {
-                    this.UseFIPSEndpoint = true;
-                    this.regionEndpoint = RegionEndpoint.GetBySystemName(value.SystemName.Replace("fips-", "").Replace("-fips", ""));
-                    this.RegionEndpoint.OriginalSystemName = value.SystemName;
-                }
             }
         }
 
@@ -94,11 +78,7 @@ namespace Amazon.Runtime
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
         /// </summary>
-        public string AuthenticationServiceName
-        {
-            get { return this.authServiceName; }
-            set { this.authServiceName = value; }
-        }
+        public string AuthenticationServiceName { get; set; } = null;
 
         /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should
@@ -138,47 +118,6 @@ namespace Amazon.Runtime
         }
 
         #endregion
-
-        /// <summary>
-        /// Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
-        /// for the configured region.
-        /// </summary>
-        /// <remarks>
-        /// Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
-        /// that the service actually supports a dualstack endpoint in the configured region before enabling 
-        /// this option for a service.
-        /// </remarks>
-        public bool UseDualstackEndpoint
-        {
-            get
-            {
-                if (!this.useDualstackEndpoint.HasValue)
-                {
-                    return false;
-                }
-
-                return this.useDualstackEndpoint.Value;
-            }
-            set { useDualstackEndpoint = value; }
-        }
-
-        /// <summary>
-        /// Configures the endpoint calculation to go to a FIPS (https://aws.amazon.com/compliance/fips/) endpoint
-        /// for the configured region.
-        /// </summary>
-        public bool UseFIPSEndpoint
-        {
-            get
-            {
-                if (!this.useFIPSEndpoint.HasValue)
-                {
-                    return false;
-                }
-
-                return this.useFIPSEndpoint.Value;
-            }
-            set { useFIPSEndpoint = value; }
-        }
 
         /// <summary>
         /// Gets and sets of the EndpointProvider property.

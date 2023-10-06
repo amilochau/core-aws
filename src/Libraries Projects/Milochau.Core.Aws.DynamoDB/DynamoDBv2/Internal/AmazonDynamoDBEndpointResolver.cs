@@ -15,22 +15,13 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal
     public class AmazonDynamoDBEndpointResolver : BaseEndpointResolver
     {
         /// <inheritdoc/>
-        protected override void ServiceSpecificHandler(IExecutionContext executionContext, EndpointParameters parameters)
-        {
-
-            InjectHostPrefix(executionContext.RequestContext);
-        }
-
-        /// <inheritdoc/>
         protected override EndpointParameters MapEndpointsParameters(IRequestContext requestContext)
         {
             var config = (AmazonDynamoDBConfig)requestContext.ClientConfig;
-            var result = new DynamoDBEndpointParameters();
-            result.Region = config.RegionEndpoint?.SystemName!;
-            result.UseDualStack = config.UseDualstackEndpoint;
-            result.UseFIPS = config.UseFIPSEndpoint;
-
-            return result;
+            return new EndpointParameters
+            {
+                Region = config.RegionEndpoint?.SystemName
+            };
         }
     }
 }

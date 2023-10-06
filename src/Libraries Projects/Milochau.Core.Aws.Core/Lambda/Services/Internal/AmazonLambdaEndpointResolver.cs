@@ -20,7 +20,6 @@
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Endpoints;
-using Amazon.Lambda.Endpoints;
 
 #pragma warning disable 1591
 
@@ -35,21 +34,13 @@ namespace Amazon.Lambda.Internal
     /// </summary>
     public class AmazonLambdaEndpointResolver : BaseEndpointResolver
     {
-        protected override void ServiceSpecificHandler(IExecutionContext executionContext, EndpointParameters parameters)
-        {
-
-            InjectHostPrefix(executionContext.RequestContext);
-        }
-
         protected override EndpointParameters MapEndpointsParameters(IRequestContext requestContext)
         {
             var config = (AmazonLambdaConfig)requestContext.ClientConfig;
-            var result = new LambdaEndpointParameters();
-            result.Region = config.RegionEndpoint?.SystemName;
-            result.UseDualStack = config.UseDualstackEndpoint;
-            result.UseFIPS = config.UseFIPSEndpoint;
-
-            return result;
+            return new EndpointParameters
+            {
+                Region = config.RegionEndpoint?.SystemName
+            };
         }
     }
 }

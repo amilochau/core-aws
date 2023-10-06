@@ -16,7 +16,6 @@
 using Amazon.Runtime.Internal.Transform;
 using Amazon.Util;
 using System;
-using System.Net;
 
 namespace Amazon.Runtime.Internal
 {
@@ -50,11 +49,6 @@ namespace Amazon.Runtime.Internal
             var requestContext = executionContext.RequestContext;
             var httpErrorResponse = exception.Response;
 
-            // If 404 was suppressed and successfully unmarshalled,
-            // don't rethrow the original exception.
-            if (HandleSuppressed404(executionContext, httpErrorResponse))
-                return false;
-
             using (httpErrorResponse.ResponseBody)
             {
                 var responseStream = httpErrorResponse.ResponseBody.OpenResponse();
@@ -77,11 +71,6 @@ namespace Amazon.Runtime.Internal
         {
             var requestContext = executionContext.RequestContext;
             var httpErrorResponse = exception.Response;
-
-            // If 404 was suppressed and successfully unmarshalled,
-            // don't rethrow the original exception.
-            if (HandleSuppressed404(executionContext, httpErrorResponse))
-                return false;
 
             using(httpErrorResponse.ResponseBody)
             {
@@ -119,8 +108,7 @@ namespace Amazon.Runtime.Internal
             catch (Exception e)
             {
                 // Rethrow Amazon service or client exceptions 
-                if (e is AmazonServiceException ||
-                    e is AmazonClientException)
+                if (e is AmazonServiceException || e is AmazonClientException)
                 {
                     throw;
                 }
@@ -133,54 +121,6 @@ namespace Amazon.Runtime.Internal
             }
 
             throw errorResponseException;
-        }
-
-        /// <summary>
-        /// Checks if a HTTP 404 status code is returned which needs to be suppressed and 
-        /// processes it.
-        /// If a suppressed 404 is present, it unmarshalls the response and returns true to 
-        /// indicate that a suppressed 404 was processed, else returns false.
-        /// </summary>
-        /// <param name="executionContext">The execution context, it contains the
-        /// request and response context.</param>
-        /// <param name="httpErrorResponse"></param>
-        /// <returns>
-        /// If a suppressed 404 is present, returns true, else returns false.
-        /// </returns>
-        private bool HandleSuppressed404(IExecutionContext executionContext, IWebResponseData httpErrorResponse)
-        {
-            var requestContext = executionContext.RequestContext;
-            var responseContext = executionContext.ResponseContext;
-
-            // If the error is a 404 and the request is configured to supress it,
-            // then unmarshall as much as we can.
-            if (httpErrorResponse != null &&
-                httpErrorResponse.StatusCode == HttpStatusCode.NotFound &&
-                requestContext.Request.Suppress404Exceptions)
-            {
-                using (httpErrorResponse.ResponseBody)
-                {
-                    var unmarshaller = requestContext.Unmarshaller;
-
-                    UnmarshallerContext errorContext = unmarshaller.CreateContext(
-                        httpErrorResponse,
-                        false,
-                        httpErrorResponse.ResponseBody.OpenResponse(),
-                        true,
-                        requestContext);
-                    try
-                    {
-                        responseContext.Response = unmarshaller.Unmarshall(errorContext);
-                        responseContext.Response.ContentLength = httpErrorResponse.ContentLength;
-                        responseContext.Response.HttpStatusCode = httpErrorResponse.StatusCode;
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
-            return false;
         }
     }
 }

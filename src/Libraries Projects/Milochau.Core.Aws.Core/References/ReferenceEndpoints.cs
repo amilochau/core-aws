@@ -19,18 +19,6 @@ namespace Amazon.Internal
                         {
                             new EndpointsPartitionDefaultsVariant
                             {
-                                DnsSuffix = "amazonaws.com",
-                                Hostname = "{service}-fips.{region}.{dnsSuffix}",
-                                Tags = new List<string> { "fips" },
-                            },
-                            new EndpointsPartitionDefaultsVariant
-                            {
-                                DnsSuffix = "api.aws",
-                                Hostname = "{service}-fips.{region}.{dnsSuffix}",
-                                Tags = new List<string> { "dualstack", "fips" },
-                            },
-                            new EndpointsPartitionDefaultsVariant
-                            {
                                 DnsSuffix = "api.aws",
                                 Hostname = "{service}.{region}.{dnsSuffix}",
                                 Tags = new List<string> { "dualstack" },
@@ -40,7 +28,7 @@ namespace Amazon.Internal
                     DnsSuffix = "amazonaws.com",
                     Partition = "aws",
                     PartitionName = "AWS Standard",
-                    RegionRegex = "^(us|eu|ap|sa|ca|me|af|il)\\-\\w+\\-\\d+$",
+                    RegionRegex = "^(us|eu)\\-\\w+\\-\\d+$",
                     Regions = new Dictionary<string, EndpointsPartitionRegion>
                     {
                         { "eu-west-3", new EndpointsPartitionRegion { Description = "Europe (Paris)" } },
@@ -59,18 +47,7 @@ namespace Amazon.Internal
                                 Endpoints = new Dictionary<string, EndpointsPartitionDefaults>
                                 {
                                     { "eu-west-3", new EndpointsPartitionDefaults() },
-                                    { "us-east-1", new EndpointsPartitionDefaults
-                                        {
-                                            Variants = new List<EndpointsPartitionDefaultsVariant>
-                                            {
-                                                new EndpointsPartitionDefaultsVariant
-                                                {
-                                                    Hostname = "dynamodb-fips.us-east-1.amazonaws.com",
-                                                    Tags = new List<string> { "fips" },
-                                                }
-                                            }
-                                        }
-                                    },
+                                    { "us-east-1", new EndpointsPartitionDefaults() },
                                 },
                             }
                         },
@@ -80,18 +57,7 @@ namespace Amazon.Internal
                                 Endpoints = new Dictionary<string, EndpointsPartitionDefaults>
                                 {
                                     { "eu-west-3", new EndpointsPartitionDefaults() },
-                                    { "us-east-1", new EndpointsPartitionDefaults
-                                        {
-                                            Variants = new List<EndpointsPartitionDefaultsVariant>
-                                            {
-                                                new EndpointsPartitionDefaultsVariant
-                                                {
-                                                    Hostname = "email-fips.us-east-1.amazonaws.com",
-                                                    Tags = new List<string> { "fips" },
-                                                }
-                                            }
-                                        }
-                                    },
+                                    { "us-east-1", new EndpointsPartitionDefaults() },
                                 }
                             }
                         },
@@ -111,11 +77,6 @@ namespace Amazon.Internal
                                         {
                                             Variants = new List<EndpointsPartitionDefaultsVariant>
                                             {
-                                                new EndpointsPartitionDefaultsVariant
-                                                {
-                                                    Hostname = "lambda-fips.us-east-1.amazonaws.com",
-                                                    Tags = new List<string> { "fips "},
-                                                },
                                                 new EndpointsPartitionDefaultsVariant
                                                 {
                                                     Hostname = "lambda.us-east-1.api.aws",

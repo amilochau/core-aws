@@ -173,9 +173,9 @@ namespace Amazon
         /// <param name="options">
         /// Specify additional requirements on the <see cref="Endpoint"/> to be returned.
         /// </param>
-        public Endpoint GetEndpointForService(string serviceName, GetEndpointForServiceOptions options)
+        public Endpoint GetEndpointForService(string serviceName)
         {
-            return InternedRegionEndpoint.GetEndpointForService(serviceName, options);
+            return InternedRegionEndpoint.GetEndpointForService(serviceName);
         }
 
         /// <summary>

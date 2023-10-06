@@ -214,20 +214,7 @@ namespace Amazon.Runtime
                 sb.AppendFormat("{0}{1}", delim, queryString);
             }
 
-            var parameterizedPath = string.Empty;
-            if (internalRequest.MarshallerVersion >= 2)
-            {
-                parameterizedPath = string.Concat(resourcePath, sb);
-            }
-            else
-            {
-                if (AWSSDKUtils.HasBidiControlCharacters(resourcePath))
-                    throw new AmazonClientException(string.Format(CultureInfo.InvariantCulture,
-                        "Target resource path [{0}] has bidirectional characters, which are not supported" +
-                        "by System.Uri and thus cannot be handled by the .NET SDK.", resourcePath));
-
-                parameterizedPath = string.Concat(AWSSDKUtils.ProtectEncodedSlashUrlEncode(resourcePath, skipEncodingValidPathChars), sb);
-            }
+            var parameterizedPath = string.Concat(resourcePath, sb);
 
             var hasSlash = url.AbsoluteUri.EndsWith("/", StringComparison.Ordinal) || parameterizedPath.StartsWith("/", StringComparison.Ordinal);
             var uri = hasSlash

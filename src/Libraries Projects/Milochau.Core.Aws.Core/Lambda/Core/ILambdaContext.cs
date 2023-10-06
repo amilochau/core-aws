@@ -1,7 +1,5 @@
 namespace Amazon.Lambda.Core
 {
-    using System;
-
     /// <summary>
     /// Object that allows you to access useful information available within
     /// the Lambda execution environment.

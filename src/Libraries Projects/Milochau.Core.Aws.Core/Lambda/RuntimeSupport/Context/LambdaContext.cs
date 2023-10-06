@@ -14,7 +14,6 @@
  */
 
 using Amazon.Lambda.Core;
-using System;
 using Amazon.Lambda.RuntimeSupport.Helpers;
 
 namespace Amazon.Lambda.RuntimeSupport

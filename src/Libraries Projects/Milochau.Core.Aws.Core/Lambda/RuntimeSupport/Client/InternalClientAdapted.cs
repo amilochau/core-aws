@@ -17,7 +17,6 @@
 using System.Text.Json;
 using System.Net;
 using System.Text.Json.Serialization;
-using Amazon.Lambda.RuntimeSupport.Helpers;
 
 namespace Amazon.Lambda.RuntimeSupport
 {
