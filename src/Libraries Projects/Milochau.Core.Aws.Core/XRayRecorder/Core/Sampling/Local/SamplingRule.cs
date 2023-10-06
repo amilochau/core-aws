@@ -16,9 +16,7 @@
 //-----------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Text.RegularExpressions;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 
 [module: SuppressMessage("Microsoft.Design", "CA1036:OverrideMethodsOnComparableTypes", Scope = "type", Target = "Amazon.XRay.Recorder.Core.Sampling.Local.SamplingRule", Justification = "Only used for sorting")]
@@ -31,34 +29,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
     public class SamplingRule
     {
         private int _fixedTarget;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SamplingRule"/> class.
-        /// </summary>
-        public SamplingRule()
-        {
-            _fixedTarget = -1;
-            this.Rate = -1d;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SamplingRule"/> class.
-        /// </summary>
-        /// <param name="host">Name of the host. The value can include a multi-character match wildcard(*) or a single-character match wildcard (?) anywhere in the string.</param>
-        /// <param name="urlPath">The URL path. The value can include a multi-character match wildcard(*) or a single-character match wildcard (?) anywhere in the string.</param>
-        /// <param name="httpMethod">Http method. The value can be a multi-character match wildcard(*) to match any method.</param>
-        /// <param name="fixedTarget">It defines a trace collection target for a rule with no sampling in the unit of traces per second. Before the threshold is met, all request will be traced. After the threshold is met, sampling rate is triggered.</param>
-        /// <param name="rate">The rate at which request will be sampled. E.g. with 5% sampling rate, average 5 request out of 100 will be traced.</param>
-        /// <param name="description">Description of the sampling rule.</param>
-        public SamplingRule(string host, string urlPath, string httpMethod, int fixedTarget, double rate, string description = null)
-        {
-            this.Host = host;
-            this.HttpMethod = httpMethod;
-            this.UrlPath = urlPath;
-            this.FixedTarget = fixedTarget;
-            this.Rate = rate;
-            this.Description = description;
-        }
 
         /// <summary>
         /// Gets or sets the host of the rule
@@ -129,15 +99,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Generate a string out of this instance of the class
-        /// </summary>
-        /// <returns>The string generated from current object</returns>
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "hostToMatch={0}, httpMethodToMatch={1}, urlPathToMatch={2}, fixedTarget={3}, rate={4}, description={5}", Host, HttpMethod, UrlPath, FixedTarget, Rate, Description);
         }
     }
 }

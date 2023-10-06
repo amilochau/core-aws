@@ -14,7 +14,6 @@
 //      permissions and limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------------
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using Amazon.XRay.Recorder.Core.Sampling.Local;
 using System;
@@ -44,31 +43,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
         /// Instance of <see cref="XRayConfig"/>.
         /// </summary>
         public XRayConfig XRayConfig = null;
-
-        /// <summary>
-        /// Instance of <see cref="DefaultSamplingStrategy"/>.
-        /// </summary>
-        public DefaultSamplingStrategy()
-        {
-            _localFallbackRules = new LocalizedSamplingStrategy(); 
-            InititalizeStrategy();
-        }
-
-        /// <summary>
-        /// Instance of <see cref="DefaultSamplingStrategy"/>.
-        /// </summary>
-        /// <param name="samplingRuleManifest">Path to local sampling maifest file.</param>
-        public DefaultSamplingStrategy(string samplingRuleManifest)
-        {
-            _localFallbackRules = new LocalizedSamplingStrategy(samplingRuleManifest); 
-            InititalizeStrategy();
-        }
-        private void InititalizeStrategy()
-        {
-            _ruleCache = new RuleCache();
-            _rulePoller = new RulePoller(_ruleCache);
-            _targetPoller = new TargetPoller(_ruleCache, _rulePoller);
-        }
 
         /// <summary>
         /// Start rule poller and target poller.

@@ -23,7 +23,7 @@ namespace Amazon.Runtime
     /// The interface for a HTTP request factory.
     /// </summary>
     /// <typeparam name="TRequestContent">The type used by the underlying HTTP API to represent the request body.</typeparam>
-    public interface IHttpRequestFactory<TRequestContent> : IDisposable
+    public interface IHttpRequestFactory<TRequestContent>
     {
         /// <summary>
         /// Creates an HTTP request for the given URI.

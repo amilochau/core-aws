@@ -16,23 +16,13 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             InternalSDKUtils.BuildUserAgentString("3.7.202.4");
 
         private string _userAgent = UserAgentString;
-        ///<summary>
-        /// The ServiceId, which is the unique identifier for a service.
-        ///</summary>
-        public static new string ServiceId
-        {
-            get
-            {
-                return "DynamoDB";
-            }
-        }
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public AmazonDynamoDBConfig()
             : base(AmazonDynamoDBDefaultConfiguration.Standard)
         {
-            base.ServiceId = "DynamoDB";
             this.AuthenticationServiceName = "dynamodb";
             this.MaxErrorRetry = 10;
             this.EndpointProvider = new AmazonDynamoDBEndpointProvider();
@@ -46,17 +36,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             get
             {
                 return "dynamodb";
-            }
-        }
-
-        /// <summary>
-        /// Gets the ServiceVersion property.
-        /// </summary>
-        public override string ServiceVersion
-        {
-            get
-            {
-                return "2012-08-10";
             }
         }
 

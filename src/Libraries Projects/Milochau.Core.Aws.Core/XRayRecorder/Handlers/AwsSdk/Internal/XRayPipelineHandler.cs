@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Reflection;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;

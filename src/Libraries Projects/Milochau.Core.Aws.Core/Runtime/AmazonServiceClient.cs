@@ -23,7 +23,6 @@ using System.Linq;
 using System.Threading;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Runtime
 {
@@ -166,9 +165,6 @@ namespace Amazon.Runtime
         {
             ThrowIfDisposed();
 
-            if (cancellationToken == default(CancellationToken))
-                cancellationToken = _config.BuildDefaultCancellationToken();
-
             var executionContext = new ExecutionContext(
                 new RequestContext(Signer)
                 {
@@ -270,7 +266,7 @@ namespace Amazon.Runtime
 
         private void BuildRuntimePipeline()
         {
-            var httpRequestFactory = new HttpRequestMessageFactory(Config);
+            var httpRequestFactory = new HttpRequestMessageFactory();
             var httpHandler = new HttpHandler<System.Net.Http.HttpContent>(httpRequestFactory, this);
             var preMarshallHandler = new CallbackHandler();
             preMarshallHandler.OnPreInvoke = this.ProcessPreRequestHandlers;

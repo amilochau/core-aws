@@ -52,14 +52,7 @@ namespace Amazon.Runtime.Internal
             var userAgent = $"{requestContext.ClientConfig.UserAgent} " +
                 $"{(executionContext.RequestContext.IsAsync ? "ClientAsync" : "ClientSync")}{requestContext.OriginalRequest.UserAgentAddition}";
 
-            if(requestContext.ClientConfig.UseAlternateUserAgentHeader)
-            {
-                requestContext.Request.Headers[HeaderKeys.XAmzUserAgentHeader] = userAgent;
-            }
-            else
-            {
-                requestContext.Request.Headers[HeaderKeys.UserAgentHeader] = userAgent;
-            }
+            requestContext.Request.Headers[HeaderKeys.UserAgentHeader] = userAgent;
 
             var method = requestContext.Request.HttpMethod.ToUpperInvariant();
             if (method != "GET" && method != "DELETE" && method != "HEAD")

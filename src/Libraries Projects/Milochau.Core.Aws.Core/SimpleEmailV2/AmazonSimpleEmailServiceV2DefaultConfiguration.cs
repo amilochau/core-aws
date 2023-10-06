@@ -40,7 +40,6 @@ namespace Amazon.SimpleEmailV2
             ConnectTimeout = TimeSpan.FromMilliseconds(3100L),
             // 0:00:03.1
             TlsNegotiationTimeout = TimeSpan.FromMilliseconds(3100L),
-            TimeToFirstByteTimeout = null,
             HttpRequestTimeout = null
         };
     }

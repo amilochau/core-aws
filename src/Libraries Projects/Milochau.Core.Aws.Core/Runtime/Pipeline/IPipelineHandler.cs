@@ -13,8 +13,6 @@
  * permissions and limitations under the License.
  */
 
-using Amazon.Runtime.Internal.Util;
-
 namespace Amazon.Runtime
 {
     /// <summary>

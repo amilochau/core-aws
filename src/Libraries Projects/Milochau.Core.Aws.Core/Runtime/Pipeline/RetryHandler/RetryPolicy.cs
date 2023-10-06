@@ -22,7 +22,6 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal.Util;
 using Amazon.Util;
 using AWSSDK.Runtime.Internal.Util;
 

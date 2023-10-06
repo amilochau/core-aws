@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 
 namespace Amazon.XRay.Recorder.Core.Strategies

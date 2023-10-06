@@ -19,7 +19,6 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 

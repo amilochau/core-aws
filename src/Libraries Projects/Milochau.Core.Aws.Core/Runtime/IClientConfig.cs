@@ -18,38 +18,12 @@ using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
 {
-    public partial interface IClientConfig
-    {
-        /// <summary>
-        /// HttpClientFactory used to create new HttpClients.
-        /// If null, an HttpClient will be created by the SDK.
-        /// Note that IClientConfig members such as ProxyHost, ProxyPort, GetWebProxy, and AllowAutoRedirect
-        /// will have no effect unless they're used explicitly by the HttpClientFactory implementation.
-        ///
-        /// See https://docs.microsoft.com/en-us/xamarin/cross-platform/macios/http-stack?context=xamarin/ios and
-        /// https://docs.microsoft.com/en-us/xamarin/android/app-fundamentals/http-stack?context=xamarin%2Fcross-platform&tabs=macos#ssltls-implementation-build-option
-        /// for guidance on creating HttpClients for your platform.
-        /// </summary>
-        HttpClientFactory HttpClientFactory { get; }
-    }
-
     /// <summary>
     /// This interface is the read only access to the ClientConfig object used when setting up service clients. Once service clients
     /// are initiated the config object should not be changed to avoid issues with using a service client in a multi threaded environment.
     /// </summary>
     public partial interface IClientConfig
     {
-        /// <summary>
-        /// The serviceId for the service, which is specified in the metadata in the ServiceModel.
-        /// The transformed value of the service ID (replace any spaces in the service ID 
-        /// with underscores and uppercase all letters) is used to set service-specific endpoint urls.
-        /// I.e: AWS_ENDPOINT_URL_ELASTIC_BEANSTALK
-        /// For configuration files, replace any spaces with underscores and lowercase all letters
-        /// I.e. elastic_beanstalk = 
-        ///     endpoint_url = http://localhost:8000
-        /// </summary>
-        string ServiceId { get; }
-
         /// <summary>
         /// Gets the RegionEndpoint property. The region constant to use that 
         /// determines the endpoint to use.  If this is not set
@@ -69,11 +43,6 @@ namespace Amazon.Runtime
         /// but can be changed to use custom user supplied EndpointProvider.
         /// </summary>
         IEndpointProvider EndpointProvider { get; }
-
-        /// <summary>
-        /// Gets Service Version
-        /// </summary>
-        string ServiceVersion { get; }
 
         /// <summary>
         /// Gets the AuthenticationServiceName property.
@@ -103,26 +72,6 @@ namespace Amazon.Runtime
         int MaxErrorRetry { get; }
 
         /// <summary>
-        /// Credentials to use with a proxy.
-        /// </summary>
-        ICredentials ProxyCredentials { get; }
-
-        /// <summary>
-        /// Gets the default request timeout value.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the value is set, the value is assigned to the Timeout property of the HTTPWebRequest/HttpClient object used
-        /// to send requests.
-        /// </para>
-        /// <para>
-        /// Please specify a timeout value only if the operation will not complete within the default intervals
-        /// specified for an HttpWebRequest/HttpClient.
-        /// </para>
-        /// </remarks>
-        TimeSpan? Timeout { get; }
-
-        /// <summary>
         /// Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint
         /// for the configured region.
         /// </summary>
@@ -145,21 +94,5 @@ namespace Amazon.Runtime
         /// <returns>The URL to the service.</returns>
         [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         string DetermineServiceURL();
-
-        /// <summary>
-        /// Returns the calculated clock skew value for this config's service endpoint. If AWSConfigs.CorrectForClockSkew is false,
-        /// this value won't be used to construct service requests.
-        /// </summary>
-        TimeSpan ClockOffset { get; }
-
-        /// <summary>
-        /// When set to true, the service client will use the  x-amz-user-agent
-        /// header instead of the User-Agent header to report version and
-        /// environment information to the AWS service.
-        ///
-        /// Note: This is especially useful when using a platform like WebAssembly
-        /// which doesn't allow to specify the User-Agent header.
-        /// </summary>
-        bool UseAlternateUserAgentHeader { get; }
     }
 }

@@ -41,7 +41,6 @@ namespace Amazon.SimpleEmailV2
         public AmazonSimpleEmailServiceV2Config()
             : base(AmazonSimpleEmailServiceV2DefaultConfiguration.Standard)
         {
-            base.ServiceId = "SESv2";
             this.AuthenticationServiceName = "ses";
             this.EndpointProvider = new AmazonSimpleEmailServiceV2EndpointProvider();
         }
@@ -54,17 +53,6 @@ namespace Amazon.SimpleEmailV2
             get
             {
                 return "email";
-            }
-        }
-
-        /// <summary>
-        /// Gets the ServiceVersion property.
-        /// </summary>
-        public override string ServiceVersion
-        {
-            get
-            {
-                return "2019-09-27";
             }
         }
 

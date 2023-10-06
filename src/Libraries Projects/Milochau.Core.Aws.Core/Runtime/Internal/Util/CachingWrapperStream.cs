@@ -32,14 +32,15 @@ namespace Amazon.Runtime.Internal.Util
     /// </summary>
     public class CachingWrapperStream : WrapperStream
     {
-        private readonly int? _cacheLimit;
+        // Default limit for response logging is 1 KB.
+        public static readonly int DefaultLogResponsesSizeLimit = 1024;
 
         private int _cachedBytes = 0;
 
         /// <summary>
         /// All the bytes read by the stream.
         /// </summary>
-        public List<Byte> AllReadBytes { get; private set; }
+        public List<Byte> AllReadBytes { get; private set; } = new List<byte>();
 
         /// <summary>
         /// All the bytes read by the stream constrained with _cacheLimit
@@ -47,8 +48,7 @@ namespace Amazon.Runtime.Internal.Util
         public List<Byte> LoggableReadBytes { 
             get
             {
-                var limit = _cacheLimit ?? AWSConfigs.LoggingConfig.LogResponsesSizeLimit;
-                return AllReadBytes.Take(limit).ToList();
+                return AllReadBytes.Take(DefaultLogResponsesSizeLimit).ToList();
             }
         }
 
@@ -57,10 +57,8 @@ namespace Amazon.Runtime.Internal.Util
         /// </summary>
         /// <param name="baseStream">The stream to be wrapped.</param>
         /// <param name="cacheLimit">Maximum number of bytes to be cached.</param>
-        public CachingWrapperStream(Stream baseStream, int? cacheLimit = null) : base(baseStream)
+        public CachingWrapperStream(Stream baseStream) : base(baseStream)
         {
-            _cacheLimit = cacheLimit;
-            this.AllReadBytes = new List<byte>();
         }
 
         /// <summary>
@@ -100,25 +98,15 @@ namespace Amazon.Runtime.Internal.Util
 
         private void UpdateCacheAfterReading(byte[] buffer, int offset, int numberOfBytesRead)
         {
-            // Limit the cached bytes to _cacheLimit
-            if (_cacheLimit.HasValue)
+            if (_cachedBytes < DefaultLogResponsesSizeLimit)
             {
-                if (_cachedBytes < _cacheLimit.Value)
-                {
-                    int remainingBytes = _cacheLimit.Value - _cachedBytes;
-                    int bytesToCache = Math.Min(numberOfBytesRead, remainingBytes);
+                int remainingBytes = DefaultLogResponsesSizeLimit - _cachedBytes;
+                int bytesToCache = Math.Min(numberOfBytesRead, remainingBytes);
 
-                    var readBytes = new byte[bytesToCache];
-                    System.Array.Copy(buffer, offset, readBytes, 0, bytesToCache);
-                    AllReadBytes.AddRange(readBytes);
-                    _cachedBytes += bytesToCache;
-                }
-            }
-            else
-            {
-                var readBytes = new byte[numberOfBytesRead];
-                System.Array.Copy(buffer, offset, readBytes, 0, numberOfBytesRead);
+                var readBytes = new byte[bytesToCache];
+                System.Array.Copy(buffer, offset, readBytes, 0, bytesToCache);
                 AllReadBytes.AddRange(readBytes);
+                _cachedBytes += bytesToCache;
             }
         }
 

@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Utils
 {

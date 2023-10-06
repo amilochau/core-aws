@@ -27,9 +27,8 @@ namespace Amazon.Runtime.Internal
     /// independent of the underlying HTTP infrastructure.
     /// </summary>
     /// <typeparam name="TRequestContent"></typeparam>
-    public class HttpHandler<TRequestContent> : PipelineHandler, IDisposable
+    public class HttpHandler<TRequestContent> : PipelineHandler
     {
-        private bool _disposed;
         private IHttpRequestFactory<TRequestContent> _requestFactory;
 
         /// <summary>
@@ -182,29 +181,6 @@ namespace Amazon.Runtime.Internal
             }
 
             return httpRequest;
-        }
-
-        /// <summary>
-        /// Disposes the HTTP handler.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_requestFactory != null)
-                    _requestFactory.Dispose();
-
-                _disposed = true;
-            }
         }
     }
 }

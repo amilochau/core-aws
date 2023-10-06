@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Sampling;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Entities

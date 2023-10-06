@@ -20,18 +20,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Utils
 {
-	/// <summary>
-	/// Represents a endpoint on some network.
-	/// The represented endpoint is identified by a hostname.
-	///
-	/// Internally resolves and caches an ip for the hostname.
-	/// The ip is cached to keep the normal path speedy and non-blocking.
-	/// </summary>
-	public class HostEndPoint
+    /// <summary>
+    /// Represents a endpoint on some network.
+    /// The represented endpoint is identified by a hostname.
+    ///
+    /// Internally resolves and caches an ip for the hostname.
+    /// The ip is cached to keep the normal path speedy and non-blocking.
+    /// </summary>
+    public class HostEndPoint
 	{
 		private readonly int _cacheTtl;	//Seconds to consider a cached dns response valid
 		private IPEndPoint _ipCache;

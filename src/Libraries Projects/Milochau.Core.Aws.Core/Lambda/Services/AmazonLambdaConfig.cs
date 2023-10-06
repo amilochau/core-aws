@@ -34,23 +34,13 @@ namespace Amazon.Lambda
             InternalSDKUtils.BuildUserAgentString("3.7.201.45");
 
         private string _userAgent = UserAgentString;
-        ///<summary>
-        /// The ServiceId, which is the unique identifier for a service.
-        ///</summary>
-        public static new string ServiceId
-        {
-            get
-            {
-                return "Lambda";
-            }
-        }
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public AmazonLambdaConfig()
             : base(AmazonLambdaDefaultConfiguration.Standard)
         {
-            base.ServiceId = "Lambda";
             this.AuthenticationServiceName = "lambda";
             this.EndpointProvider = new AmazonLambdaEndpointProvider();
         }
@@ -67,17 +57,6 @@ namespace Amazon.Lambda
         }
 
         /// <summary>
-        /// Gets the ServiceVersion property.
-        /// </summary>
-        public override string ServiceVersion
-        {
-            get
-            {
-                return "2015-03-31";
-            }
-        }
-
-        /// <summary>
         /// Gets the value of UserAgent property.
         /// </summary>
         public override string UserAgent
@@ -87,6 +66,5 @@ namespace Amazon.Lambda
                 return _userAgent;
             }
         }
-
     }
 }

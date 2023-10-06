@@ -59,11 +59,6 @@ namespace Amazon.Runtime
         /// </summary>
         TimeSpan? TlsNegotiationTimeout { get; }
         /// <summary>
-        /// How long an application will attempt to read the first byte over an established,
-        /// open connection after write request before timing out.
-        /// </summary>
-        TimeSpan? TimeToFirstByteTimeout { get; }
-        /// <summary>
         /// This timeout measures the time between when the first byte is sent over an established,
         /// open connection and when the last byte is received from the service.
         /// If the response is not received by the timeout, then the request is considered timed out.
@@ -82,8 +77,6 @@ namespace Amazon.Runtime
         public TimeSpan? ConnectTimeout { get; set; }
         /// <inheritdoc />
         public TimeSpan? TlsNegotiationTimeout { get; set; }
-        /// <inheritdoc />
-        public TimeSpan? TimeToFirstByteTimeout { get; set; }
         /// <inheritdoc />
         public TimeSpan? HttpRequestTimeout { get; set; }
     }

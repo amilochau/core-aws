@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Sampling.Model;
 using ThirdParty.LitJson;
 using System.Text;

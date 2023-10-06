@@ -14,7 +14,6 @@
 //      permissions and limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------------
-using Amazon.Runtime.Internal.Util;
 using System.Threading;
 
 namespace Amazon.XRay.Recorder.Core.Sampling

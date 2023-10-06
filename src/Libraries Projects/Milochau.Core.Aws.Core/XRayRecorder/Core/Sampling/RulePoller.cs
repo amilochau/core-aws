@@ -14,7 +14,6 @@
 //      permissions and limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------------
-using Amazon.Runtime.Internal.Util;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

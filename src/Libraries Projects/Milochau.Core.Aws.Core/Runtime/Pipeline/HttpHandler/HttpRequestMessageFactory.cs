@@ -14,7 +14,6 @@
  */
 
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal.Util;
 using Amazon.Util;
 using System;
 using System.Collections.Generic;
@@ -28,56 +27,11 @@ using System.Threading;
 namespace Amazon.Runtime
 {
     /// <summary>
-    /// A factory which creates HTTP clients.
-    /// </summary>
-    public abstract class HttpClientFactory
-    {
-        /// <summary>
-        /// Create and configure an HttpClient.
-        /// </summary>
-        /// <returns></returns>
-        public abstract HttpClient CreateHttpClient(IClientConfig clientConfig);
-
-        /// <summary>
-        /// Returns a string that's used to group equivalent HttpClients into caches.
-        /// This method isn't used unless UseSDKHttpClientCaching returns true;
-        /// 
-        /// A null return value signals the SDK caching mechanism to cache HttpClients per SDK client.
-        /// So when the SDK client is disposed, the HttpClients are as well.
-        /// 
-        /// A non-null return value signals the SDK that HttpClients created with the given clientConfig
-        /// should be cached and reused globally.  ClientConfigs that produce the same result for
-        /// GetConfigUniqueString will be grouped together and considered equivalent for caching purposes.
-        /// </summary>
-        /// <param name="clientConfig"></param>
-        /// <returns></returns>
-        public virtual string GetConfigUniqueString(IClientConfig clientConfig)
-        {
-            return null;
-        }
-    }
-
-    /// <summary>
     /// A factory which creates HTTP requests which uses System.Net.Http.HttpClient.
     /// </summary>
     public class HttpRequestMessageFactory : IHttpRequestFactory<HttpContent>
     {
-        // This is the global cache of HttpClient for service clients that are using 
-        static readonly ReaderWriterLockSlim _httpClientCacheRWLock = new ReaderWriterLockSlim();
-        static readonly IDictionary<string, HttpClientCache> _httpClientCaches = new Dictionary<string, HttpClientCache>();
-
-        private HttpClientCache _httpClientCache;
-        private bool _useGlobalHttpClientCache;
-        private IClientConfig _clientConfig;
-
-        /// <summary>
-        /// The constructor for HttpRequestMessageFactory.
-        /// </summary>
-        /// <param name="clientConfig">Configuration setting for a client.</param>
-        public HttpRequestMessageFactory(IClientConfig clientConfig)
-        {
-            _clientConfig = clientConfig;
-        }
+        static readonly HttpClient _httpClient = new HttpClient();
 
         /// <summary>
         /// Creates an HTTP request for the given URI.
@@ -86,209 +40,7 @@ namespace Amazon.Runtime
         /// <returns>An HTTP request.</returns>
         public IHttpRequest<HttpContent> CreateHttpRequest(Uri requestUri)
         {
-            HttpClient httpClient;
-            if(_httpClientCache == null)
-            {
-                if (!ClientConfig.UseGlobalHttpClientCache(_clientConfig))
-                {
-                    _useGlobalHttpClientCache = false;
-
-                    _httpClientCacheRWLock.EnterWriteLock();
-                    try
-                    {
-                        if (_httpClientCache == null)
-                        {
-                            _httpClientCache = CreateHttpClientCache(_clientConfig);
-                        }
-                    }
-                    finally
-                    {
-                        _httpClientCacheRWLock.ExitWriteLock();
-                    }
-                }
-                else
-                {
-                    _useGlobalHttpClientCache = true;
-
-                    // Check to see if an HttpClient was created by another service client with the 
-                    // same settings on the ClientConfig.
-                    var configUniqueString = ClientConfig.CreateConfigUniqueString(_clientConfig);
-                    _httpClientCacheRWLock.EnterReadLock();
-                    try
-                    {
-                        _httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache);
-                    }
-                    finally
-                    {
-                        _httpClientCacheRWLock.ExitReadLock();
-                    }
-
-                    // If a HttpClientCache is not found in the global cache then create one
-                    // for this and other service clients to use.
-                    if (_httpClientCache == null)
-                    {
-                        _httpClientCacheRWLock.EnterWriteLock();
-                        try
-                        {
-                            // Check if the HttpClientCache was created by some other thread 
-                            // while this thread was waiting for the lock.
-                            if (!_httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache))
-                            {
-                                _httpClientCache = CreateHttpClientCache(_clientConfig);
-                                _httpClientCaches[configUniqueString] = _httpClientCache;
-                            }
-                        }
-                        finally
-                        {
-                            _httpClientCacheRWLock.ExitWriteLock();
-                        }
-                    }
-                }
-            }
-
-            // Now that we have a HttpClientCache from either the global cache or just created a new HttpClientCache
-            // get the next HttpClient to be used for making a web request.
-            httpClient = _httpClientCache.GetClient();
-
-            return new HttpWebRequestMessage(httpClient, requestUri);
-        }
-
-        /// <summary>
-        /// Disposes the HttpRequestMessageFactory.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose the factory
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // if the http cache is local to this instance then dispose it
-                if (!_useGlobalHttpClientCache && _httpClientCache != null)
-                {
-                    _httpClientCache.Dispose();
-                }
-            }
-        }
-
-        private static HttpClientCache CreateHttpClientCache(IClientConfig clientConfig)
-        {
-            var client = CreateHttpClient(clientConfig);
-            return new HttpClientCache(client);
-        }
-
-        private static HttpClient CreateHttpClient(IClientConfig clientConfig)
-        {
-            if (clientConfig.HttpClientFactory == null)
-            {
-                return CreateManagedHttpClient(clientConfig);
-            }
-            else
-            {
-                return clientConfig.HttpClientFactory.CreateHttpClient(clientConfig);
-            }
-        }
-
-         /// <summary>
-         /// Create and configure a managed HttpClient instance.
-         /// The use of HttpClientHandler in the constructor for HttpClient implicitly creates a managed HttpClient.
-         /// </summary>
-         /// <param name="clientConfig"></param>
-         /// <returns></returns>
-        private static HttpClient CreateManagedHttpClient(IClientConfig clientConfig)
-        {
-            var httpMessageHandler = new HttpClientHandler();
-
-            try
-            {
-                // Disable automatic decompression when Content-Encoding header is present
-                httpMessageHandler.AutomaticDecompression = DecompressionMethods.None;
-            }
-            catch (PlatformNotSupportedException)
-            {
-            }
-
-            try
-            { 
-                if (httpMessageHandler.Proxy != null && clientConfig.ProxyCredentials != null)
-                {
-                    httpMessageHandler.Proxy.Credentials = clientConfig.ProxyCredentials;
-                }
-            }
-            catch (PlatformNotSupportedException)
-            {
-            }
-
-            var httpClient = new HttpClient(httpMessageHandler);
-            
-            if (clientConfig.Timeout.HasValue)
-            {
-                // Timeout value is set to ClientConfig.MaxTimeout for S3 and Glacier.
-                // Use default value (100 seconds) for other services.
-                httpClient.Timeout = clientConfig.Timeout.Value;
-            }
-
-            return httpClient;
-        }
-
-    }
-
-    /// <summary>
-    /// A cache of HttpClient objects. The GetNextClient method does a round robin cycle through the clients
-    /// to distribute the load even across.
-    /// </summary>
-    public class HttpClientCache : IDisposable
-    {
-        HttpClient _client;
-
-        /// <summary>
-        /// Constructs a container for a cache of HttpClient objects
-        /// </summary>
-        /// <param name="clients">The HttpClient to cache</param>
-        public HttpClientCache(HttpClient client)
-        {
-            _client = client;
-        }
-
-        /// <summary>
-        /// Returns the next HttpClient using a round robin rotation. It is expected that individual clients will be used
-        /// by more then one Thread.
-        /// </summary>
-        /// <returns></returns>
-        public HttpClient GetClient()
-        {
-            return _client;
-        }
-
-        /// <summary>
-        /// Disposes the HttpClientCache.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose the HttpClientCache
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_client != null)
-                {
-                    _client.Dispose();
-                }
-            }
+            return new HttpWebRequestMessage(_httpClient, requestUri);
         }
     }
 
@@ -297,7 +49,6 @@ namespace Amazon.Runtime
     /// </summary>
     public class HttpWebRequestMessage : IHttpRequest<HttpContent>
     {
-
         /// <summary>
         /// Set of content header names.
         /// </summary>

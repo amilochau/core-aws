@@ -16,7 +16,6 @@
 //-----------------------------------------------------------------------------
 using System;
 using System.Runtime.ExceptionServices;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Strategies;

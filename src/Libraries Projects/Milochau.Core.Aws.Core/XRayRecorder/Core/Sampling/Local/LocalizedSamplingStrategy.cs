@@ -21,7 +21,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using ThirdParty.LitJson;
@@ -44,25 +43,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
         public LocalizedSamplingStrategy()
         {
             InitWithDefaultSamplingRules();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LocalizedSamplingStrategy"/> class.
-        /// </summary>
-        /// <param name="path">Path to the file which sampling configuration.</param>
-        public LocalizedSamplingStrategy(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                InitWithDefaultSamplingRules();
-            }
-            else
-            {
-                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    Init(stream);
-                }
-            }
         }
 
         /// <summary>

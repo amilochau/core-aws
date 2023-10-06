@@ -14,7 +14,6 @@
 //      permissions and limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------------
-using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using System;
 using System.Collections.Generic;

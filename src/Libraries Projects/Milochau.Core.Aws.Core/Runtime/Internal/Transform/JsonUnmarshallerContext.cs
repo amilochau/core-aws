@@ -88,13 +88,9 @@ namespace Amazon.Runtime.Internal.Transform
             bool isException,
             IRequestContext requestContext)
         {
-            if (isException)
+            if (isException || maintainResponseBody)
             {
                 this.WrappingStream = new CachingWrapperStream(responseStream);
-            }
-            else if (maintainResponseBody)
-            {
-                this.WrappingStream = new CachingWrapperStream(responseStream, AWSConfigs.LoggingConfig.LogResponsesSizeLimit);
             }
 
             if (isException || maintainResponseBody)
