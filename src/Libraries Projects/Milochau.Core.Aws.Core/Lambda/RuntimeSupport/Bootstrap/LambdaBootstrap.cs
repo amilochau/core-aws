@@ -18,7 +18,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Lambda.RuntimeSupport.Bootstrap;
 using Amazon.Lambda.RuntimeSupport.Helpers;
 
 namespace Amazon.Lambda.RuntimeSupport
@@ -39,7 +38,6 @@ namespace Amazon.Lambda.RuntimeSupport
         private static readonly TimeSpan RuntimeApiHttpTimeout = TimeSpan.FromHours(12);
 
         private LambdaBootstrapHandler _handler;
-        private InternalLogger _logger = InternalLogger.GetDefaultLogger();
 
         private HttpClient _httpClient;
         internal IRuntimeApiClient Client { get; set; }
@@ -64,7 +62,7 @@ namespace Amazon.Lambda.RuntimeSupport
             _httpClient = ConstructHttpClient();
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             _httpClient.Timeout = RuntimeApiHttpTimeout;
-            Client = new RuntimeApiClient(new SystemEnvironmentVariables(), _httpClient);
+            Client = new RuntimeApiClient(_httpClient);
         }
 
         /// <summary>
@@ -75,21 +73,11 @@ namespace Amazon.Lambda.RuntimeSupport
         /// <returns>A Task that represents the operation.</returns>
         public async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // For local debugging purposes this environment variable can be set to run a Lambda executable assembly and process one event
-            // and then shut down cleanly. Useful for profiling or running local tests with the .NET Lambda Test Tool. This environment
-            // variable should never be set when function is deployed to Lambda.
-            var runOnce = string.Equals(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VARIABLE_AWS_LAMBDA_DOTNET_DEBUG_RUN_ONCE), "true", StringComparison.OrdinalIgnoreCase);
-
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     await InvokeOnceAsync(cancellationToken);
-                    if(runOnce)
-                    {
-                        _logger.LogInformation("Exiting Lambda processing loop because the run once environment variable was set.");
-                        return;
-                    }
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -100,7 +88,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
         internal async Task InvokeOnceAsync(CancellationToken cancellationToken = default)
         {
-            this._logger.LogInformation($"Starting InvokeOnceAsync");
             using (var invocation = await Client.GetNextInvocationAsync(cancellationToken))
             {
                 InvocationResponse response = null;
@@ -108,7 +95,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
                 try
                 {
-                    this._logger.LogInformation($"Starting invoking handler");
                     response = await _handler(invocation);
                     invokeSucceeded = true;
                 }
@@ -117,14 +103,9 @@ namespace Amazon.Lambda.RuntimeSupport
                     WriteUnhandledExceptionToLog(exception);
                     await Client.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception);
                 }
-                finally
-                {
-                    this._logger.LogInformation($"Finished invoking handler");
-                }
 
                 if (invokeSucceeded)
                 {
-                    this._logger.LogInformation($"Starting sending response");
                     try
                     {
                         await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
@@ -135,11 +116,8 @@ namespace Amazon.Lambda.RuntimeSupport
                         {
                             response.OutputStream?.Dispose();
                         }
-
-                        this._logger.LogInformation($"Finished sending response");
                     }
                 }
-                this._logger.LogInformation($"Finished InvokeOnceAsync");
             }
         }
 

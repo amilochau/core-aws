@@ -49,40 +49,5 @@ namespace Amazon.Lambda.Model
                     this.PayloadStream = AWSSDKUtils.GenerateMemoryStreamFromString(value);
             }
         }
-
-        /// <summary>
-        /// Gets and sets the property ClientContext. When this property is set the ClientContextBase64
-        /// property is also set with a base64-encoded string containing the contents of ClientContext.
-        /// <para>
-        /// Using the <code>ClientContext</code> you can pass client-specific information to the
-        /// Lambda function you are invoking. You can then process the client information in your
-        /// Lambda function as you choose through the context variable. For an example of a ClientContext
-        /// JSON, go to <a href="http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html">PutEvents</a>
-        /// in the <i>Amazon Mobile Analytics API Reference and User Guide</i>.
-        /// </para>
-        /// </summary>
-        public string ClientContext
-        {
-            get
-            {
-                string content = null;
-                if (this.ClientContextBase64 != null)
-                {
-                    var bytes = Convert.FromBase64String(ClientContextBase64);
-                    content = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                }
-                return content;
-            }
-            set
-            {
-                if (value == null)
-                    this.ClientContextBase64 = null;
-                else
-                {
-                    var bytes = Encoding.UTF8.GetBytes(value);
-                    this.ClientContextBase64 = Convert.ToBase64String(bytes);
-                }
-            }
-        }
     }
 }

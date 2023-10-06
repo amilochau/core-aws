@@ -30,37 +30,6 @@ namespace Amazon.Runtime
     /// </summary>
     public static class CorrectClockSkew
     {
-        private static TimeSpan? manualClockCorrection;
-        private static ReaderWriterLockSlim manualClockCorrectionLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        /// GlobalClockCorrection should be only set by AWSConfigs.ManualClockCorrection property
-        /// and is only available to maintain backward compatibilty.  This should override any
-        /// endpoint specific clockskew correction.
-        /// </summary>
-        internal static TimeSpan? GlobalClockCorrection
-        {
-            get
-            {
-                TimeSpan? value;
-                manualClockCorrectionLock.EnterReadLock();
-                {
-                    value = manualClockCorrection;
-                }
-                manualClockCorrectionLock.ExitReadLock();
-                return value;
-            }
-
-            set
-            {
-                manualClockCorrectionLock.EnterWriteLock();
-                {
-                    manualClockCorrection = value;
-                }
-                manualClockCorrectionLock.ExitWriteLock();
-            }
-        }
-
         private static IDictionary<string, TimeSpan> clockCorrectionDictionary = new Dictionary<string, TimeSpan>();
         private static ReaderWriterLockSlim clockCorrectionDictionaryLock = new ReaderWriterLockSlim();
 
@@ -97,26 +66,9 @@ namespace Amazon.Runtime
         /// <returns></returns>
         public static DateTime GetCorrectedUtcNowForEndpoint(string endpoint)
         {
-            TimeSpan adjustment = TimeSpan.Zero;
+            TimeSpan adjustment = GetClockCorrectionForEndpoint(endpoint);
 
-            manualClockCorrectionLock.EnterReadLock();
-            try
-            {
-                if (manualClockCorrection != null)
-                    adjustment = manualClockCorrection.Value;
-            }
-            finally
-            {
-                manualClockCorrectionLock.ExitReadLock();
-            }
-            
-
-            if (AWSConfigs.CorrectForClockSkew && (adjustment == TimeSpan.Zero))
-            {
-                adjustment = GetClockCorrectionForEndpoint(endpoint);
-            }
-            
-            return AWSConfigs.utcNowSource() + adjustment;
+            return DateTime.UtcNow + adjustment;
         }
 
         internal static void SetClockCorrectionForEndpoint(string endpoint, TimeSpan correction)
@@ -125,9 +77,6 @@ namespace Amazon.Runtime
             try
             {
                 clockCorrectionDictionary[endpoint] = correction;
-#pragma warning disable CS0618 // Type or member is obsolete
-                AWSConfigs.ClockOffset = correction;
-#pragma warning restore CS0618 // Type or member is obsolete
             }
             finally
             {

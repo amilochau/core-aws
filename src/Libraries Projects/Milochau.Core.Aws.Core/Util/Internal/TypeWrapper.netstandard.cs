@@ -57,11 +57,6 @@ namespace Amazon.Util.Internal
                 return this._type.GetFields();
             }
 
-            public override FieldInfo GetField(string name)
-            {
-                return this._type.GetField(name);
-            }
-
             private static readonly Type objectType = typeof(object);
             private static bool IsBackingField(MemberInfo mi)
             {
@@ -128,11 +123,6 @@ namespace Amazon.Util.Internal
             public override bool IsAssignableFrom(ITypeInfo typeInfo)
             {
                 return this._typeInfo.IsAssignableFrom(((TypeInfoWrapper)typeInfo)._typeInfo);
-            }
-
-            public override Assembly Assembly
-            {
-                get { return this._typeInfo.Assembly; }
             }
 
             public override ConstructorInfo GetConstructor(ITypeInfo[] paramTypes)

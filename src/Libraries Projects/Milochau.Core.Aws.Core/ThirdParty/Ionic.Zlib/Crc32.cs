@@ -31,13 +31,7 @@ namespace ThirdParty.Ionic.Zlib
         /// indicates the total number of bytes read on the CRC stream.
         /// This is used when writing the ZipDirEntry when compressing files.
         /// </summary>
-        public Int64 TotalBytesRead
-        {
-            get
-            {
-                return _TotalBytesRead;
-            }
-        }
+        public Int64 TotalBytesRead { get; private set; }
 
         /// <summary>
         /// Indicates the current CRC for all blocks slurped in.
@@ -49,71 +43,6 @@ namespace ThirdParty.Ionic.Zlib
                 // return one's complement of the running result
                 return unchecked((Int32)(~_RunningCrc32Result));
             }
-        }
-
-        /// <summary>
-        /// Returns the CRC32 for the specified stream.
-        /// </summary>
-        /// <param name="input">The stream over which to calculate the CRC32</param>
-        /// <returns>the CRC32 calculation</returns>
-        public Int32 GetCrc32(System.IO.Stream input)
-        {
-            return GetCrc32AndCopy(input, null);
-        }
-
-        /// <summary>
-        /// Returns the CRC32 for the specified stream, and writes the input into the output stream.
-        /// </summary>
-        /// <param name="input">The stream over which to calculate the CRC32</param>
-        /// <param name="output">The stream into which to deflate the input</param>
-        /// <returns>the CRC32 calculation</returns>
-        public Int32 GetCrc32AndCopy(System.IO.Stream input, System.IO.Stream output)
-        {
-            unchecked
-            {
-                //UInt32 crc32Result;
-                //crc32Result = 0xFFFFFFFF;
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int readSize = BUFFER_SIZE;
-
-                _TotalBytesRead = 0;
-                int count = input.Read(buffer, 0, readSize);
-                if (output != null) output.Write(buffer, 0, count);
-                _TotalBytesRead += count;
-                while (count > 0)
-                {
-                    //for (int i = 0; i < count; i++)
-                    //{
-                    //    _RunningCrc32Result = ((_RunningCrc32Result) >> 8) ^ crc32Table[(buffer[i]) ^ ((_RunningCrc32Result) & 0x000000FF)];
-                    //}
-
-
-                    SlurpBlock(buffer, 0, count);
-                    count = input.Read(buffer, 0, readSize);
-                    if (output != null) output.Write(buffer, 0, count);
-                    _TotalBytesRead += count;
-                }
-
-                return (Int32)(~_RunningCrc32Result);
-            }
-        }
-
-
-        /// <summary>
-        /// Get the CRC32 for the given (word,byte) combo. 
-        /// This is a computation defined by PKzip.
-        /// </summary>
-        /// <param name="W">The word to start with.</param>
-        /// <param name="B">The byte to combine it with.</param>
-        /// <returns>The CRC-ized result.</returns>
-        public Int32 ComputeCrc32(Int32 W, byte B)
-        {
-            return _InternalComputeCrc32((UInt32)W, B);
-        }
-
-        internal Int32 _InternalComputeCrc32(UInt32 W, byte B)
-        {
-            return (Int32)(crc32Table[(W ^ B) & 0xFF] ^ (W >> 8));
         }
 
         /// <summary>
@@ -130,7 +59,7 @@ namespace ThirdParty.Ionic.Zlib
                 int x = offset + i;
                 _RunningCrc32Result = ((_RunningCrc32Result) >> 8) ^ crc32Table[(block[x]) ^ ((_RunningCrc32Result) & 0x000000FF)];
             }
-            _TotalBytesRead += count;
+            TotalBytesRead += count;
         }
 
 
@@ -166,17 +95,10 @@ namespace ThirdParty.Ionic.Zlib
             }
         }
 
-
-        // private member vars
-        private Int64 _TotalBytesRead;
         private static UInt32[] crc32Table;
-        private const int BUFFER_SIZE = 8192;
         private UInt32 _RunningCrc32Result = 0xFFFFFFFF;
 
     }
-
-
-
 
     /// <summary>
     /// A Stream that calculates a CRC32 (a checksum) on all bytes read, 

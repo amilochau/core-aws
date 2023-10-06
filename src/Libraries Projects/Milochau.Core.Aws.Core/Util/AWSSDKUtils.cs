@@ -36,30 +36,19 @@ namespace Amazon.Util
     {
 #region Internal Constants
 
-        internal const string DefaultRegion = "us-east-1";
-        internal const string DefaultGovRegion = "us-gov-west-1";
-
         private const char SlashChar = '/';
         private const string Slash = "/";
         private const string EncodedSlash = "%2F";
 
-        internal const int DefaultMaxRetry = 3;
-
         public static readonly DateTime EPOCH_START = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public const int DefaultBufferSize = 8192;
-
-        // Default value of progress update interval for streaming is 100KB.
-        public const long DefaultProgressUpdateInterval = 102400;
 
         internal static Dictionary<int, string> RFCEncodingSchemes = new Dictionary<int, string>
         {
             { 3986,  ValidUrlCharacters },
             { 1738,  ValidUrlCharactersRFC1738 }
         };
-
-        internal const string S3Accelerate = "s3-accelerate";
-        internal const string S3Control = "s3-control";
 
 #endregion
 
@@ -140,11 +129,6 @@ namespace Amazon.Util
         /// The ISO8601 basic date format. Used during AWS4 signature computation.
         /// </summary>
         public const string ISO8601BasicDateFormat = "yyyyMMdd";
-
-        /// <summary>
-        /// The RFC822Date Format string. Used when parsing date objects
-        /// </summary>
-        public const string RFC822DateFormat = "ddd, dd MMM yyyy HH:mm:ss \\G\\M\\T";
 
 #endregion
 

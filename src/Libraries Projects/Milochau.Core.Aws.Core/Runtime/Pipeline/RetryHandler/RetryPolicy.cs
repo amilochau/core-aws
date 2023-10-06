@@ -401,7 +401,7 @@ namespace Amazon.Runtime
             if (isHead || isClockskewErrorCode)
             {
                 var endpoint = executionContext.RequestContext.Request.Endpoint.ToString();
-                var realNow = AWSConfigs.utcNowSource();
+                var realNow = DateTime.UtcNow;
                 var correctedNow = CorrectClockSkew.GetCorrectedUtcNowForEndpoint(endpoint);
 
                 DateTime serverTime;
@@ -426,15 +426,9 @@ namespace Amazon.Runtime
                         // Always set the correction, for informational purposes
                         CorrectClockSkew.SetClockCorrectionForEndpoint(endpoint, newCorrection);
 
-                        var shouldRetry = AWSConfigs.CorrectForClockSkew && !AWSConfigs.ManualClockCorrection.HasValue;
-
-                        // Only retry if clock skew correction is not disabled
-                        if (shouldRetry)
-                        {
-                            // Set clock skew correction
-                            executionContext.RequestContext.IsSigned = false;
-                            return true;
-                        }
+                        // Set clock skew correction
+                        executionContext.RequestContext.IsSigned = false;
+                        return true;
                     }
                 }
             }

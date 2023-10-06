@@ -42,7 +42,6 @@ namespace Amazon.Runtime.Internal
         {
             var requestContext = executionContext.RequestContext;
             var parameters = MapEndpointsParameters(requestContext);
-            var config = requestContext.ClientConfig;
 
             var endpoint = GetEndpoint(executionContext, parameters);
             requestContext.Request.Endpoint = new Uri(endpoint.URL);

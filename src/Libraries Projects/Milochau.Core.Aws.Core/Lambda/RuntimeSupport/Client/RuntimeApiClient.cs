@@ -31,13 +31,11 @@ namespace Amazon.Lambda.RuntimeSupport
 
         private readonly IConsoleLoggerWriter _consoleLoggerRedirector = new LogLevelLoggerWriter();
 
-        internal Func<Exception, ExceptionInfo> ExceptionConverter { get;  set; }
         internal LambdaEnvironment LambdaEnvironment { get; set; }
 
-        internal RuntimeApiClient(IEnvironmentVariables environmentVariables, HttpClient httpClient)
+        internal RuntimeApiClient(HttpClient httpClient)
         {
-            ExceptionConverter = ExceptionInfo.GetExceptionInfo;
-            LambdaEnvironment = new LambdaEnvironment(environmentVariables);
+            LambdaEnvironment = new LambdaEnvironment();
             var internalClient = new InternalRuntimeApiClient(httpClient);
             internalClient.BaseUrl = "http://" + LambdaEnvironment.RuntimeServerHostAndPort + internalClient.BaseUrl;
             _internalClient = internalClient;

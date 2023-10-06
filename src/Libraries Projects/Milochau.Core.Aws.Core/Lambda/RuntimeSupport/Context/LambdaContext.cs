@@ -21,14 +21,8 @@ namespace Amazon.Lambda.RuntimeSupport
 {
     internal class LambdaContext : ILambdaContext
     {
-        internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         private LambdaEnvironment _lambdaEnvironment;
         private RuntimeApiHeaders _runtimeApiHeaders;
-        private long _deadlineMs;
-        private int _memoryLimitInMB;
-        private Lazy<CognitoIdentity> _cognitoIdentityLazy;
-        private Lazy<CognitoClientContext> _cognitoClientContextLazy;
         private IConsoleLoggerWriter _consoleLogger;
 
         public LambdaContext(RuntimeApiHeaders runtimeApiHeaders, LambdaEnvironment lambdaEnvironment, IConsoleLoggerWriter consoleLogger)
@@ -38,35 +32,12 @@ namespace Amazon.Lambda.RuntimeSupport
             _runtimeApiHeaders = runtimeApiHeaders;
             _consoleLogger = consoleLogger;
 
-            int.TryParse(_lambdaEnvironment.FunctionMemorySize, out _memoryLimitInMB);
-            long.TryParse(_runtimeApiHeaders.DeadlineMs, out _deadlineMs);
-            _cognitoIdentityLazy = new Lazy<CognitoIdentity>(() => CognitoIdentity.FromJson(runtimeApiHeaders.CognitoIdentityJson));
-            _cognitoClientContextLazy = new Lazy<CognitoClientContext>(() => CognitoClientContext.FromJson(runtimeApiHeaders.ClientContextJson));
-
             // set environment variable so that if the function uses the XRay client it will work correctly
             _lambdaEnvironment.SetXAmznTraceId(_runtimeApiHeaders.TraceId);
         }
 
         public string AwsRequestId => _runtimeApiHeaders.AwsRequestId;
 
-        public IClientContext ClientContext => _cognitoClientContextLazy.Value;
-
-        public string FunctionName => _lambdaEnvironment.FunctionName;
-
-        public string FunctionVersion => _lambdaEnvironment.FunctionVersion;
-
-        public ICognitoIdentity Identity => _cognitoIdentityLazy.Value;
-
-        public string InvokedFunctionArn => _runtimeApiHeaders.InvokedFunctionArn;
-
         public ILambdaLogger Logger => new LambdaConsoleLogger(_consoleLogger);
-
-        public string LogGroupName => _lambdaEnvironment.LogGroupName;
-
-        public string LogStreamName => _lambdaEnvironment.LogStreamName;
-
-        public int MemoryLimitInMB => _memoryLimitInMB;
-
-        public TimeSpan RemainingTime => TimeSpan.FromMilliseconds(_deadlineMs - (DateTime.UtcNow - UnixEpoch).TotalMilliseconds);
     }
 }

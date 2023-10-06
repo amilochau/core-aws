@@ -14,7 +14,6 @@
  */
 
 using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport.Bootstrap;
 using System;
 using System.IO;
 using System.Text;
@@ -44,53 +43,6 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
         /// <param name="level"></param>
         /// <param name="message"></param>
         void FormattedWriteLine(string level, string message);
-    }
-
-    /// <summary>
-    /// Simple logger to maintain compatibility with versions of .NET before .NET 6
-    /// </summary>
-    public class SimpleLoggerWriter : IConsoleLoggerWriter
-    {
-        TextWriter _writer;
-
-        public SimpleLoggerWriter()
-        {
-            // Look to see if Lambda's telemetry log file descriptor is available. If so use that for logging.
-            // This will make sure multiline log messages use a single CloudWatch Logs record.
-            var fileDescriptorLogId = Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VARIABLE_TELEMETRY_LOG_FD);
-            if (fileDescriptorLogId != null)
-            {
-                try
-                {
-                    _writer = FileDescriptorLogFactory.GetWriter(fileDescriptorLogId);
-                    InternalLogger.GetDefaultLogger().LogInformation("Using file descriptor stream writer for logging");
-                }
-                catch (Exception ex)
-                {
-                    _writer = Console.Out;
-                    InternalLogger.GetDefaultLogger().LogError(ex, "Error creating file descriptor log stream writer. Fallback to stdout.");
-                }
-            }
-            else
-            {
-                _writer = Console.Out;
-                InternalLogger.GetDefaultLogger().LogInformation("Using stdout for logging");
-            }
-        }
-
-        public void SetCurrentAwsRequestId(string awsRequestId)
-        {
-        }
-
-        public void FormattedWriteLine(string message)
-        {
-            _writer.WriteLine(message);
-        }
-
-        public void FormattedWriteLine(string level, string message)
-        {
-            _writer.WriteLine(message);
-        }
     }
 
     /// <summary>
@@ -147,29 +99,7 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
         /// </summary>
         public LogLevelLoggerWriter()
         {
-            // Look to see if Lambda's telemetry log file descriptor is available. If so use that for logging.
-            // This will make sure multiline log messages use a single CloudWatch Logs record.
-            var fileDescriptorLogId = Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VARIABLE_TELEMETRY_LOG_FD);
-            if (fileDescriptorLogId != null)
-            {
-                try
-                {
-                    var stdOutWriter = FileDescriptorLogFactory.GetWriter(fileDescriptorLogId);
-                    var stdErrorWriter = FileDescriptorLogFactory.GetWriter(fileDescriptorLogId);
-                    Initialize(stdOutWriter, stdErrorWriter);
-                    InternalLogger.GetDefaultLogger().LogInformation("Using file descriptor stream writer for logging.");
-                }
-                catch(Exception ex)
-                {
-                    InternalLogger.GetDefaultLogger().LogError(ex, "Error creating file descriptor log stream writer. Fallback to stdout and stderr.");
-                    Initialize(Console.Out, Console.Error);
-                }
-            }
-            else
-            {
-                Initialize(Console.Out, Console.Error);
-                InternalLogger.GetDefaultLogger().LogInformation("Using stdout and stderr for logging.");
-            }
+            Initialize(Console.Out, Console.Error);
 
             // SetOut will wrap our WrapperTextWriter with a synchronized TextWriter. Pass in the new synchronized
             // TextWriter into our writer to make sure we obtain a lock on that instance before writing to the stdout.
@@ -314,23 +244,16 @@ namespace Amazon.Lambda.RuntimeSupport.Helpers
             /// <returns></returns>
             private static string ConvertLogLevelToLabel(LogLevel level)
             {
-                switch (level)
+                return level switch
                 {
-                    case LogLevel.Trace:
-                        return "trce";
-                    case LogLevel.Debug:
-                        return "dbug";
-                    case LogLevel.Information:
-                        return "info";
-                    case LogLevel.Warning:
-                        return "warn";
-                    case LogLevel.Error:
-                        return "fail";
-                    case LogLevel.Critical:
-                        return "crit";
-                }
-
-                return level.ToString();
+                    LogLevel.Trace => "trce",
+                    LogLevel.Debug => "dbug",
+                    LogLevel.Information => "info",
+                    LogLevel.Warning => "warn",
+                    LogLevel.Error => "fail",
+                    LogLevel.Critical => "crit",
+                    _ => level.ToString(),
+                };
             }
             public override Encoding Encoding => _innerWriter.Encoding;
         }

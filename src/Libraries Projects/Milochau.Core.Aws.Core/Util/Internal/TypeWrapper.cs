@@ -30,14 +30,11 @@ namespace Amazon.Util.Internal
 
         Type Type { get; }
 
-        Assembly Assembly { get; }
-
         Type GetInterface(string name);
 
         IEnumerable<PropertyInfo> GetProperties();
 
         IEnumerable<FieldInfo> GetFields();
-        FieldInfo GetField(string name);
 
         MethodInfo GetMethod(string name, ITypeInfo[] paramTypes);
 
@@ -50,8 +47,6 @@ namespace Amazon.Util.Internal
         bool IsEnum {get;}
 
         bool IsClass { get; }
-
-        string FullName { get; }
     }
 
     public static partial class TypeFactory
@@ -93,31 +88,16 @@ namespace Amazon.Util.Internal
                 return this._type.Equals(typeWrapper._type);
             }
 
-            public bool IsType(Type type)
-            {
-                return this._type == type;
-            }
-
             public abstract Type BaseType { get; }
-            public abstract Assembly Assembly { get; }
             public abstract Type GetInterface(string name);
             public abstract IEnumerable<PropertyInfo> GetProperties();
             public abstract IEnumerable<FieldInfo> GetFields();
-            public abstract FieldInfo GetField(string name);
             public abstract MethodInfo GetMethod(string name, ITypeInfo[] paramTypes);
             public abstract PropertyInfo GetProperty(string name);
             public abstract bool IsAssignableFrom(ITypeInfo typeInfo);
             public abstract bool IsClass { get; }
             public abstract bool IsEnum { get; }
             public abstract ConstructorInfo GetConstructor(ITypeInfo[] paramTypes);
-
-            public string FullName 
-            {
-                get
-                {
-                    return this._type.FullName;
-                }
-            }
        }
     }
 
