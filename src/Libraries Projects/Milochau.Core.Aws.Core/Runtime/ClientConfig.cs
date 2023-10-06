@@ -29,7 +29,6 @@ namespace Amazon.Runtime
     /// This class is the base class of all the configurations settings to connect
     /// to a service.
     /// </summary>
-    [CLSCompliant(false)]
     public abstract partial class ClientConfig
     {
         private IWebProxy proxy = null;
@@ -233,9 +232,7 @@ namespace Amazon.Runtime
         private long? requestMinCompressionSizeBytes;
         private bool disableHostPrefixInjection = false;
         private bool? endpointDiscoveryEnabled = null;
-        private bool? ignoreConfiguredEndpointUrls;
         private int endpointDiscoveryCacheLimit = 1000;
-        private RequestRetryMode? retryMode = null;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
         private const long DefaultMinCompressionSizeBytes = 10240;
@@ -290,7 +287,6 @@ namespace Amazon.Runtime
             }
             set
             {
-                this.DefaultConfiguration = null;
                 this.regionEndpoint = value;
                 this.probeForRegionEndpoint = this.regionEndpoint == null;
 
@@ -302,9 +298,7 @@ namespace Amazon.Runtime
                     Logger.GetLogger(GetType()).InfoFormat($"FIPS Pseudo Region support is deprecated. Will attempt to convert {value.SystemName}.");
 
                     this.UseFIPSEndpoint = true;
-                    this.regionEndpoint =
-                        RegionEndpoint.GetBySystemName(
-                            value.SystemName.Replace("fips-", "").Replace("-fips", ""));
+                    this.regionEndpoint = RegionEndpoint.GetBySystemName(value.SystemName.Replace("fips-", "").Replace("-fips", ""));
                     this.RegionEndpoint.OriginalSystemName = value.SystemName;
                 }
             }

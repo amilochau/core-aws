@@ -43,24 +43,6 @@ namespace Amazon.Runtime.Internal
         public IPipelineHandler OuterHandler { get; set; }
 
         /// <summary>
-        /// Contains the processing logic for a synchronous request invocation.
-        /// This method calls InnerHandler.InvokeSync to continue processing of the
-        /// request by the pipeline.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-//        [System.Diagnostics.DebuggerHidden]
-        public virtual void InvokeSync(IExecutionContext executionContext)
-        {
-            if (this.InnerHandler != null)
-            {
-                InnerHandler.InvokeSync(executionContext);
-                return;
-            }
-            throw new InvalidOperationException("Cannot invoke InnerHandler. InnerHandler is not set.");
-        }
-
-        /// <summary>
         /// Contains the processing logic for an asynchronous request invocation.
         /// This method calls InnerHandler.InvokeSync to continue processing of the
         /// request by the pipeline.

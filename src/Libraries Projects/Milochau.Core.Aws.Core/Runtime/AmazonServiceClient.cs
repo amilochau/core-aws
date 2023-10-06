@@ -31,7 +31,6 @@ namespace Amazon.Runtime
     {
         private bool _disposed;
         private Logger _logger;
-        protected EndpointDiscoveryResolverBase EndpointDiscoveryResolver { get; private set; }
         protected RuntimePipeline RuntimePipeline { get; set; }
         protected internal AWSCredentials Credentials { get; private set; }
         public IClientConfig Config => _config;
@@ -151,8 +150,7 @@ namespace Amazon.Runtime
 
             Credentials = credentials;
             _config = config;
-            Signer = CreateSigner();
-            EndpointDiscoveryResolver = new EndpointDiscoveryResolver(config, _logger);
+            Signer = new AWS4Signer();
             Initialize();
             BuildRuntimePipeline();
         }
@@ -170,29 +168,6 @@ namespace Amazon.Runtime
         #endregion
 
         #region Invoke methods
-
-        protected TResponse Invoke<TResponse>(AmazonWebServiceRequest request, InvokeOptionsBase options)
-            where TResponse : AmazonWebServiceResponse
-        {
-            ThrowIfDisposed();
-
-            var executionContext = new ExecutionContext(
-                new RequestContext(Config.LogMetrics, Signer)
-                {
-                    ClientConfig = Config,
-                    Marshaller = options.RequestMarshaller,
-                    OriginalRequest = request,
-                    Unmarshaller = options.ResponseUnmarshaller,
-                    IsAsync = false,
-                    ServiceMetaData = ServiceMetadata,
-                    Options = options
-                },
-                new ResponseContext()
-            );
-            SetupCSMHandler(executionContext.RequestContext);
-            var response = (TResponse)RuntimePipeline.InvokeSync(executionContext).Response;
-            return response;
-        }
 
         protected System.Threading.Tasks.Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
@@ -222,8 +197,6 @@ namespace Amazon.Runtime
             SetupCSMHandler(executionContext.RequestContext);
             return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);
         }
-
-        protected virtual IEnumerable<DiscoveryEndpointBase> EndpointOperation(EndpointOperationContextBase context) { return null; }
 
         #endregion
 
@@ -306,7 +279,6 @@ namespace Amazon.Runtime
 
         #endregion
 
-        protected abstract AbstractAWSSigner CreateSigner();
         protected virtual void CustomizeRuntimePipeline(RuntimePipeline pipeline) { }
 
         private void BuildRuntimePipeline()
@@ -336,9 +308,6 @@ namespace Amazon.Runtime
                     new ErrorHandler(_logger),
                     postUnmarshallHandler,
                     new Signer(),
-                    // EndpointDiscoveryResolver must come after CredentialsRetriever, RetryHander, and EndpointResolver as it depends on
-                    // credentials, retrying of requests for 421 web exceptions, and the current set regional endpoint.
-                    new EndpointDiscoveryHandler(),
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
                     // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
                     new ChecksumHandler(),

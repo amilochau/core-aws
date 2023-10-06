@@ -20,7 +20,6 @@ using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
 {
-    [CLSCompliant(false)]
     public partial interface IClientConfig
     {
         /// <summary>

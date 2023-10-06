@@ -60,53 +60,6 @@ namespace Amazon.Runtime.Internal
         /// Invokes the inner handler and performs a retry, if required as per the
         /// retry policy.
         /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            var requestContext = executionContext.RequestContext;
-            var responseContext = executionContext.ResponseContext;
-            bool shouldRetry = false;
-            this.RetryPolicy.ObtainSendToken(executionContext, null);
-            do
-            {
-                try
-                {
-                    SetRetryHeaders(requestContext);
-                    base.InvokeSync(executionContext);
-                    this.RetryPolicy.NotifySuccess(executionContext);
-                    return;
-                }
-                catch (Exception exception)
-                {
-                    shouldRetry = this.RetryPolicy.Retry(executionContext, exception);
-                    if (!shouldRetry)
-                    {
-                        LogForError(requestContext, exception);
-                        throw;
-                    }
-                    else
-                    {
-                        requestContext.Retries++;
-                        requestContext.Metrics.SetCounter(Metric.AttemptCount, requestContext.Retries);
-                        LogForRetry(requestContext, exception);
-                    }
-
-                    this.RetryPolicy.ObtainSendToken(executionContext, exception);
-                }
-
-                PrepareForRetry(requestContext);
-
-                using (requestContext.Metrics.StartEvent(Metric.RetryPauseTime))
-                    this.RetryPolicy.WaitBeforeRetry(executionContext);
-
-            } while (shouldRetry);
-        }
-
-        /// <summary>
-        /// Invokes the inner handler and performs a retry, if required as per the
-        /// retry policy.
-        /// </summary>
         /// <typeparam name="T">The response type for the current request.</typeparam>
         /// <param name="executionContext">The execution context, it contains the
         /// request and response context.</param>

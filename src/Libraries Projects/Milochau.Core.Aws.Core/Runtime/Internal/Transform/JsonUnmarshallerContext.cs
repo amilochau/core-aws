@@ -283,45 +283,9 @@ namespace Amazon.Runtime.Internal.Transform
             get { return streamReader.BaseStream; }
         }
 
-        /// <summary>
-        /// Peeks at the next (non-whitespace) character in the jsonStream.
-        /// </summary>
-        /// <returns>The next (non-whitespace) character in the jsonStream, or -1 if at the end.</returns>
-        public int Peek()
-        {
-            // Per MSDN documentation on StreamReader.Peek(), it's perfectly acceptable to cast
-            // int returned by Peek() to char.
-            unchecked
-            {
-                while (Char.IsWhiteSpace((char) StreamPeek()))
-                {
-                    streamReader.Read();
-                }
-            }
-            return StreamPeek();
-
-        }
-
         #endregion
 
         #region Private methods
-
-        /// <summary>
-        /// Peeks at the next character in the stream.
-        /// If the data isn't buffered into the StreamReader (Peek() returns -1),
-        /// we flush the buffered data and try one more time.
-        /// </summary>
-        /// <returns></returns>
-        private int StreamPeek()
-        {
-            int peek = streamReader.Peek();
-            if (peek == -1)
-            {
-                streamReader.DiscardBufferedData();
-                peek = streamReader.Peek();
-            }
-            return peek;
-        }
 
         private void UpdateContext()
         {
@@ -375,16 +339,6 @@ namespace Amazon.Runtime.Internal.Transform
         }
 
         #endregion
-
-        public JsonData ToJsonData()
-        {
-            var data = JsonMapper.ToObject(jsonReader);
-
-            if (stack.Count > 0)
-                stack.Pop();
-            
-            return data;
-        }
 
         protected override void Dispose(bool disposing)
         {

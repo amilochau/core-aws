@@ -54,81 +54,6 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Issues an HTTP request for the current request context.
         /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            IHttpRequest<TRequestContent> httpRequest = null;
-            try
-            {
-                SetMetrics(executionContext.RequestContext);
-                IRequest wrappedRequest = executionContext.RequestContext.Request; 
-                httpRequest = CreateWebRequest(executionContext.RequestContext);
-                httpRequest.SetRequestHeaders(wrappedRequest.Headers);
-
-                using (executionContext.RequestContext.Metrics.StartEvent(Metric.HttpRequestTime))
-                {
-                    // Send request body if present.
-                    if (wrappedRequest.HasRequestBody())
-                    {
-                        try
-                        {
-                            var requestContent = httpRequest.GetRequestContent();
-                            WriteContentToRequestBody(requestContent, httpRequest, executionContext.RequestContext);
-                        }
-                        catch
-                        {
-                            CompleteFailedRequest(httpRequest);
-                            throw;
-                        }
-                    }
-
-                    executionContext.ResponseContext.HttpResponse = httpRequest.GetResponse();
-                }
-            }
-            finally
-            {
-                if (httpRequest != null)
-                    httpRequest.Dispose();
-            }
-        }
-
-        private static void CompleteFailedRequest(IHttpRequest<TRequestContent> httpRequest)
-        {
-            try
-            {
-                // In some cases where writing the request body fails, HttpWebRequest.Abort
-                // may not dispose of the underlying Socket, so we need to retrieve and dispose
-                // the web response to close the socket
-                IWebResponseData response = null;
-                try
-                {
-                    response = httpRequest.GetResponse();
-                }
-                catch (WebException webException)
-                {
-                    if (webException.Response != null)
-                    {
-                        webException.Response.Dispose();
-                    }
-                }
-                catch (HttpErrorResponseException httpErrorResponse)
-                {
-                    if (httpErrorResponse.Response != null && httpErrorResponse.Response.ResponseBody != null)
-                        httpErrorResponse.Response.ResponseBody.Dispose();
-                }
-                finally
-                {
-                    if (response != null && response.ResponseBody != null)
-                        response.ResponseBody.Dispose();
-                }
-            }
-            catch { }
-        }
-		
-        /// <summary>
-        /// Issues an HTTP request for the current request context.
-        /// </summary>
         /// <typeparam name="T">The response type for the current request.</typeparam>
         /// <param name="executionContext">The execution context, it contains the
         /// request and response context.</param>
@@ -221,39 +146,9 @@ namespace Amazon.Runtime.Internal
             IHttpRequest<TRequestContent> httpRequest,
             IRequestContext requestContext)
         {
-            IRequest wrappedRequest = requestContext.Request;
-
-            // This code path ends up using a ByteArrayContent for System.Net.HttpClient used by .NET Core.
-            // HttpClient can't seem to handle ByteArrayContent with 0 length so in that case use
-            // the StreamContent code path.
-            if (wrappedRequest.Content != null && wrappedRequest.Content.Length > 0)
-            {
-                byte[] requestData = wrappedRequest.Content;
-                requestContext.Metrics.AddProperty(Metric.RequestSize, requestData.Length);
-                httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
-            }
-            else
-            {
-                System.IO.Stream originalStream;
-                if (wrappedRequest.ContentStream == null)
-                {
-                    originalStream = new System.IO.MemoryStream();
-                    originalStream.Write(wrappedRequest.Content, 0, wrappedRequest.Content.Length);
-                    originalStream.Position = 0;
-                }
-                else
-                {
-                    originalStream = wrappedRequest.ContentStream;
-                }
-
-                var callback = ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)wrappedRequest.OriginalRequest).StreamUploadProgressCallback;
-                if (callback != null)
-                    originalStream = httpRequest.SetupProgressListeners(originalStream, requestContext.ClientConfig.ProgressUpdateInterval, this.CallbackSender, callback);
-                var inputStream = GetInputStream(requestContext, originalStream, wrappedRequest);
-                httpRequest.WriteToRequestBody(requestContent, inputStream, 
-                    requestContext.Request.Headers, requestContext);
-
-            }
+            byte[] requestData = requestContext.Request.Content;
+            requestContext.Metrics.AddProperty(Metric.RequestSize, requestData.Length);
+            httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
         }
 
         /// <summary>
@@ -324,55 +219,6 @@ namespace Amazon.Runtime.Internal
 
                 _disposed = true;
             }
-        }
-
-        private static System.IO.Stream GetInputStream(IRequestContext requestContext, System.IO.Stream originalStream, IRequest wrappedRequest)
-        {
-            var requestHasConfigForChunkStream = wrappedRequest.UseChunkEncoding && wrappedRequest.AWS4SignerResult != null;
-            var hasTransferEncodingHeader = wrappedRequest.Headers.ContainsKey(HeaderKeys.TransferEncodingHeader);
-            var isTransferEncodingHeaderChunked = hasTransferEncodingHeader && wrappedRequest.Headers[HeaderKeys.TransferEncodingHeader] == "chunked";
-            var hasTrailingHeaders = wrappedRequest.TrailingHeaders?.Count > 0;
-
-            // The goal of this logic is to wrap the request's ContentStream with:
-            //   ChunkedUploadWrapperStream - if using chunked signing (with or without trailing checksums)
-            //   TrailingHeadersWrapperStream - if using trailing checksums (without chunked signing)
-            // Otherwise return the request's current stream (which could be our compression wrapper stream, or else the original stream that the user set on the request)
-            //
-            // The indication to use chunked signing from earlier in the SDK is if we have SigV4 or SigV4a signingResult,
-            // which contains the header signature that is the input to the first chunk signature.
-            if (requestHasConfigForChunkStream || isTransferEncodingHeaderChunked)
-            {
-                AWSSigningResultBase signingResult = wrappedRequest.AWS4SignerResult;
-                if (signingResult != null)
-                {
-                    if (hasTrailingHeaders)
-                    {
-                        return new ChunkedUploadWrapperStream(originalStream,
-                                                     requestContext.ClientConfig.BufferSize,
-                                                     signingResult,
-                                                     wrappedRequest.SelectedChecksum,
-                                                     wrappedRequest.TrailingHeaders);
-                    }
-                    else // no trailing headers
-                    {
-                        return new ChunkedUploadWrapperStream(originalStream,
-                                                     requestContext.ClientConfig.BufferSize,
-                                                     signingResult);
-                    }
-                }
-            }
-            if (hasTrailingHeaders) // and is unsigned/unchunked
-            {
-                if (wrappedRequest.SelectedChecksum != CoreChecksumAlgorithm.NONE)
-                {
-                    return new TrailingHeadersWrapperStream(originalStream, wrappedRequest.TrailingHeaders, wrappedRequest.SelectedChecksum);
-                }
-                else
-                {
-                    return new TrailingHeadersWrapperStream(originalStream, wrappedRequest.TrailingHeaders);
-                }
-            }
-            return originalStream;
         }
     }
 }

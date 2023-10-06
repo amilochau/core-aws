@@ -43,33 +43,8 @@ namespace Amazon.Runtime
             }
         }
 
-        EventHandler<StreamTransferProgressArgs> Amazon.Runtime.Internal.IAmazonWebServiceRequest.StreamUploadProgressCallback { get; set; }
-
-        private Dictionary<string, object> requestState = null;
-        Dictionary<string, object> Amazon.Runtime.Internal.IAmazonWebServiceRequest.RequestState
-        {
-            get
-            {
-                if (requestState == null)
-                {
-                    requestState = new Dictionary<string, object>();
-                }
-                return requestState;
-            }
-        }
-
         protected AmazonWebServiceRequest()
         {
-        }
-
-        void Amazon.Runtime.Internal.IAmazonWebServiceRequest.AddBeforeRequestHandler(RequestEventHandler handler)
-        {
-            BeforeRequestEvent += handler;
-        }
-
-        void Amazon.Runtime.Internal.IAmazonWebServiceRequest.RemoveBeforeRequestHandler(RequestEventHandler handler)
-        {
-            BeforeRequestEvent -= handler;
         }
 
         internal void FireBeforeRequestEvent(object sender, RequestEventArgs args)

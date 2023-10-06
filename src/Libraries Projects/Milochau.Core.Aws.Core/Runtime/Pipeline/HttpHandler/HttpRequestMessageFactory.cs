@@ -31,7 +31,6 @@ namespace Amazon.Runtime
     /// <summary>
     /// A factory which creates HTTP clients.
     /// </summary>
-    [CLSCompliant(false)]
     public abstract class HttpClientFactory
     {
         /// <summary>
@@ -87,7 +86,6 @@ namespace Amazon.Runtime
     /// <summary>
     /// A factory which creates HTTP requests which uses System.Net.Http.HttpClient.
     /// </summary>
-    [CLSCompliant(false)]
     public class HttpRequestMessageFactory : IHttpRequestFactory<HttpContent>
     {
         // This is the global cache of HttpClient for service clients that are using 
@@ -365,8 +363,7 @@ namespace Amazon.Runtime
 
     /// <summary>
     /// HTTP request wrapper for System.Net.Http.HttpRequestMessage.
-    /// </summary>    
-    [CLSCompliant(false)]
+    /// </summary>
     public class HttpWebRequestMessage : IHttpRequest<HttpContent>
     {
 
@@ -405,36 +402,12 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// The underlying HttpClient
-        /// </summary>
-        public HttpClient HttpClient
-        {
-            get { return _httpClient; }
-        }
-
-        /// <summary>
-        /// The underlying HTTP web request.
-        /// </summary>
-        public HttpRequestMessage Request
-        {
-            get { return _request; }
-        }
-
-        /// <summary>
         /// The HTTP method or verb.
         /// </summary>
         public string Method
         {
             get { return _request.Method.Method; }
             set { _request.Method = new HttpMethod(value); }
-        }
-
-        /// <summary>
-        /// The request URI.
-        /// </summary>
-        public Uri RequestUri
-        {
-            get { return _request.RequestUri; }
         }
 
         /// <summary>
@@ -490,14 +463,6 @@ namespace Amazon.Runtime
             {
                 throw e.InnerException;
             }
-        }
-
-        /// <summary>
-        /// Aborts the HTTP request.
-        /// </summary>
-        public void Abort()
-        {
-            // NOP since HttRequestMessage does not have an Abort operation. 
         }
 
         /// <summary>
@@ -557,38 +522,6 @@ namespace Amazon.Runtime
 
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Writes a stream to the request body.
-        /// </summary>
-        /// <param name="requestContent">The destination where the content stream is written.</param>
-        /// <param name="contentStream">The content stream to be written.</param>
-        /// <param name="contentHeaders">HTTP content headers.</param>
-        /// <param name="requestContext">The request context.</param>
-        public void WriteToRequestBody(HttpContent requestContent, Stream contentStream,
-            IDictionary<string, string> contentHeaders, IRequestContext requestContext)
-        {
-            var wrapperStream = new Amazon.Runtime.Internal.Util.NonDisposingWrapperStream(contentStream);
-            _request.Content = new StreamContent(wrapperStream, requestContext.ClientConfig.BufferSize);
-
-            var chunkedUploadWrapperStream = (contentStream as ChunkedUploadWrapperStream);
-            var trailingHeadersWrapperStream = (contentStream as TrailingHeadersWrapperStream);
-            var compressionWrapperStream = (contentStream as CompressionWrapperStream);
-
-            var isChunkedUploadWrapperStreamWithLength = chunkedUploadWrapperStream != null && chunkedUploadWrapperStream.HasLength;
-            var isTrailingHeadersWrapperStreamWithLength = trailingHeadersWrapperStream != null && trailingHeadersWrapperStream.HasLength;
-            var isCompressionWrapperStreamWithLength = compressionWrapperStream != null && compressionWrapperStream.HasLength;
-
-            // We only want to set content length if it's one of the wrapper streams that knows it's length
-            // or that the stream is not wrapped by any of the wrapper streams
-            if ((isChunkedUploadWrapperStreamWithLength || isTrailingHeadersWrapperStreamWithLength || isCompressionWrapperStreamWithLength)
-                || (chunkedUploadWrapperStream == null && trailingHeadersWrapperStream == null && compressionWrapperStream == null))
-            {
-                _request.Content.Headers.ContentLength = contentStream.Length;
-            }
-
-            WriteContentHeaders(contentHeaders);
         }
 
         /// <summary>
@@ -666,23 +599,6 @@ namespace Amazon.Runtime
 
                 _disposed = true;
             }
-        }
-
-        /// <summary>
-        /// Sets up the progress listeners
-        /// </summary>
-        /// <param name="originalStream">The content stream</param>
-        /// <param name="progressUpdateInterval">The interval at which progress needs to be published</param>
-        /// <param name="sender">The objects which is triggering the progress changes</param>
-        /// <param name="callback">The callback which will be invoked when the progress changed event is triggered</param>
-        /// <returns>an <see cref="EventStream"/> object, incase the progress is setup, else returns the original stream</returns>
-        public Stream SetupProgressListeners(Stream originalStream, long progressUpdateInterval, object sender, EventHandler<StreamTransferProgressArgs> callback)
-        {
-            var eventStream = new EventStream(originalStream, true);
-            var tracker = new StreamReadTracker(sender, callback, originalStream.Length,
-                progressUpdateInterval);
-            eventStream.OnRead += tracker.ReadProgress;
-            return eventStream;
         }
     }
 }

@@ -27,12 +27,6 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class BaseEndpointResolver : PipelineHandler
     {
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            PreInvoke(executionContext);
-            base.InvokeSync(executionContext);
-        }
-
         public override System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
             PreInvoke(executionContext);

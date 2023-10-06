@@ -33,14 +33,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         #region Overrides
 
         /// <summary>
-        /// Creates the signer for the service.
-        /// </summary>
-        protected override AbstractAWSSigner CreateSigner()
-        {
-            return new AWS4Signer();
-        }
-
-        /// <summary>
         /// Customizes the runtime pipeline.
         /// </summary>
         /// <param name="pipeline">Runtime pipeline for the current client.</param>
@@ -70,50 +62,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-        }
-
-        #endregion
-
-        #region  EndpointOperation Override
-
-        /// <inheritdoc/>
-        protected override IEnumerable<DiscoveryEndpointBase> EndpointOperation(EndpointOperationContextBase context)
-        {
-            return EndpointDiscoveryResolver.ResolveEndpoints(context, () =>
-            {
-                var request = new DescribeEndpointsRequest
-                {
-                };
-
-                var response = DescribeEndpoints(request);
-                if (response.HttpStatusCode != HttpStatusCode.OK || response.Endpoints == null)
-                {
-                    return null;
-                }
-
-                var endpoints = new List<DiscoveryEndpointBase>();
-                foreach (var endpoint in response.Endpoints)
-                {
-                    endpoints.Add(new DiscoveryEndpoint(endpoint.Address, endpoint.CachePeriodInMinutes));
-                }
-
-                return endpoints;
-            });
-        }
-
-        #endregion
-
-        #region  DescribeEndpoints
-
-        internal virtual DescribeEndpointsResponse DescribeEndpoints(DescribeEndpointsRequest request)
-        {
-            var options = new InvokeOptions
-            {
-                RequestMarshaller = DescribeEndpointsRequestMarshaller.Instance,
-                ResponseUnmarshaller = DescribeEndpointsResponseUnmarshaller.Instance
-            };
-
-            return Invoke<DescribeEndpointsResponse>(request, options);
         }
 
         #endregion
@@ -365,8 +313,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = BatchWriteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = BatchWriteItemResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = BatchWriteItemEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<BatchWriteItemResponse>(request, options, cancellationToken);
@@ -410,8 +356,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = DeleteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = DeleteItemResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = DeleteItemEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<DeleteItemResponse>(request, options, cancellationToken);
@@ -446,8 +390,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = GetItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = GetItemResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = GetItemEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<GetItemResponse>(request, options, cancellationToken);
@@ -507,8 +449,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = PutItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = PutItemResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = PutItemEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<PutItemResponse>(request, options, cancellationToken);
@@ -598,8 +538,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = QueryRequestMarshaller.Instance,
                 ResponseUnmarshaller = QueryResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = QueryEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<QueryResponse>(request, options, cancellationToken);
@@ -634,8 +572,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             {
                 RequestMarshaller = UpdateItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
-                EndpointDiscoveryMarshaller = UpdateItemEndpointDiscoveryMarshaller.Instance,
-                EndpointOperation = EndpointOperation
             };
 
             return InvokeAsync<UpdateItemResponse>(request, options, cancellationToken);

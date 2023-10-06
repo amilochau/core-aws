@@ -36,37 +36,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Retrieves the credentials to be used for the current call before 
-        /// invoking the next handler.
-        /// </summary>
-        /// <param name="executionContext"></param>
-        protected virtual void PreInvoke(IExecutionContext executionContext)
-        {
-            ImmutableCredentials ic = null;
-            if (Credentials != null)
-            {
-                using(executionContext.RequestContext.Metrics.StartEvent(Metric.CredentialsRequestTime))
-                {
-                    ic = Credentials.GetCredentials();
-                }
-            }
-
-            executionContext.RequestContext.ImmutableCredentials = ic;
-        }
-
-        /// <summary>
-        /// Calls pre invoke logic before calling the next handler 
-        /// in the pipeline.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            PreInvoke(executionContext);
-            base.InvokeSync(executionContext);
-        }
-
-        /// <summary>
         /// Calls pre invoke logic before calling the next handler 
         /// in the pipeline.
         /// </summary>

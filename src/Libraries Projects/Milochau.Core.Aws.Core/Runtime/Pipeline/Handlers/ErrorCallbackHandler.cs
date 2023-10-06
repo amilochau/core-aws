@@ -29,19 +29,6 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         public Action<IExecutionContext,Exception> OnError { get; set; }
 
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            try
-            {
-                base.InvokeSync(executionContext);
-            }
-            catch (Exception exception)
-            {
-                HandleException(executionContext, exception);
-                throw;
-            }
-        }
-
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
             try

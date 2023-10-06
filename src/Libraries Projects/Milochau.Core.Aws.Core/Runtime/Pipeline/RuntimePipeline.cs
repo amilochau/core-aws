@@ -54,33 +54,6 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Constructor for RuntimePipeline.
         /// </summary>
-        /// <param name="handler">The handler with which the pipeline is initialized.</param>
-        public RuntimePipeline(IPipelineHandler handler) 
-        {
-            if (handler == null)
-                throw new ArgumentNullException("handler");
-
-            var logger =
-                 Amazon.Runtime.Internal.Util.Logger.GetLogger(typeof(RuntimePipeline));
-
-            _handler = handler;
-            _handler.Logger = logger;
-
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Constructor for RuntimePipeline.
-        /// </summary>
-        /// <param name="handlers">List of handlers with which the pipeline is initialized.</param>
-        public RuntimePipeline(IList<IPipelineHandler> handlers)
-            : this(handlers, Amazon.Runtime.Internal.Util.Logger.GetLogger(typeof(RuntimePipeline)))
-        {    
-        }
-
-        /// <summary>
-        /// Constructor for RuntimePipeline.
-        /// </summary>
         /// <param name="handlers">List of handlers with which the pipeline is initialized.</param>
         /// <param name="logger">The logger used to log messages.</param>
         public RuntimePipeline(IList<IPipelineHandler> handlers, ILogger logger)
@@ -99,41 +72,9 @@ namespace Amazon.Runtime.Internal
             }
         }
 
-        /// <summary>
-        /// Constructor for RuntimePipeline.
-        /// </summary>
-        /// <param name="handler">The handler with which the pipeline is initialized.</param>
-        /// <param name="logger">The logger used to log messages.</param>
-        public RuntimePipeline(IPipelineHandler handler, ILogger logger)
-        {
-            if (handler == null)
-                throw new ArgumentNullException("handler");
-
-            if (logger == null)
-                throw new ArgumentNullException("logger");
-
-            _handler = handler;
-            _handler.Logger = logger;
-
-            _logger = logger;
-        }
-
         #endregion
 
         #region Invoke methods
-
-        /// <summary>
-        /// Invokes the pipeline synchronously.
-        /// </summary>
-        /// <param name="executionContext">Request context</param>
-        /// <returns>Response context</returns>
-        public IResponseContext InvokeSync(IExecutionContext executionContext)
-        {
-            ThrowIfDisposed();
-
-            _handler.InvokeSync(executionContext);
-            return executionContext.ResponseContext;
-        }
 
         /// <summary>
         /// Invokes the pipeline asynchronously.
@@ -297,60 +238,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Replaces the first occurance of a handler of type T with the given handler.
-        /// </summary>
-        /// <typeparam name="T">Type of the handler which will be replaced.</typeparam>
-        /// <param name="handler">The handler to be added to the pipeline.</param>
-        public void ReplaceHandler<T>(IPipelineHandler handler)
-            where T : IPipelineHandler
-        {
-            if (handler == null)
-                throw new ArgumentNullException("handler");
-
-            ThrowIfDisposed();
-
-            var type = typeof(T);
-            IPipelineHandler previous = null;
-            var current = _handler;
-            while (current != null)
-            {
-                if (current.GetType() == type)
-                {
-                    // Replace current with handler.
-                    handler.InnerHandler = current.InnerHandler;
-                    handler.OuterHandler = current.OuterHandler;
-                    if(previous != null)
-                    {
-                        // Wireup previous handler
-                        previous.InnerHandler = handler;
-                    }
-                    else
-                    {
-                        // Current is the top, replace it.
-                        _handler = handler;            
-                    }
-
-                    if (current.InnerHandler != null)
-                    {
-                        // Wireup next handler
-                        current.InnerHandler.OuterHandler = handler;
-                    }
-                    
-                    // Cleanup current
-                    current.InnerHandler = null;
-                    current.OuterHandler = null;
-
-                    SetHandlerProperties(handler);
-                    return;
-                }
-                previous = current;
-                current = current.InnerHandler;    
-            }
-            throw new InvalidOperationException(
-                string.Format(CultureInfo.InvariantCulture, "Cannot find a handler of type {0}", type.Name));
-        }
-
-        /// <summary>
         /// Inserts the given handler after current handler in the pipeline.
         /// </summary>
         /// <param name="handler">Handler to be inserted in the pipeline.</param>
@@ -388,32 +275,6 @@ namespace Amazon.Runtime.Internal
             ThrowIfDisposed();
 
             handler.Logger = _logger;
-        }
-
-        /// <summary>
-        /// Retrieves a list of handlers, in the order of their execution.
-        /// </summary>
-        /// <returns>Handlers in the current pipeline.</returns>
-        public List<IPipelineHandler> Handlers
-        {
-            get
-            {
-                return EnumerateHandlers().ToList();
-            }
-        }
-
-        /// <summary>
-        /// Retrieves current handlers, in the order of their execution.
-        /// </summary>
-        /// <returns>Handlers in the current pipeline.</returns>
-        public IEnumerable<IPipelineHandler> EnumerateHandlers()
-        {
-            var handler = this.Handler;
-            while(handler != null)
-            {
-                yield return handler;
-                handler = handler.InnerHandler;
-            }
         }
 
         #endregion

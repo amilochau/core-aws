@@ -26,27 +26,6 @@ namespace Amazon.Runtime.Internal
     {
         // Stopwatch to measure API call latency.
         private Stopwatch stopWatch;
-        /// <summary>
-        /// Invokes the CSM handler and captures data for the CSM events.
-        /// </summary>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            try
-            {
-                PreInvoke(executionContext);
-                base.InvokeSync(executionContext);
-            }
-            catch (Exception e)
-            {
-                CaptureCSMCallEventExceptionData(executionContext.RequestContext, e);
-                throw;
-            }
-            finally
-            {
-                CSMCallEventMetricsCapture(executionContext);
-                CSMUtilities.SerializetoJsonAndPostOverUDP(executionContext.RequestContext.CSMCallEvent);
-            }
-        }
 
         /// <summary>
         /// Calls the PreInvoke and PostInvoke methods before and after calling the next handler 

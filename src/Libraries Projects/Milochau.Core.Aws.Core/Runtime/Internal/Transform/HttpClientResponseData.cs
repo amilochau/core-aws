@@ -120,7 +120,6 @@ namespace Amazon.Runtime.Internal.Transform
         }
     }
 
-    [CLSCompliant(false)]
     public class HttpResponseMessageBody : IHttpResponseBody
     {
         HttpClient _httpClient;

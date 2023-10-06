@@ -39,15 +39,6 @@ namespace Amazon.Runtime
         IPipelineHandler OuterHandler { get; set; }
 
         /// <summary>
-        /// Contains the processing logic for a synchronous request invocation.
-        /// This method should call InnerHandler.InvokeSync to continue processing of the
-        /// request by the pipeline, unless it's a terminating handler.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        void InvokeSync(IExecutionContext executionContext);
-
-        /// <summary>
         /// Contains the processing logic for an asynchronous request invocation.
         /// This method should call InnerHandler.InvokeSync to continue processing of the
         /// request by the pipeline, unless it's a terminating handler.

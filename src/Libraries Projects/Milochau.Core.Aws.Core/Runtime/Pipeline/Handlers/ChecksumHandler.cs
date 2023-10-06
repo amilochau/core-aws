@@ -23,19 +23,6 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class ChecksumHandler : PipelineHandler
     {
-
-        /// <summary>
-        /// Calls pre invoke logic before calling the next handler 
-        /// in the pipeline.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// request and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            PreInvoke(executionContext);
-            base.InvokeSync(executionContext);
-        }
-
         /// <summary>
         /// Calls pre invoke logic before calling the next handler 
         /// in the pipeline.

@@ -60,41 +60,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XRayPipelineHandler" /> class.
-        /// </summary>
-        /// <param name="path">Path to the file which contains the operation parameter whitelist configuration.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when recorder is null.</exception>
-        public XRayPipelineHandler(string path)
-        {
-            _recorder = AWSXRayRecorder.Instance;
-
-            if (_recorder == null)
-            {
-                throw new ArgumentNullException("recorder");
-            }
-
-            AWSServiceHandlerManifest = GetAWSServiceManifest(path);
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XRayPipelineHandler" /> class.
-        /// </summary>
-        /// <param name="stream"> stream for manifest which contains the operation parameter whitelist configuration.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when recorder is null.</exception>
-        public XRayPipelineHandler(Stream stream)
-        {
-            _recorder = AWSXRayRecorder.Instance;
-
-            if (_recorder == null)
-            {
-                throw new ArgumentNullException("recorder");
-            }
-
-            AWSServiceHandlerManifest = GetAWSServiceManifest(stream);
-        }
-
-        /// <summary>
         /// Creates instance of <see cref="XRayPipelineHandler"/> with provided AWS service manifest instance.
         /// </summary>
         /// <param name="awsServiceManifest">Instance of <see cref="AWSServiceHandlerManifest"/></param>
@@ -594,38 +559,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                     {
                         XRayPipelineHandler.AddListLengthProperty(aws, response, propertyName, descriptor.RenameTo);
                     }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Process Synchronous <see cref="AmazonServiceClient"/> operations. A subsegment is started at the beginning of 
-        /// the request and ended at the end of the request.
-        /// </summary>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            if (XRayPipelineHandler.IsTracingDisabled() || XRayPipelineHandler.ExcludeServiceOperation(executionContext))
-            {
-                base.InvokeSync(executionContext);
-            }
-            else
-            {
-                ProcessBeginRequest(executionContext);
-
-                try
-                {
-                    base.InvokeSync(executionContext);
-                }
-
-                catch (Exception e)
-                {
-                    PopulateException(e);
-                    throw;
-                }
-
-                finally
-                {
-                    ProcessEndRequest(executionContext);
                 }
             }
         }

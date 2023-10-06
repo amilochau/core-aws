@@ -24,26 +24,6 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Captures the overall execution time and logs final metrics.
         /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            executionContext.RequestContext.Metrics.AddProperty(Metric.AsyncCall, false);
-            try
-            {
-                executionContext.RequestContext.Metrics.StartEvent(Metric.ClientExecuteTime);
-                base.InvokeSync(executionContext);
-            }
-            finally
-            {
-                executionContext.RequestContext.Metrics.StopEvent(Metric.ClientExecuteTime);
-                this.LogMetrics(executionContext);
-            }
-        }
-
-        /// <summary>
-        /// Captures the overall execution time and logs final metrics.
-        /// </summary>
         /// <typeparam name="T">The response type for the current request.</typeparam>
         /// <param name="executionContext">
         /// The execution context, it contains the request and response context.

@@ -57,28 +57,10 @@ namespace Amazon.Runtime
         IWebResponseData HttpResponse { get; set; }
     }
 
-    public interface IAsyncRequestContext : IRequestContext
-    {
-        AsyncCallback Callback { get; }
-        object State { get; }
-    }    
-
-    public interface IAsyncResponseContext : IResponseContext
-    {
-    }
-
     public interface IExecutionContext
     {
         IResponseContext ResponseContext { get; }
         IRequestContext RequestContext { get; }
-    }
-
-    public interface IAsyncExecutionContext
-    {
-        IAsyncResponseContext ResponseContext { get; }
-        IAsyncRequestContext RequestContext { get; }
-
-        object RuntimeState { get; set; }
     }
 }
 
@@ -161,15 +143,12 @@ namespace Amazon.Runtime.Internal
         public Guid InvocationId { get; private set; }
     }
 
-    public class AsyncRequestContext : RequestContext, IAsyncRequestContext
+    public class AsyncRequestContext : RequestContext, IRequestContext
     {
         public AsyncRequestContext(bool enableMetrics, AbstractAWSSigner clientSigner):
             base(enableMetrics, clientSigner)
         {
         }
-
-        public AsyncCallback Callback { get; set; }
-        public object State { get; set; }
     }
 
     public class ResponseContext : IResponseContext
@@ -178,46 +157,12 @@ namespace Amazon.Runtime.Internal
         public IWebResponseData HttpResponse { get; set; }
     }
 
-    public class AsyncResponseContext : ResponseContext, IAsyncResponseContext
-    {
-    }
-
     public class ExecutionContext : IExecutionContext
     {
         public IRequestContext RequestContext { get; private set; }
         public IResponseContext ResponseContext { get; private set; }
 
-        public ExecutionContext(bool enableMetrics, AbstractAWSSigner clientSigner)
-        {
-            this.RequestContext = new RequestContext(enableMetrics, clientSigner);
-            this.ResponseContext = new ResponseContext();
-        }
-
         public ExecutionContext(IRequestContext requestContext, IResponseContext responseContext)
-        {
-            this.RequestContext = requestContext;
-            this.ResponseContext = responseContext;
-        }
-        public static IExecutionContext CreateFromAsyncContext(IAsyncExecutionContext asyncContext)
-        {
-            return new ExecutionContext(asyncContext.RequestContext,
-                asyncContext.ResponseContext);
-        }
-    }
-
-    public class AsyncExecutionContext : IAsyncExecutionContext
-    {
-        public IAsyncResponseContext ResponseContext { get; private set; }
-        public IAsyncRequestContext RequestContext { get; private set; }
-        public object RuntimeState { get; set; }
-
-        public AsyncExecutionContext(bool enableMetrics, AbstractAWSSigner clientSigner)
-        {
-            this.RequestContext = new AsyncRequestContext(enableMetrics, clientSigner);
-            this.ResponseContext = new AsyncResponseContext();
-        }
-
-        public AsyncExecutionContext(IAsyncRequestContext requestContext, IAsyncResponseContext responseContext)
         {
             this.RequestContext = requestContext;
             this.ResponseContext = responseContext;

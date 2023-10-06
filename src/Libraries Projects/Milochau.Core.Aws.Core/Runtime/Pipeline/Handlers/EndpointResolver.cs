@@ -26,18 +26,6 @@ namespace Amazon.Runtime.Internal
         /// Calls pre invoke logic before calling the next handler 
         /// in the pipeline.
         /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            PreInvoke(executionContext);
-            base.InvokeSync(executionContext);
-        }
-
-        /// <summary>
-        /// Calls pre invoke logic before calling the next handler 
-        /// in the pipeline.
-        /// </summary>
         /// <typeparam name="T">The response type for the current request.</typeparam>
         /// <param name="executionContext">The execution context, it contains the
         /// request and response context.</param>

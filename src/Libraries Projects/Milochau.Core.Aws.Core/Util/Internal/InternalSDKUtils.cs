@@ -22,26 +22,18 @@ namespace Amazon.Util.Internal
     public static partial class InternalSDKUtils
     {
         #region UserAgent
-        static string _customSdkUserAgent;
-        static string _customData;
  
         public static string BuildUserAgentString(string serviceSdkVersion)
         {
-            if (!string.IsNullOrEmpty(_customSdkUserAgent))
-            {
-                return _customSdkUserAgent;
-            }
-
             var environmentInfo = EnvironmentInfo.Instance;
 
-            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} aws-sdk-dotnet-core/{2} {3} OS/{4} {5} {6}",
+            return string.Format(CultureInfo.InvariantCulture, "{0}/{1} aws-sdk-dotnet-core/{2} {3} OS/{4} {5}",
                 _userAgentBaseName,
                 serviceSdkVersion,
                 CoreVersionNumber,
                 environmentInfo.FrameworkUserAgent,
                 environmentInfo.PlatformUserAgent,
-                GetExecutionEnvironmentUserAgentString(),
-                _customData).Trim();
+                GetExecutionEnvironmentUserAgentString()).Trim();
         }
 
 

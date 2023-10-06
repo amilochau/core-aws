@@ -24,33 +24,6 @@ namespace Amazon.Runtime.Internal
     public class CSMCallAttemptHandler : PipelineHandler
     {
         /// <summary>
-        /// Invokes the CSM handler and captures data for the CSM attempts.
-        /// </summary>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            try
-            {
-                PreInvoke(executionContext);
-                base.InvokeSync(executionContext);
-            }
-            catch (AmazonServiceException e)
-            {
-                CaptureAmazonException(executionContext.RequestContext.CSMCallAttempt, e);
-                throw;
-            }
-            catch (Exception e)
-            {
-                CaptureSDKExceptionMessage(executionContext.RequestContext.CSMCallAttempt, e);
-                throw;
-            }
-            finally
-            {
-                CSMCallAttemptMetricsCapture(executionContext.RequestContext, executionContext.ResponseContext);
-                CSMUtilities.SerializetoJsonAndPostOverUDP(executionContext.RequestContext.CSMCallAttempt);
-            }
-        }
-
-        /// <summary>
         /// Calls the PreInvoke and PostInvoke methods before and after calling the next handler 
         /// in the pipeline.
         /// </summary>

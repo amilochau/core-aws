@@ -18,8 +18,6 @@ using System.Collections.Generic;
 
 namespace Amazon.Runtime.Internal
 {
-    public delegate IEnumerable<DiscoveryEndpointBase> EndpointOperationDelegate(EndpointOperationContextBase context);
-
     /// <summary>
     /// Class containing the members used to invoke service calls
     /// <para>
@@ -31,8 +29,6 @@ namespace Amazon.Runtime.Internal
     {
         private IMarshaller<IRequest, AmazonWebServiceRequest> _requestMarshaller;
         private ResponseUnmarshaller _responseUnmarshaller;
-        private IMarshaller<EndpointDiscoveryDataBase, AmazonWebServiceRequest> _endpointDiscoveryMarshaller;
-        private EndpointOperationDelegate _endpointOperation;
         
         protected InvokeOptionsBase()
         {
@@ -61,34 +57,6 @@ namespace Amazon.Runtime.Internal
             set
             {
                 _responseUnmarshaller = value;
-            }
-        }
-
-        #endregion
-
-        #region EndpointDiscovery                
-
-        public virtual IMarshaller<EndpointDiscoveryDataBase, AmazonWebServiceRequest> EndpointDiscoveryMarshaller
-        {
-            get
-            {
-                return _endpointDiscoveryMarshaller;
-            }
-            set
-            {
-                _endpointDiscoveryMarshaller = value;
-            }
-        }
-
-        public virtual EndpointOperationDelegate EndpointOperation
-        {
-            get
-            {
-                return _endpointOperation;
-            }
-            set
-            {
-                _endpointOperation = value;
             }
         }
 

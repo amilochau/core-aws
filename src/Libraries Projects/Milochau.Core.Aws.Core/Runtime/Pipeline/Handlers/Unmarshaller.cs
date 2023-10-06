@@ -41,22 +41,6 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Unmarshalls the response returned by the HttpHandler.
         /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public override void InvokeSync(IExecutionContext executionContext)
-        {
-            base.InvokeSync(executionContext);
-
-            if (executionContext.ResponseContext.HttpResponse.IsSuccessStatusCode)
-            {
-                // Unmarshall the http response.
-                Unmarshall(executionContext);  
-            }                      
-        }
-
-        /// <summary>
-        /// Unmarshalls the response returned by the HttpHandler.
-        /// </summary>
         /// <typeparam name="T">The response type for the current request.</typeparam>
         /// <param name="executionContext">The execution context, it contains the
         /// request and response context.</param>
@@ -67,60 +51,6 @@ namespace Amazon.Runtime.Internal
             // Unmarshall the response
             await UnmarshallAsync(executionContext).ConfigureAwait(false);
             return (T)executionContext.ResponseContext.Response;
-        }
-
-        /// <summary>
-        /// Unmarshalls the HTTP response.
-        /// </summary>
-        /// <param name="executionContext">
-        /// The execution context, it contains the request and response context.
-        /// </param>
-        private void Unmarshall(IExecutionContext executionContext)
-        {
-            var requestContext = executionContext.RequestContext;
-            var responseContext = executionContext.ResponseContext;
-
-            using (requestContext.Metrics.StartEvent(Metric.ResponseProcessingTime))
-            {
-                var unmarshaller = requestContext.Unmarshaller;
-                try
-                {
-                    var readEntireResponse = _supportsResponseLogging;
-
-                    var context = unmarshaller.CreateContext(responseContext.HttpResponse,
-                        readEntireResponse,
-                        responseContext.HttpResponse.ResponseBody.OpenResponse(),
-                        requestContext.Metrics,
-                        false,
-                        requestContext);
-
-                    try
-                    {
-                        var response = UnmarshallResponse(context, requestContext);
-                        responseContext.Response = response;
-                    }
-                    catch(Exception e)
-                    {
-                        // Rethrow Amazon service or client exceptions
-                        if (e is AmazonServiceException ||
-                            e is AmazonClientException)
-                        {
-                            throw;
-                        }
-
-                        // Else, there was an issue with the response body, throw AmazonUnmarshallingException
-                        var requestId = responseContext.HttpResponse.GetHeaderValue(HeaderKeys.RequestIdHeader);
-                        var body = context.ResponseBody;
-                        throw new AmazonUnmarshallingException(requestId, lastKnownLocation: null, responseBody: body, innerException: e,
-                            statusCode: responseContext.HttpResponse.StatusCode);
-                    }
-                }
-                finally
-                {
-                    if (!unmarshaller.HasStreamingProperty)
-                        responseContext.HttpResponse.ResponseBody.Dispose();     
-                }
-            }
         }
 
         /// <summary>

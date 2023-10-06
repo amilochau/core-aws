@@ -493,28 +493,6 @@ namespace Amazon.Runtime.Internal.Auth
         }
 
         /// <summary>
-        /// Returns the HMAC256 for an arbitrary blob using the specified key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static byte[] SignBlob(byte[] key, string data)
-        {
-            return SignBlob(key, Encoding.UTF8.GetBytes(data));
-        }
-
-        /// <summary>
-        /// Returns the HMAC256 for an arbitrary blob using the specified key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static byte[] SignBlob(byte[] key, byte[] data)
-        {
-            return CryptoUtilFactory.CryptoInstance.HMACSignBinary(data, key, SignerAlgorithm);
-        }
-
-        /// <summary>
         /// Compute and return the hash of a data blob using the specified key
         /// </summary>
         /// <param name="algorithm">Algorithm to use for hashing</param>
@@ -763,59 +741,6 @@ namespace Amazon.Runtime.Internal.Auth
             }
 
             return parametersToCanonicalize;
-        }
-
-        /// <summary>
-        /// Computes and returns the canonicalized query string, if query parameters have been supplied.
-        /// Parameters with no value will be canonicalized as 'param='. The expectation is that parameters
-        /// have not already been url encoded prior to canonicalization.
-        /// </summary>
-        /// <param name="queryString">The set of parameters being passed on the uri</param>
-        /// <param name="uriEncodeParameters">
-        /// Parameters must be uri encoded into the canonical request and by default the signer expects
-        /// that the supplied collection contains non-encoded data. Set this to false if the encoding was
-        /// done prior to signer entry.
-        /// </param>
-        /// <returns>The uri encoded query string parameters in canonical ordering</returns>
-        protected static string CanonicalizeQueryParameters(string queryString, bool uriEncodeParameters)
-        {
-            if (string.IsNullOrEmpty(queryString))
-                return string.Empty;
-
-            var queryParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            var queryParamsStart = queryString.IndexOf('?');
-            var qs = queryString.Substring(++queryParamsStart); 
-            var subStringPos = 0;
-            var index = qs.IndexOfAny(new char[] { '&', ';' }, 0);
-            if (index == -1 && subStringPos < qs.Length)
-                index = qs.Length;
-            while (index != -1)
-            {
-                var token = qs.Substring(subStringPos, index - subStringPos);
-
-                // If the next character is a space then this isn't the end of query string value
-                // Content Disposition is an example of this.
-                if (!(index + 1 < qs.Length && qs[index + 1] == ' '))
-                {
-                    var equalPos = token.IndexOf('=');
-                    if (equalPos == -1)
-                        queryParams.Add(token, null);
-                    else
-                        queryParams.Add(token.Substring(0, equalPos), token.Substring(equalPos + 1));
-
-                    subStringPos = index + 1;
-                }
-
-                if (qs.Length <= index + 1)
-                    break;
-
-                index = qs.IndexOfAny(new char[] { '&', ';' }, index + 1);
-                if (index == -1 && subStringPos < qs.Length)
-                    index = qs.Length;
-            }
-
-            return CanonicalizeQueryParameters(queryParams, uriEncodeParameters: uriEncodeParameters);
         }
 
         protected static string CanonicalizeQueryParameters(IEnumerable<KeyValuePair<string, string>> parameters)
