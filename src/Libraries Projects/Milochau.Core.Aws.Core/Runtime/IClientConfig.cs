@@ -14,7 +14,6 @@
  */
 using System;
 using System.Net;
-using Amazon.Runtime.Internal;
 using System.Net.Http;
 using Amazon.Runtime.Endpoints;
 

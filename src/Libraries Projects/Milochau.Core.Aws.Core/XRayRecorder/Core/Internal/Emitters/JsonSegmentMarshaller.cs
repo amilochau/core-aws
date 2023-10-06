@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using Amazon.Runtime;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using ThirdParty.LitJson;

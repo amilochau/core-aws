@@ -26,7 +26,6 @@ using Amazon.Lambda.Model.Internal.MarshallTransformations;
 using Amazon.Lambda.Internal;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
 
 namespace Amazon.Lambda
 {

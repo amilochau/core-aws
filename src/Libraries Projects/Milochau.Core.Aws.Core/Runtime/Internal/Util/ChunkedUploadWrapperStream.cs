@@ -14,16 +14,8 @@
  */
 using System;
 using System.Globalization;
-using System.IO;
-using System.Text;
 using Amazon.Util;
-using Amazon.Util.Internal;
-using Amazon.Runtime.Internal.Auth;
-using System.Security.Cryptography;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Amazon.Runtime.Internal.Util
 {

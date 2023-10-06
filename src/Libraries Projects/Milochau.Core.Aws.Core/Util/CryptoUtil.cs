@@ -16,7 +16,6 @@ using Amazon.Runtime;
 using Amazon.Runtime.Internal.Util;
 using System.IO;
 using System.Security.Cryptography;
-using ThirdParty.MD5;
 
 namespace Amazon.Util
 {
@@ -104,28 +103,6 @@ namespace Amazon.Util
             public byte[] ComputeSHA256Hash(Stream steam)
             {
                 return SHA256HashAlgorithmInstance.ComputeHash(steam);
-            }
-
-            /// <summary>
-            /// Computes an MD5 hash
-            /// </summary>
-            /// <param name="data">Input to compute the hash code for</param>
-            /// <returns>Computed hash code</returns>
-            public byte[] ComputeMD5Hash(byte[] data)
-            {
-                var hashed = new MD5Managed().ComputeHash(data);
-                return hashed;
-            }
-
-            /// <summary>
-            /// Computes an MD5 hash
-            /// </summary>
-            /// <param name="steam">Input to compute the hash code for</param>
-            /// <returns>Computed hash code</returns>
-            public byte[] ComputeMD5Hash(Stream steam)
-            {
-                var hashed = new MD5Managed().ComputeHash(steam);
-                return hashed;
             }
         }
     }

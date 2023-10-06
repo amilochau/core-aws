@@ -13,14 +13,11 @@
  * permissions and limitations under the License.
  */
 
-using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal.Util;
 using Amazon.Util;
 using Amazon.Util.Internal;
 using System;
 using System.Globalization;
-using System.Net;
 using System.Text;
 
 namespace Amazon.Runtime.Internal

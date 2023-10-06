@@ -19,24 +19,13 @@
  */
 using Amazon.Util;
 using System;
-using System.IO;
 using System.Security.Cryptography;
-using ThirdParty.MD5;
 
 namespace Amazon.Runtime.Internal.Util
 {
     public partial class HashingWrapper : IHashingWrapper
     {
-        private static string MD5ManagedName = typeof(MD5Managed).FullName;
-
         private HashAlgorithm _algorithm = null;
-        private void Init(string algorithmName)
-        {
-            if (string.Equals(MD5ManagedName, algorithmName, StringComparison.Ordinal))
-                _algorithm = new MD5Managed();
-            else
-                throw new ArgumentOutOfRangeException(algorithmName, "Unsupported hashing algorithm");
-        }
 
 
         #region IHashingWrapper Members
@@ -44,16 +33,6 @@ namespace Amazon.Runtime.Internal.Util
         public void Clear()
         {
             _algorithm.Initialize();
-        }
-
-        public byte[] ComputeHash(byte[] buffer)
-        {
-            return _algorithm.ComputeHash(buffer);
-        }
-
-        public byte[] ComputeHash(Stream stream)
-        {
-            return _algorithm.ComputeHash(stream);
         }
 
         public void AppendBlock(byte[] buffer, int offset, int count)
@@ -92,24 +71,12 @@ namespace Amazon.Runtime.Internal.Util
 
     public partial class HashingWrapper : IHashingWrapper
     {
-        public HashingWrapper(string algorithmName)
-        {
-            if (string.IsNullOrEmpty(algorithmName))
-                throw new ArgumentNullException("algorithmName");
-
-            Init(algorithmName);
-        }
-
         public HashingWrapper(HashAlgorithm algorithm)
         {
             _algorithm = algorithm;
         }
 
          #region IHashingWrapper Members
-        public void AppendBlock(byte[] buffer)
-        {
-            AppendBlock(buffer, 0, buffer.Length);
-        }
 
         public byte[] AppendLastBlock(byte[] buffer)
         {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Amazon.Runtime.Internal
+﻿namespace Amazon.Runtime.Internal
 {
     public interface IAmazonWebServiceRequest
     {

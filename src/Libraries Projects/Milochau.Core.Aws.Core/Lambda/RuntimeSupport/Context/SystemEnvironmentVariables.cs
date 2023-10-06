@@ -13,7 +13,6 @@
  * permissions and limitations under the License.
  */
 using System;
-using System.Collections;
 
 namespace Amazon.Lambda.RuntimeSupport
 {

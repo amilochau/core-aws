@@ -14,11 +14,7 @@
  */
 
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Util;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
 
 namespace Amazon.Runtime.Internal.Util
 {

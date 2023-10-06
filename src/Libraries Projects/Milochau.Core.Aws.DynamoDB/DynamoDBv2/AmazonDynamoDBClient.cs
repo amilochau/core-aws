@@ -1,11 +1,9 @@
 ﻿using Amazon.Runtime;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 

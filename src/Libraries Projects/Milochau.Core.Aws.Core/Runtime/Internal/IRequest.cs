@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 using Amazon.Runtime.Endpoints;
 using Amazon.Runtime.Internal.Auth;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Runtime.Internal
 {

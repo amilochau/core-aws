@@ -26,7 +26,6 @@ using Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations;
 using Amazon.SimpleEmailV2.Internal;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
 
 namespace Amazon.SimpleEmailV2
 {

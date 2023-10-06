@@ -14,7 +14,6 @@
  */
 
 using Amazon.Runtime.Internal.Transform;
-using System.Collections.Generic;
 
 namespace Amazon.Runtime.Internal
 {

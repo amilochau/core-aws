@@ -1,7 +1,5 @@
 ﻿using Amazon.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/AmazonDynamoDBDefaultConfiguration.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2

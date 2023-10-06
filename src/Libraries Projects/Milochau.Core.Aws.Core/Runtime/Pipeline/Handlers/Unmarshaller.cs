@@ -13,9 +13,7 @@
  * permissions and limitations under the License.
  */
 
-using System;
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Util;
 
 namespace Amazon.Runtime.Internal
 {

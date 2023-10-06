@@ -43,10 +43,6 @@ namespace Amazon.Util
         internal const string DefaultRegion = "us-east-1";
         internal const string DefaultGovRegion = "us-gov-west-1";
 
-        private const char WindowsDirectorySeparatorChar = '\\';
-        private const char WindowsAltDirectorySeparatorChar = '/';
-        private const char WindowsVolumeSeparatorChar = ':';
-
         private const char SlashChar = '/';
         private const string Slash = "/";
         private const string EncodedSlash = "%2F";
@@ -515,62 +511,6 @@ namespace Amazon.Util
 
 #region Public Methods and Properties
 
-        #region The code in this region has been minimally adapted from Microsoft's PathInternal.Windows.cs class as of 11/19/2019.  The logic remains the same.
-        /// <summary>
-        /// Returns true if the path specified is relative to the current drive or working directory.
-        /// Returns false if the path is fixed to a specific drive or UNC path.  This method does no
-        /// validation of the path (URIs will be returned as relative as a result).
-        /// </summary>
-        /// <remarks>
-        /// Handles paths that use the alternate directory separator.  It is a frequent mistake to
-        /// assume that rooted paths (Path.IsPathRooted) are not relative.  This isn't the case.
-        /// "C:a" is drive relative- meaning that it will be resolved against the current directory
-        /// for C: (rooted, but relative). "C:\a" is rooted and not relative (the current directory
-        /// will not be used to modify the path).
-        /// </remarks>
-        private static bool IsPartiallyQualifiedForWindows(string path)
-        {
-            if (path.Length < 2)
-            {
-                // It isn't fixed, it must be relative.  There is no way to specify a fixed
-                // path with one character (or less).
-                return true;
-            }
-
-            if (IsWindowsDirectorySeparator(path[0]))
-            {
-                // There is no valid way to specify a relative path with two initial slashes or
-                // \? as ? isn't valid for drive relative paths and \??\ is equivalent to \\?\
-                return !(path[1] == '?' || IsWindowsDirectorySeparator(path[1]));
-            }
-
-            // The only way to specify a fixed path that doesn't begin with two slashes
-            // is the drive, colon, slash format- i.e. C:\
-            return !((path.Length >= 3)
-                && (path[1] == WindowsVolumeSeparatorChar)
-                && IsWindowsDirectorySeparator(path[2])
-                // To match old behavior we'll check the drive character for validity as the path is technically
-                // not qualified if you don't have a valid drive. "=:\" is the "=" file's default data stream.
-                && IsValidWindowsDriveChar(path[0]));
-        }
-
-        /// <summary>
-        /// True if the given character is a directory separator.
-        /// </summary>
-        private static bool IsWindowsDirectorySeparator(char c)
-        {
-            return c == WindowsDirectorySeparatorChar || c == WindowsAltDirectorySeparatorChar;
-        }
-
-        /// <summary>
-        /// Returns true if the given character is a valid drive letter
-        /// </summary>
-        private static bool IsValidWindowsDriveChar(char value)
-        {
-            return (value >= 'A' && value <= 'Z') || (value >= 'a' && value <= 'z');
-        }
-#endregion The code in this region has been minimally adapted from Microsoft's PathInternal.Windows.cs class as of 11/19/2019.  The logic remains the same.
-
         /// <summary>
         /// URL encodes a string per RFC3986. If the path property is specified,
         /// the accepted path characters {/+:} are not encoded.
@@ -710,61 +650,6 @@ namespace Amazon.Util
             }
             
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Generates an MD5 Digest for the stream specified
-        /// </summary>
-        /// <param name="input">The Stream for which the MD5 Digest needs
-        /// to be computed.</param>
-        /// <returns>A string representation of the hash with base64 encoding
-        /// </returns>
-        public static string GenerateMD5ChecksumForStream(Stream input)
-        {
-            string hash = null;
-
-            if (!input.CanSeek)
-                throw new InvalidOperationException("Input stream must be seekable");
-
-            // Use an MD5 instance to compute the hash for the stream
-            byte[] hashed = CryptoUtilFactory.CryptoInstance.ComputeMD5Hash(input);
-
-            // Convert the hash to a Base64 Encoded string and return it
-            hash = Convert.ToBase64String(hashed);
-
-            // Now that the hash has been generated, reset the stream to its origin so that the stream's data can be processed
-            input.Position = 0;
-
-            return hash;
-        }
-
-        /// <summary>
-        /// Generates an MD5 Digest for the given byte array
-        /// </summary>
-        /// <param name="content">The content for which the MD5 Digest needs
-        /// to be computed.
-        /// </param>
-        /// <param name="fBase64Encode">Whether the returned checksum should be
-        /// base64 encoded.
-        /// </param>
-        /// <returns>A string representation of the hash with or w/o base64 encoding
-        /// </returns>
-        public static string GenerateChecksumForBytes(byte[] content, bool fBase64Encode)
-        {
-
-            var hashed = content != null ?
-                CryptoUtilFactory.CryptoInstance.ComputeMD5Hash(content) :
-                CryptoUtilFactory.CryptoInstance.ComputeMD5Hash(ArrayEx.Empty<byte>());
-
-            if (fBase64Encode)
-            {
-                // Convert the hash to a Base64 Encoded string and return it
-                return Convert.ToBase64String(hashed);
-            }
-            else
-            {
-                return BitConverter.ToString(hashed).Replace("-", String.Empty);
-            }
         }
 
         /// <summary>
@@ -925,39 +810,6 @@ namespace Amazon.Util
             return stringBuilder.ToString();
         }
 
-#endregion
-
-#region Private Methods, Static Fields and Classes
-
-        private class IsSetMethodsCacheKey
-        {
-            public readonly Type Type;
-            public readonly string PropertyName;
-            public IsSetMethodsCacheKey(Type type, string propertyName)
-            {
-                Type = type;
-                PropertyName = propertyName;
-            }
-            public override bool Equals(object other)
-            {
-                var otherKey = other as IsSetMethodsCacheKey;
-                if (otherKey == null)
-                {
-                    return false;
-                }
-                return Type == otherKey.Type && PropertyName == otherKey.PropertyName;
-            }
-
-            public override int GetHashCode()
-            {
-                return Type.GetHashCode() ^ PropertyName.GetHashCode();
-            }
-
-            public override string ToString()
-            {
-                return Type.FullName + "." + PropertyName;
-            }
-        }
 #endregion
     }
 }
