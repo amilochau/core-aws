@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections;
-using System.IO;
 using System.Reflection;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal.Util;
@@ -27,11 +26,11 @@ using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using Amazon.XRay.Recorder.Handlers.AwsSdk.Entities;
-using ThirdParty.LitJson;
 using Amazon.Runtime.Internal;
 using System.Threading;
 using Amazon.Runtime.Internal.Transform;
 using Amazon.XRay.Recorder.Core.Exceptions;
+using Milochau.Core.Aws.Core.References;
 
 namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 {
@@ -41,14 +40,8 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
     /// </summary>
     public class XRayPipelineHandler : PipelineHandler
     {
-        private const string DefaultAwsWhitelistManifestResourceName = "Amazon.XRay.Recorder.Handlers.AwsSdk.DefaultAWSWhitelist.json";
         private static readonly Logger _logger = Runtime.Internal.Util.Logger.GetLogger(typeof(AWSXRayRecorder));
         private AWSXRayRecorder _recorder;
-
-        /// <summary>
-        /// Gets AWS service manifest of operation parameter whitelist.
-        /// </summary>
-        public AWSServiceHandlerManifest AWSServiceHandlerManifest { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XRayPipelineHandler" /> class.
@@ -56,64 +49,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         public XRayPipelineHandler()
         {
             _recorder = AWSXRayRecorder.Instance;
-            AWSServiceHandlerManifest  = GetDefaultAWSWhitelist();
         }
-
-        /// <summary>
-        /// Creates instance of <see cref="XRayPipelineHandler"/> with provided AWS service manifest instance.
-        /// </summary>
-        /// <param name="awsServiceManifest">Instance of <see cref="AWSServiceHandlerManifest"/></param>
-        public XRayPipelineHandler(AWSServiceHandlerManifest awsServiceManifest)
-        {
-            _recorder = AWSXRayRecorder.Instance;
-
-            if (_recorder == null)
-            {
-                throw new ArgumentNullException("recorder");
-            }
-
-            AWSServiceHandlerManifest = awsServiceManifest;
-        }
-
-        /// <summary>
-        /// Extracts <see cref="AWSServiceHandlerManifest"/> instance from provided path of AWS Service manifest file.
-        /// </summary>
-        /// <param name="path">Absolute path to AWS Service Manifest file</param>
-        /// <returns>Instance of <see cref="AWSServiceHandlerManifest"/></returns>
-        public static AWSServiceHandlerManifest GetAWSServiceManifest(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                _logger.DebugFormat("The path is null or empty, initializing with default AWS whitelist.");
-                return GetDefaultAWSWhitelist();
-            }
-            else
-            {
-                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    return GetAWSServiceHandlerManifest(stream);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Extracts <see cref="AWSServiceHandlerManifest"/> instance from provided aws service manifest stream.
-        /// </summary>
-        /// <param name="stream">Absolute path to AWS Service Manifest file</param>
-        /// <returns>Instance of <see cref="AWSServiceHandlerManifest"/></returns>
-        public static AWSServiceHandlerManifest GetAWSServiceManifest(Stream stream)
-        {
-            if (stream == null)
-            {
-                _logger.DebugFormat("The provided stream is null, initializing with default AWS whitelist.");
-                return GetDefaultAWSWhitelist();
-            }
-            else
-            {
-                return GetAWSServiceHandlerManifest(stream);
-            }
-        }
-
 
         private static bool TryReadPropertyValue(object obj, string propertyName, out object value)
         {
@@ -239,30 +175,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             var newPropertyName = string.IsNullOrEmpty(renameTo) ? propertyName : renameTo;
             aws[newPropertyName.FromCamelCaseToSnakeCase()] = listValue.Count;
-        }
-
-        private static AWSServiceHandlerManifest GetDefaultAWSWhitelist()
-        {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(DefaultAwsWhitelistManifestResourceName))
-            {
-                return GetAWSServiceHandlerManifest(stream);
-            }
-        }
-
-        private static AWSServiceHandlerManifest GetAWSServiceHandlerManifest(Stream stream)
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                try
-                {
-                    return JsonMapper.ToObject<AWSServiceHandlerManifest>(reader);
-                }
-                catch (JsonException e)
-                {
-                    _logger.Error(e, "Failed to load AWSServiceHandlerManifest.");
-                }
-                return null;
-            }
         }
 
         /// <summary>
@@ -445,13 +357,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 throw new ArgumentNullException(nameof(aws));
             }
 
-            if (AWSServiceHandlerManifest == null)
-            {
-                _logger.DebugFormat("AWSServiceHandlerManifest doesn't exist.");
-                return;
-            }
-
-            if (!AWSServiceHandlerManifest.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
+            if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
             {
                 _logger.DebugFormat("Service name doesn't exist in AWSServiceHandlerManifest: serviceName = {0}.", serviceName);
                 return;
@@ -515,13 +421,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 throw new ArgumentNullException(nameof(aws));
             }
 
-            if (AWSServiceHandlerManifest == null)
-            {
-                _logger.DebugFormat("AWSServiceHandlerManifest doesn't exist.");
-                return;
-            }
-
-            if (!AWSServiceHandlerManifest.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
+            if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
             {
                 _logger.DebugFormat("Service name doesn't exist in AWSServiceHandlerManifest: serviceName = {0}.", serviceName);
                 return;
@@ -653,7 +553,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         private ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
    
         public bool RegisterAll { get => registerAll; set => registerAll = value; }
-        public AWSServiceHandlerManifest AWSServiceHandlerManifest { get; set; } = null;
 
         public void Customize(Type serviceClientType, RuntimePipeline pipeline)
         {
@@ -667,13 +566,9 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 addCustomization = ProcessType(serviceClientType, addCustomization);
             }
 
-            if (addCustomization && AWSServiceHandlerManifest == null)
+            if (addCustomization)
             {
                 pipeline.AddHandlerBefore<RetryHandler>(new XRayPipelineHandler());
-            }
-            else if (addCustomization && AWSServiceHandlerManifest != null)
-            {
-                pipeline.AddHandlerBefore<RetryHandler>(new XRayPipelineHandler(AWSServiceHandlerManifest)); // Custom AWS Manifest file path/stream provided
             }
         }
 
@@ -698,24 +593,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             }
 
             return addCustomization;
-        }
-
-        /// <summary>
-        /// Adds type to the list of <see cref="Type" />.
-        /// </summary>
-        /// <param name="type"> Type of <see cref="Runtime.AmazonServiceClient"/> to be registered with X-Ray.</param>
-        public void AddType(Type type)
-        {
-            rwLock.EnterWriteLock();
-
-            try
-            {
-                types.Add(type);
-            }
-            finally
-            {
-                rwLock.ExitWriteLock();
-            }
         }
     }
 }

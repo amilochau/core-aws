@@ -210,27 +210,6 @@ namespace Amazon.Runtime.Internal
             return executionContext.RequestContext.Retries >= this.MaxRetries;
         }
 
-        /// <summary>
-        /// Waits before retrying a request. The default policy implements a exponential backoff with 
-        /// jitter algorithm.
-        /// </summary>
-        /// <param name="executionContext">Request context containing the state of the request.</param>
-        public override void WaitBeforeRetry(IExecutionContext executionContext)
-        {
-            StandardRetryPolicy.WaitBeforeRetry(executionContext.RequestContext.Retries, this.MaxBackoffInMilliseconds);
-        }
-        
-        /// <summary>
-        /// Waits for an amount of time using an exponential backoff with jitter algorithm.
-        /// </summary>
-        /// <param name="retries">The request retry index. The first request is expected to be 0 while 
-        /// the first retry will be 1.</param>
-        /// <param name="maxBackoffInMilliseconds">The max number of milliseconds to wait</param>
-        public static void WaitBeforeRetry(int retries, int maxBackoffInMilliseconds)
-        {
-            AWSSDKUtils.Sleep(CalculateRetryDelay(retries, maxBackoffInMilliseconds));
-        }        
-
         protected static int CalculateRetryDelay(int retries, int maxBackoffInMilliseconds)
         {
             double jitter;

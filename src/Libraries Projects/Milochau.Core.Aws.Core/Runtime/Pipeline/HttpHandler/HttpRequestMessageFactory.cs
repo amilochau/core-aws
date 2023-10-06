@@ -265,12 +265,6 @@ namespace Amazon.Runtime
 
             try
             { 
-                var proxy = clientConfig.GetWebProxy();
-                if (proxy != null)
-                {
-                    httpMessageHandler.Proxy = proxy;
-                }
-
                 if (httpMessageHandler.Proxy != null && clientConfig.ProxyCredentials != null)
                 {
                     httpMessageHandler.Proxy.Credentials = clientConfig.ProxyCredentials;

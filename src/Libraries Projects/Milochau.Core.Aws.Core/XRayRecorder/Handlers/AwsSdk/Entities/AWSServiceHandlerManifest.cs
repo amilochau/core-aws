@@ -25,30 +25,9 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Entities
     /// </summary>
     public class AWSServiceHandlerManifest
     {
-        private Dictionary<string, AWSServiceHandler> _services;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AWSServiceHandlerManifest"/> class.
-        /// </summary>
-        public AWSServiceHandlerManifest()
-        {
-            _services = new Dictionary<string, AWSServiceHandler>(StringComparer.OrdinalIgnoreCase);
-        }
-
         /// <summary>
         /// Gets or sets the map of service name to AwsServiceInfo. The key of map ignores case.
         /// </summary>
-        public Dictionary<string, AWSServiceHandler> Services
-        {
-            get
-            {
-                return _services;
-            }
-
-            set
-            {
-                _services = value;
-            }
-        }
+        public Dictionary<string, AWSServiceHandler> Services { get; set; } = new Dictionary<string, AWSServiceHandler>(StringComparer.OrdinalIgnoreCase);
     }
 }

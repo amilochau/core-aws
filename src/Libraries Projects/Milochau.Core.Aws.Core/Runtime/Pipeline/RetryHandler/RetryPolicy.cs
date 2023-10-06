@@ -242,13 +242,6 @@ namespace Amazon.Runtime
         public abstract bool RetryLimitReached(IExecutionContext executionContext);
 
         /// <summary>
-        /// Waits before retrying a request.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        public abstract void WaitBeforeRetry(IExecutionContext executionContext);
-
-        /// <summary>
         /// Virtual method that gets called on a successful request response.
         /// </summary>
         /// <param name="executionContext">The execution context which contains both the

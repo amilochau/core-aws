@@ -48,7 +48,6 @@ namespace Amazon.Util
         private const string EncodedSlash = "%2F";
 
         internal const int DefaultMaxRetry = 3;
-        private const int DefaultConnectionLimit = 50;
 
         public static readonly DateTime EPOCH_START = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -65,8 +64,6 @@ namespace Amazon.Util
 
         internal const string S3Accelerate = "s3-accelerate";
         internal const string S3Control = "s3-control";
-
-        private static readonly string _userAgent = InternalSDKUtils.BuildUserAgentString(string.Empty);
 
 #endregion
 
@@ -349,11 +346,6 @@ namespace Amazon.Util
             return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
         }
 
-        public static string ConvertToUnixEpochSecondsString(DateTime dateTime)
-        {
-            return Convert.ToInt64(GetTimeSpanInTicks(dateTime).TotalSeconds).ToString(CultureInfo.InvariantCulture);
-        }
-
         public static double ConvertToUnixEpochSecondsDouble(DateTime dateTime)
         {
             return Math.Round(GetTimeSpanInTicks(dateTime).TotalMilliseconds, 0) / 1000.0;
@@ -390,43 +382,6 @@ namespace Amazon.Util
             }
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Calls a specific EventHandler in a background thread
-        /// </summary>
-        /// <param name="handler"></param>
-        /// <param name="args"></param>
-        /// <param name="sender"></param>
-        public static void InvokeInBackground<T>(EventHandler<T> handler, T args, object sender) where T : EventArgs
-        {
-            if (handler == null) return;
-
-
-            var list = handler.GetInvocationList();
-            foreach (var call in list)
-            {
-                var eventHandler = ((EventHandler<T>)call);
-                if (eventHandler != null)
-                {
-                    Dispatcher.Dispatch(() => eventHandler(sender, args));
-                }
-            }
-        }
-
-        private static BackgroundInvoker _dispatcher;
-
-        private static BackgroundInvoker Dispatcher
-        {
-            get
-            {
-                if (_dispatcher == null)
-                {
-                    _dispatcher = new BackgroundInvoker();
-                }
-
-                return _dispatcher;
-            }
         }
 
         internal static bool AreEqual(object[] itemsA, object[] itemsB)
@@ -577,16 +532,6 @@ namespace Amazon.Util
             // Maps 10-15 to the Unicode range of 'A' - 'F' (0x41 - 0x46).
             return (char)(value - 10 + 'A');
         }
-                
-        internal static string UrlEncodeSlash(string data)
-        {
-            if (string.IsNullOrEmpty(data))
-            {
-                return data;
-            }
-
-            return data.Replace("/", EncodedSlash);
-        }
 
         /// <summary>
         /// Percent encodes the X-Amzn-Trace-Id header value skipping any characters within the
@@ -702,83 +647,6 @@ namespace Amazon.Util
                 c == '\u202D' || // LRO
                 c == '\u202E'    // RLO
             );
-        }
-
-        /// <summary>
-        /// Executes an HTTP request and returns the response as a string. This method
-        /// throws WebException and HttpRequestException. In the event HttpRequestException
-        /// is thrown the StatusCode is sent as user defined data on the exception under
-        /// the key "StatusCode".
-        /// </summary>
-        /// <param name="uri">The URI to make the request to</param>
-        /// <param name="requestType">The request type: GET, PUT, POST</param>
-        /// <param name="content">null or the content to send with the request</param>
-        /// <param name="timeout">Timeout for the request</param>
-        /// <param name="proxy">Proxy for the request</param>
-        /// <param name="headers">null or any headers to send with the request</param>
-        /// <returns>The response as a string.</returns>
-        public static string ExecuteHttpRequest(Uri uri, string requestType, string content, TimeSpan timeout, IWebProxy proxy, IDictionary<string, string> headers)
-        {
-            using (var client = CreateClient(uri, timeout, proxy, headers))
-            {           
-                var response = AsyncHelpers.RunSync<HttpResponseMessage>(() =>
-                {
-                    var requestMessage = new HttpRequestMessage(new HttpMethod(requestType), uri);
-                    if(!string.IsNullOrEmpty(content))
-                    {
-                        requestMessage.Content = new StringContent(content);         
-                    }
-                                
-                    return client.SendAsync(requestMessage);        
-                });
-
-                try
-                {
-                    response.EnsureSuccessStatusCode();
-                }
-                catch(HttpRequestException e)
-                {
-                    var httpRequestException = new HttpRequestException(e.Message, e);
-                    httpRequestException.Data.Add(nameof(response.StatusCode), response.StatusCode);
-
-                    response.Dispose();
-                    throw httpRequestException;
-                }
-                            
-                try
-                {
-                    return AsyncHelpers.RunSync<string>(() =>
-                    {
-                        return response.Content.ReadAsStringAsync();        
-                    });
-                }
-                finally 
-                {
-                    response.Dispose();
-                }
-            }
-        }
-
-        private static HttpClient CreateClient(Uri uri, TimeSpan timeout, IWebProxy proxy, IDictionary<string, string> headers)
-        {
-            var client = new HttpClient(new System.Net.Http.HttpClientHandler() { Proxy = proxy });
-            
-            if (timeout > TimeSpan.Zero)
-            {
-                client.Timeout = timeout;
-            }
-                
-            //DefaultRequestHeaders should not be used if we reuse the HttpClient. It is currently created for each request.
-            client.DefaultRequestHeaders.TryAddWithoutValidation(UserAgentHeader, _userAgent);
-            if(headers != null)
-            {
-                foreach(var nameValue in headers)
-                {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(nameValue.Key, nameValue.Value);
-                }
-            }
-                                
-            return client;
         }
 
         /// <summary>

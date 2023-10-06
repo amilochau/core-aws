@@ -22,22 +22,6 @@ namespace Amazon.Runtime
     public partial interface IClientConfig
     {
         /// <summary>
-        /// Gets the ProxyHost property.
-        /// </summary>
-        string ProxyHost { get; }
-
-        /// <summary>
-        /// Gets the ProxyPort property.
-        /// </summary>
-        int ProxyPort { get; }
-
-        /// <summary>
-        /// Returns a WebProxy instance configured to match the proxy settings
-        /// in the client configuration.
-        /// </summary>
-        IWebProxy GetWebProxy();
-
-        /// <summary>
         /// HttpClientFactory used to create new HttpClients.
         /// If null, an HttpClient will be created by the SDK.
         /// Note that IClientConfig members such as ProxyHost, ProxyPort, GetWebProxy, and AllowAutoRedirect
@@ -157,13 +141,6 @@ namespace Amazon.Runtime
         bool AllowAutoRedirect { get; }
 
         /// <summary>
-        /// Gets the BufferSize property.
-        /// The BufferSize controls the buffer used to read in from input streams and write 
-        /// out to the request.
-        /// </summary>
-        int BufferSize { get; }
-
-        /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should
         /// make for a single SDK operation invocation before giving up. This flag will 
         /// return 4 when the RetryMode is set to "Legacy" which is the default. For
@@ -177,24 +154,10 @@ namespace Amazon.Runtime
         /// </summary>
         int MaxErrorRetry { get; }
 
-
-        /// <summary>
-        /// Determines if MaxErrorRetry has been manually set.
-        /// </summary>
-        bool IsMaxErrorRetrySet { get; }
-
-        /// <summary>
-        /// Gets the interval at which progress update events are raised
-        /// for upload operations. By default, the progress update events are 
-        /// raised at every 100KB of data transferred. 
-        /// </summary>
-        long ProgressUpdateInterval { get; }
-
         /// <summary>
         /// Flag on whether to resign requests on retry or not.
         /// </summary>
         bool ResignRetries { get; }
-
 
         /// <summary>
         /// Credentials to use with a proxy.
@@ -273,24 +236,6 @@ namespace Amazon.Runtime
         /// "service.region.amazonaws.com" regardless of the value of hostPrefix. E.g. You may want to disable host prefix injection for testing against a local mock endpoint.
         /// </summary>
         bool DisableHostPrefixInjection { get; }
-
-        /// <summary>
-        /// Returns the flag indicating if endpoint discovery should be enabled or disabled for operations that are not required to use endpoint discovery.
-        /// </summary>
-        bool EndpointDiscoveryEnabled { get; }
-
-        /// <summary>
-        /// Returns the maximum number of discovered endpoints that can be stored within the cache for the client. The default limit is 1000 cache entries.
-        /// </summary>
-        int EndpointDiscoveryCacheLimit { get; }
-
-        /// <summary>
-        /// Under Adaptive retry mode, this flag determines if the client should wait for
-        /// a send token to become available or don't block and fail the request immediately
-        /// if a send token is not available.
-        /// </summary>
-        bool FastFailRequests { get;  }
-
 
         /// <summary>
         /// When set to true, the service client will use the  x-amz-user-agent

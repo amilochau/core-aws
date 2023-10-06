@@ -46,6 +46,5 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// Singleton Marshaller.
         /// </summary>
         public readonly static RawMessageMarshaller Instance = new RawMessageMarshaller();
-
     }
 }

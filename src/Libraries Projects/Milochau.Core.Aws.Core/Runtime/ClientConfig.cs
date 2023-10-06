@@ -31,78 +31,11 @@ namespace Amazon.Runtime
     /// </summary>
     public abstract partial class ClientConfig
     {
-        private IWebProxy proxy = null;
-        private string proxyHost;
-        private int proxyPort = -1;
-
         private static RegionEndpoint GetDefaultRegionEndpoint()
         {
             return FallbackRegionFactory.GetRegionEndpoint();
         }
 
-        /// <summary>
-        /// Returns a WebProxy instance configured to match the proxy settings
-        /// in the client configuration.
-        /// </summary>
-        public IWebProxy GetWebProxy()
-        {
-            return proxy;
-        }
-
-        /// <summary>
-        /// Unpacks the host, port and any credentials info into the instance's
-        /// proxy-related fields.
-        /// Unlike the SetWebProxy implementation on .NET 3.5/4.5,the Host and the Port are not reconstructed from the 
-        /// input proxyuri
-        /// </summary>
-        /// <param name="proxy">The proxy details</param>
-        public void SetWebProxy(IWebProxy proxy)
-        {
-            this.proxy = proxy;
-        }
-
-        /// <summary>
-        /// Gets and sets of the ProxyHost property.
-        /// </summary>
-        public string ProxyHost
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.proxyHost))
-                    return AWSConfigs.ProxyConfig.Host;
-
-                return this.proxyHost;
-            }
-            set
-            {
-                this.proxyHost = value;
-                if (this.ProxyPort>0)
-                {
-                    this.proxy = new Amazon.Runtime.Internal.Util.WebProxy(ProxyHost, ProxyPort);
-                }
-            }
-        }
-        /// <summary>
-        /// Gets and sets of the ProxyPort property.
-        /// </summary>
-        public int ProxyPort
-        {
-            get
-            {
-                if (this.proxyPort <= 0)
-                    return AWSConfigs.ProxyConfig.Port.GetValueOrDefault();
-
-                return this.proxyPort;
-            }
-            set
-            {
-                this.proxyPort = value;
-                if (this.ProxyHost!=null)
-                {
-                    this.proxy = new Amazon.Runtime.Internal.Util.WebProxy(ProxyHost, ProxyPort);
-                }
-            }
-        }
         /// <summary>
         /// Get or set the value to use for <see cref="HttpClientHandler.MaxConnectionsPerServer"/> on requests.
         /// If this property is null, <see cref="HttpClientHandler.MaxConnectionsPerServer"/>
@@ -163,7 +96,7 @@ namespace Amazon.Runtime
             {
                 return clientConfig.HttpClientFactory.GetConfigUniqueString(clientConfig);
             }
-            string uniqueString = string.Empty;
+            string uniqueString;
             uniqueString = string.Concat("AllowAutoRedirect:", clientConfig.AllowAutoRedirect.ToString(), "CacheSize:", clientConfig.HttpClientCacheSize);
 
             if (clientConfig.Timeout.HasValue)
@@ -186,7 +119,7 @@ namespace Amazon.Runtime
         internal static bool UseGlobalHttpClientCache(IClientConfig clientConfig)
         {
             if (clientConfig.HttpClientFactory == null)
-                return clientConfig.ProxyCredentials == null && clientConfig.GetWebProxy() == null;
+                return clientConfig.ProxyCredentials == null;
             else
                 return clientConfig.HttpClientFactory.GetConfigUniqueString(clientConfig) != null;
         }
@@ -218,8 +151,6 @@ namespace Amazon.Runtime
         private string authServiceName = null;
         private bool readEntireResponse = false;
         private bool logResponse = false;
-        private int bufferSize = AWSSDKUtils.DefaultBufferSize;
-        private long progressUpdateInterval = AWSSDKUtils.DefaultProgressUpdateInterval;
         private bool resignRetries = false;
         private ICredentials proxyCredentials;
         private bool logMetrics = AWSConfigs.LoggingConfig.LogMetrics;
@@ -313,27 +244,6 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// <para>
-        /// Gets and sets of the ServiceURL property.
-        /// This is an optional property; change it
-        /// only if you want to try a different service
-        /// endpoint.
-        /// </para>
-        /// <para>
-        /// RegionEndpoint and ServiceURL are mutually exclusive properties. 
-        /// Whichever property is set last will cause the other to automatically 
-        /// be reset to null.
-        /// </para>
-        /// </summary>
-        public string ServiceURL
-        {
-            get
-            {
-                return this.serviceURL;
-            }
-        }
-
-        /// <summary>
         /// Gets and sets the UseHttp.
         /// If this property is set to true, the client attempts
         /// to use HTTP protocol, if the target endpoint supports it.
@@ -412,23 +322,12 @@ namespace Amazon.Runtime
                     //In the shared config or environment variable MaxAttempts is the total number 
                     //of attempts. This will include the initial call and must be deducted from
                     //from the number of actual retries.
-                    return FallbackInternalConfigurationFactory.MaxAttempts - 1 ?? MaxRetriesDefault;
+                    return MaxRetriesDefault;
                 }
 
                 return this.maxRetries.Value;
             }
             set { this.maxRetries = value; }
-        }
-
-        /// <summary>
-        /// Determines if MaxErrorRetry has been manually set.
-        /// </summary>
-        public bool IsMaxErrorRetrySet
-        {
-            get
-            {
-                return this.maxRetries.HasValue;
-            }
         }
 
         /// <summary>
@@ -455,35 +354,6 @@ namespace Amazon.Runtime
             get { return this.readEntireResponse; }
             set { this.readEntireResponse = value; }
         }
-
-        /// <summary>
-        /// Gets and Sets the BufferSize property.
-        /// The BufferSize controls the buffer used to read in from input streams and write 
-        /// out to the request.
-        /// </summary>
-        public int BufferSize
-        {
-            get { return this.bufferSize; }
-            set { this.bufferSize = value; }
-        }
-
-        /// <summary>
-        /// <para>
-        /// Gets or sets the interval at which progress update events are raised
-        /// for upload operations. By default, the progress update events are 
-        /// raised at every 100KB of data transferred. 
-        /// </para>
-        /// <para>
-        /// If the value of this property is set less than ClientConfig.BufferSize, 
-        /// progress updates events will be raised at the interval specified by ClientConfig.BufferSize.
-        /// </para>
-        /// </summary>
-        public long ProgressUpdateInterval
-        {
-            get { return progressUpdateInterval; }
-            set { progressUpdateInterval = value; }
-        }
-
 
         /// <summary>
         /// Flag on whether to resign requests on retry or not.
@@ -640,7 +510,7 @@ namespace Amazon.Runtime
             {
                 if (!this.useDualstackEndpoint.HasValue)
                 {
-                    return FallbackInternalConfigurationFactory.UseDualStackEndpoint ?? false;
+                    return false;
                 }
 
                 return this.useDualstackEndpoint.Value;
@@ -658,7 +528,7 @@ namespace Amazon.Runtime
             {
                 if (!this.useFIPSEndpoint.HasValue)
                 {
-                    return FallbackInternalConfigurationFactory.UseFIPSEndpoint ?? false;
+                    return false;
                 }
 
                 return this.useFIPSEndpoint.Value;
@@ -676,7 +546,7 @@ namespace Amazon.Runtime
             {
                 if (!this.disableRequestCompression.HasValue)
                 {
-                    return FallbackInternalConfigurationFactory.DisableRequestCompression ?? false;
+                    return false;
                 }
 
                 return this.disableRequestCompression.Value;
@@ -693,7 +563,7 @@ namespace Amazon.Runtime
             {
                 if (!this.requestMinCompressionSizeBytes.HasValue)
                 {
-                    return FallbackInternalConfigurationFactory.RequestMinCompressionSizeBytes ?? DefaultMinCompressionSizeBytes;
+                    return DefaultMinCompressionSizeBytes;
                 }
 
                 return this.requestMinCompressionSizeBytes.Value;
@@ -770,39 +640,6 @@ namespace Amazon.Runtime
             get { return this.disableHostPrefixInjection; }
             set { this.disableHostPrefixInjection = value; }
         }
-
-        /// <summary>
-        /// Returns the flag indicating if endpoint discovery should be enabled or disabled for operations that are not required to use endpoint discovery.
-        /// </summary>
-        public bool EndpointDiscoveryEnabled
-        {
-            get
-            {
-                if (!this.endpointDiscoveryEnabled.HasValue)
-                {
-                    return FallbackInternalConfigurationFactory.EndpointDiscoveryEnabled ?? false;
-                }
-
-                return this.endpointDiscoveryEnabled.Value;
-            }
-            set { this.endpointDiscoveryEnabled = value; }
-        }
-
-        /// <summary>
-        /// Returns the maximum number of discovered endpoints that can be stored within the cache for the client. The default limit is 1000 cache entries.
-        /// </summary>
-        public int EndpointDiscoveryCacheLimit
-        {
-            get { return this.endpointDiscoveryCacheLimit; }
-            set { this.endpointDiscoveryCacheLimit = value; }
-        }
-
-        /// <summary>
-        /// Under Adaptive retry mode, this flag determines if the client should wait for
-        /// a send token to become available or don't block and fail the request immediately
-        /// if a send token is not available.
-        /// </summary>
-        public bool FastFailRequests { get; set; } = false;
 
         /// <summary>
         /// Throw an exception if the boxed TimeSpan parameter doesn't have a value or is out of range.

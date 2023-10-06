@@ -50,15 +50,6 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AWSXRayRecorder" /> class with <see cref="XRayOptions"/>
-        /// </summary>
-        /// <param name="options">Instance of <see cref="XRayOptions"/>.</param>
-        public AWSXRayRecorder(XRayOptions options) : this(new UdpSegmentEmitter(), options)
-        {
-
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AWSXRayRecorder" /> class
         /// with given instance of <see cref="ISegmentEmitter" />.
         /// </summary>
@@ -69,18 +60,6 @@ namespace Amazon.XRay.Recorder.Core
             SamplingStrategy = new LocalizedSamplingStrategy();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AWSXRayRecorder" /> class
-        /// with given instance of <see cref="ISegmentEmitter" /> and instance of <see cref="XRayOptions"/>.
-        /// </summary>
-        /// <param name="emitter">Instance of <see cref="ISegmentEmitter"/>.</param>
-        /// <param name="options">Instance of <see cref="XRayOptions"/>.</param>
-        internal AWSXRayRecorder(ISegmentEmitter emitter, XRayOptions options) : base(emitter)
-        {
-            XRayOptions = options;
-            PopulateContexts();
-            SamplingStrategy = new LocalizedSamplingStrategy(options.SamplingRuleManifest);
-        }
         /// <summary>
         /// Gets the singleton instance of <see cref="AWSXRayRecorder"/> with default configuration.
         /// </summary>

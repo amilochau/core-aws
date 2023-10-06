@@ -54,10 +54,10 @@ namespace Amazon.Lambda.Model.Internal.MarshallTransformations
 
             if (!publicRequest.IsSetFunctionName())
                 throw new AmazonLambdaException("Request object does not have required field FunctionName set");
-            request.AddPathResource("{FunctionName}", StringUtils.FromString(publicRequest.FunctionName));
+            request.AddPathResource("{FunctionName}", publicRequest.FunctionName);
             
             if (publicRequest.IsSetQualifier())
-                request.Parameters.Add("Qualifier", StringUtils.FromString(publicRequest.Qualifier));
+                request.Parameters.Add("Qualifier", publicRequest.Qualifier);
             request.ResourcePath = "/2015-03-31/functions/{FunctionName}/invocations";
             request.ContentStream =  publicRequest.PayloadStream ?? new MemoryStream();
             if(request.ContentStream.CanSeek)

@@ -25,30 +25,9 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Entities
     /// </summary>
     public class AWSServiceHandler
     {
-        private Dictionary<string, AWSOperationHandler> _operations;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AWSServiceHandler"/> class.
-        /// </summary>
-        public AWSServiceHandler()
-        {
-            _operations = new Dictionary<string, AWSOperationHandler>(StringComparer.OrdinalIgnoreCase);
-        }
-
         /// <summary>
         /// Gets or sets the operations for the services
         /// </summary>
-        public Dictionary<string, AWSOperationHandler> Operations
-        {
-            get
-            {
-                return _operations;
-            }
-
-            set
-            {
-                _operations = value;
-            }
-        }
+        public Dictionary<string, AWSOperationHandler> Operations { get; set; } = new Dictionary<string, AWSOperationHandler>(StringComparer.OrdinalIgnoreCase);
     }
 }

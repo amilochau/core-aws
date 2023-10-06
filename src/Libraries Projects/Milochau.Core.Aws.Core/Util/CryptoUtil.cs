@@ -39,23 +39,14 @@ namespace Amazon.Util
         /// <returns>New instance of the given algorithm</returns>
         public static HashAlgorithm GetChecksumInstance(CoreChecksumAlgorithm algorithm)
         {
-            switch (algorithm)
+            return algorithm switch
             {
-                case CoreChecksumAlgorithm.SHA1:
-                    return new SHA1Managed();
-
-                case CoreChecksumAlgorithm.SHA256:
-                    return CryptoUtil.CreateSHA256Instance();
-
-                case CoreChecksumAlgorithm.CRC32:
-                    return new CrtCrc32();
-
-                case CoreChecksumAlgorithm.CRC32C:
-                    return new CrtCrc32c();
-
-                default:
-                    throw new AmazonClientException($"Unable to instantiate checksum algorithm {algorithm}");
-            }
+                CoreChecksumAlgorithm.SHA1 => new SHA1Managed(),
+                CoreChecksumAlgorithm.SHA256 => CryptoUtil.CreateSHA256Instance(),
+                CoreChecksumAlgorithm.CRC32 => new CrtCrc32(),
+                CoreChecksumAlgorithm.CRC32C => new CrtCrc32c(),
+                _ => throw new AmazonClientException($"Unable to instantiate checksum algorithm {algorithm}"),
+            };
         }
 
         /// <summary>
@@ -65,18 +56,13 @@ namespace Amazon.Util
         /// <returns>Length of the base64 encoded checksum</returns>
         public static int GetChecksumBase64Length(CoreChecksumAlgorithm algorithm)
         {
-            switch (algorithm)
+            return algorithm switch
             {
-                case CoreChecksumAlgorithm.SHA1:
-                    return SHA1_BASE64_LENGTH;
-                case CoreChecksumAlgorithm.SHA256:
-                    return SHA56_BASE64_LENGTH;
-                case CoreChecksumAlgorithm.CRC32:
-                case CoreChecksumAlgorithm.CRC32C:
-                    return CRC32_BASE64_LENGTH;
-                default:
-                    throw new AmazonClientException($"Unable to determine the base64-encoded length of {algorithm}");
-            }
+                CoreChecksumAlgorithm.SHA1 => SHA1_BASE64_LENGTH,
+                CoreChecksumAlgorithm.SHA256 => SHA56_BASE64_LENGTH,
+                CoreChecksumAlgorithm.CRC32 or CoreChecksumAlgorithm.CRC32C => CRC32_BASE64_LENGTH,
+                _ => throw new AmazonClientException($"Unable to determine the base64-encoded length of {algorithm}"),
+            };
         }
 
         partial class CryptoUtil : ICryptoUtil

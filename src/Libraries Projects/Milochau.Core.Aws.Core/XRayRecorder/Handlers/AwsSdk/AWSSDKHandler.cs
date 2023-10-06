@@ -37,46 +37,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk
             _customizer.RegisterAll = true;
         }
 
-        /// <summary>
-        /// Registers X-Ray for all instances of <see cref="Runtime.AmazonServiceClient"/> with a given custom AWS Service Manifest File.
-        /// </summary>
-        /// <param name="path"> Absolute path to the file which contains the operation parameter whitelist configuration.</param>
-        public static void RegisterXRayForAllServices(String path)
-        {
-            _customizer = GetCustomizer();
-            _customizer.RegisterAll = true;
-            _customizer.AWSServiceHandlerManifest = XRayPipelineHandler.GetAWSServiceManifest(path);
-        }
-
-        /// <summary>
-        /// Registers X-Ray for the given type of <see cref="Runtime.AmazonServiceClient"/>.
-        /// </summary>
-        public static void RegisterXRay<T>()
-        {
-            _customizer = GetCustomizer();
-            _customizer.AddType(typeof(T));
-        }
-
-        /// <summary>
-        /// Registers file path of AWS Service Manifest file. This file would be used for all the registered <see cref="Runtime.AmazonServiceClient"/> instances. 
-        /// </summary>
-        /// <param name="path"> Absolute path to the file which contains the operation parameter whitelist configuration.</param>
-        public static void RegisterXRayManifest(String path)
-        {
-            _customizer = GetCustomizer();
-            _customizer.AWSServiceHandlerManifest = XRayPipelineHandler.GetAWSServiceManifest(path);
-        }
-
-        /// <summary>
-        /// Registers AWS Service Manifest resource stream. This stream would be used for all the registered <see cref="Runtime.AmazonServiceClient"/> instances. 
-        /// </summary>
-        /// <param name="stream"> stream for manifest which contains the operation parameter whitelist configuration.</param>
-        public static void RegisterXRayManifest(Stream stream)
-        {
-            _customizer = GetCustomizer();
-            _customizer.AWSServiceHandlerManifest = XRayPipelineHandler.GetAWSServiceManifest(stream);
-        }
-
         private static XRayPipelineCustomizer GetCustomizer()
         {
             if (_customizer == null)

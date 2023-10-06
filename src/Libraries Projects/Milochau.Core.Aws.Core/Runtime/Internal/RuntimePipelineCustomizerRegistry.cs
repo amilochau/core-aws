@@ -51,50 +51,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Deregistered the runtime pipeline customizer
-        /// </summary>
-        /// <param name="customizer"></param>
-        public void Deregister(IRuntimePipelineCustomizer customizer)
-        {
-            Deregister(customizer.UniqueName);
-        }
-
-        /// <summary>
-        /// Deregistered the runtime pipeline customizer
-        /// </summary>
-        /// <param name="uniqueName"></param>
-        public void Deregister(string uniqueName)
-        {
-            _rwlock.EnterWriteLock();
-            try
-            {
-                int pos = -1;
-                for(int i = 0; i < _customizers.Count; i++)
-                {
-                    if(string.Equals(uniqueName, _customizers[i].UniqueName, StringComparison.Ordinal))
-                    {
-                        pos = i;
-                        break;
-                    }
-                }
-
-                if(pos != -1)
-                {
-                    _logger.InfoFormat("Deregistering runtime pipeline customizer {0}", uniqueName);
-                    _customizers.RemoveAt(pos);
-                }
-                else
-                {
-                    _logger.InfoFormat("Runtime pipeline customizer {0} not found to deregister", uniqueName);
-                }
-            }
-            finally
-            {
-                _rwlock.ExitWriteLock();
-            }
-        }
-
-        /// <summary>
         /// Applies all of the registered customizers on the runtime pipeline
         /// </summary>
         /// <param name="pipeline">The service clients runtime pipeline.</param>

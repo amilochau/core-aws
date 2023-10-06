@@ -176,21 +176,21 @@ namespace Amazon.Internal
     public class EndpointsPartitionService
     {
         public Dictionary<string, EndpointsPartitionDefaults> Endpoints { get; set; }
-        public string? PartitionEndpoint { get; set; }
+        public string PartitionEndpoint { get; set; }
         public bool? IsRegionalized { get; set; }
-        public EndpointsPartitionDefaults? Defaults { get; set; }
+        public EndpointsPartitionDefaults Defaults { get; set; }
     }
 
     public class MergedEndpoint
     {
         public string Hostname { get; set; }
         public bool? Deprecated { get; set; }
-        public MergedEndpointCredentialScope? CredentialScope { get; set; }
+        public MergedEndpointCredentialScope CredentialScope { get; set; }
         public List<string> SignatureVersions { get; set; }
     }
 
     public class MergedEndpointCredentialScope
     {
-        public string? Region { get; set; }
+        public string Region { get; set; }
     }
 }
