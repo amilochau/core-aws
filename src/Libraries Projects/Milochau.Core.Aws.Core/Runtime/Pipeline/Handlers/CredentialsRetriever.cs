@@ -45,13 +45,7 @@ namespace Amazon.Runtime.Internal
         /// <returns>A task that represents the asynchronous operation.</returns>
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
-            ImmutableCredentials ic = null;
-            if (Credentials != null)
-            {
-                ic = await Credentials.GetCredentialsAsync().ConfigureAwait(false);
-            }
-
-            executionContext.RequestContext.ImmutableCredentials = ic;
+            executionContext.RequestContext.ImmutableCredentials = await Credentials.GetCredentialsAsync().ConfigureAwait(false);
 
             return await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
         }

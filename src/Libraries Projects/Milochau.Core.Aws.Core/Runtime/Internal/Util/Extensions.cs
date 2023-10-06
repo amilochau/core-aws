@@ -19,15 +19,6 @@ namespace Amazon.Runtime.Internal.Util
 {
     public static partial class Extensions
     {
-        private static readonly long TicksPerSecond = TimeSpan.FromSeconds(1).Ticks;
-        private static readonly double TickFrequency = TicksPerSecond / (double)Stopwatch.Frequency;
-        public static long GetElapsedDateTimeTicks(this Stopwatch self)
-        {
-            double stopwatchTicks = self.ElapsedTicks;
-            var ticks = (long)(stopwatchTicks * TickFrequency);
-            return ticks;
-        }
-
         /// <summary>
         /// Returns true if the Content is set or there are
         /// query parameters.

@@ -120,10 +120,6 @@ namespace Amazon.Runtime
         {
             var httpRequestFactory = new HttpRequestMessageFactory();
             var httpHandler = new HttpHandler<System.Net.Http.HttpContent>(httpRequestFactory, this);
-            var preMarshallHandler = new CallbackHandler();
-            var postMarshallHandler = new CallbackHandler();
-            var postUnmarshallHandler = new CallbackHandler();
-            var errorCallbackHandler = new ErrorCallbackHandler();
 
             //Determine which retry policy to use based on the retry mode
             RetryPolicy retryPolicy = new StandardRetryPolicy(Config);
@@ -134,7 +130,6 @@ namespace Amazon.Runtime
                     httpHandler,
                     new Unmarshaller(true),
                     new ErrorHandler(),
-                    postUnmarshallHandler,
                     new Signer(),
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
                     // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
@@ -142,10 +137,7 @@ namespace Amazon.Runtime
                     // CredentialsRetriever must come after RetryHandler because of any credential related changes.
                     new CredentialsRetriever(Credentials),
                     new RetryHandler(retryPolicy),
-                    postMarshallHandler,
                     new Marshaller(),
-                    preMarshallHandler,
-                    errorCallbackHandler,
                 }
             );
 

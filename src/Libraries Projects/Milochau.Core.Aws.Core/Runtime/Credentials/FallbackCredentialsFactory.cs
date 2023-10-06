@@ -25,40 +25,6 @@ namespace Amazon.Runtime
         // Lock to control caching credentials across multiple threads.
         private static ReaderWriterLockSlim cachedCredentialsLock = new ReaderWriterLockSlim();
     
-        internal const string AWS_PROFILE_ENVIRONMENT_VARIABLE = "AWS_PROFILE";
-        internal const string DefaultProfileName = "default";
-
-        static FallbackCredentialsFactory()
-        {
-            Reset();
-        }
-
-        public delegate AWSCredentials CredentialsGenerator();
-
-        public static void Reset()
-        {
-            Reset(null);
-        }
-
-        public static void Reset(IWebProxy proxy)
-        {
-            try
-            {
-                cachedCredentialsLock.EnterWriteLock();
-                cachedCredentials = null;
-            }
-            finally
-            {
-                cachedCredentialsLock.ExitWriteLock();
-            }
-        }
-
-        internal static string GetProfileName()
-        {
-            // @todo here to simplify
-            return DefaultProfileName;
-        }
-
         private static AWSCredentials cachedCredentials;
         public static AWSCredentials GetCredentials()
         {
@@ -83,17 +49,7 @@ namespace Amazon.Runtime
                     return cachedCredentials;
                 }
                 
-                List<Exception> errors = new List<Exception>();
-                try
-                {
-                    cachedCredentials = new EnvironmentVariablesAWSCredentials();
-                }
-                catch (Exception e)
-                {
-                    cachedCredentials = null;
-
-                    errors.Add(e);
-                }
+                cachedCredentials = new EnvironmentVariablesAWSCredentials();
 
                 if (cachedCredentials == null)
                 {

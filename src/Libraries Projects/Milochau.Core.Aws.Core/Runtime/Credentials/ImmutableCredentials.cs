@@ -60,35 +60,9 @@ namespace Amazon.Runtime
         /// <param name="token">Optional. Can be set to null or empty for non-session credentials.</param>
         public ImmutableCredentials(string awsAccessKeyId, string awsSecretAccessKey, string token)
         {
-            if (string.IsNullOrEmpty(awsAccessKeyId)) throw new ArgumentNullException("awsAccessKeyId");
-            if (string.IsNullOrEmpty(awsSecretAccessKey)) throw new ArgumentNullException("awsSecretAccessKey");
-
             AccessKey = awsAccessKeyId;
             SecretKey = awsSecretAccessKey;
-
             Token = token ?? string.Empty;
-        }
-
-        private ImmutableCredentials() { }
-
-        #endregion
-
-
-        #region Public methods
-
-        /// <summary>
-        /// Returns a copy of the current credentials.
-        /// </summary>
-        /// <returns></returns>
-        public virtual ImmutableCredentials Copy()
-        {
-            ImmutableCredentials credentials = new ImmutableCredentials
-            {
-                AccessKey = this.AccessKey,
-                SecretKey = this.SecretKey,
-                Token = this.Token,
-            };
-            return credentials;
         }
 
         #endregion
