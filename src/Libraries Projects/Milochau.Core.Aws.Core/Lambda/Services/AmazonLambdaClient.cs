@@ -133,8 +133,6 @@ namespace Amazon.Lambda
     /// </summary>
     public partial class AmazonLambdaClient : AmazonServiceClient, IAmazonLambda
     {
-        private static IServiceMetadata serviceMetadata = new AmazonLambdaMetadata();
-        
         #region Constructors
 
         /// <summary>
@@ -167,16 +165,6 @@ namespace Amazon.Lambda
         {
             pipeline.RemoveHandler<Amazon.Runtime.Internal.EndpointResolver>();
             pipeline.AddHandlerAfter<Amazon.Runtime.Internal.Marshaller>(new AmazonLambdaEndpointResolver());
-        }
-        /// <summary>
-        /// Capture metadata for the service.
-        /// </summary>
-        protected override IServiceMetadata ServiceMetadata
-        {
-            get
-            {
-                return serviceMetadata;
-            }
         }
 
         #endregion

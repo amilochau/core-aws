@@ -30,7 +30,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
     /// </summary>
     public class UdpSegmentEmitter : ISegmentEmitter
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(UdpSegmentEmitter));
         private readonly ISegmentMarshaller _marshaller;
         private readonly UdpClient _udpClient;
         private DaemonConfig _daemonConfig;
@@ -70,24 +69,19 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
                 var packet = _marshaller.Marshall(segment);
                 var data = Encoding.ASCII.GetBytes(packet);
                 var ip = EndPoint; //Need local var to ensure ip do not updates
-                _logger.DebugFormat("UDP Segment emitter endpoint: {0}.", ip);
                 _udpClient.Send(data, data.Length, ip);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
-                _logger.Error(e, "Failed to send package through socket.");
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                _logger.Error(e, "The udp data gram is null.");
             }
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
-                _logger.Error(e, "The udp client is already closed.");
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
-                _logger.Error(e, "The udp client connection is invalid.");
             }
         }
 
@@ -101,10 +95,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             if (Environment.GetEnvironmentVariable(DaemonConfig.EnvironmentVariableDaemonAddress) == null)
             {
                 SetEndPointOrDefault(daemonAddress);
-            }
-            else
-            {
-                _logger.InfoFormat("Ignoring call to SetDaemonAddress as " + DaemonConfig.EnvironmentVariableDaemonAddress + " is set.");
             }
         }
 

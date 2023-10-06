@@ -25,8 +25,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Context
 {
     public abstract class TraceContextImpl : ITraceContext
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(TraceContextImpl));
-
         /// <summary>
         /// Get entity (segment/subsegment) from the trace context.
         /// </summary>
@@ -60,13 +58,7 @@ namespace Amazon.XRay.Recorder.Core.Internal.Context
         /// <param name="message">String message</param>
         public void HandleEntityMissing(IAWSXRayRecorder recorder, Exception e, string message)
         {
-            _logger.Error(e, message);
-
-            if (recorder.ContextMissingStrategy == ContextMissingStrategy.LOG_ERROR)
-            {
-                _logger.DebugFormat("The ContextMissingStrategy is set to be LOG_ERROR. EntityNotAvailableException exception is suppressed.");
-            }
-            else
+            if (recorder.ContextMissingStrategy != ContextMissingStrategy.LOG_ERROR)
             {
                 ExceptionDispatchInfo.Capture(e).Throw();
             }

@@ -30,8 +30,8 @@ namespace Amazon.Runtime.Internal
         /// The constructor for HttpErrorResponseExceptionHandler.
         /// </summary>
         /// <param name="logger">in instance of ILogger.</param>
-        public HttpErrorResponseExceptionHandler(ILogger logger) :
-            base(logger)
+        public HttpErrorResponseExceptionHandler() :
+            base()
         {
         }
 
@@ -103,49 +103,34 @@ namespace Amazon.Runtime.Internal
         {
             AmazonServiceException errorResponseException;
             // Unmarshall the service error response and throw the corresponding service exception.
+            var unmarshaller = requestContext.Unmarshaller;
+            var readEntireResponse = true;
+
+            var errorContext = unmarshaller.CreateContext(httpErrorResponse,
+                readEntireResponse,
+                responseStream,
+                true,
+                requestContext);
+
             try
             {
-                var unmarshaller = requestContext.Unmarshaller;
-                var readEntireResponse = true;
-
-                var errorContext = unmarshaller.CreateContext(httpErrorResponse,
-                    readEntireResponse,
-                    responseStream,
-                    true,
-                    requestContext);
-
-                try
-                {
-                    errorResponseException = unmarshaller.UnmarshallException(errorContext,
-                        exception, httpErrorResponse.StatusCode);
-                }
-                catch (Exception e)
-                {
-                    // Rethrow Amazon service or client exceptions 
-                    if (e is AmazonServiceException ||
-                        e is AmazonClientException)
-                    {
-                        throw;
-                    }
-
-                    // Else, there was an issue with the response body, throw AmazonUnmarshallingException
-                    var requestId = httpErrorResponse.GetHeaderValue(HeaderKeys.RequestIdHeader);
-                    var body = errorContext.ResponseBody;
-                    throw new AmazonUnmarshallingException(requestId, lastKnownLocation: null, responseBody: body,
-                        innerException: e, statusCode: httpErrorResponse.StatusCode);
-                }
-
-                var logResponseBody = AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
-                if (logResponseBody)
-                {
-                    this.Logger.Error(errorResponseException, "Received error response: [{0}]",
-                        errorContext.ResponseBody);
-                }
+                errorResponseException = unmarshaller.UnmarshallException(errorContext,
+                    exception, httpErrorResponse.StatusCode);
             }
-            catch (Exception unmarshallException)
+            catch (Exception e)
             {
-                this.Logger.Error(unmarshallException, "Failed to unmarshall a service error response.");
-                throw;
+                // Rethrow Amazon service or client exceptions 
+                if (e is AmazonServiceException ||
+                    e is AmazonClientException)
+                {
+                    throw;
+                }
+
+                // Else, there was an issue with the response body, throw AmazonUnmarshallingException
+                var requestId = httpErrorResponse.GetHeaderValue(HeaderKeys.RequestIdHeader);
+                var body = errorContext.ResponseBody;
+                throw new AmazonUnmarshallingException(requestId, lastKnownLocation: null, responseBody: body,
+                    innerException: e, statusCode: httpErrorResponse.StatusCode);
             }
 
             throw errorResponseException;
@@ -177,11 +162,10 @@ namespace Amazon.Runtime.Internal
                 using (httpErrorResponse.ResponseBody)
                 {
                     var unmarshaller = requestContext.Unmarshaller;
-                    var readEntireResponse = AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
 
                     UnmarshallerContext errorContext = unmarshaller.CreateContext(
                         httpErrorResponse,
-                        readEntireResponse,
+                        false,
                         httpErrorResponse.ResponseBody.OpenResponse(),
                         true,
                         requestContext);
@@ -192,9 +176,8 @@ namespace Amazon.Runtime.Internal
                         responseContext.Response.HttpStatusCode = httpErrorResponse.StatusCode;
                         return true;
                     }
-                    catch (Exception unmarshallException)
+                    catch (Exception)
                     {
-                        this.Logger.Debug(unmarshallException, "Failed to unmarshall 404 response when it was supressed.");
                     }
                 }
             }

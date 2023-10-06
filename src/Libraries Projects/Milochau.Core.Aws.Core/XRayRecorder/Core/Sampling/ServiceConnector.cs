@@ -34,7 +34,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary>
     class ServiceConnector : IConnector
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(ServiceConnector));
         private XRayConfig _xrayConfig;
         private readonly object _xrayClientLock = new object();
         private const int Version = 1;
@@ -78,7 +77,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             if (serviceUrlCandidate.Equals(_xrayConfig.ServiceURL)) return; // endpoint do not need refreshing
 
             _xrayConfig.ServiceURL = serviceUrlCandidate;
-            _logger.DebugFormat($"ServiceConnector Endpoint refreshed to: {_xrayConfig.ServiceURL}");
         }
 
         /// <summary>

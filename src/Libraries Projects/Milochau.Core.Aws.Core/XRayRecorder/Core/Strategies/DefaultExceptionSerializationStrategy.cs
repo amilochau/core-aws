@@ -30,8 +30,6 @@ namespace Amazon.XRay.Recorder.Core.Strategies
     [Serializable]
     public class DefaultExceptionSerializationStrategy : ExceptionSerializationStrategy
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(DefaultExceptionSerializationStrategy));
-
         private static List<Type> _defaultExceptionClasses = new List<Type>() { typeof(AmazonServiceException)};
 
         private List<Type> _remoteExceptionClasses = new List<Type>();
@@ -71,11 +69,9 @@ namespace Amazon.XRay.Recorder.Core.Strategies
         {
             if (stackFrameSize < 0)
             {
-                _logger.DebugFormat("Provided Stack frame size should be non-negative. Setting max stack frame size : {0}", DefaultStackFrameSize);
                 return DefaultStackFrameSize;
             }
 
-            _logger.DebugFormat("Setting max stack frame size : {0}", stackFrameSize);
             return stackFrameSize;
         }
 

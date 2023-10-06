@@ -39,7 +39,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         private const string ParentKey = "Parent";
         private const string SampledKey = "Sampled";
 
-        private static readonly Logger _logger = Logger.GetLogger(typeof(TraceHeader));
         private static readonly char[] _validSeparators = { ';' };
 
         /// <summary>
@@ -120,9 +119,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
                 header = result;
                 return true;
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
-                _logger.Error(e, "Invalid trace header from string: {0}", rawHeader);
                 return false;
             }
         }
@@ -188,9 +186,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
 
                 return result;
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
-                _logger.Error(e, "Invalid trace header from string: {0}", rawHeader);
                 return result;
             }
         }
@@ -209,19 +206,16 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
             header = null;
             if (entity == null)
             {
-                _logger.DebugFormat("Failed to parse TraceHeader because segment is null.");
                 return false;
             }
 
             if (string.IsNullOrEmpty(entity.Id))
             {
-                _logger.DebugFormat("Failed to parse TraceHeader because segment id is null or empty.");
                 return false;
             }
 
             if (string.IsNullOrEmpty(entity.RootSegment.TraceId))
             {
-                _logger.DebugFormat("Failed to parse TraceHeader because trace id is null or empty.");
                 return false;
             }
 

@@ -26,7 +26,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary>
     public class RulePoller
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(RulePoller));
         private RuleCache _ruleCache;
         private IConnector _connector;
         private const int RefreshInterval = 5 * 60 * 1000; // 5 minutes
@@ -56,9 +55,8 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             {
                 await RefreshCache();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Error(e, "Encountered an exception while polling sampling rules.");
             }
             finally
             {
@@ -78,7 +76,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             {
                 _ruleCache.LoadRules(response.Rules);
                 _ruleCache.LastUpdated = time;
-                _logger.InfoFormat("Successfully refreshed sampling rule cache.");
             }
         }
         /// <summary>

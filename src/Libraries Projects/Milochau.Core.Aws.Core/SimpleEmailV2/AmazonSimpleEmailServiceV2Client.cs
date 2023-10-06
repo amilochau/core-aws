@@ -47,8 +47,6 @@ namespace Amazon.SimpleEmailV2
     /// </summary>
     public partial class AmazonSimpleEmailServiceV2Client : AmazonServiceClient, IAmazonSimpleEmailServiceV2
     {
-        private static IServiceMetadata serviceMetadata = new AmazonSimpleEmailServiceV2Metadata();
-        
         #region Constructors
 
         /// <summary>
@@ -81,16 +79,6 @@ namespace Amazon.SimpleEmailV2
         {
             pipeline.RemoveHandler<Amazon.Runtime.Internal.EndpointResolver>();
             pipeline.AddHandlerAfter<Amazon.Runtime.Internal.Marshaller>(new AmazonSimpleEmailServiceV2EndpointResolver());
-        }
-        /// <summary>
-        /// Capture metadata for the service.
-        /// </summary>
-        protected override IServiceMetadata ServiceMetadata
-        {
-            get
-            {
-                return serviceMetadata;
-            }
         }
 
         #endregion

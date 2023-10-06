@@ -35,8 +35,6 @@ namespace Amazon.XRay.Recorder.Core
     /// </summary>
     public abstract class AWSXRayRecorderImpl : IAWSXRayRecorder
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(AWSXRayRecorderImpl));
-
         /// <summary>
         /// The environment variable that setting context missing strategy.
         /// </summary>
@@ -77,20 +75,16 @@ namespace Amazon.XRay.Recorder.Core
             set
             {
                 cntxtMissingStrategy = value;
-                _logger.DebugFormat(string.Format("Context missing mode : {0}", cntxtMissingStrategy));
                 string modeFromEnvironmentVariable = Environment.GetEnvironmentVariable(EnvironmentVariableContextMissingStrategy);
                 if (string.IsNullOrEmpty(modeFromEnvironmentVariable))
                 {
-                    _logger.DebugFormat(string.Format("{0} environment variable is not set. Do not override context missing mode.", EnvironmentVariableContextMissingStrategy));
                 }
                 else if (modeFromEnvironmentVariable.Equals(ContextMissingStrategy.LOG_ERROR.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.DebugFormat(string.Format("{0} environment variable is set to {1}. Override local value.", EnvironmentVariableContextMissingStrategy, modeFromEnvironmentVariable));
                     cntxtMissingStrategy = ContextMissingStrategy.LOG_ERROR;
                 }
                 else if (modeFromEnvironmentVariable.Equals(ContextMissingStrategy.RUNTIME_ERROR.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.DebugFormat(string.Format("{0} environment variable is set to {1}. Override local value.", EnvironmentVariableContextMissingStrategy, modeFromEnvironmentVariable));
                     cntxtMissingStrategy = ContextMissingStrategy.RUNTIME_ERROR;
                 }
             }
@@ -160,7 +154,6 @@ namespace Amazon.XRay.Recorder.Core
 
             if (IsTracingDisabled())
             {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not set namespace.");
                 return;
             }
 
@@ -170,7 +163,6 @@ namespace Amazon.XRay.Recorder.Core
 
                 if (subsegment == null)
                 {
-                    _logger.DebugFormat("Failed to cast the entity from TraceContext to Subsegment. SetNamespace is only available to Subsegment.");
                     return;
                 }
 
@@ -194,7 +186,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             if (IsTracingDisabled())
             {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not add http information.");
                 return;
             }
 
@@ -226,7 +217,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             if (IsTracingDisabled())
             {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not mark fault.");
                 return;
             }
 
@@ -250,7 +240,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             if (IsTracingDisabled())
             {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not mark error.");
                 return;
             }
 
@@ -274,7 +263,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             if (IsTracingDisabled())
             {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not mark throttle.");
                 return;
             }
 

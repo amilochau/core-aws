@@ -26,21 +26,6 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class RetryHandler : PipelineHandler
     {
-        private ILogger _logger;
-
-        /// <summary>
-        /// The logger used to log messages.
-        /// </summary>
-        public override ILogger Logger
-        {
-            get { return _logger; }
-            set
-            {
-                _logger = value;
-                this.RetryPolicy.Logger = value;
-            }
-        }
-
         /// <summary>
         /// The retry policy which specifies when 
         /// a retry should be performed.
@@ -91,13 +76,11 @@ namespace Amazon.Runtime.Internal
                     shouldRetry = await this.RetryPolicy.RetryAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
                     if (!shouldRetry)
                     {
-                        LogForError(requestContext, capturedException.SourceException);
                         capturedException.Throw();
                     }
                     else
                     {
                         requestContext.Retries++;
-                        LogForRetry(requestContext, capturedException.SourceException);
                     }
 
                     await this.RetryPolicy.ObtainSendTokenAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
@@ -142,25 +125,6 @@ namespace Amazon.Runtime.Internal
             }
         }
         
-        private void LogForRetry(IRequestContext requestContext, Exception exception)
-        {
-            Logger.InfoFormat("{0} making request {1} to {2}. Attempting retry {3} of {4}.",
-                          exception.GetType().Name,
-                          requestContext.RequestName,
-                          requestContext.Request.Endpoint.ToString(),
-                          requestContext.Retries,
-                          this.RetryPolicy.MaxRetries);
-        }
-
-        private void LogForError(IRequestContext requestContext, Exception exception)
-        {
-            Logger.Error(exception, "{0} making request {1} to {2}. Attempt {3}.",
-                          exception.GetType().Name,
-                          requestContext.RequestName,
-                          requestContext.Request.Endpoint.ToString(),
-                          requestContext.Retries + 1);
-        }        
-
         private void SetRetryHeaders(IRequestContext requestContext)
         {    
             var request = requestContext.Request;

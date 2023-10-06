@@ -32,16 +32,6 @@ namespace Amazon.Util
     public partial class ProxyConfig
     {
         /// <summary>
-        /// The host name or IP address of the proxy server.
-        /// </summary>
-        public string Host { get; set; }
-
-        /// <summary>
-        /// The port number of the proxy.
-        /// </summary>
-        public int? Port { get; set; }
-
-        /// <summary>
         /// The username to authenticate with the proxy server.
         /// </summary>
         public string Username { get; set; }
@@ -50,22 +40,6 @@ namespace Amazon.Util
         /// The password to authenticate with the proxy server.
         /// </summary>
         public string Password { get; set; }
-
-        /// <summary>
-        /// Collection of one or more regular expressions denoting addresses
-        /// for which the proxy will not be used.
-        /// </summary>
-        /// <remarks>
-        ///  For more information on bypass lists 
-        ///  see https://msdn.microsoft.com/en-us/library/system.net.webproxy.bypasslist%28v=vs.110%29.aspx.
-        /// </remarks>
-        public List<string> BypassList { get; set; }
-
-        /// <summary>
-        /// If true requests to local addresses bypass the configured
-        /// proxy.
-        /// </summary>
-        public bool BypassOnLocal { get; set; }
 
         internal ProxyConfig()
         {
@@ -94,10 +68,6 @@ namespace Amazon.Util
                 AWSConfigs.OnPropertyChanged(AWSConfigs.LoggingDestinationProperty);
             }
         }
-        /// <summary>
-        /// When to log responses.
-        /// </summary>
-        public ResponseLoggingOption LogResponses { get; set; }
 
         /// <summary>        
         /// Gets or sets the size limit in bytes for logged responses.
@@ -109,15 +79,8 @@ namespace Amazon.Util
         internal LoggingConfig()
         {
             LogTo = LoggingOptions.None;
-            LogResponses = default;
             LogResponsesSizeLimit = DefaultLogResponsesSizeLimit;
         }
-    }
-
-    public partial class CSMConfig
-    {
-        internal const string DEFAULT_HOST = "127.0.0.1";
-        internal const int DEFAULT_PORT = 31000;
     }
     #endregion
 

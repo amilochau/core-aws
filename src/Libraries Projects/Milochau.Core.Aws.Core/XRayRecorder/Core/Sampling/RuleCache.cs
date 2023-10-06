@@ -27,7 +27,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary>
     public class RuleCache
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(RuleCache));
         private IDictionary<string, SamplingRule> _cache;
         private readonly ReaderWriterLockSlim _cacheLock = new ReaderWriterLockSlim();
         /// <summary>

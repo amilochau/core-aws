@@ -28,7 +28,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary> 
     public class SamplingRule : IComparable<SamplingRule>
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(SamplingRule));
         public string Host { get; set; }
         public string RuleName { get; set; }
         public int Priority { get; set; }
@@ -119,11 +118,8 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             {
                 return StringExtension.IsMatch(input.ServiceName, ServiceName) && StringExtension.IsMatch(input.Method, HTTPMethod) && StringExtension.IsMatch(input.Url, URLPath) && StringExtension.IsMatch(input.Host, Host) && StringExtension.IsMatch(input.ServiceType, ServiceType);
             }
-            catch (RegexMatchTimeoutException e)
+            catch (RegexMatchTimeoutException)
             {
-                _logger.Error(e, "Match rule timeout. Rule: serviceName = {0}, urlPath = {1}, httpMethod = {2}, host = {3}, serviceType = {4}. Input: serviceNameToMatch = {5}, urlPathToMatch = {6}, httpMethodToMatch = {7}, hostToMatch = {8}, serviceTypeToMatch = {9}.", ServiceName, URLPath,
-                    HTTPMethod, Host, ServiceType, input.ServiceName, input.Url, input.Method, input.Host, input.ServiceType);
-
                 return false;
             }
         }

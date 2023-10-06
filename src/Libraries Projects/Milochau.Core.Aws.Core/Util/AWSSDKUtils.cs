@@ -242,26 +242,15 @@ namespace Amazon.Util
 
             IEnumerable<string> encodedSegments = AWSSDKUtils.SplitResourcePathIntoSegments(resourcePath, pathResources);
 
-            var pathWasPreEncoded = false;
             if (encode)
             {
                 if (endpoint == null)
                     throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
 
                 encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
-                pathWasPreEncoded = true;
             }
 
-            var canonicalizedResourcePath = AWSSDKUtils.JoinResourcePathSegments(encodedSegments, false);
-
-            // Get the logger each time (it's cached) because we shouldn't store it in a static variable.
-            Logger.GetLogger(typeof(AWSSDKUtils)).DebugFormat("{0} encoded {1}{2} for canonicalization: {3}",
-                pathWasPreEncoded ? "Double" : "Single",
-                resourcePath,
-                endpoint == null ? "" : " with endpoint " + endpoint.AbsoluteUri,
-                canonicalizedResourcePath);
-
-            return canonicalizedResourcePath;
+            return AWSSDKUtils.JoinResourcePathSegments(encodedSegments, false);
         }
 
         /// <summary>
@@ -351,16 +340,6 @@ namespace Amazon.Util
         public static TimeSpan GetTimeSpanInTicks(DateTime dateTime)
         {
             return new TimeSpan(dateTime.ToUniversalTime().Ticks - EPOCH_START.Ticks);
-        }
-
-        public static long ConvertDateTimetoMilliseconds(DateTime dateTime)
-        {
-            return ConvertTimeSpanToMilliseconds(GetTimeSpanInTicks(dateTime));
-        }
-
-        public static long ConvertTimeSpanToMilliseconds(TimeSpan timeSpan)
-        {
-            return timeSpan.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
         /// <summary>
@@ -592,23 +571,6 @@ namespace Amazon.Util
             }
             
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns DateTime.UtcNow + ManualClockCorrection when
-        /// <seealso cref="AWSConfigs.ManualClockCorrection"/> is set.
-        /// This value should be used instead of DateTime.UtcNow to factor in manual clock correction
-        /// </summary>
-        [Obsolete("This property does not account for endpoint specific clock skew.  Use CorrectClockSkew.GetCorrectedUtcNowForEndpoint() instead.")]
-        public static DateTime CorrectedUtcNow
-        {
-            get
-            {
-                var now = AWSConfigs.utcNowSource();
-                if (AWSConfigs.ManualClockCorrection.HasValue)
-                    now += AWSConfigs.ManualClockCorrection.Value;
-                return now;
-            }
         }
 
         /// <summary>

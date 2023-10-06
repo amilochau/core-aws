@@ -30,16 +30,10 @@ namespace Amazon.Runtime
     public abstract class AmazonServiceClient : IDisposable
     {
         private bool _disposed;
-        private Logger _logger;
         protected RuntimePipeline RuntimePipeline { get; set; }
         protected internal AWSCredentials Credentials { get; private set; }
         public IClientConfig Config => _config;
         private readonly ClientConfig _config;
-        protected virtual IServiceMetadata ServiceMetadata { get; } = new ServiceMetadata();
-        protected virtual bool SupportResponseLogging
-        {
-            get { return true; }
-        }
 
         #region Events
 
@@ -143,8 +137,6 @@ namespace Amazon.Runtime
 
         protected AmazonServiceClient(AWSCredentials credentials, ClientConfig config)
         {
-            _logger = Logger.GetLogger(GetType());
-
             Credentials = credentials;
             _config = config;
             Signer = new AWS4Signer();
@@ -186,7 +178,6 @@ namespace Amazon.Runtime
                     Unmarshaller = options.ResponseUnmarshaller,
                     IsAsync = true,
                     CancellationToken = cancellationToken,
-                    ServiceMetaData = this.ServiceMetadata,
                     Options = options
                 },
                 new ResponseContext()
@@ -300,8 +291,8 @@ namespace Amazon.Runtime
             RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
                 {
                     httpHandler,
-                    new Unmarshaller(SupportResponseLogging),
-                    new ErrorHandler(_logger),
+                    new Unmarshaller(true),
+                    new ErrorHandler(),
                     postUnmarshallHandler,
                     new Signer(),
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
@@ -317,8 +308,7 @@ namespace Amazon.Runtime
                     new Marshaller(),
                     preMarshallHandler,
                     errorCallbackHandler,
-                },
-                _logger
+                }
             );
 
             CustomizeRuntimePipeline(RuntimePipeline);

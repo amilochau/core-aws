@@ -14,8 +14,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
     /// </summary>
     public partial class AmazonDynamoDBClient : AmazonServiceClient, IAmazonDynamoDB
     {
-        private static readonly IServiceMetadata serviceMetadata = new AmazonDynamoDBMetadata();
-
         #region Constructors
 
         /// <summary>
@@ -37,16 +35,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         {
             pipeline.RemoveHandler<EndpointResolver>();
             pipeline.AddHandlerAfter<Marshaller>(new AmazonDynamoDBEndpointResolver());
-        }
-        /// <summary>
-        /// Capture metadata for the service.
-        /// </summary>
-        protected override IServiceMetadata ServiceMetadata
-        {
-            get
-            {
-                return serviceMetadata;
-            }
         }
 
         #endregion

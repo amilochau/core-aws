@@ -23,11 +23,6 @@ namespace Amazon.Runtime
     public partial interface IPipelineHandler
     {
         /// <summary>
-        /// The logger used to log messages.
-        /// </summary>
-        ILogger Logger { get; set; }
-
-        /// <summary>
         /// The inner handler which is called after the current 
         /// handler completes it's processing.
         /// </summary>

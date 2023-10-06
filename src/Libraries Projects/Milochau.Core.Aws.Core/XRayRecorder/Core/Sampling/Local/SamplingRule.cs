@@ -30,7 +30,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
     /// </summary>    
     public class SamplingRule
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(SamplingRule));
         private int _fixedTarget;
 
         /// <summary>
@@ -126,9 +125,8 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
             {
                 return StringExtension.IsMatch(hostToMatch, Host) && StringExtension.IsMatch(urlPathToMatch, UrlPath) && StringExtension.IsMatch(httpMethodToMatch, HttpMethod);
             }
-            catch (RegexMatchTimeoutException e)
+            catch (RegexMatchTimeoutException)
             {
-                _logger.Error(e, "Match rule timeout. Rule: Host = {0}, UrlPath = {1}, HttpMethod = {2}. Input: hostToMatch = {3}, urlPathToMatch = {4}, httpMethodToMatch = {5}.", Host, UrlPath, HttpMethod, hostToMatch, urlPathToMatch, httpMethodToMatch);
                 return false;
             }
         }

@@ -87,7 +87,6 @@ namespace Amazon.Runtime
         /// <param name="executionContext">The execution context which contains both the
         /// requests and response context.</param>
         public abstract Task WaitBeforeRetryAsync(IExecutionContext executionContext);
-
     }
 
     /// <summary>
@@ -101,11 +100,6 @@ namespace Amazon.Runtime
         /// This does not count the initial request.
         /// </summary>
         public int MaxRetries { get; protected set; }
-                
-        /// <summary>
-        /// The logger used to log messages.
-        /// </summary>
-        public ILogger Logger { get; set; }
 
         /// <summary>
         /// The standard set of throttling error codes
@@ -135,12 +129,6 @@ namespace Amazon.Runtime
             "RequestTimeout",
             "RequestTimeoutException"
         };
-
-        /// <summary>
-        /// List of AWS specific error codes which are returned as part of the error response.
-        /// These error codes will be retried.
-        /// </summary>
-        public ICollection<string> ErrorCodesToRetryOn { get; protected set; } = new HashSet<string>();
 
         #region Transient errors
 
@@ -179,38 +167,6 @@ namespace Amazon.Runtime
         /// capacity size.
         /// </summary>
         protected RetryCapacity RetryCapacity { get; set; }
-
-        /// <summary>
-        /// Checks if a retry should be performed with the given execution context and exception.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        /// <param name="exception">The exception thrown after issuing the request.</param>
-        /// <returns>Returns true if the request should be retried, else false. The exception is retried if it matches with clockskew error codes.</returns>
-        public bool Retry(IExecutionContext executionContext, Exception exception)
-        {
-            // Boolean that denotes retries have not exceeded maxretries and request is rewindable
-            bool canRetry = !RetryLimitReached(executionContext) && CanRetry(executionContext);
-            if (canRetry)
-            {
-                var isClockSkewError = IsClockskew(executionContext, exception);
-                if (isClockSkewError || RetryForException(executionContext, exception))
-                {
-                    executionContext.RequestContext.IsLastExceptionRetryable = true;
-                    // If CSM is enabled but canRetry was false, we should not retry the request.
-                    // Return false after successfully evaluating the last exception for retryable.
-                    if (!canRetry)
-                    {
-                        return false;
-                    }
-
-                    executionContext.RequestContext.LastCapacityType = IsServiceTimeoutError(exception) ? 
-                        CapacityManager.CapacityType.Timeout : CapacityManager.CapacityType.Retry;
-                    return OnRetry(executionContext, isClockSkewError,  IsThrottlingError(exception));
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Returns true if the request is in a state where it can be retried, else false.
@@ -269,18 +225,6 @@ namespace Amazon.Runtime
         public virtual bool OnRetry(IExecutionContext executionContext, bool bypassAcquireCapacity, bool isThrottlingError)
         {
             return OnRetry(executionContext, bypassAcquireCapacity);
-        }
-
-
-        /// <summary>
-        /// This method uses a token bucket to enforce the maximum sending rate.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        /// <param name="exception">If the prior request failed, this exception is expected to be 
-        /// the exception that occurred during the prior request failure.</param>
-        public virtual void ObtainSendToken(IExecutionContext executionContext, Exception exception)
-        {
         }
 
         /// <summary>
@@ -438,8 +382,6 @@ namespace Amazon.Runtime
             "RequestInTheFuture",
         };
 
-        private const string clockSkewMessageFormat = "Identified clock skew: local time = {0}, local time with correction = {1}, current clock skew correction = {2}, server time = {3}, service endpoint = {4}.";
-        private const string clockSkewUpdatedFormat = "Setting clock skew correction: new clock skew correction = {0}, service endpoint = {1}.";
         private const string clockSkewMessageParen = "(";
         private const string clockSkewMessagePlusSeparator = " + ";
         private const string clockSkewMessageMinusSeparator = " - ";
@@ -481,8 +423,6 @@ namespace Amazon.Runtime
                     if (absDiff > clockSkewMaxThreshold)
                     {
                         var newCorrection = serverTime - realNow;
-                        Logger.InfoFormat(clockSkewMessageFormat,
-                            realNow, correctedNow, clientConfig.ClockOffset, serverTime, endpoint);
 
                         // Always set the correction, for informational purposes
                         CorrectClockSkew.SetClockCorrectionForEndpoint(endpoint, newCorrection);
@@ -493,7 +433,6 @@ namespace Amazon.Runtime
                         if (shouldRetry)
                         {
                             // Set clock skew correction
-                            Logger.InfoFormat(clockSkewUpdatedFormat, newCorrection, endpoint);
                             executionContext.RequestContext.IsSigned = false;
                             return true;
                         }

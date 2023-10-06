@@ -29,7 +29,6 @@ namespace Amazon.Runtime.Internal
         #region Private members
 
         bool _disposed;
-        ILogger _logger;
 
         // The top-most handler in the pipeline.
         IPipelineHandler _handler;
@@ -55,16 +54,11 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         /// <param name="handlers">List of handlers with which the pipeline is initialized.</param>
         /// <param name="logger">The logger used to log messages.</param>
-        public RuntimePipeline(IList<IPipelineHandler> handlers, ILogger logger)
+        public RuntimePipeline(IList<IPipelineHandler> handlers)
         {
             if (handlers == null || handlers.Count == 0)
                 throw new ArgumentNullException("handlers");
 
-            if (logger == null)
-                throw new ArgumentNullException("logger");
-
-            _logger = logger;
-            
             foreach (var handler in handlers)
             {
                 this.AddHandler(handler);
@@ -194,7 +188,7 @@ namespace Amazon.Runtime.Internal
 
             var type = typeof(T);
 
-            IPipelineHandler previous = null;
+            IPipelineHandler previous;
             var current = _handler;
 
             while (current != null)
@@ -272,8 +266,6 @@ namespace Amazon.Runtime.Internal
         private void SetHandlerProperties(IPipelineHandler handler)
         {
             ThrowIfDisposed();
-
-            handler.Logger = _logger;
         }
 
         #endregion

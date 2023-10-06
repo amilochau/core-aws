@@ -40,7 +40,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
     /// </summary>
     public class XRayPipelineHandler : PipelineHandler
     {
-        private static readonly Logger _logger = Runtime.Internal.Util.Logger.GetLogger(typeof(AWSXRayRecorder));
         private AWSXRayRecorder _recorder;
 
         /// <summary>
@@ -66,21 +65,18 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
                 if (property == null)
                 {
-                    _logger.DebugFormat("Property doesn't exist. {0}", propertyName);
                     return false;
                 }
 
                 value = property.GetValue(obj);
                 return true;
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
-                _logger.Error(e, "Failed to read property because argument is null.");
                 return false;
             }
-            catch (AmbiguousMatchException e)
+            catch (AmbiguousMatchException)
             {
-                _logger.Error(e, "Failed to read property because of duplicate property name.");
                 return false;
             }
         }
@@ -141,7 +137,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         {
             if (!TryReadPropertyValue(obj, propertyName, out object propertyValue))
             {
-                _logger.DebugFormat("Failed to read property value: {0}", propertyName);
                 return;
             }
 
@@ -149,7 +144,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             if (dictionaryValue == null)
             {
-                _logger.DebugFormat("Property value does not implements IDictionary: {0}", propertyName);
                 return;
             }
 
@@ -161,7 +155,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         {
             if (!TryReadPropertyValue(obj, propertyName, out object propertyValue))
             {
-                _logger.DebugFormat("Failed to read property value: {0}", propertyName);
                 return;
             }
 
@@ -169,7 +162,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             if (listValue == null)
             {
-                _logger.DebugFormat("Property value does not implements IList: {0}", propertyName);
                 return;
             }
 
@@ -203,10 +195,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             {
                 request.Headers[TraceHeader.HeaderKey] = traceHeader.ToString();
             }
-            else
-            {
-                _logger.DebugFormat("Failed to inject trace header to AWS SDK request as the segment can't be converted to TraceHeader.");
-            }
         }
 
         /// <summary>
@@ -230,14 +218,12 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             if (responseContext == null)
             {
-                _logger.DebugFormat("Failed to handle AfterResponseEvent, because response is null.");
                 return;
             }
 
             var client = executionContext.RequestContext.ClientConfig;
             if (client == null)
             {
-                _logger.DebugFormat("Failed to handle AfterResponseEvent, because client from the Response Context is null");
                 return;
             }
 
@@ -359,13 +345,11 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
             {
-                _logger.DebugFormat("Service name doesn't exist in AWSServiceHandlerManifest: serviceName = {0}.", serviceName);
                 return;
             }
 
             if (!serviceHandler.Operations.TryGetValue(operation, out AWSOperationHandler operationHandler))
             {
-                _logger.DebugFormat("Operation doesn't exist in AwsServiceInfo: serviceName = {0}, operation = {1}.", serviceName, operation);
                 return;
             }
 
@@ -423,13 +407,11 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
             if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
             {
-                _logger.DebugFormat("Service name doesn't exist in AWSServiceHandlerManifest: serviceName = {0}.", serviceName);
                 return;
             }
 
             if (!serviceHandler.Operations.TryGetValue(operation, out AWSOperationHandler operationHandler))
             {
-                _logger.DebugFormat("Operation doesn't exist in AwsServiceInfo: serviceName = {0}, operation = {1}.", serviceName, operation);
                 return;
             }
 
@@ -496,12 +478,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
         private static bool IsTracingDisabled()
         {
-            if (AWSXRayRecorder.Instance.IsTracingDisabled())
-            {
-                _logger.DebugFormat("X-Ray tracing is disabled, do not handle AWSSDK request / response.");
-                return true;
-            }
-            return false;
+            return AWSXRayRecorder.Instance.IsTracingDisabled();
         }
 
         /// <summary>

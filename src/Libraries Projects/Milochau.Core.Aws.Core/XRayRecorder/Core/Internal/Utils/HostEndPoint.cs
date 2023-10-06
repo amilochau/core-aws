@@ -36,7 +36,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 		private readonly int _cacheTtl;	//Seconds to consider a cached dns response valid
 		private IPEndPoint _ipCache;
 		private DateTime? _timestampOfLastIPCacheUpdate;
-		private static readonly Logger _logger = Logger.GetLogger(typeof(HostEndPoint));
 		private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
 
 		/// <summary>
@@ -47,10 +46,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 		/// <param name="cacheTtl"></param>
 		public HostEndPoint(string host, int port, int cacheTtl = 60)
 		{
-			if (host == "")
-			{
-				_logger.InfoFormat("Warning: Using an empty host will always resolve to the address of the local host.");
-			}
 			Host = host;
 			Port = port;
 			_cacheTtl = cacheTtl;
@@ -64,7 +59,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 		/// Get the port of the endpoint.
 		/// </summary>
 		public int Port { get; }
-
 
 		/// <summary>
 		/// Check to see if the cache is valid.
@@ -178,9 +172,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 
 				if (newIP == null)
 				{
-					_logger.InfoFormat(
-						"IP cache invalid: DNS responded with no IP addresses for {1}. Cached IP address not updated!.",
-						_ipCache, Host);
 					return false;
 				}
 				// Upgrade our read lock to write mode
@@ -189,17 +180,14 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 				{
 					_timestampOfLastIPCacheUpdate = DateTime.Now;
 					_ipCache = new IPEndPoint(newIP, Port);
-					_logger.InfoFormat("IP cache invalid: updated ip cache for {0} to {1}.", Host, newIP);
 					return true;
 				}
 				//Error catching for IPEndPoint creation
 				catch (ArgumentNullException)
 				{
-					_logger.InfoFormat("IP cache invalid: resolved IP address for hostname {0} null. Cached IP address not updated!", Host);
 				}
 				catch (ArgumentOutOfRangeException)
 				{
-					_logger.InfoFormat("IP cache invalid: either the port {0} or IP address {1} is out of range. Cached IP address not updated!", Port, newIP);
 				}
 				finally
 				{
@@ -210,22 +198,15 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
 			//Error catching for DNS resolve
 			catch (ArgumentNullException)
 			{
-				_logger.InfoFormat(
-					"IP cache invalid: failed to resolve DNS due to host being null. Cached IP address not updated!");
 			}
 			catch (ArgumentOutOfRangeException)
 			{
-				_logger.InfoFormat(
-					"IP cache invalid: failed to resolve DNS due to host being longer than 255 characters. ({0}) Cached IP address not updated!",
-					Host);
 			}
 			catch (SocketException)
 			{
-				_logger.InfoFormat("IP cache invalid: failed to resolve DNS. ({0}) Cached IP address not updated!", Host);
 			}
 			catch (ArgumentException)
 			{
-				_logger.InfoFormat("IP cache invalid: failed to update cache due to {0} not being a valid IP. Cached IP address not updated!", Host);
 			}
 			finally
 			{

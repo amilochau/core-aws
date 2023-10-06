@@ -29,7 +29,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
     /// </summary>
     public class DaemonConfig
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(DaemonConfig));
         /// <summary>
         /// The environment variable for daemon address.
         /// </summary>
@@ -86,7 +85,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             if (!IPEndPointExtension.TryParse(daemonAddress, out DaemonConfig daemonEndPoint))
             {
                 daemonEndPoint = new DaemonConfig();
-                _logger.InfoFormat("The given daemonAddress ({0}) is invalid, using default daemon UDP and TCP address {1}:{2}.", daemonAddress, daemonEndPoint.UDPEndpoint.Address.ToString(), daemonEndPoint.UDPEndpoint.Port);
             }
             return daemonEndPoint;
         }
@@ -100,10 +98,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
         {
             if(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
             {
-                if (!string.IsNullOrEmpty(daemonAddress))
-                {
-                    _logger.InfoFormat("Ignoring call to GetEndPoint as " + EnvironmentVariableDaemonAddress + " is set.");
-                }
                 return ParsEndpoint(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress));
             }
             else

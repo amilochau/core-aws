@@ -31,7 +31,6 @@ namespace Amazon.XRay.Recorder.Core
     /// <seealso cref="Amazon.XRay.Recorder.Core.IAWSXRayRecorder" />
     public class AWSXRayRecorder : AWSXRayRecorderImpl
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(AWSXRayRecorder));
         static AWSXRayRecorder _instance = new AWSXRayRecorderBuilder().Build();
         public const String LambdaTaskRootKey = "LAMBDA_TASK_ROOT";
         public const String LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
@@ -99,7 +98,6 @@ namespace Amazon.XRay.Recorder.Core
             {
                 if (IsTracingDisabled())
                 {
-                    _logger.DebugFormat("X-Ray tracing is disabled, do not start subsegment");
                     return;
                 }
 
@@ -144,19 +142,9 @@ namespace Amazon.XRay.Recorder.Core
         internal void AddFacadeSegment(String name = null)
         {
             _lambdaVariables = AWSXRayRecorder.GetTraceVariablesFromEnvironment();
-            _logger.DebugFormat("Lambda Environment detected. Lambda variables: {0}", _lambdaVariables);
 
             if (!TraceHeader.TryParseAll(_lambdaVariables, out TraceHeader traceHeader))
             {
-                if (name != null)
-                {
-                    _logger.DebugFormat("Lambda variables : {0} for X-Ray trace header environment variable under key : {1} are missing/not valid trace id, parent id or sampling decision, discarding subsegment : {2}", _lambdaVariables, LambdaTraceHeaderKey, name);
-                }
-                else
-                {
-                    _logger.DebugFormat("Lambda variables : {0} for X-Ray trace header environment variable under key : {1} are missing/not valid trace id, parent id or sampling decision, discarding subsegment", _lambdaVariables, LambdaTraceHeaderKey);
-                }
-
                 traceHeader = new TraceHeader();
                 traceHeader.RootTraceId = TraceId.NewId();
                 traceHeader.ParentId = null;
@@ -199,7 +187,6 @@ namespace Amazon.XRay.Recorder.Core
             {
                 if (IsTracingDisabled())
                 {
-                    _logger.DebugFormat("X-Ray tracing is disabled, do not end subsegment");
                     return;
                 }
 

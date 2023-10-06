@@ -36,7 +36,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
     {
         private const string DefaultSamplingConfigurationResourceName = "Amazon.XRay.Recorder.Core.Sampling.Local.DefaultSamplingRule.json";
         private int[] SupportedSamplingConfigurationVersion = {1,2};
-        private static readonly Logger _logger = Logger.GetLogger(typeof(LocalizedSamplingStrategy));
         private SamplingRule _defaultRule;
 
         /// <summary>
@@ -55,12 +54,10 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
         {
             if (string.IsNullOrEmpty(path))
             {
-                _logger.DebugFormat("Initializing with default sampling rules.");
                 InitWithDefaultSamplingRules();
             }
             else
             {
-                _logger.DebugFormat("Initializing with custom sampling configuration : {0}", path);
                 using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
                     Init(stream);
@@ -123,11 +120,9 @@ namespace Amazon.XRay.Recorder.Core.Sampling.Local
 
             if (firstMatchRule == null)
             {
-                _logger.DebugFormat("Can't match a rule for host = {0}, path = {1}, method = {2}", host, path, method);
                 return ApplyRule(DefaultRule);
             }
 
-            _logger.DebugFormat("Found a matching rule : ({0}) for host = {1}, path = {2}, method = {3}", firstMatchRule.ToString(), host, path, method);
             return ApplyRule(firstMatchRule);
         }
 

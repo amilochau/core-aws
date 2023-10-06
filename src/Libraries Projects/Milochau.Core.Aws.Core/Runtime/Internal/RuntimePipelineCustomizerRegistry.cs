@@ -17,7 +17,6 @@ namespace Amazon.Runtime.Internal
 
         }
 
-        Logger _logger = Logger.GetLogger(typeof(RuntimePipelineCustomizerRegistry));
         ReaderWriterLockSlim _rwlock = new ReaderWriterLockSlim();
 
         // List is used instead of a dictionary to maintain order
@@ -37,11 +36,9 @@ namespace Amazon.Runtime.Internal
                 // to a project and they both one to turn on a third party customizer
                 if (_customizers.FirstOrDefault(x => string.Equals(x.UniqueName, customizer.UniqueName)) != null)
                 {
-                    _logger.InfoFormat("Skipping registration because runtime pipeline customizer {0} already registered", customizer.UniqueName);
                     return;
                 }
 
-                _logger.InfoFormat("Registering runtime pipeline customizer {0}", customizer.UniqueName);
                 _customizers.Add(customizer);
             }
             finally
@@ -62,7 +59,6 @@ namespace Amazon.Runtime.Internal
             {
                 foreach (var customizer in _customizers)
                 {
-                    _logger.InfoFormat("Applying runtime pipeline customization {0}", customizer.UniqueName);
                     customizer.Customize(type, pipeline);
                 }
             }

@@ -39,7 +39,6 @@ namespace Amazon.Runtime
         int EndpointDiscoveryRetries { get; set; }
 
         System.Threading.CancellationToken CancellationToken { get; }
-        IServiceMetadata ServiceMetaData { get; }
 
         bool IsLastExceptionRetryable { get; set; }
 
@@ -63,7 +62,6 @@ namespace Amazon.Runtime.Internal
 {
     public class RequestContext : IRequestContext
     {
-        private IServiceMetadata _serviceMetadata;
         AbstractAWSSigner clientSigner;
 
         public RequestContext(AbstractAWSSigner clientSigner)
@@ -104,18 +102,6 @@ namespace Amazon.Runtime.Internal
         public string RequestName
         {
             get { return this.OriginalRequest.GetType().Name; }
-        }
-
-        public IServiceMetadata ServiceMetaData
-        {
-            get
-            {
-                return _serviceMetadata;
-            }
-            internal set
-            {
-                _serviceMetadata = value;
-            }
         }
 
         /// <summary>

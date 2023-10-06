@@ -161,8 +161,6 @@ namespace Amazon.Runtime
                 if (!string.IsNullOrEmpty(value?.SystemName) &&
                     (value.SystemName.Contains("fips-") || value.SystemName.Contains("-fips")))
                 {
-                    Logger.GetLogger(GetType()).InfoFormat($"FIPS Pseudo Region support is deprecated. Will attempt to convert {value.SystemName}.");
-
                     this.UseFIPSEndpoint = true;
                     this.regionEndpoint = RegionEndpoint.GetBySystemName(value.SystemName.Replace("fips-", "").Replace("-fips", ""));
                     this.RegionEndpoint.OriginalSystemName = value.SystemName;

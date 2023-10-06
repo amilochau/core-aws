@@ -46,13 +46,11 @@ namespace Amazon.Runtime.Internal
         /// Constructor for ErrorHandler.
         /// </summary>
         /// <param name="logger">an ILogger instance.</param>
-        public ErrorHandler(ILogger logger)
+        public ErrorHandler()
         {
-            this.Logger = logger;
-
             _exceptionHandlers = new Dictionary<Type, IExceptionHandler>
             {
-                {typeof(HttpErrorResponseException), new HttpErrorResponseExceptionHandler(this.Logger)}
+                {typeof(HttpErrorResponseException), new HttpErrorResponseExceptionHandler()}
             };
         }
 
@@ -119,9 +117,6 @@ namespace Amazon.Runtime.Internal
         /// </returns>
         private async System.Threading.Tasks.Task<bool> ProcessExceptionAsync(IExecutionContext executionContext, Exception exception)
         {
-            // Log the exception
-            this.Logger.Error(exception, "An exception of type {0} was handled in ErrorHandler.", exception.GetType().Name);
-
             // Find the matching handler which can process the exception
             // Start by checking if there is a matching handler for the specific exception type,
             // if not check for handlers for it's base type till we find a match.

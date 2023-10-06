@@ -28,7 +28,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary>
     public class DefaultSamplingStrategy : ISamplingStrategy
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(DefaultSamplingStrategy));
         private ISamplingStrategy _localFallbackRules;
         private RuleCache _ruleCache;
         private RulePoller _rulePoller;
@@ -113,12 +112,10 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             SamplingRule sampleRule = _ruleCache.GetMatchedRule(input,time);
             if (sampleRule != null)
             {
-                _logger.DebugFormat("Rule {0} is selected to make a sampling decision.", sampleRule.RuleName);
                 return DefaultSamplingStrategy.ProcessMatchedRule(sampleRule, time);
             }
             else
             {
-                _logger.InfoFormat("No effective centralized sampling rule match. Fallback to local rules.");
                 return _localFallbackRules.ShouldTrace(input);
             }
         }

@@ -211,9 +211,8 @@ namespace Amazon.Runtime
                 // Disable automatic decompression when Content-Encoding header is present
                 httpMessageHandler.AutomaticDecompression = DecompressionMethods.None;
             }
-            catch (PlatformNotSupportedException pns)
+            catch (PlatformNotSupportedException)
             {
-                Logger.GetLogger(typeof(HttpRequestMessageFactory)).Debug(pns, $"The current runtime does not support modifying the configuration of HttpClient.");
             }
 
             try
@@ -223,9 +222,8 @@ namespace Amazon.Runtime
                     httpMessageHandler.Proxy.Credentials = clientConfig.ProxyCredentials;
                 }
             }
-            catch (PlatformNotSupportedException pns)
+            catch (PlatformNotSupportedException)
             {
-                Logger.GetLogger(typeof(HttpRequestMessageFactory)).Debug(pns, $"The current runtime does not support modifying proxy settings of HttpClient.");
             }
 
             var httpClient = new HttpClient(httpMessageHandler);

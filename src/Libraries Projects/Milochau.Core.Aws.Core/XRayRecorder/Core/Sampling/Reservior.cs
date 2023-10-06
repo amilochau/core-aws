@@ -30,7 +30,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
         private int _borrowedThisSec;
         private readonly int _defaultInterval = 10; // 10 seconds
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-        private static readonly Logger _logger = Logger.GetLogger(typeof(Reservior));
 
         public TimeStamp TTL { get; set; }
         public int? Quota { get; set; }

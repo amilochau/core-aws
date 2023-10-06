@@ -29,7 +29,6 @@ namespace Amazon.XRay.Recorder.Core.Sampling
     /// </summary>
     public class TargetPoller
     {
-        private static readonly Logger _logger = Logger.GetLogger(typeof(TargetPoller));
         private RuleCache _ruleCache;
         private RulePoller _rulePoller;
         private IConnector _connector;
@@ -61,9 +60,8 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             {
                 await RefreshTargets();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Error(e, "Encountered exception while polling targets");
             }
             finally
             {
@@ -76,16 +74,13 @@ namespace Amazon.XRay.Recorder.Core.Sampling
             List<SamplingRule> rules = GetCandidates();
             if(rules == null || rules.Count == 0)
             {
-                _logger.DebugFormat("There is no sampling rule statistics to report, skipping.");
                 return;
             }
-            _logger.DebugFormat("Reporting rule statistics to get new quota.");
             GetSamplingTargetsResponse response = await _connector.GetSamplingTargets(rules);
             _ruleCache.LoadTargets(response.Targets);
 
             if (response.RuleFreshness.IsGreaterThan(_ruleCache.LastUpdated))
             {
-                _logger.InfoFormat("Performing out-of-band sampling rule polling to fetch updated rules.");
                 _rulePoller.WakeUp();
             }
         }

@@ -30,7 +30,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
     public static class IPEndPointExtension
     {
         private const string Ipv4Address = @"^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d{1,5}$";
-        private static readonly Logger _logger = Logger.GetLogger(typeof(IPEndPointExtension));
         private const char _addressDelimiter = ' '; // UDP and TCP address 
         private const char _addressPortDelimiter = ':';
         private const string _udpKey = "udp";
@@ -48,9 +47,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
                 // Validate basic format of IPv4 address
                 return Regex.IsMatch(input, Ipv4Address, RegexOptions.None, TimeSpan.FromMinutes(1));
             }
-            catch (RegexMatchTimeoutException e)
+            catch (RegexMatchTimeoutException)
             {
-                _logger.Error(e, "Failed to determine if IP because of match timeout. ({0})", input);
                 return false;
             }
         }
@@ -68,20 +66,17 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             string[] ep = input.Split(':');
             if (ep.Length != 2)
             {
-                _logger.InfoFormat("Failed to parse IPEndpoint because input has not exactly two parts splitting by ':'. ({0})", input);
                 return false;
             }
 
             // Validate IP address is in valid range
             if (!IPAddress.TryParse(ep[0], out IPAddress ip))
             {
-                _logger.InfoFormat("Failed to parse IPEndPoint because ip address is invalid. ({0})", input);
                 return false;
             }
 
             if (!int.TryParse(ep[1], NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int port))
             {
-                _logger.InfoFormat("Failed to parse IPEndPoint because port is invalid. ({0})", input);
                 return false;
             }
 
@@ -91,9 +86,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
                 endPoint = new IPEndPoint(ip, port);
                 return true;
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
-                _logger.Error(e, "Failed to parse IPEndPoint because argument to IPEndPoint is invalid. ({0}", input);
                 return false;
             }
         }
@@ -110,19 +104,16 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             var entries = input.Split(':');
             if (entries.Length != 2)
             {
-                _logger.InfoFormat("Failed to parse HostEndPoint because input has not exactly two parts splitting by ':'. ({0})", input);
                 hostEndpoint = null;
                 return false;
             }
             if (!int.TryParse(entries[1], out var port))
             {
-                _logger.InfoFormat("Failed to parse HostEndPoint because port is invalid. ({0})", input);
                 hostEndpoint = null;
                 return false;
             }
             if (port < 0 || 65535 < port)
             {
-                _logger.InfoFormat("Failed to parse HostEndPoint because port is out of range. ({0})", input);
                 hostEndpoint = null;
                 return false;
             }
@@ -133,7 +124,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
              */
             
             hostEndpoint = new HostEndPoint(entries[0], port);
-            _logger.InfoFormat("Using custom daemon address: {0}:{1}", hostEndpoint.Host, hostEndpoint.Port);
             return true;
         }
 
@@ -148,7 +138,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             endpoint = null;
             if (IsIPAddress(input))
             {
-                _logger.DebugFormat("Determined that {0} is an IP.", input);
                 if (TryParse(input, out IPEndPoint ipEndPoint))
                 {
                     endpoint = EndPoint.Of(ipEndPoint);
@@ -157,7 +146,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             }
             else
             {
-                _logger.DebugFormat("Determined that {0} is not an IP address, will try to parse it as a hostname.", input);
                 if (TryParse(input, out HostEndPoint hostEndPoint))
                 {
                     endpoint = EndPoint.Of(hostEndPoint);
@@ -188,9 +176,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
               string[] ep = daemonAddress.Split(_addressDelimiter);
               return TryParseDaemonAddress(ep, out daemonEndPoint);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Error(e, "Invalid daemon address. ({0})", daemonAddress);
                 return false;
             }
         }
@@ -218,7 +205,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             {
                 endPoint._udpEndpoint = udpEndpoint;
                 endPoint._tcpEndpoint = udpEndpoint;
-                _logger.InfoFormat("Using custom daemon address for UDP and TCP: {0}:{1}", endPoint.UDPEndpoint.Address.ToString(), endPoint.UDPEndpoint.Port);
                 return true;
             }
             else
@@ -241,7 +227,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             {
                 endPoint._udpEndpoint = udpEndpoint;
                 endPoint._tcpEndpoint = tcpEndpoint;
-                _logger.InfoFormat("Using custom daemon address for UDP {0}:{1} and TCP {2}:{3}", endPoint.UDPEndpoint.Address.ToString(), endPoint.UDPEndpoint.Port, endPoint.TCPEndpoint.Address.ToString(), endPoint.TCPEndpoint.Port);
                 return true;
             }
 

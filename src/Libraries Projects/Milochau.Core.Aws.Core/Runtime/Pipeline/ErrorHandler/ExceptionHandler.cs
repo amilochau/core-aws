@@ -24,13 +24,8 @@ namespace Amazon.Runtime.Internal
     /// <typeparam name="T">The exception type.</typeparam>
     public abstract class ExceptionHandler<T> : IExceptionHandler<T> where T : Exception
     {
-        private ILogger _logger;
-
-        protected ILogger Logger { get { return _logger; } }
-
-        protected ExceptionHandler(ILogger logger)
+        protected ExceptionHandler()
         {
-            _logger = logger;
         }
 
         public bool Handle(IExecutionContext executionContext, Exception exception)

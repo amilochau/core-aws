@@ -64,12 +64,10 @@ namespace Amazon.Runtime.Internal
             var unmarshaller = requestContext.Unmarshaller;
             try
             {
-                var readEntireResponse = _supportsResponseLogging && AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
-
                 var responseStream = await responseContext.HttpResponse.
                     ResponseBody.OpenResponseAsync().ConfigureAwait(false);
                 var context = unmarshaller.CreateContext(responseContext.HttpResponse,
-                    readEntireResponse,
+                    false,
                     responseStream,
                     false,
                     requestContext);
@@ -87,32 +85,12 @@ namespace Amazon.Runtime.Internal
         private AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context,
             IRequestContext requestContext)
         {
-            try
-            {
-                var unmarshaller = requestContext.Unmarshaller;
-                AmazonWebServiceResponse response = null;
-                response = unmarshaller.UnmarshallResponse(context);
+            var unmarshaller = requestContext.Unmarshaller;
+            AmazonWebServiceResponse response = unmarshaller.UnmarshallResponse(context);
 
-                context.ValidateCRC32IfAvailable();
-                context.ValidateFlexibleCheckumsIfAvailable(response.ResponseMetadata);
-                return response;
-            }
-            finally
-            {
-                var logResponseBody = ShouldLogResponseBody(_supportsResponseLogging, requestContext);
-
-                if (logResponseBody)
-                {
-                    this.Logger.DebugFormat("Received response (truncated to {0} bytes): [{1}]",
-                        AWSConfigs.LoggingConfig.LogResponsesSizeLimit,
-                        context.ResponseBody);
-                }
-            }
-        }
-
-        private static bool ShouldLogResponseBody(bool supportsResponseLogging, IRequestContext requestContext)
-        {
-            return supportsResponseLogging && AWSConfigs.LoggingConfig.LogResponses == ResponseLoggingOption.Always;
+            context.ValidateCRC32IfAvailable();
+            context.ValidateFlexibleCheckumsIfAvailable(response.ResponseMetadata);
+            return response;
         }
     }
 }

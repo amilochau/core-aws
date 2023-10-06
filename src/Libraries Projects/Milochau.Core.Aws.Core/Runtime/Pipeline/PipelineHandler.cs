@@ -25,12 +25,6 @@ namespace Amazon.Runtime.Internal
     /// </summary>    
     public abstract partial class PipelineHandler : IPipelineHandler
     {
-
-        /// <summary>
-        /// The logger used to log messages.
-        /// </summary>
-        public virtual ILogger Logger { get; set; }
-
         /// <summary>
         /// The inner handler which is called after the current 
         /// handler completes it's processing.
