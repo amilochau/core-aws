@@ -77,7 +77,6 @@ namespace Amazon.SimpleEmailV2
         /// <param name="pipeline">Runtime pipeline for the current client.</param>
         protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
         {
-            pipeline.RemoveHandler<Amazon.Runtime.Internal.EndpointResolver>();
             pipeline.AddHandlerAfter<Amazon.Runtime.Internal.Marshaller>(new AmazonSimpleEmailServiceV2EndpointResolver());
         }
 

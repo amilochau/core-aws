@@ -36,7 +36,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// version of the message, or both.
         /// </para>
         /// </summary>
-        [AWSProperty(Required=true)]
         public Body Body
         {
             get { return this._body; }
@@ -57,7 +56,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// syntax, as described in <a href="https://tools.ietf.org/html/rfc2047">RFC 2047</a>.
         /// </para>
         /// </summary>
-        [AWSProperty(Required=true)]
         public Content Subject
         {
             get { return this._subject; }

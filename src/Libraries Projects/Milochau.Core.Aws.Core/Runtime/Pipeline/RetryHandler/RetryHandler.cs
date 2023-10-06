@@ -106,14 +106,6 @@ namespace Amazon.Runtime.Internal
                 var originalStream = requestContext.Request.ContentStream;
                 var seekableStream = originalStream;
 
-                // If the stream is wrapped in a CompressionWrapperStream, reset the CompressionWrapperStream
-                var compressionWrapperStream = originalStream as CompressionWrapperStream;
-                if (compressionWrapperStream != null)
-                {
-                    compressionWrapperStream.Reset();
-                    seekableStream = compressionWrapperStream.GetSeekableBaseStream();
-                }
-
                 // If the stream is wrapped in a HashStream, reset the HashStream
                 var hashStream = originalStream as HashStream;
                 if (hashStream != null)

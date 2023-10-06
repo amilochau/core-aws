@@ -65,7 +65,6 @@ namespace Amazon.Runtime.Internal
             this.serviceName = serviceName;
             this.originalRequest = request;
             this.requestName = this.originalRequest.GetType().Name;
-            this.SignatureVersion = ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)this.originalRequest).SignatureVersion;
             this.HostPrefix = string.Empty;
 
             parametersCollection = new ParameterCollection();
@@ -351,13 +350,6 @@ namespace Amazon.Runtime.Internal
             set;
         }
 
-        /// <summary>
-        /// If using AWS4 signing protocol, contains the resultant parts of the
-        /// signature that we may need to make use of if we elect to do a chunked
-        /// encoding upload.
-        /// </summary>
-        public AWS4SigningResult AWS4SignerResult { get; set; }
-
         /// <summary>      
         /// <para><b>WARNING: Setting DisablePayloadSigning to true disables the SigV4 payload signing 
         /// data integrity check on this request.</b></para>  
@@ -394,11 +386,6 @@ namespace Amazon.Runtime.Internal
         public bool UseDoubleEncoding { get; set; } = true;
 
         /// <summary>
-        /// Specifies which signature version shall be used for the current request.
-        /// </summary>
-        public SignatureVersion SignatureVersion { get; set; }
-
-        /// <summary>
         /// The authentication region to use for the request.
         /// Set from Config.AuthenticationRegion.
         /// </summary>
@@ -426,11 +413,6 @@ namespace Amazon.Runtime.Internal
         /// after this request's content.
         /// </summary>
         public IDictionary<string, string> TrailingHeaders => this.trailingHeaders;
-
-        /// <summary>
-        /// The selected compression algorithm to be used to compress the payload of the request.
-        /// </summary>
-        public CompressionEncodingAlgorithm CompressionAlgorithm { get; set; }
 
         /// <summary>
         /// Checks if the request stream can be rewinded.

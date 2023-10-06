@@ -57,7 +57,6 @@ namespace Amazon
         /// </summary>
         /// <param name="regionEndpoint">The region endpoint to find the possible override for</param>
         /// <returns></returns>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
         public static RegionEndpoint GetRegionEndpointOverride(RegionEndpoint regionEndpoint)
         {
             try
@@ -137,9 +136,6 @@ namespace Amazon
             private set;
         }
 
-        [Obsolete("It should not be necessary to use this property.  To support upgrading to Endpoint Variants, " +
-                  "ClientConfig will manipulate the assigned RegionEndpoint.  To support the Polly PreSigner, it's still necessary" +
-                  "to check the OriginalSystemName to determine if a PseudoRegion was assigned.",error: false)]
         public string OriginalSystemName
         {
             get;

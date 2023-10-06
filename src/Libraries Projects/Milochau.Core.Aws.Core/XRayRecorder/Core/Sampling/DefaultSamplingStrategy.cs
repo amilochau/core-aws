@@ -45,6 +45,17 @@ namespace Amazon.XRay.Recorder.Core.Sampling
         public XRayConfig XRayConfig = null;
 
         /// <summary>
+        /// Instance of <see cref="DefaultSamplingStrategy"/>.
+        /// </summary>
+        public DefaultSamplingStrategy()
+        {
+            _localFallbackRules = new LocalizedSamplingStrategy();
+            _ruleCache = new RuleCache();
+            _rulePoller = new RulePoller(_ruleCache);
+            _targetPoller = new TargetPoller(_ruleCache, _rulePoller);
+        }
+
+        /// <summary>
         /// Start rule poller and target poller.
         /// </summary>
         private void Start()

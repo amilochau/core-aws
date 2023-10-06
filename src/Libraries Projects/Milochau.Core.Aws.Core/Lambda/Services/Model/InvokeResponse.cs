@@ -41,7 +41,6 @@ namespace Amazon.Lambda.Model
         /// this indicates which version the alias resolved to.
         /// </para>
         /// </summary>
-        [AWSProperty(Min=1, Max=1024)]
         public string ExecutedVersion
         {
             get { return this._executedVersion; }
@@ -97,7 +96,6 @@ namespace Amazon.Lambda.Model
         /// The response from the function, or an error object.
         /// </para>
         /// </summary>
-        [AWSProperty(Sensitive=true)]
         public MemoryStream Payload
         {
             get { return this._payload; }

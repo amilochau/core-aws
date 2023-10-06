@@ -13,7 +13,6 @@
  * permissions and limitations under the License.
  */
 using System;
-using System.Net;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
@@ -51,7 +50,6 @@ namespace Amazon.Runtime
         /// </summary>
         string AuthenticationServiceName { get; }
 
-
         /// <summary>
         /// Gets the UserAgent property.
         /// </summary>
@@ -87,12 +85,5 @@ namespace Amazon.Runtime
         /// for the configured region.
         /// </summary>
         bool UseFIPSEndpoint { get; }
-
-        /// <summary>
-        /// Using either the RegionEndpoint or the ServiceURL determine what the URL to the service is.
-        /// </summary>
-        /// <returns>The URL to the service.</returns>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        string DetermineServiceURL();
     }
 }

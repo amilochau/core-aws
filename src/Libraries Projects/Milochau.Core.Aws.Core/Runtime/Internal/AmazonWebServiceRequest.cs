@@ -20,52 +20,8 @@ using Amazon.Runtime.Internal.Auth;
 
 namespace Amazon.Runtime
 {
-    public abstract partial class AmazonWebServiceRequest : IAmazonWebServiceRequest
+    public abstract partial class AmazonWebServiceRequest
     {
-        /// <summary>
-        /// Specifies which signature version will be used for the current request.
-        /// </summary>
-        SignatureVersion IAmazonWebServiceRequest.SignatureVersion
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or Sets a value indicating if "Expect: 100-continue" HTTP header will be 
-        /// sent by the client for this request. The default value is false.
-        /// </summary>
-        protected virtual bool Expect100Continue
-        {
-            get { return false; }
-        }
-
-        internal bool GetExpect100Continue()
-        {
-            return this.Expect100Continue;
-        }
-
-        /// <summary>
-        /// Gets the signer to use for this request.
-        /// A null return value indicates to use the configured
-        /// signer for the service that this request is part of.
-        /// </summary>
-        /// <returns>A signer for this request, or null.</returns>
-        protected virtual AbstractAWSSigner CreateSigner()
-        {
-            return null;
-        }
-
-        internal AbstractAWSSigner GetSigner()
-        {
-            return CreateSigner();
-        }
-
-        /// <summary>
-        /// Checksum validation behavior for validating the integrity of this request's response
-        /// </summary>
-        protected internal virtual CoreChecksumResponseBehavior CoreChecksumMode => CoreChecksumResponseBehavior.DISABLED;
-
         /// <summary>
         /// Checksum algorithms that are supported for validating the integrity of this request's response
         /// </summary>

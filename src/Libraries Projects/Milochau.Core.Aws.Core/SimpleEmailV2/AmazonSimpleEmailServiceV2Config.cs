@@ -39,7 +39,7 @@ namespace Amazon.SimpleEmailV2
         /// Default constructor
         /// </summary>
         public AmazonSimpleEmailServiceV2Config()
-            : base(AmazonSimpleEmailServiceV2DefaultConfiguration.Standard)
+            : base()
         {
             this.AuthenticationServiceName = "ses";
             this.EndpointProvider = new AmazonSimpleEmailServiceV2EndpointProvider();

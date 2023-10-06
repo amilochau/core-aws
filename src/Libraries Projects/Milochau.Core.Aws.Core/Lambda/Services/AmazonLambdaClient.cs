@@ -163,7 +163,6 @@ namespace Amazon.Lambda
         /// <param name="pipeline">Runtime pipeline for the current client.</param>
         protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
         {
-            pipeline.RemoveHandler<Amazon.Runtime.Internal.EndpointResolver>();
             pipeline.AddHandlerAfter<Amazon.Runtime.Internal.Marshaller>(new AmazonLambdaEndpointResolver());
         }
 

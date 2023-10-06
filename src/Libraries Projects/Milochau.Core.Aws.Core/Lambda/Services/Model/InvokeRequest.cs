@@ -83,7 +83,6 @@ namespace Amazon.Lambda.Model
         private string _clientContextBase64;
         private string _functionName;
         private InvocationType _invocationType;
-        private LogType _logType;
         private MemoryStream _payloadStream;
         private string _qualifier;
 
@@ -135,7 +134,6 @@ namespace Amazon.Lambda.Model
         /// to 64 characters in length.
         /// </para>
         /// </summary>
-        [AWSProperty(Required=true, Min=1, Max=170)]
         public string FunctionName
         {
             get { return this._functionName; }
@@ -185,25 +183,6 @@ namespace Amazon.Lambda.Model
         }
 
         /// <summary>
-        /// Gets and sets the property LogType. 
-        /// <para>
-        /// Set to <code>Tail</code> to include the execution log in the response. Applies to
-        /// synchronously invoked functions only.
-        /// </para>
-        /// </summary>
-        public LogType LogType
-        {
-            get { return this._logType; }
-            set { this._logType = value; }
-        }
-
-        // Check to see if LogType property is set
-        internal bool IsSetLogType()
-        {
-            return this._logType != null;
-        }
-
-        /// <summary>
         /// Gets and sets the property PayloadStream. 
         /// <para>
         /// The JSON that you want to provide to your Lambda function as input.
@@ -214,17 +193,10 @@ namespace Amazon.Lambda.Model
         /// You can also specify a file path. For example, <code>--payload file://payload.json</code>.
         /// </para>
         /// </summary>
-        [AWSProperty(Sensitive=true)]
         public MemoryStream PayloadStream
         {
             get { return this._payloadStream; }
             set { this._payloadStream = value; }
-        }
-
-        // Check to see if PayloadStream property is set
-        internal bool IsSetPayloadStream()
-        {
-            return this._payloadStream != null;
         }
 
         /// <summary>
@@ -233,7 +205,6 @@ namespace Amazon.Lambda.Model
         /// Specify a version or alias to invoke a published version of the function.
         /// </para>
         /// </summary>
-        [AWSProperty(Min=1, Max=128)]
         public string Qualifier
         {
             get { return this._qualifier; }
@@ -245,6 +216,5 @@ namespace Amazon.Lambda.Model
         {
             return this._qualifier != null;
         }
-
     }
 }

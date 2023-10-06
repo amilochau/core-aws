@@ -58,7 +58,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// The corresponding value defines the value to use for that variable.
         /// </para>
         /// </summary>
-        [AWSProperty(Max=262144)]
         public string TemplateData
         {
             get { return this._templateData; }
@@ -79,7 +78,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// 
         /// </para>
         /// </summary>
-        [AWSProperty(Min=1)]
         public string TemplateName
         {
             get { return this._templateName; }
@@ -91,6 +89,5 @@ namespace Amazon.SimpleEmailV2.Model
         {
             return this._templateName != null;
         }
-
     }
 }

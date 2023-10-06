@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Linq;
-using System.Threading;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 
@@ -33,104 +32,6 @@ namespace Amazon.Runtime
         protected internal AWSCredentials Credentials { get; private set; }
         public IClientConfig Config => _config;
         private readonly ClientConfig _config;
-
-        #region Events
-
-
-        private PreRequestEventHandler mBeforeMarshallingEvent;
-
-        /// <summary>
-        /// Occurs before a request is marshalled.
-        /// </summary>
-        internal event PreRequestEventHandler BeforeMarshallingEvent
-        {
-            add
-            {
-                lock (this)
-                {
-                    mBeforeMarshallingEvent += value;
-                }
-            }
-            remove
-            {
-                lock (this)
-                {
-                    mBeforeMarshallingEvent -= value;
-                }
-            }
-        }
-
-
-        private RequestEventHandler mBeforeRequestEvent;
-
-        /// <summary>
-        /// Occurs before a request is issued against the service.
-        /// </summary>
-        public event RequestEventHandler BeforeRequestEvent
-        {
-            add
-            {
-                lock (this)
-                {
-                    mBeforeRequestEvent += value;
-                }
-            }
-            remove
-            {
-                lock (this)
-                {
-                    mBeforeRequestEvent -= value;
-                }
-            }
-        }
-
-        private ResponseEventHandler mAfterResponseEvent;
-
-        /// <summary>
-        /// Occurs after a response is received from the service.
-        /// </summary>
-        public event ResponseEventHandler AfterResponseEvent
-        {
-            add
-            {
-                lock (this)
-                {
-                    mAfterResponseEvent += value;
-                }
-            }
-            remove
-            {
-                lock (this)
-                {
-                    mAfterResponseEvent -= value;
-                }
-            }
-        }
-
-        private ExceptionEventHandler mExceptionEvent;
-
-        /// <summary>
-        /// Occurs after an exception is encountered.
-        /// </summary>
-        public event ExceptionEventHandler ExceptionEvent
-        {
-            add
-            {
-                lock (this)
-                {
-                    mExceptionEvent += value;
-                }
-            }
-            remove
-            {
-                lock (this)
-                {
-                    mExceptionEvent -= value;
-                }
-            }
-        }
-
-        #endregion
 
         #region Constructors
 
@@ -183,55 +84,6 @@ namespace Amazon.Runtime
 
         #endregion
 
-        #region Process Handlers
-
-        protected void ProcessPreRequestHandlers(IExecutionContext executionContext)
-        {
-            //if (request == null)
-            //    return;
-            if (mBeforeMarshallingEvent == null)
-                return;
-
-            PreRequestEventArgs args = PreRequestEventArgs.Create(executionContext.RequestContext.OriginalRequest);
-            mBeforeMarshallingEvent(this, args);
-        }
-
-        protected void ProcessRequestHandlers(IExecutionContext executionContext)
-        {
-            var request = executionContext.RequestContext.Request;
-            WebServiceRequestEventArgs args = WebServiceRequestEventArgs.Create(request);
-
-            if (request.OriginalRequest != null)
-                request.OriginalRequest.FireBeforeRequestEvent(this, args);
-
-            if (mBeforeRequestEvent != null)
-                mBeforeRequestEvent(this, args);
-        }
-
-        protected void ProcessResponseHandlers(IExecutionContext executionContext)
-        {
-            if (mAfterResponseEvent == null)
-                return;
-
-            WebServiceResponseEventArgs args = WebServiceResponseEventArgs.Create(
-                executionContext.ResponseContext.Response,
-                executionContext.RequestContext.Request,
-                executionContext.ResponseContext.HttpResponse);
-
-            mAfterResponseEvent(this, args);
-        }
-
-        protected virtual void ProcessExceptionHandlers(IExecutionContext executionContext, Exception exception)
-        {
-            if (mExceptionEvent == null)
-                return;
-
-            WebServiceExceptionEventArgs args = WebServiceExceptionEventArgs.Create(exception, executionContext.RequestContext.Request);
-            mExceptionEvent(this, args);
-        }
-
-        #endregion
-
         #region Dispose methods
 
         public void Dispose()
@@ -269,16 +121,9 @@ namespace Amazon.Runtime
             var httpRequestFactory = new HttpRequestMessageFactory();
             var httpHandler = new HttpHandler<System.Net.Http.HttpContent>(httpRequestFactory, this);
             var preMarshallHandler = new CallbackHandler();
-            preMarshallHandler.OnPreInvoke = this.ProcessPreRequestHandlers;
-
             var postMarshallHandler = new CallbackHandler();
-            postMarshallHandler.OnPreInvoke = this.ProcessRequestHandlers;
-
             var postUnmarshallHandler = new CallbackHandler();
-            postUnmarshallHandler.OnPostInvoke = this.ProcessResponseHandlers;
-
             var errorCallbackHandler = new ErrorCallbackHandler();
-            errorCallbackHandler.OnError = this.ProcessExceptionHandlers;
 
             //Determine which retry policy to use based on the retry mode
             RetryPolicy retryPolicy = new StandardRetryPolicy(Config);
@@ -297,10 +142,7 @@ namespace Amazon.Runtime
                     // CredentialsRetriever must come after RetryHandler because of any credential related changes.
                     new CredentialsRetriever(Credentials),
                     new RetryHandler(retryPolicy),
-                    new CompressionHandler(),
                     postMarshallHandler,
-                    // EndpointResolver must come after CredentialsRetriever in an upcoming endpoint project.
-                    new EndpointResolver(),
                     new Marshaller(),
                     preMarshallHandler,
                     errorCallbackHandler,

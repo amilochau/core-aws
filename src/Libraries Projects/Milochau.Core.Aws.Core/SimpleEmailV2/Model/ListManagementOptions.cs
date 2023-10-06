@@ -35,7 +35,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// The name of the contact list.
         /// </para>
         /// </summary>
-        [AWSProperty(Required=true)]
         public string ContactListName
         {
             get { return this._contactListName; }

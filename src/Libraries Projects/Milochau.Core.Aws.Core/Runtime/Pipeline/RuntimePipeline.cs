@@ -178,58 +178,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Removes the first occurance of a handler of type T.
-        /// </summary>
-        /// <typeparam name="T">Type of the handler which will be removed.</typeparam>
-        public void RemoveHandler<T>()
-        {
-            ThrowIfDisposed();
-
-            var type = typeof(T);
-
-            IPipelineHandler previous;
-            var current = _handler;
-
-            while (current != null)
-            {
-                if (current.GetType() == type)
-                {
-                    // Cannot remove the handler if it's the only one in the pipeline
-                    if (current == _handler && _handler.InnerHandler == null)
-                    {
-                        throw new InvalidOperationException(
-                            "The pipeline contains a single handler, cannot remove the only handler in the pipeline.");
-                    }
-
-                    // current is the top, point top to current's inner handler
-                    if (current == _handler)                    
-                        _handler = current.InnerHandler;
-                    
-
-                    // Wireup outer handler to current's inner handler
-                    if (current.OuterHandler != null)                    
-                        current.OuterHandler.InnerHandler = current.InnerHandler;
-
-                    // Wireup inner handler to current's outer handler
-                    if (current.InnerHandler != null)
-                        current.InnerHandler.OuterHandler = current.OuterHandler;
-
-                    // Cleanup current
-                    current.InnerHandler = null;
-                    current.OuterHandler = null;
-
-                    return;
-                }
-
-                previous = current;
-                current = current.InnerHandler;
-            }
-
-            throw new InvalidOperationException(
-                string.Format(CultureInfo.InvariantCulture, "Cannot find a handler of type {0}", type.Name));
-        }
-
-        /// <summary>
         /// Inserts the given handler after current handler in the pipeline.
         /// </summary>
         /// <param name="handler">Handler to be inserted in the pipeline.</param>

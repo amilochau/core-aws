@@ -85,7 +85,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// Raw message or a template Message.
         /// </para>
         /// </summary>
-        [AWSProperty(Required=true)]
         public EmailContent Content
         {
             get { return this._content; }

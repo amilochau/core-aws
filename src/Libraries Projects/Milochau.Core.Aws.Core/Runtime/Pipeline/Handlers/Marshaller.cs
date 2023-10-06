@@ -50,7 +50,7 @@ namespace Amazon.Runtime.Internal
             requestContext.Request.AuthenticationRegion = null;
 
             var userAgent = $"{requestContext.ClientConfig.UserAgent} " +
-                $"{(executionContext.RequestContext.IsAsync ? "ClientAsync" : "ClientSync")}{requestContext.OriginalRequest.UserAgentAddition}";
+                $"{(executionContext.RequestContext.IsAsync ? "ClientAsync" : "ClientSync")}";
 
             requestContext.Request.Headers[HeaderKeys.UserAgentHeader] = userAgent;
 

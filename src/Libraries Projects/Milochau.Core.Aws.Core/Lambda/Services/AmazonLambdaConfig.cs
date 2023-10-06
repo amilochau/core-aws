@@ -39,7 +39,7 @@ namespace Amazon.Lambda
         /// Default constructor
         /// </summary>
         public AmazonLambdaConfig()
-            : base(AmazonLambdaDefaultConfiguration.Standard)
+            : base()
         {
             this.AuthenticationServiceName = "lambda";
             this.EndpointProvider = new AmazonLambdaEndpointProvider();

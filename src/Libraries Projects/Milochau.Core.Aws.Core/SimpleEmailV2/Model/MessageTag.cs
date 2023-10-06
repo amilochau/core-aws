@@ -45,7 +45,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        [AWSProperty(Required=true)]
         public string Name
         {
             get { return this._name; }
@@ -74,7 +73,6 @@ namespace Amazon.SimpleEmailV2.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        [AWSProperty(Required=true)]
         public string Value
         {
             get { return this._value; }

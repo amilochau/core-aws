@@ -230,17 +230,6 @@ namespace Amazon.Runtime.Internal
             set;
         }
 
-        /// <summary>
-        /// If using AWS4 signing protocol, contains the resultant parts of the
-        /// signature that we may need to make use of if we elect to do a chunked
-        /// encoding upload.
-        /// </summary>
-        AWS4SigningResult AWS4SignerResult
-        {
-            get;
-            set;
-        }
-
         /// <summary>      
         /// <para><b>WARNING: Setting DisablePayloadSigning to true disables the SigV4 payload signing 
         /// data integrity check on this request.</b></para>  
@@ -275,11 +264,6 @@ namespace Amazon.Runtime.Internal
             get;
             set;
         }
-
-        /// <summary>
-        /// Specifies which signature version shall be used for the current request.
-        /// </summary>
-        SignatureVersion SignatureVersion { get; set; }
 
         /// <summary>
         /// The authentication region to use for the request.
@@ -331,10 +315,5 @@ namespace Amazon.Runtime.Internal
         /// Custom endpoint attributes
         /// </summary>
         IPropertyBag EndpointAttributes { get; set; }
-
-        //// <summary>
-        /// The selected compression algorithm to be used to compress the payload of the request.
-        /// </summary>
-        CompressionEncodingAlgorithm CompressionAlgorithm { get; set; }
     }
 }

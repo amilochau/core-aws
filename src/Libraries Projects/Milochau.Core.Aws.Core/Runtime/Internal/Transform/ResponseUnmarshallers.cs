@@ -32,31 +32,10 @@ namespace Amazon.Runtime.Internal.Transform
                 throw new AmazonServiceException("The Web Response for a successful request is null!");
             }
 
-            UnmarshallerContext context;
-
-            // If the request is using the flexible checksum feature to verify a response checksum,
-            // then both the service package and core will support the ConstructUnmarshallerContext
-            // override with 5 parameters
-            if (requestContext?.OriginalRequest?.CoreChecksumMode != CoreChecksumResponseBehavior.DISABLED)
-            {
-                context = ConstructUnmarshallerContext(stream,
-                ShouldReadEntireResponse(response, readEntireResponse),
-                response,
-                isException,
-                requestContext);
-            }
-            else // Otherwise it's okay to skip passing in requestContext, because 
-            // it's only currently used when validating a response checksum. This will also
-            // preserve existing behavior for a core package version with flexible checksum
-            // support alongside an older service package version.
-            {
-                context = ConstructUnmarshallerContext(stream,
+            return ConstructUnmarshallerContext(stream,
                 ShouldReadEntireResponse(response, readEntireResponse),
                 response,
                 isException);
-            }
-
-            return context;
         }
 
         public virtual bool HasStreamingProperty

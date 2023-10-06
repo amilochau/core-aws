@@ -13,10 +13,8 @@
  * permissions and limitations under the License.
  */
 using System;
-using System.Net;
 using System.Globalization;
 using Amazon.Internal;
-using System.Threading;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
@@ -92,26 +90,6 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// Given this client configuration, return a string form ofthe service endpoint url.
-        /// </summary>
-        [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
-        public virtual string DetermineServiceURL()
-        {
-            return GetUrl(this, RegionEndpoint);
-        }
-
-        internal static string GetUrl(IClientConfig config, RegionEndpoint regionEndpoint)
-        {
-            var endpoint =
-                regionEndpoint.GetEndpointForService(
-                    config.RegionEndpointServiceName,
-                    config.ToGetEndpointForServiceOptions());
-
-            string url = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}{1}", "https://", endpoint.Hostname)).AbsoluteUri;
-            return url;
-        }
-
-        /// <summary>
         /// Gets and sets the AuthenticationServiceName property.
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
@@ -153,22 +131,13 @@ namespace Amazon.Runtime
             set { this.maxRetries = value; }
         }
 
-        protected IDefaultConfiguration DefaultConfiguration { get; private set; }
-
         #region Constructor 
 
-        protected ClientConfig(IDefaultConfiguration defaultConfiguration)
+        protected ClientConfig()
         {
-            DefaultConfiguration = defaultConfiguration;
-
-            Initialize();
         }
 
         #endregion
-
-        protected virtual void Initialize()
-        {
-        }
 
         /// <summary>
         /// Configures the endpoint calculation for a service to go to a dual stack (ipv6 enabled) endpoint

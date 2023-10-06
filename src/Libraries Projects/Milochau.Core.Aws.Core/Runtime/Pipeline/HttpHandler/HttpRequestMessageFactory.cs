@@ -19,10 +19,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 
 namespace Amazon.Runtime
 {
@@ -98,7 +96,7 @@ namespace Amazon.Runtime
             // Configure the Expect 100-continue header
             if (requestContext != null && requestContext.OriginalRequest != null)
             {
-                _request.Headers.ExpectContinue = requestContext.OriginalRequest.GetExpect100Continue();
+                _request.Headers.ExpectContinue = false;
             }
         }
 

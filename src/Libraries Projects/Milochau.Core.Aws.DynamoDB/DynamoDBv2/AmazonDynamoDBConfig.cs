@@ -21,7 +21,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// Default constructor
         /// </summary>
         public AmazonDynamoDBConfig()
-            : base(AmazonDynamoDBDefaultConfiguration.Standard)
+            : base()
         {
             this.AuthenticationServiceName = "dynamodb";
             this.MaxErrorRetry = 10;

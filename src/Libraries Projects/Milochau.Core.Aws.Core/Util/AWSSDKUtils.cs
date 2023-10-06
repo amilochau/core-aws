@@ -539,7 +539,6 @@ namespace Amazon.Util
         /// <param name="data">The string to encode</param>
         /// <param name="path">Whether the string is a URL path or not</param>
         /// <returns>The encoded string with any previously encoded %2F preserved</returns>
-        [Obsolete("This method is not supported in AWSSDK 3.5")]
         public static string ProtectEncodedSlashUrlEncode(string data, bool path)
         {
             if (string.IsNullOrEmpty(data))

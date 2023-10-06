@@ -99,8 +99,6 @@ namespace Amazon.Runtime.Internal
                             {
                                 case "sigv4":
                                     {
-                                        request.SignatureVersion = SignatureVersion.SigV4;
-
                                         var signingRegion = (string)schema["signingRegion"];
                                         if (!string.IsNullOrEmpty(signingRegion))
                                         {
@@ -112,8 +110,6 @@ namespace Amazon.Runtime.Internal
                                     }
                                 case "sigv4a":
                                     {
-                                        request.SignatureVersion = SignatureVersion.SigV4a;
-
                                         var signingRegions = ((List<object>)schema["signingRegionSet"]).OfType<string>().ToArray();
                                         var authenticationRegion = string.Join(",", signingRegions);
                                         if (!string.IsNullOrEmpty(authenticationRegion))

@@ -89,11 +89,7 @@ namespace Amazon.Runtime.Internal
         {
             get
             {
-                var requestSigner = OriginalRequest == null ? null : OriginalRequest.GetSigner();
-                if (requestSigner == null)
-                    return clientSigner;
-                else
-                    return requestSigner;
+                return clientSigner;
             }
         }
 

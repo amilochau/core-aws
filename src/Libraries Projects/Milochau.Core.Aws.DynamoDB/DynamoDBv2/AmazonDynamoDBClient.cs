@@ -33,7 +33,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         /// <param name="pipeline">Runtime pipeline for the current client.</param>
         protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
         {
-            pipeline.RemoveHandler<EndpointResolver>();
             pipeline.AddHandlerAfter<Marshaller>(new AmazonDynamoDBEndpointResolver());
         }
 
