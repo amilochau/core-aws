@@ -13,7 +13,6 @@
 * permissions and limitations under the License.
 */
 
-using Amazon.Util;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -76,10 +75,7 @@ namespace Amazon.Runtime.Internal
         public StandardRetryPolicy(IClientConfig config)
         {
             this.MaxRetries = config.MaxErrorRetry;
-            if (config.ThrottleRetries)
-            {
-                RetryCapacity = CapacityManagerInstance.GetRetryCapacity(GetRetryCapacityKey(config));
-            } 
+            RetryCapacity = CapacityManagerInstance.GetRetryCapacity(GetRetryCapacityKey(config));
         }
 
         /// <summary>
@@ -127,7 +123,7 @@ namespace Amazon.Runtime.Internal
         /// <param name="isThrottlingError">true if the error that will be retried is a throtting error</param>        
         public override bool OnRetry(IExecutionContext executionContext, bool bypassAcquireCapacity, bool isThrottlingError)
         {
-            if (!bypassAcquireCapacity && executionContext.RequestContext.ClientConfig.ThrottleRetries && RetryCapacity != null)
+            if (!bypassAcquireCapacity && RetryCapacity != null)
             {
                 return CapacityManagerInstance.TryAcquireCapacity(RetryCapacity, executionContext.RequestContext.LastCapacityType);
             }
@@ -145,7 +141,7 @@ namespace Amazon.Runtime.Internal
         /// <param name="executionContext">Request context containing the state of the request.</param>
         public override void NotifySuccess(IExecutionContext executionContext)
         {
-            if(executionContext.RequestContext.ClientConfig.ThrottleRetries && RetryCapacity != null)
+            if (RetryCapacity != null)
             {
                 var requestContext = executionContext.RequestContext;
                 CapacityManagerInstance.ReleaseCapacity(requestContext.LastCapacityType, RetryCapacity);

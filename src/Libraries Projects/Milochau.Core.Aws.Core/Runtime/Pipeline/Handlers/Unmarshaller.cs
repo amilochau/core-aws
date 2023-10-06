@@ -61,33 +61,26 @@ namespace Amazon.Runtime.Internal
         {
             var requestContext = executionContext.RequestContext;
             var responseContext = executionContext.ResponseContext;
-
-            using (requestContext.Metrics.StartEvent(Metric.ResponseProcessingTime))
+            var unmarshaller = requestContext.Unmarshaller;
+            try
             {
-                var unmarshaller = requestContext.Unmarshaller;
-                try
-                {
-                    var readEntireResponse = _supportsResponseLogging &&
-                        (requestContext.ClientConfig.LogResponse || requestContext.ClientConfig.ReadEntireResponse
-                        || AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never);
+                var readEntireResponse = _supportsResponseLogging && AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
 
-                    var responseStream = await responseContext.HttpResponse.
-                        ResponseBody.OpenResponseAsync().ConfigureAwait(false);
-                    var context = unmarshaller.CreateContext(responseContext.HttpResponse,
-                        readEntireResponse,
-                        responseStream,
-                        requestContext.Metrics,
-                        false,
-                        requestContext);
+                var responseStream = await responseContext.HttpResponse.
+                    ResponseBody.OpenResponseAsync().ConfigureAwait(false);
+                var context = unmarshaller.CreateContext(responseContext.HttpResponse,
+                    readEntireResponse,
+                    responseStream,
+                    false,
+                    requestContext);
 
-                    var response = UnmarshallResponse(context, requestContext);
-                    responseContext.Response = response;
-                }
-                finally
-                {
-                    if (!unmarshaller.HasStreamingProperty)
-                        responseContext.HttpResponse.ResponseBody.Dispose();
-                }
+                var response = UnmarshallResponse(context, requestContext);
+                responseContext.Response = response;
+            }
+            finally
+            {
+                if (!unmarshaller.HasStreamingProperty)
+                    responseContext.HttpResponse.ResponseBody.Dispose();
             }
         }
 
@@ -98,17 +91,7 @@ namespace Amazon.Runtime.Internal
             {
                 var unmarshaller = requestContext.Unmarshaller;
                 AmazonWebServiceResponse response = null;
-                using (requestContext.Metrics.StartEvent(Metric.ResponseUnmarshallTime))
-                {
-                    response = unmarshaller.UnmarshallResponse(context);
-                }
-
-                requestContext.Metrics.AddProperty(Metric.StatusCode, response.HttpStatusCode);
-                requestContext.Metrics.AddProperty(Metric.BytesProcessed, response.ContentLength);
-                if (response.ResponseMetadata != null)
-                {
-                    requestContext.Metrics.AddProperty(Metric.AWSRequestID, response.ResponseMetadata.RequestId);
-                }
+                response = unmarshaller.UnmarshallResponse(context);
 
                 context.ValidateCRC32IfAvailable();
                 context.ValidateFlexibleCheckumsIfAvailable(response.ResponseMetadata);
@@ -129,8 +112,7 @@ namespace Amazon.Runtime.Internal
 
         private static bool ShouldLogResponseBody(bool supportsResponseLogging, IRequestContext requestContext)
         {
-            return supportsResponseLogging &&
-                (requestContext.ClientConfig.LogResponse || AWSConfigs.LoggingConfig.LogResponses == ResponseLoggingOption.Always);
+            return supportsResponseLogging && AWSConfigs.LoggingConfig.LogResponses == ResponseLoggingOption.Always;
         }
     }
 }

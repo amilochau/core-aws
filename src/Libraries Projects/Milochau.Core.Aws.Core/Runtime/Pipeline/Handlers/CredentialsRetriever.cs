@@ -48,10 +48,7 @@ namespace Amazon.Runtime.Internal
             ImmutableCredentials ic = null;
             if (Credentials != null)
             {
-                using(executionContext.RequestContext.Metrics.StartEvent(Metric.CredentialsRequestTime))
-                {
-                    ic = await Credentials.GetCredentialsAsync().ConfigureAwait(false);
-                }
+                ic = await Credentials.GetCredentialsAsync().ConfigureAwait(false);
             }
 
             executionContext.RequestContext.ImmutableCredentials = ic;

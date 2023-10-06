@@ -106,24 +106,11 @@ namespace Amazon.Util
         /// </summary>
         public int LogResponsesSizeLimit { get; set; }
 
-        /// <summary>
-        /// Whether or not to log SDK metrics.
-        /// </summary>
-        public bool LogMetrics { get; set; }
-
-        public LogMetricsFormatOption LogMetricsFormat { get; set; }
-
-        /// <summary>
-        /// A custom formatter added through Configuration
-        /// </summary>
-        public Amazon.Runtime.IMetricsFormatter LogMetricsCustomFormatter { get; set; }
-
         internal LoggingConfig()
         {
             LogTo = LoggingOptions.None;
             LogResponses = default;
             LogResponsesSizeLimit = DefaultLogResponsesSizeLimit;
-            LogMetrics = false;
         }
     }
 
@@ -131,14 +118,6 @@ namespace Amazon.Util
     {
         internal const string DEFAULT_HOST = "127.0.0.1";
         internal const int DEFAULT_PORT = 31000;
-
-        public string CSMHost { get; set; } = DEFAULT_HOST;
-
-        public int CSMPort { get; set; } = DEFAULT_PORT;
-
-        public string CSMClientId { get; set; }
-
-        public bool? CSMEnabled { get; set; }
     }
     #endregion
 

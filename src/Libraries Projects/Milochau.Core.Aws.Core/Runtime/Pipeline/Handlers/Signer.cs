@@ -55,8 +55,7 @@ namespace Amazon.Runtime.Internal
         /// <returns>A boolean value that indicated if the request should be signed.</returns>
         private static bool ShouldSign(IRequestContext requestContext)
         {
-            return !requestContext.IsSigned ||
-                requestContext.ClientConfig.ResignRetries;
+            return !requestContext.IsSigned;
         }
 
         /// <summary>
@@ -71,32 +70,28 @@ namespace Amazon.Runtime.Internal
             if (immutableCredentials == null && requestContext.Signer.RequiresCredentials)
                 return;
 
-            using (requestContext.Metrics.StartEvent(Metric.RequestSigningTime))
+            if (immutableCredentials?.UseToken == true)
             {
-                if (immutableCredentials?.UseToken == true)
+                ClientProtocol protocol = requestContext.Signer.Protocol;
+                switch (protocol)
                 {
-                    ClientProtocol protocol = requestContext.Signer.Protocol;
-                    switch (protocol)
-                    {
-                        case ClientProtocol.QueryStringProtocol:
-                            requestContext.Request.Parameters["SecurityToken"] = immutableCredentials.Token;
-                            break;
-                        case ClientProtocol.RestProtocol:
-                            requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = immutableCredentials.Token;
-                            break;
-                        default:
-                            throw new InvalidDataException("Cannot determine protocol");
-                    }
+                    case ClientProtocol.QueryStringProtocol:
+                        requestContext.Request.Parameters["SecurityToken"] = immutableCredentials.Token;
+                        break;
+                    case ClientProtocol.RestProtocol:
+                        requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = immutableCredentials.Token;
+                        break;
+                    default:
+                        throw new InvalidDataException("Cannot determine protocol");
                 }
-
-                await requestContext.Signer
-                    .SignAsync(
-                        requestContext.Request, 
-                        requestContext.ClientConfig, 
-                        requestContext.Metrics, 
-                        immutableCredentials)
-                    .ConfigureAwait(false);
             }
+
+            await requestContext.Signer
+                .SignAsync(
+                    requestContext.Request, 
+                    requestContext.ClientConfig, 
+                    immutableCredentials)
+                .ConfigureAwait(false);
         }
     }
 }

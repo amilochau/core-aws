@@ -14,7 +14,6 @@
  */
 
 using Amazon.Runtime;
-using Milochau.Core.Aws.Core.References;
 using System;
 using System.Collections.Generic;
 using System.Linq;

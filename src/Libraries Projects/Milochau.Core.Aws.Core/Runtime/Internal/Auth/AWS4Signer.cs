@@ -110,11 +110,10 @@ namespace Amazon.Runtime.Internal.Auth
         /// </param>
         public override void Sign(IRequest request, 
                                   IClientConfig clientConfig, 
-                                  RequestMetrics metrics, 
                                   string awsAccessKeyId, 
                                   string awsSecretAccessKey)
         {
-            var signingResult = SignRequest(request, clientConfig, metrics, awsAccessKeyId, awsSecretAccessKey);
+            var signingResult = SignRequest(request, clientConfig, awsAccessKeyId, awsSecretAccessKey);
             request.Headers[HeaderKeys.AuthorizationHeader] = signingResult.ForAuthorizationHeader;
         }
 
@@ -140,11 +139,10 @@ namespace Amazon.Runtime.Internal.Auth
         /// The AWS credentials for the account making the service call.
         /// </param>
         public override void Sign(IRequest request, 
-                                  IClientConfig clientConfig, 
-                                  RequestMetrics metrics, 
+                                  IClientConfig clientConfig,
                                   ImmutableCredentials credentials)
         {
-            Sign(request, clientConfig, metrics, credentials.AccessKey, credentials.SecretKey);
+            Sign(request, clientConfig, credentials.AccessKey, credentials.SecretKey);
         }
 
         /// <summary>
@@ -176,7 +174,6 @@ namespace Amazon.Runtime.Internal.Auth
         /// </remarks>
         public AWS4SigningResult SignRequest(IRequest request,
                                              IClientConfig clientConfig,
-                                             RequestMetrics metrics,
                                              string awsAccessKeyId,
                                              string awsSecretAccessKey)
         {
@@ -213,8 +210,6 @@ namespace Amazon.Runtime.Internal.Auth
                                                        bodyHash,
                                                        request.PathResources,
                                                        request.UseDoubleEncoding);
-            if (metrics != null)
-                metrics.AddProperty(Metric.CanonicalRequest, canonicalRequest);
 
             return ComputeSignature(awsAccessKeyId,
                                     awsSecretAccessKey,
@@ -222,8 +217,7 @@ namespace Amazon.Runtime.Internal.Auth
                                     signedAt,
                                     serviceSigningName,
                                     CanonicalizeHeaderNames(sortedHeaders),
-                                    canonicalRequest,
-                                    metrics);
+                                    canonicalRequest);
         }
 
         #region Public Signing Helpers
@@ -327,8 +321,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                          DateTime signedAt,
                                                          string service,
                                                          string signedHeaders,
-                                                         string canonicalRequest,
-                                                         RequestMetrics metrics)
+                                                         string canonicalRequest)
         {
             var dateStamp = FormatDateTime(signedAt, AWSSDKUtils.ISO8601BasicDateFormat);
             var scope = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}/{3}", dateStamp, region, service, Terminator);
@@ -342,9 +335,6 @@ namespace Amazon.Runtime.Internal.Auth
 
             var canonicalRequestHashBytes = ComputeHash(canonicalRequest);
             stringToSignBuilder.Append(AWSSDKUtils.ToHex(canonicalRequestHashBytes, true));
-
-            if (metrics != null)
-                metrics.AddProperty(Metric.StringToSign, stringToSignBuilder);
 
             var key = ComposeSigningKey(awsSecretAccessKey,
                                         region,

@@ -14,7 +14,6 @@
  */
 using System;
 using System.Net;
-using System.Net.Http;
 using Amazon.Runtime.Endpoints;
 
 namespace Amazon.Runtime
@@ -72,15 +71,6 @@ namespace Amazon.Runtime
         IEndpointProvider EndpointProvider { get; }
 
         /// <summary>
-        /// Gets the UseHttp property.
-        /// If this property is set to true, the client attempts
-        /// to use HTTP protocol.
-        /// By default, this property is set to false.
-        /// </summary>
-        bool UseHttp { get; }
-
-
-        /// <summary>
         /// Gets Service Version
         /// </summary>
         string ServiceVersion { get; }
@@ -98,48 +88,6 @@ namespace Amazon.Runtime
         /// </summary>
         string UserAgent { get; }
 
-
-        /// <summary>
-        /// Gets the DisableLogging. If true logging for this client will be disabled.
-        /// </summary>
-        bool DisableLogging { get; }
-
-        /// <summary>
-        /// Flag on whether to log metrics for service calls.
-        /// 
-        /// This can be set in the application's configs, as below:
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSLogMetrics" value"true"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        /// </summary>
-        bool LogMetrics { get; }
-
-        /// <summary>
-        /// Gets the LogResponse property.
-        /// If this property is set to true, the service response
-        /// is read in its entirety and logged.
-        /// </summary>
-        bool LogResponse { get; }
-
-        /// <summary>
-        /// Gets the ReadEntireResponse.
-        /// If this property is set to true, the service response
-        /// is read in its entirety before being processed.
-        /// </summary>
-        bool ReadEntireResponse { get; }
-
-
-        /// <summary>
-        /// This flag controls if .NET HTTP infrastructure should follow redirection
-        ///  responses (e.g. HTTP 307 - temporary redirect).
-        /// </summary>
-        bool AllowAutoRedirect { get; }
-
         /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should
         /// make for a single SDK operation invocation before giving up. This flag will 
@@ -153,11 +101,6 @@ namespace Amazon.Runtime
         /// because this flag is the number of retry requests, not total requests.
         /// </summary>
         int MaxErrorRetry { get; }
-
-        /// <summary>
-        /// Flag on whether to resign requests on retry or not.
-        /// </summary>
-        bool ResignRetries { get; }
 
         /// <summary>
         /// Credentials to use with a proxy.
@@ -197,24 +140,6 @@ namespace Amazon.Runtime
         bool UseFIPSEndpoint { get; }
 
         /// <summary>
-        /// Controls whether request payloads are automatically compressed for supported operations.
-        /// This setting only applies to operations that support compression.
-        /// The default value is "false". Set to "true" to disable compression.
-        /// </summary>
-        bool DisableRequestCompression { get; }
-
-        /// <summary>
-        /// Minimum size in bytes that a request body should be to trigger compression.
-        /// </summary>
-        long RequestMinCompressionSizeBytes { get; }
-
-        /// <summary>
-        /// Configures a flag enabling to either opt in or opt out of the retry throttling service.
-        /// Note: set value to true to enable retry throttling feature. The Default value for this flag is false.
-        /// </summary>
-        bool ThrottleRetries { get; }
-
-        /// <summary>
         /// Using either the RegionEndpoint or the ServiceURL determine what the URL to the service is.
         /// </summary>
         /// <returns>The URL to the service.</returns>
@@ -228,16 +153,6 @@ namespace Amazon.Runtime
         TimeSpan ClockOffset { get; }
 
         /// <summary>
-        /// Gets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false. 
-        /// Host prefix injection prefixes the service endpoint with request members from APIs which use this feature. 
-        /// Example: for a hostPrefix of "foo-name." and a endpoint of "service.region.amazonaws.com" the default behavior is to
-        /// prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting 
-        /// DisableHostPrefixInjection to true will disable hostPrefix injection resulting in a final endpoint of
-        /// "service.region.amazonaws.com" regardless of the value of hostPrefix. E.g. You may want to disable host prefix injection for testing against a local mock endpoint.
-        /// </summary>
-        bool DisableHostPrefixInjection { get; }
-
-        /// <summary>
         /// When set to true, the service client will use the  x-amz-user-agent
         /// header instead of the User-Agent header to report version and
         /// environment information to the AWS service.
@@ -246,33 +161,5 @@ namespace Amazon.Runtime
         /// which doesn't allow to specify the User-Agent header.
         /// </summary>
         bool UseAlternateUserAgentHeader { get; }
-
-        /// <summary>
-        /// Get the value to use for <see cref="HttpClientHandler.MaxConnectionsPerServer"/> on requests.
-        /// If this property is null, <see cref="HttpClientHandler.MaxConnectionsPerServer"/>
-        /// will be left at its default value of <see cref="int.MaxValue"/>.
-        /// </summary>
-        int? MaxConnectionsPerServer { get; }
-        
-        /// <summary>
-        /// <para>
-        /// This is a switch used for performance testing and is not intended for production applications 
-        /// to change. This switch may be removed in a future version of the SDK as the .NET Core platform matures.
-        /// </para>
-        /// <para>
-        /// If true, the HttpClient is cached and reused for every request made by the service client 
-        /// and shared with other service clients.
-        /// </para>
-        /// <para>
-        /// For the .NET Core platform this is default to true because the HttpClient manages the connection
-        /// pool.
-        /// </para>
-        /// </summary>
-        bool CacheHttpClient { get; }
-
-        /// <summary>
-        /// If CacheHttpClient is set to true then HttpClientCacheSize controls the number of HttpClients cached.
-        /// </summary>
-        int HttpClientCacheSize { get; }
     }
 }

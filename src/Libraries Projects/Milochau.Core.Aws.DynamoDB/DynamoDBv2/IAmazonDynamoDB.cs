@@ -1,7 +1,6 @@
 ﻿using Amazon.Runtime;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -67,13 +67,12 @@ namespace Amazon.Runtime.Internal
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
             var requestContext = executionContext.RequestContext;
-            var responseContext = executionContext.ResponseContext;
             bool shouldRetry = false;
             await this.RetryPolicy.ObtainSendTokenAsync(executionContext, null).ConfigureAwait(false);
 
             do
             {
-                System.Runtime.ExceptionServices.ExceptionDispatchInfo capturedException = null;    
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo capturedException;
 
                 try
                 {        
@@ -98,7 +97,6 @@ namespace Amazon.Runtime.Internal
                     else
                     {
                         requestContext.Retries++;
-                        requestContext.Metrics.SetCounter(Metric.AttemptCount, requestContext.Retries);
                         LogForRetry(requestContext, capturedException.SourceException);
                     }
 
@@ -107,8 +105,7 @@ namespace Amazon.Runtime.Internal
 
                 PrepareForRetry(requestContext);
 
-                using (requestContext.Metrics.StartEvent(Metric.RetryPauseTime))
-                    await RetryPolicy.WaitBeforeRetryAsync(executionContext).ConfigureAwait(false);
+                await RetryPolicy.WaitBeforeRetryAsync(executionContext).ConfigureAwait(false);
 
             } while (shouldRetry);
             throw new AmazonClientException("Neither a response was returned nor an exception was thrown in the Runtime RetryHandler.");

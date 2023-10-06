@@ -16,8 +16,6 @@
 //-----------------------------------------------------------------------------
 using Amazon.Runtime.Internal;
 using Amazon.XRay.Recorder.Handlers.AwsSdk.Internal;
-using System;
-using System.IO;
 
 namespace Amazon.XRay.Recorder.Handlers.AwsSdk
 {

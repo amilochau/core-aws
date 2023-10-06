@@ -14,7 +14,6 @@
  */
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Runtime.Internal.Auth
 {
@@ -25,25 +24,24 @@ namespace Amazon.Runtime.Internal.Auth
         /// <summary>
         /// Signals to the <see cref="Signer"/> Pipeline Handler
         /// if a Signer requires valid <see cref="ImmutableCredentials"/> in order
-        /// to correctly <see cref="Sign(IRequest,IClientConfig,RequestMetrics,ImmutableCredentials)"/>.
+        /// to correctly <see cref="Sign(IRequest,IClientConfig,ImmutableCredentials)"/>.
         /// </summary>
         public virtual bool RequiresCredentials { get; } = true;
 
-        public abstract void Sign(IRequest request, IClientConfig clientConfig, RequestMetrics metrics, string awsAccessKeyId, string awsSecretAccessKey);
+        public abstract void Sign(IRequest request, IClientConfig clientConfig, string awsAccessKeyId, string awsSecretAccessKey);
 
-        public virtual void Sign(IRequest request, IClientConfig clientConfig, RequestMetrics metrics, ImmutableCredentials credentials)
+        public virtual void Sign(IRequest request, IClientConfig clientConfig, ImmutableCredentials credentials)
         {
-            Sign(request, clientConfig, metrics, credentials?.AccessKey, credentials?.SecretKey);
+            Sign(request, clientConfig, credentials?.AccessKey, credentials?.SecretKey);
         }
 
         public virtual System.Threading.Tasks.Task SignAsync(
             IRequest request, 
             IClientConfig clientConfig,
-            RequestMetrics metrics, 
             ImmutableCredentials credentials,
             CancellationToken token = default)
         {
-            Sign(request, clientConfig, metrics, credentials);
+            Sign(request, clientConfig, credentials);
             return Task.CompletedTask;
         }
 

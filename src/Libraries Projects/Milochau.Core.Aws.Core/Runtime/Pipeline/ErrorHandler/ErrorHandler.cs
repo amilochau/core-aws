@@ -121,7 +121,6 @@ namespace Amazon.Runtime.Internal
         {
             // Log the exception
             this.Logger.Error(exception, "An exception of type {0} was handled in ErrorHandler.", exception.GetType().Name);
-            executionContext.RequestContext.Metrics.AddProperty(Metric.Exception, exception);
 
             // Find the matching handler which can process the exception
             // Start by checking if there is a matching handler for the specific exception type,

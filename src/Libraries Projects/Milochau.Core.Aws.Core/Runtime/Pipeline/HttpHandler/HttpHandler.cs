@@ -60,43 +60,40 @@ namespace Amazon.Runtime.Internal
             IHttpRequest<TRequestContent> httpRequest = null;
             try
             {
-                SetMetrics(executionContext.RequestContext);
                 IRequest wrappedRequest = executionContext.RequestContext.Request;
                 httpRequest = CreateWebRequest(executionContext.RequestContext);
                 httpRequest.SetRequestHeaders(wrappedRequest.Headers);
                 
-                using(executionContext.RequestContext.Metrics.StartEvent(Metric.HttpRequestTime))
+                // Send request body if present.
+                if (wrappedRequest.HasRequestBody())
                 {
-                    // Send request body if present.
-                    if (wrappedRequest.HasRequestBody())
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo edi = null;
+                    try
                     {
-                        System.Runtime.ExceptionServices.ExceptionDispatchInfo edi = null;
-                        try
-                        {
-                            // In .NET Framework, there needs to be a cancellation token in this method since GetRequestStreamAsync
-                            // does not accept a cancellation token. A workaround is used. This isn't necessary in .NET Standard
-                            // where the stream is a property of the request.
+                        // In .NET Framework, there needs to be a cancellation token in this method since GetRequestStreamAsync
+                        // does not accept a cancellation token. A workaround is used. This isn't necessary in .NET Standard
+                        // where the stream is a property of the request.
 
-                            var requestContent = await httpRequest.GetRequestContentAsync().ConfigureAwait(false);
-                            WriteContentToRequestBody(requestContent, httpRequest, executionContext.RequestContext);
-                        }
-                        catch(Exception e)
-                        {
-                            edi = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(e);
-                        }
-
-                        if (edi != null)
-                        {
-                            await CompleteFailedRequest(executionContext, httpRequest).ConfigureAwait(false);
-
-                            edi.Throw();
-                        }
+                        var requestContent = await httpRequest.GetRequestContentAsync().ConfigureAwait(false);
+                        WriteContentToRequestBody(requestContent, httpRequest, executionContext.RequestContext);
                     }
-                
-                    var response = await httpRequest.GetResponseAsync(executionContext.RequestContext.CancellationToken).
-                        ConfigureAwait(false);
-                    executionContext.ResponseContext.HttpResponse = response;
+                    catch(Exception e)
+                    {
+                        edi = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(e);
+                    }
+
+                    if (edi != null)
+                    {
+                        await CompleteFailedRequest(executionContext, httpRequest).ConfigureAwait(false);
+
+                        edi.Throw();
+                    }
                 }
+                
+                var response = await httpRequest.GetResponseAsync(executionContext.RequestContext.CancellationToken).
+                    ConfigureAwait(false);
+                executionContext.ResponseContext.HttpResponse = response;
+
                 // The response is not unmarshalled yet.
                 return null;
             }            
@@ -125,13 +122,6 @@ namespace Amazon.Runtime.Internal
             }
         }
 
-        private static void SetMetrics(IRequestContext requestContext)
-        {
-            requestContext.Metrics.AddProperty(Metric.ServiceName, requestContext.Request.ServiceName);
-            requestContext.Metrics.AddProperty(Metric.ServiceEndpoint, requestContext.Request.Endpoint);
-            requestContext.Metrics.AddProperty(Metric.MethodName, requestContext.Request.RequestName);
-        }
-
         /// <summary>
         /// Determines the content for request body and uses the HTTP request
         /// to write the content to the HTTP request body.
@@ -144,7 +134,6 @@ namespace Amazon.Runtime.Internal
             IRequestContext requestContext)
         {
             byte[] requestData = requestContext.Request.Content;
-            requestContext.Metrics.AddProperty(Metric.RequestSize, requestData.Length);
             httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
         }
 

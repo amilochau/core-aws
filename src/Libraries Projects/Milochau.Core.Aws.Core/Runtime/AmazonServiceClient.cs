@@ -143,10 +143,7 @@ namespace Amazon.Runtime
 
         protected AmazonServiceClient(AWSCredentials credentials, ClientConfig config)
         {
-            if (config.DisableLogging)
-                _logger = Logger.EmptyLogger;
-            else
-                _logger = Logger.GetLogger(GetType());
+            _logger = Logger.GetLogger(GetType());
 
             Credentials = credentials;
             _config = config;
@@ -181,7 +178,7 @@ namespace Amazon.Runtime
                 cancellationToken = _config.BuildDefaultCancellationToken();
 
             var executionContext = new ExecutionContext(
-                new RequestContext(this.Config.LogMetrics, Signer)
+                new RequestContext(Signer)
                 {
                     ClientConfig = this.Config,
                     Marshaller = options.RequestMarshaller,
@@ -194,7 +191,6 @@ namespace Amazon.Runtime
                 },
                 new ResponseContext()
             );
-            SetupCSMHandler(executionContext.RequestContext);
             return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);
         }
 
@@ -321,16 +317,9 @@ namespace Amazon.Runtime
                     new Marshaller(),
                     preMarshallHandler,
                     errorCallbackHandler,
-                    new MetricsHandler()
                 },
                 _logger
             );
-
-            if (DeterminedCSMConfiguration.Instance.CSMConfiguration.Enabled && !string.IsNullOrEmpty(ServiceMetadata.ServiceId))
-            {
-                RuntimePipeline.AddHandlerBefore<ErrorHandler>(new CSMCallAttemptHandler());
-                RuntimePipeline.AddHandlerBefore<MetricsHandler>(new CSMCallEventHandler());
-            }
 
             CustomizeRuntimePipeline(RuntimePipeline);
 
@@ -425,14 +414,6 @@ namespace Amazon.Runtime
                 ? new Uri(url.AbsoluteUri + parameterizedPath)
                 : new Uri(url.AbsoluteUri + "/" + parameterizedPath);
             return uri;
-        }
-
-        private static void SetupCSMHandler(IRequestContext requestContext)
-        {
-            if (requestContext.CSMEnabled)
-            {
-                requestContext.CSMCallEvent = new MonitoringAPICallEvent(requestContext);
-            }
         }
     }
 }

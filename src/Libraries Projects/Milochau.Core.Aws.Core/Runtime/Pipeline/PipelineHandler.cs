@@ -60,22 +60,5 @@ namespace Amazon.Runtime.Internal
             }
             throw new InvalidOperationException("Cannot invoke InnerHandler. InnerHandler is not set.");
         }
-
-        /// <summary>
-        /// Logs the metrics for the current execution context.
-        /// </summary>
-        /// <param name="executionContext">The execution context, it contains the
-        /// request and response context.</param>
-        protected void LogMetrics(IExecutionContext executionContext)
-        {
-            var metrics = executionContext.RequestContext.Metrics;
-            if (executionContext.RequestContext.ClientConfig.LogMetrics)
-            {
-                string errors = metrics.GetErrors();
-                if (!string.IsNullOrEmpty(errors))
-                    this.Logger.InfoFormat("Request metrics errors: {0}", errors);
-                this.Logger.InfoFormat("Request metrics: {0}", metrics);
-            }
-        }
     }
 }

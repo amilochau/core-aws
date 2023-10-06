@@ -16,7 +16,6 @@
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Auth;
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal.Util;
 using System;
 
 namespace Amazon.Runtime
@@ -27,8 +26,7 @@ namespace Amazon.Runtime
         string RequestName { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
-        InvokeOptionsBase Options { get; }        
-        RequestMetrics Metrics { get; }
+        InvokeOptionsBase Options { get; }
         AbstractAWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
         ImmutableCredentials ImmutableCredentials { get; set; }
@@ -41,11 +39,8 @@ namespace Amazon.Runtime
         int EndpointDiscoveryRetries { get; set; }
 
         System.Threading.CancellationToken CancellationToken { get; }
-        MonitoringAPICallAttempt CSMCallAttempt { get; set; }
-        MonitoringAPICallEvent CSMCallEvent { get; set; }
         IServiceMetadata ServiceMetaData { get; }
 
-        bool CSMEnabled { get; }
         bool IsLastExceptionRetryable { get; set; }
 
         Guid InvocationId { get; }
@@ -71,19 +66,16 @@ namespace Amazon.Runtime.Internal
         private IServiceMetadata _serviceMetadata;
         AbstractAWSSigner clientSigner;
 
-        public RequestContext(bool enableMetrics, AbstractAWSSigner clientSigner)
+        public RequestContext(AbstractAWSSigner clientSigner)
         {
             if (clientSigner == null)
                 throw new ArgumentNullException("clientSigner");
 
             this.clientSigner = clientSigner;
-            this.Metrics = new RequestMetrics();
-            this.Metrics.IsEnabled = enableMetrics;
             this.InvocationId = Guid.NewGuid();
         }
 
         public IRequest Request { get; set; }
-        public RequestMetrics Metrics { get; private set; }
         public IClientConfig ClientConfig { get; set; }
         public int Retries { get; set; }
         public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
@@ -113,9 +105,7 @@ namespace Amazon.Runtime.Internal
         {
             get { return this.OriginalRequest.GetType().Name; }
         }
-        public MonitoringAPICallAttempt CSMCallAttempt { get; set; }
 
-        public MonitoringAPICallEvent CSMCallEvent { get; set; }
         public IServiceMetadata ServiceMetaData
         {
             get
@@ -125,15 +115,9 @@ namespace Amazon.Runtime.Internal
             internal set
             {
                 _serviceMetadata = value;
-                // The CSMEnabled flag is referred in the runtime pipeline before capturing any CSM data.
-                // Along with the customer set CSMEnabled flag, the ServiceMetadata.ServiceId needs to be set
-                // to capture client side metrics. Older service nuget packages might not have a ServiceMetadata
-                // implementation and in such cases client side metrics will not be captured.
-                CSMEnabled = DeterminedCSMConfiguration.Instance.CSMConfiguration.Enabled && !string.IsNullOrEmpty(_serviceMetadata.ServiceId);
             }
         }
 
-        public bool CSMEnabled { get; private set; }
         /// <summary>
         /// Property to denote that the last exception returned by an AWS Service
         /// was retryable or not.
@@ -141,14 +125,6 @@ namespace Amazon.Runtime.Internal
         public bool IsLastExceptionRetryable { get; set; }
 
         public Guid InvocationId { get; private set; }
-    }
-
-    public class AsyncRequestContext : RequestContext, IRequestContext
-    {
-        public AsyncRequestContext(bool enableMetrics, AbstractAWSSigner clientSigner):
-            base(enableMetrics, clientSigner)
-        {
-        }
     }
 
     public class ResponseContext : IResponseContext

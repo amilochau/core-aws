@@ -25,10 +25,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Linq;
-using System.Net;
 using Amazon.Runtime.Internal;
-using Amazon.Util.Internal;
-using System.Net.Http;
 
 namespace Amazon.Util
 {

@@ -101,9 +101,7 @@ namespace Amazon.Runtime.Internal
         /// <returns></returns>
         private bool HandleExceptionStream(IRequestContext requestContext, IWebResponseData httpErrorResponse, HttpErrorResponseException exception, System.IO.Stream responseStream)
         {
-            requestContext.Metrics.AddProperty(Metric.StatusCode, httpErrorResponse.StatusCode);
-
-            AmazonServiceException errorResponseException = null;
+            AmazonServiceException errorResponseException;
             // Unmarshall the service error response and throw the corresponding service exception.
             try
             {
@@ -113,7 +111,6 @@ namespace Amazon.Runtime.Internal
                 var errorContext = unmarshaller.CreateContext(httpErrorResponse,
                     readEntireResponse,
                     responseStream,
-                    requestContext.Metrics,
                     true,
                     requestContext);
 
@@ -138,11 +135,7 @@ namespace Amazon.Runtime.Internal
                         innerException: e, statusCode: httpErrorResponse.StatusCode);
                 }
 
-                requestContext.Metrics.AddProperty(Metric.AWSRequestID, errorResponseException.RequestId);
-                requestContext.Metrics.AddProperty(Metric.AWSErrorCode, errorResponseException.ErrorCode);
-
-                var logResponseBody = requestContext.ClientConfig.LogResponse ||
-                    AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
+                var logResponseBody = AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
                 if (logResponseBody)
                 {
                     this.Logger.Error(errorResponseException, "Received error response: [{0}]",
@@ -184,14 +177,12 @@ namespace Amazon.Runtime.Internal
                 using (httpErrorResponse.ResponseBody)
                 {
                     var unmarshaller = requestContext.Unmarshaller;
-                    var readEntireResponse = requestContext.ClientConfig.LogResponse ||
-                            AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
+                    var readEntireResponse = AWSConfigs.LoggingConfig.LogResponses != ResponseLoggingOption.Never;
 
                     UnmarshallerContext errorContext = unmarshaller.CreateContext(
                         httpErrorResponse,
                         readEntireResponse,
                         httpErrorResponse.ResponseBody.OpenResponse(),
-                        requestContext.Metrics,
                         true,
                         requestContext);
                     try

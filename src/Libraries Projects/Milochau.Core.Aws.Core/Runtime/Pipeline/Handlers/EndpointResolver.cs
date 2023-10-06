@@ -68,7 +68,7 @@ namespace Amazon.Runtime.Internal
 
         private static Uri InjectHostPrefix(IClientConfig config, IRequest request, Uri endpoint)
         {
-            if (config.DisableHostPrefixInjection || string.IsNullOrEmpty(request.HostPrefix))
+            if (string.IsNullOrEmpty(request.HostPrefix))
             {
                 return endpoint;
             }

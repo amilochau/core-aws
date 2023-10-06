@@ -70,7 +70,7 @@ namespace Amazon
         #region Private static members
 
         // Tests can override this DateTime source.
-        internal static Func<DateTime> utcNowSource = GetUtcNow;
+        internal static Func<DateTime> utcNowSource = () => DateTime.UtcNow;
 
         // New config section
         private static RootConfig _rootConfig = new RootConfig();
@@ -128,52 +128,6 @@ namespace Amazon
         }
         #endregion
 
-        #region Accounts Location
-
-        /// <summary>
-        /// Location of the credentials file shared with other AWS SDKs.
-        /// By default, the credentials file is stored in the .aws directory in the current user's home directory.
-        /// 
-        /// Changes to this setting will only take effect in newly-constructed clients.
-        /// <para>
-        /// To reference the profile from an application's App.config or Web.config use the AWSProfileName setting.
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSProfilesLocation" value="c:\config"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        /// </para>
-        /// </summary>
-        public static string AWSProfilesLocation
-        {
-            get { return _rootConfig.ProfilesLocation; }
-            set { _rootConfig.ProfilesLocation = value; }
-        }
-
-        #endregion
-
-        #region SDK Cache
-
-        /// <summary>
-        /// Configures if the SDK Cache should be used, the default value is true.
-        /// <code>
-        /// &lt;configSections&gt;
-        ///   &lt;section name="aws" type="Amazon.AWSSection, AWSSDK.Core"/&gt;
-        /// &lt;/configSections&gt;
-        /// &lt;aws useSdkCache="true" /&gt;
-        /// </code>
-        /// </summary>
-        public static bool UseSdkCache
-        {
-            get { return _rootConfig.UseSdkCache; }
-            set { _rootConfig.UseSdkCache = value; }
-        }
-
-        #endregion
-
         #region AWS Config Sections
 
         /// <summary>
@@ -222,11 +176,6 @@ namespace Amazon
             set { _rootConfig.UseAlternateUserAgentHeader = value; }
         }
 
-        public static CSMConfig CSMConfig
-        {
-            get { return _rootConfig.CSMConfig; }
-            set { _rootConfig.CSMConfig = value; }
-        }
         #endregion
 
         #region Internal members
@@ -264,21 +213,6 @@ namespace Amazon
             {
                 handler(null, new PropertyChangedEventArgs(name));
             }
-        }
-
-        #endregion
-
-        #region Private general methods
-
-        /// <summary>
-        /// This method should never be called directly.
-        /// Call AWSSDKUtils.CorrectedUtcNow instead.
-        /// </summary>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("AwsSdkRules", "CR1003:PreventDateTimeNowUseRule")]
-        private static DateTime GetUtcNow()
-        {
-            return DateTime.UtcNow;
         }
 
         #endregion
@@ -331,20 +265,5 @@ namespace Amazon
         /// Always log service response
         /// </summary>
         Always = 2
-    }
-
-    /// <summary>
-    /// Format for metrics data in the logs
-    /// </summary>
-    public enum LogMetricsFormatOption
-    {
-        /// <summary>
-        /// Emit metrics in human-readable format
-        /// </summary>
-        Standard = 0,
-        /// <summary>
-        /// Emit metrics as JSON data
-        /// </summary>
-        JSON = 1
     }
 }

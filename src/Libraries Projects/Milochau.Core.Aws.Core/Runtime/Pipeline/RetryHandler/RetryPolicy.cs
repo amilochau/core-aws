@@ -44,7 +44,7 @@ namespace Amazon.Runtime
         public async Task<bool> RetryAsync(IExecutionContext executionContext, Exception exception)
         {
             bool canRetry = !RetryLimitReached(executionContext) && CanRetry(executionContext);
-            if (canRetry || executionContext.RequestContext.CSMEnabled)
+            if (canRetry)
             {
                 var isClockSkewError = IsClockskew(executionContext, exception);
                 if (isClockSkewError || await RetryForExceptionAsync(executionContext, exception).ConfigureAwait(false))
@@ -191,11 +191,7 @@ namespace Amazon.Runtime
         {
             // Boolean that denotes retries have not exceeded maxretries and request is rewindable
             bool canRetry = !RetryLimitReached(executionContext) && CanRetry(executionContext);
-            // If canRetry is false, we still want to evaluate the exception if its retryable or not,
-            // is CSM is enabled. This is necessary to set the IsLastExceptionRetryable property on 
-            // CSM Call Attempt. For S3, with the BucketRegion mismatch exception, an overhead of 100-
-            // 115 ms was added(because of GetPreSignedUrl and Http HEAD requests).
-            if (canRetry || executionContext.RequestContext.CSMEnabled)
+            if (canRetry)
             {
                 var isClockSkewError = IsClockskew(executionContext, exception);
                 if (isClockSkewError || RetryForException(executionContext, exception))
@@ -608,7 +604,7 @@ namespace Amazon.Runtime
         /// </summary>
         protected static string GetRetryCapacityKey(IClientConfig config)
         {
-            return $"http:{config.UseHttp}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{config.UseFIPSEndpoint}.ipv6:{config.UseDualstackEndpoint}";
+            return $"http:{false}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{config.UseFIPSEndpoint}.ipv6:{config.UseDualstackEndpoint}";
         }
     }
 }

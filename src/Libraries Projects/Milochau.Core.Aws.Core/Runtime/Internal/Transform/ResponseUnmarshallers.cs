@@ -17,7 +17,6 @@ using System;
 using System.Net;
 using System.IO;
 using Amazon.Util;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Runtime.Internal.Transform
 {
@@ -26,7 +25,7 @@ namespace Amazon.Runtime.Internal.Transform
     /// </summary>
     public abstract class ResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, UnmarshallerContext>
     {
-        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, RequestMetrics metrics, bool isException, IRequestContext requestContext)
+        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, bool isException, IRequestContext requestContext)
         {
             if (response == null)
             {

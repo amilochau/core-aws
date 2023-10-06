@@ -25,15 +25,17 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class CompressionHandler : PipelineHandler
     {
-	    /// <summary>
-	    /// Calls pre invoke logic before calling the next handler 
-	    /// in the pipeline.
-	    /// </summary>
-	    /// <typeparam name="T">The response type for the current request.</typeparam>
-	    /// <param name="executionContext">The execution context, it contains the
-	    /// request and response context.</param>
-	    /// <returns>A task that represents the asynchronous operation.</returns>
-	    public override System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
+        private const long DefaultMinCompressionSizeBytes = 10240;
+
+        /// <summary>
+        /// Calls pre invoke logic before calling the next handler 
+        /// in the pipeline.
+        /// </summary>
+        /// <typeparam name="T">The response type for the current request.</typeparam>
+        /// <param name="executionContext">The execution context, it contains the
+        /// request and response context.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public override System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
 	    {
             PreInvoke(executionContext);
             return base.InvokeAsync<T>(executionContext);
@@ -46,12 +48,9 @@ namespace Amazon.Runtime.Internal
         /// request and response context.</param>
         protected virtual void PreInvoke(IExecutionContext executionContext)
         {
-            var clientConfig = executionContext.RequestContext.ClientConfig;
-            var minCompressionSize = clientConfig.RequestMinCompressionSizeBytes;
-            var disableRequestCompression = clientConfig.DisableRequestCompression;
             var request = executionContext.RequestContext.Request;
 
-            if (disableRequestCompression || request.CompressionAlgorithm == CompressionEncodingAlgorithm.NONE)
+            if (request.CompressionAlgorithm == CompressionEncodingAlgorithm.NONE)
             {
                 return;
             }
@@ -69,13 +68,9 @@ namespace Amazon.Runtime.Internal
             else
             {
                 var input = AWSSDKUtils.GetRequestPayloadBytes(request);
-                if (input.Length >= minCompressionSize)
+                if (input.Length >= DefaultMinCompressionSizeBytes)
                 {
-                    executionContext.RequestContext.Metrics.AddProperty(Metric.UncompressedRequestSize, input.Length);
-                    using (executionContext.RequestContext.Metrics.StartEvent(Metric.RequestCompressionTime))
-                    {
-                        request.Content = compressionAlgorithm.Compress(input);
-                    }
+                    request.Content = compressionAlgorithm.Compress(input);
                     CompressionAlgorithmUtils.SetRequestHeader(request, compressionAlgorithm.AlgorithmId);
                 }
             }

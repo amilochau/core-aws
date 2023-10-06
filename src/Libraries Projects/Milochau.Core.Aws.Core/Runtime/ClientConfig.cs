@@ -14,14 +14,11 @@
  */
 using System;
 using System.Net;
-using Amazon.Util;
 using System.Globalization;
 using Amazon.Runtime.Internal.Util;
-using System.Net.Http;
 using Amazon.Internal;
 using System.Threading;
 using Amazon.Runtime.Endpoints;
-using Amazon.Runtime.Internal;
 
 namespace Amazon.Runtime
 {
@@ -31,22 +28,6 @@ namespace Amazon.Runtime
     /// </summary>
     public abstract partial class ClientConfig
     {
-        private static RegionEndpoint GetDefaultRegionEndpoint()
-        {
-            return FallbackRegionFactory.GetRegionEndpoint();
-        }
-
-        /// <summary>
-        /// Get or set the value to use for <see cref="HttpClientHandler.MaxConnectionsPerServer"/> on requests.
-        /// If this property is null, <see cref="HttpClientHandler.MaxConnectionsPerServer"/>
-        /// will be left at its default value of <see cref="int.MaxValue"/>.
-        /// </summary>
-        public int? MaxConnectionsPerServer
-        {
-            get;
-            set;
-        }
-        
         /// <summary>
         /// HttpClientFactory used to create new HttpClients.
         /// If null, an HttpClient will be created by the SDK.
@@ -60,32 +41,6 @@ namespace Amazon.Runtime
         public HttpClientFactory HttpClientFactory { get; set; } = AWSConfigs.HttpClientFactory;
         
         /// <summary>
-        /// Returns true if the clients should be cached by HttpRequestMessageFactory, false otherwise.
-        /// </summary>
-        /// <param name="clientConfig"></param>
-        /// <returns></returns>
-        internal static bool CacheHttpClients(IClientConfig clientConfig)
-        {
-            if (clientConfig.HttpClientFactory == null)
-                return clientConfig.CacheHttpClient;
-            else
-                return clientConfig.HttpClientFactory.UseSDKHttpClientCaching(clientConfig);
-        }
-
-        /// <summary>
-        /// Returns true if the SDK should dispose HttpClients after one use, false otherwise.
-        /// </summary>
-        /// <param name="clientConfig"></param>
-        /// <returns></returns>
-        internal static bool DisposeHttpClients(IClientConfig clientConfig)
-        {
-            if (clientConfig.HttpClientFactory == null)
-                return !clientConfig.CacheHttpClient;
-            else
-                return clientConfig.HttpClientFactory.DisposeHttpClientsAfterUse(clientConfig);
-        }
-
-        /// <summary>
         ///  Create a unique string used for caching the HttpClient based on the settings that are used from the ClientConfig that are set on the HttpClient.
         /// </summary>
         /// <param name="clientConfig"></param>
@@ -97,13 +52,10 @@ namespace Amazon.Runtime
                 return clientConfig.HttpClientFactory.GetConfigUniqueString(clientConfig);
             }
             string uniqueString;
-            uniqueString = string.Concat("AllowAutoRedirect:", clientConfig.AllowAutoRedirect.ToString(), "CacheSize:", clientConfig.HttpClientCacheSize);
+            uniqueString = string.Concat( "CacheSize:", 1);
 
             if (clientConfig.Timeout.HasValue)
                 uniqueString = string.Concat(uniqueString, "Timeout:", clientConfig.Timeout.Value.ToString());
-
-            if (clientConfig.MaxConnectionsPerServer.HasValue)
-                uniqueString = string.Concat(uniqueString, "MaxConnectionsPerServer:", clientConfig.MaxConnectionsPerServer.Value.ToString());
 
             return uniqueString;
         }
@@ -144,29 +96,13 @@ namespace Amazon.Runtime
         private string serviceId = null;
         private RegionEndpoint regionEndpoint = null;
         private bool probeForRegionEndpoint = true;
-        private bool throttleRetries = true;
-        private bool useHttp = false;
         private bool useAlternateUserAgentHeader = AWSConfigs.UseAlternateUserAgentHeader;
-        private string serviceURL = null;
         private string authServiceName = null;
-        private bool readEntireResponse = false;
-        private bool logResponse = false;
-        private bool resignRetries = false;
-        private ICredentials proxyCredentials;
-        private bool logMetrics = AWSConfigs.LoggingConfig.LogMetrics;
-        private bool disableLogging = false;
         private TimeSpan? timeout = null;
-        private bool allowAutoRedirect = true;
         private bool? useDualstackEndpoint;
         private bool? useFIPSEndpoint;
-        private bool? disableRequestCompression;
-        private long? requestMinCompressionSizeBytes;
-        private bool disableHostPrefixInjection = false;
-        private bool? endpointDiscoveryEnabled = null;
-        private int endpointDiscoveryCacheLimit = 1000;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
-        private const long DefaultMinCompressionSizeBytes = 10240;
 
         /// <summary>
         /// Gets Service Version
@@ -192,7 +128,6 @@ namespace Amazon.Runtime
         public bool UseAlternateUserAgentHeader
         {
             get { return this.useAlternateUserAgentHeader; }
-            set { this.useAlternateUserAgentHeader = value; }
         }
 
         /// <summary>
@@ -211,7 +146,7 @@ namespace Amazon.Runtime
             {
                 if (probeForRegionEndpoint)
                 {
-                    RegionEndpoint = GetDefaultRegionEndpoint();
+                    RegionEndpoint = FallbackRegionFactory.GetRegionEndpoint();
                     this.probeForRegionEndpoint = false;
                 }
                 return this.regionEndpoint;
@@ -244,18 +179,6 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// Gets and sets the UseHttp.
-        /// If this property is set to true, the client attempts
-        /// to use HTTP protocol, if the target endpoint supports it.
-        /// By default, this property is set to false.
-        /// </summary>
-        public bool UseHttp
-        {
-            get { return this.useHttp; }
-            set { this.useHttp = value; }
-        }
-
-        /// <summary>
         /// Given this client configuration, return a string form ofthe service endpoint url.
         /// </summary>
         [Obsolete("This operation is obsoleted because as of version 3.7.100 endpoint is resolved using a newer system that uses request level parameters to resolve the endpoint, use the service-specific client.DetermineServiceOperationEndPoint method instead.")]
@@ -271,7 +194,7 @@ namespace Amazon.Runtime
                     config.RegionEndpointServiceName,
                     config.ToGetEndpointForServiceOptions());
 
-            string url = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}{1}", config.UseHttp ? "http://" : "https://", endpoint.Hostname)).AbsoluteUri;
+            string url = new Uri(string.Format(CultureInfo.InvariantCulture, "{0}{1}", "https://", endpoint.Hostname)).AbsoluteUri;
             return url;
         }
 
@@ -330,85 +253,6 @@ namespace Amazon.Runtime
             set { this.maxRetries = value; }
         }
 
-        /// <summary>
-        /// Gets and sets the LogResponse property.
-        /// If this property is set to true, the service response is logged.
-        /// The size of response being logged is controlled by the AWSConfigs.LoggingConfig.LogResponsesSizeLimit property.
-        /// </summary>
-        public bool LogResponse
-        {
-            get { return this.logResponse; }
-            set { this.logResponse = value; }
-        }
-
-        /// <summary>
-        /// Gets and sets the ReadEntireResponse property.
-        /// NOTE: This property does not effect response processing and is deprecated.
-        /// To enable response logging, the ClientConfig.LogResponse and AWSConfigs.LoggingConfig
-        /// properties can be used.
-        /// </summary>
-        [Obsolete("This property does not effect response processing and is deprecated." +
-            "To enable response logging, the ClientConfig.LogResponse and AWSConfigs.LoggingConfig.LogResponses properties can be used.")]
-        public bool ReadEntireResponse
-        {
-            get { return this.readEntireResponse; }
-            set { this.readEntireResponse = value; }
-        }
-
-        /// <summary>
-        /// Flag on whether to resign requests on retry or not.
-        /// For Amazon S3 and Amazon Glacier this value will always be set to true.
-        /// </summary>
-        public bool ResignRetries
-        {
-            get { return this.resignRetries; }
-            set { this.resignRetries = value; }
-        }
-
-        /// <summary>
-        /// This flag controls if .NET HTTP infrastructure should follow redirection
-        ///  responses (e.g. HTTP 307 - temporary redirect).
-        /// </summary>
-        public bool AllowAutoRedirect
-        {
-            get
-            {
-                return this.allowAutoRedirect;
-            }
-            set
-            {
-                this.allowAutoRedirect = value;
-            }
-        }
-
-        /// <summary>
-        /// Flag on whether to log metrics for service calls.
-        /// 
-        /// This can be set in the application's configs, as below:
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSLogMetrics" value"true"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        /// </summary>
-        public bool LogMetrics
-        {
-            get { return this.logMetrics; }
-            set { this.logMetrics = value; }
-        }
-
-        /// <summary>
-        /// Gets and sets the DisableLogging. If true logging for this client will be disabled.
-        /// </summary>
-        public bool DisableLogging
-        {
-            get { return this.disableLogging; }
-            set { this.disableLogging = value; }
-        }
-
         protected IDefaultConfiguration DefaultConfiguration { get; private set; }
 
         /// <summary>
@@ -418,15 +262,13 @@ namespace Amazon.Runtime
         {
             get
             {
-                if (this.proxyCredentials == null &&
-                    (!string.IsNullOrEmpty(AWSConfigs.ProxyConfig.Username) ||
-                    !string.IsNullOrEmpty(AWSConfigs.ProxyConfig.Password)))
+                if (!string.IsNullOrEmpty(AWSConfigs.ProxyConfig.Username) ||
+                    !string.IsNullOrEmpty(AWSConfigs.ProxyConfig.Password))
                 {
                     return new NetworkCredential(AWSConfigs.ProxyConfig.Username, AWSConfigs.ProxyConfig.Password ?? string.Empty);
                 }
-                return this.proxyCredentials;
+                return null;
             }
-            set { this.proxyCredentials = value; }
         }
 
         #region Constructor 
@@ -535,71 +377,6 @@ namespace Amazon.Runtime
             }
             set { useFIPSEndpoint = value; }
         }
-        /// <summary>
-        /// Controls whether request payloads are automatically compressed for supported operations.
-        /// This setting only applies to operations that support compression.
-        /// The default value is "false". Set to "true" to disable compression.
-        /// </summary>
-        public bool DisableRequestCompression
-        {
-            get
-            {
-                if (!this.disableRequestCompression.HasValue)
-                {
-                    return false;
-                }
-
-                return this.disableRequestCompression.Value;
-            }
-            set { disableRequestCompression = value; }
-        }
-
-        /// <summary>
-        /// Minimum size in bytes that a request body should be to trigger compression.
-        /// </summary>
-        public long RequestMinCompressionSizeBytes
-        {
-            get
-            {
-                if (!this.requestMinCompressionSizeBytes.HasValue)
-                {
-                    return DefaultMinCompressionSizeBytes;
-                }
-
-                return this.requestMinCompressionSizeBytes.Value;
-            }
-            set
-            {
-                ValidateMinCompression(value);
-                requestMinCompressionSizeBytes = value;
-            }
-        }
-
-        private static void ValidateMinCompression(long minCompressionSize)
-        {
-            if (minCompressionSize < 0 || minCompressionSize > UpperLimitCompressionSizeBytes)
-            {
-                throw new ArgumentException(string.Format("Invalid value {0} for {1}." +
-                    " A long value between 0 and {2} bytes inclusive is expected.", minCompressionSize,
-                    nameof(requestMinCompressionSizeBytes), UpperLimitCompressionSizeBytes));
-            }
-        }
-
-        /// <summary>
-        /// Enable or disable the Retry Throttling feature by setting the ThrottleRetries flag to True/False respectively.
-        /// Retry Throttling is a feature that intelligently throttles retry attempts when a large percentage of requests 
-        /// are failing and retries are unsuccessful as well. In such situations the allotted retry capacity for the service URL
-        /// will be drained until requests start to succeed again. Once the requisite capacity is available, retries would 
-        /// be permitted again. When retries are throttled, the service enters a fail-fast behaviour as the traditional retry attempt
-        /// for the request would be circumvented. Hence, errors will resurface quickly. This will result in a greater number of exceptions
-        /// but prevents requests being tied up in unsuccessful retry attempts.
-        /// Note: Retry Throttling is enabled by default. Set the ThrottleRetries flag to false to switch off this feature.
-        /// </summary>
-        public bool ThrottleRetries
-        {
-            get { return throttleRetries; }
-            set { throttleRetries = value; }
-        }
 
         /// <summary>
         /// The calculated clock skew correction for a specific endpoint, if there is one.
@@ -628,20 +405,6 @@ namespace Amazon.Runtime
         }
 
         /// <summary>
-        /// Gets and sets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false. 
-        /// Host prefix injection prefixes the service endpoint with request members from APIs which use this feature. 
-        /// Example: for a hostPrefix of "foo-name." and a endpoint of "service.region.amazonaws.com" the default behavior is to
-        /// prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting 
-        /// DisableHostPrefixInjection to true will disable hostPrefix injection resulting in a final endpoint of
-        /// "service.region.amazonaws.com" regardless of the value of hostPrefix. E.g. You may want to disable host prefix injection for testing against a local mock endpoint.
-        /// </summary>
-        public bool DisableHostPrefixInjection
-        {
-            get { return this.disableHostPrefixInjection; }
-            set { this.disableHostPrefixInjection = value; }
-        }
-
-        /// <summary>
         /// Throw an exception if the boxed TimeSpan parameter doesn't have a value or is out of range.
         /// </summary>
         public static void ValidateTimeout(TimeSpan? timeout)
@@ -655,46 +418,6 @@ namespace Amazon.Runtime
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
-        }
-
-        /// <summary>
-        /// <para>
-        /// This is a switch used for performance testing and is not intended for production applications 
-        /// to change. This switch may be removed in a future version of the SDK as the .NET Core platform matures.
-        /// </para>
-        /// <para>
-        /// If true, the HttpClient is cached and reused for every request made by the service client 
-        /// and shared with other service clients.
-        /// </para>
-        /// <para>
-        /// For the .NET Core platform this is default to true because the HttpClient manages the connection
-        /// pool.
-        /// </para>
-        /// </summary>
-        public bool CacheHttpClient {get; set;} = true;
-
-        private int? _httpClientCacheSize;
-        /// <summary>
-        /// If CacheHttpClient is set to true then HttpClientCacheSize controls the number of HttpClients cached.
-        /// <para>
-        /// The default value is 1 which is suitable for Windows and for all other platforms that have HttpClient
-        /// implementations using <see cref="System.Net.Http.SocketsHttpHandler"/> (.NET Core 2.1 and higher).
-        /// </para>
-        /// </summary>
-        public int HttpClientCacheSize
-        {
-            get
-            {
-                if(_httpClientCacheSize.HasValue)
-                {
-                    return _httpClientCacheSize.Value;
-                }
-
-// Use both NETCOREAPP3_1 and NETCOREAPP3_1_OR_GREATER because currently the build server only has .NET Core 3.1 SDK installed
-// which predates the OR_GREATER preprocessor statements. The NETCOREAPP3_1_OR_GREATER is used for future proofing.
-                return 1;
-            }
-            set => _httpClientCacheSize = value;
         }
 
         /// <summary>

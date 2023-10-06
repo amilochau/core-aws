@@ -39,31 +39,6 @@ namespace Amazon.Runtime
         public abstract HttpClient CreateHttpClient(IClientConfig clientConfig);
 
         /// <summary>
-        /// If true the SDK will internally cache the clients created by CreateHttpClient.
-        /// If false the sdk will not cache the clients.
-        /// Override this method to return false if your HttpClientFactory will handle its own caching
-        /// or if you don't want clients to be cached.
-        /// </summary>
-        /// <param name="clientConfig"></param>
-        /// <returns></returns>
-        public virtual bool UseSDKHttpClientCaching(IClientConfig clientConfig)
-        {
-            return clientConfig.CacheHttpClient;
-        }
-
-        /// <summary>
-        /// Determines if the SDK will dispose clients after they're used.
-        /// If HttpClients are cached, either by the SDK or by your HttpClientFactory, this should be false.
-        /// If there is no caching then this should be true.
-        /// </summary>
-        /// <param name="clientConfig"></param>
-        /// <returns></returns>
-        public virtual bool DisposeHttpClientsAfterUse(IClientConfig clientConfig)
-        {
-            return !UseSDKHttpClientCaching(clientConfig);
-        }
-
-        /// <summary>
         /// Returns a string that's used to group equivalent HttpClients into caches.
         /// This method isn't used unless UseSDKHttpClientCaching returns true;
         /// 
@@ -111,21 +86,56 @@ namespace Amazon.Runtime
         /// <returns>An HTTP request.</returns>
         public IHttpRequest<HttpContent> CreateHttpRequest(Uri requestUri)
         {
-            HttpClient httpClient = null;
-            if(ClientConfig.CacheHttpClients(_clientConfig))
+            HttpClient httpClient;
+            if(_httpClientCache == null)
             {
-                if(_httpClientCache == null)
+                if (!ClientConfig.UseGlobalHttpClientCache(_clientConfig))
                 {
-                    if (!ClientConfig.UseGlobalHttpClientCache(_clientConfig))
-                    {
-                        _useGlobalHttpClientCache = false;
+                    _useGlobalHttpClientCache = false;
 
+                    _httpClientCacheRWLock.EnterWriteLock();
+                    try
+                    {
+                        if (_httpClientCache == null)
+                        {
+                            _httpClientCache = CreateHttpClientCache(_clientConfig);
+                        }
+                    }
+                    finally
+                    {
+                        _httpClientCacheRWLock.ExitWriteLock();
+                    }
+                }
+                else
+                {
+                    _useGlobalHttpClientCache = true;
+
+                    // Check to see if an HttpClient was created by another service client with the 
+                    // same settings on the ClientConfig.
+                    var configUniqueString = ClientConfig.CreateConfigUniqueString(_clientConfig);
+                    _httpClientCacheRWLock.EnterReadLock();
+                    try
+                    {
+                        _httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache);
+                    }
+                    finally
+                    {
+                        _httpClientCacheRWLock.ExitReadLock();
+                    }
+
+                    // If a HttpClientCache is not found in the global cache then create one
+                    // for this and other service clients to use.
+                    if (_httpClientCache == null)
+                    {
                         _httpClientCacheRWLock.EnterWriteLock();
                         try
                         {
-                            if (_httpClientCache == null)
+                            // Check if the HttpClientCache was created by some other thread 
+                            // while this thread was waiting for the lock.
+                            if (!_httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache))
                             {
                                 _httpClientCache = CreateHttpClientCache(_clientConfig);
+                                _httpClientCaches[configUniqueString] = _httpClientCache;
                             }
                         }
                         finally
@@ -133,56 +143,14 @@ namespace Amazon.Runtime
                             _httpClientCacheRWLock.ExitWriteLock();
                         }
                     }
-                    else
-                    {
-                        _useGlobalHttpClientCache = true;
-
-                        // Check to see if an HttpClient was created by another service client with the 
-                        // same settings on the ClientConfig.
-                        var configUniqueString = ClientConfig.CreateConfigUniqueString(_clientConfig);
-                        _httpClientCacheRWLock.EnterReadLock();
-                        try
-                        {
-                            _httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache);
-                        }
-                        finally
-                        {
-                            _httpClientCacheRWLock.ExitReadLock();
-                        }
-
-                        // If a HttpClientCache is not found in the global cache then create one
-                        // for this and other service clients to use.
-                        if (_httpClientCache == null)
-                        {
-                            _httpClientCacheRWLock.EnterWriteLock();
-                            try
-                            {
-                                // Check if the HttpClientCache was created by some other thread 
-                                // while this thread was waiting for the lock.
-                                if (!_httpClientCaches.TryGetValue(configUniqueString, out _httpClientCache))
-                                {
-                                    _httpClientCache = CreateHttpClientCache(_clientConfig);
-                                    _httpClientCaches[configUniqueString] = _httpClientCache;
-                                }
-                            }
-                            finally
-                            {
-                                _httpClientCacheRWLock.ExitWriteLock();
-                            }
-                        }
-                    }
                 }
-
-                // Now that we have a HttpClientCache from either the global cache or just created a new HttpClientCache
-                // get the next HttpClient to be used for making a web request.
-                httpClient = _httpClientCache.GetNextClient();
-            }
-            else
-            {
-                httpClient = CreateHttpClient(_clientConfig);
             }
 
-            return new HttpWebRequestMessage(httpClient, requestUri, _clientConfig);
+            // Now that we have a HttpClientCache from either the global cache or just created a new HttpClientCache
+            // get the next HttpClient to be used for making a web request.
+            httpClient = _httpClientCache.GetClient();
+
+            return new HttpWebRequestMessage(httpClient, requestUri);
         }
 
         /// <summary>
@@ -212,13 +180,8 @@ namespace Amazon.Runtime
 
         private static HttpClientCache CreateHttpClientCache(IClientConfig clientConfig)
         {
-            var clients = new HttpClient[clientConfig.HttpClientCacheSize];
-            for(int i = 0; i < clients.Length; i++)
-            {
-                clients[i] = CreateHttpClient(clientConfig);
-            }
-            var cache = new HttpClientCache(clients);
-            return cache;
+            var client = CreateHttpClient(clientConfig);
+            return new HttpClientCache(client);
         }
 
         private static HttpClient CreateHttpClient(IClientConfig clientConfig)
@@ -243,18 +206,8 @@ namespace Amazon.Runtime
         {
             var httpMessageHandler = new HttpClientHandler();
 
-            if (clientConfig.MaxConnectionsPerServer.HasValue)
-                httpMessageHandler.MaxConnectionsPerServer = clientConfig.MaxConnectionsPerServer.Value;
-
             try
             {
-                // If HttpClientHandler.AllowAutoRedirect is set to true (default value),
-                // redirects for GET requests are automatically followed and redirects for POST
-                // requests are thrown back as exceptions.
-                // If HttpClientHandler.AllowAutoRedirect is set to false (e.g. S3),
-                // redirects are returned as responses.
-                httpMessageHandler.AllowAutoRedirect = clientConfig.AllowAutoRedirect;
-
                 // Disable automatic decompression when Content-Encoding header is present
                 httpMessageHandler.AutomaticDecompression = DecompressionMethods.None;
             }
@@ -295,35 +248,25 @@ namespace Amazon.Runtime
     /// </summary>
     public class HttpClientCache : IDisposable
     {
-        HttpClient[] _clients;
+        HttpClient _client;
 
         /// <summary>
         /// Constructs a container for a cache of HttpClient objects
         /// </summary>
         /// <param name="clients">The HttpClient to cache</param>
-        public HttpClientCache(HttpClient[] clients)
+        public HttpClientCache(HttpClient client)
         {
-            _clients = clients;
+            _client = client;
         }
 
-        private int count = 0;
         /// <summary>
         /// Returns the next HttpClient using a round robin rotation. It is expected that individual clients will be used
         /// by more then one Thread.
         /// </summary>
         /// <returns></returns>
-        public HttpClient GetNextClient()
+        public HttpClient GetClient()
         {
-            if (_clients.Length == 1)
-            {
-                return _clients[0];
-            }
-            else
-            {
-                int next = Interlocked.Increment(ref count);
-                int nextIndex = Math.Abs(next % _clients.Length);
-                return _clients[nextIndex];
-            }
+            return _client;
         }
 
         /// <summary>
@@ -343,12 +286,9 @@ namespace Amazon.Runtime
         {
             if (disposing)
             {
-                if (_clients != null)
+                if (_client != null)
                 {
-                    foreach (var client in _clients)
-                    {
-                        client.Dispose();
-                    }
+                    _client.Dispose();
                 }
             }
         }
@@ -377,17 +317,14 @@ namespace Amazon.Runtime
         private bool _disposed;
         private HttpRequestMessage _request;
         private HttpClient _httpClient;
-        private IClientConfig _clientConfig;
 
         /// <summary>
         /// The constructor for HttpWebRequestMessage.
         /// </summary>
         /// <param name="httpClient">The HttpClient used to make the request.</param>
         /// <param name="requestUri">The request URI.</param>
-        /// <param name="config">The service client config.</param>
-        public HttpWebRequestMessage(HttpClient httpClient, Uri requestUri, IClientConfig config)
+        public HttpWebRequestMessage(HttpClient httpClient, Uri requestUri)
         {
-            _clientConfig = config;
             _httpClient = httpClient;
 
             _request = new HttpRequestMessage();
@@ -470,23 +407,14 @@ namespace Amazon.Runtime
                 var responseMessage = await _httpClient.SendAsync(_request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                     .ConfigureAwait(continueOnCapturedContext: false);
 
-                bool disposeClient = ClientConfig.DisposeHttpClients(_clientConfig);
-                // If AllowAutoRedirect is set to false, HTTP 3xx responses are returned back as response.
-                if (!_clientConfig.AllowAutoRedirect &&
-                    responseMessage.StatusCode >= HttpStatusCode.Ambiguous &&
-                    responseMessage.StatusCode < HttpStatusCode.BadRequest)
-                {
-                    return new HttpClientResponseData(responseMessage, _httpClient, disposeClient);
-                }
-
                 if (!responseMessage.IsSuccessStatusCode)
                 {
                     // For all responses other than HTTP 2xx, return an exception.
                     throw new Amazon.Runtime.Internal.HttpErrorResponseException(
-                        new HttpClientResponseData(responseMessage, _httpClient, disposeClient));
+                        new HttpClientResponseData(responseMessage));
                 }
 
-                return new HttpClientResponseData(responseMessage, _httpClient, disposeClient);
+                return new HttpClientResponseData(responseMessage);
             }
             catch (HttpRequestException httpException)
             {

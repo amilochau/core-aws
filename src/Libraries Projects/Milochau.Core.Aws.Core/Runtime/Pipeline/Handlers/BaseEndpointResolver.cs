@@ -48,16 +48,6 @@ namespace Amazon.Runtime.Internal
             requestContext.Request.Endpoint = new Uri(endpoint.URL);
             requestContext.Request.EndpointAttributes = endpoint.Attributes;
 
-            if (config.UseHttp)
-            {
-                var uriBuilder = new UriBuilder(requestContext.Request.Endpoint)
-                {
-                    Scheme = Uri.UriSchemeHttp,
-                    Port = requestContext.Request.Endpoint.IsDefaultPort ? -1 : requestContext.Request.Endpoint.Port
-                };
-                requestContext.Request.Endpoint = uriBuilder.Uri;
-            }
-
             // set authentication parameters and headers
             SetAuthenticationAndHeaders(requestContext.Request, endpoint);
 
@@ -175,8 +165,7 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         protected static void InjectHostPrefix(IRequestContext requestContext)
         {
-            if (requestContext.ClientConfig.DisableHostPrefixInjection ||
-                string.IsNullOrEmpty(requestContext.Request.HostPrefix))
+            if (string.IsNullOrEmpty(requestContext.Request.HostPrefix))
             {
                 return;
             }

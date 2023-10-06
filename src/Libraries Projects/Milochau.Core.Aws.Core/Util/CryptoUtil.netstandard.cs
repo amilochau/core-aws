@@ -20,7 +20,6 @@
 using Amazon.Runtime;
 using System;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Amazon.Util
 {

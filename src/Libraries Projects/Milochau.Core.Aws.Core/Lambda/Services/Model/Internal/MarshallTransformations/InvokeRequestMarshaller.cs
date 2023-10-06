@@ -21,7 +21,6 @@ using System.IO;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Lambda.Model.Internal.MarshallTransformations
 {
