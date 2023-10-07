@@ -18,7 +18,6 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </summary>
     public partial class Destination
     {
-
         /// <summary>
         /// Gets and sets the property BccAddresses. 
         /// <para>
@@ -27,12 +26,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public List<string>? BccAddresses { get; set; }
-
-        // Check to see if BccAddresses property is set
-        internal bool IsSetBccAddresses()
-        {
-            return this.BccAddresses != null && this.BccAddresses.Count > 0; 
-        }
 
         /// <summary>
         /// Gets and sets the property CcAddresses. 
@@ -43,12 +36,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public List<string>? CcAddresses { get; set; }
 
-        // Check to see if CcAddresses property is set
-        internal bool IsSetCcAddresses()
-        {
-            return this.CcAddresses != null && this.CcAddresses.Count > 0; 
-        }
-
         /// <summary>
         /// Gets and sets the property ToAddresses. 
         /// <para>
@@ -56,11 +43,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public List<string>? ToAddresses { get; set; }
-
-        // Check to see if ToAddresses property is set
-        internal bool IsSetToAddresses()
-        {
-            return this.ToAddresses != null && this.ToAddresses.Count > 0; 
-        }
     }
 }

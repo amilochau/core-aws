@@ -33,9 +33,6 @@ namespace Amazon.Runtime.Internal.Transform
         protected bool IsException { get; set; }
         protected CrcCalculatorStream CrcStream { get; set; }
         protected int Crc32Result { get; set; }
-        protected CoreChecksumAlgorithm ChecksumAlgorithm { get; set; }
-        protected HashStream FlexibleChecksumStream { get; set; }
-        protected string ExpectedFlexibleChecksumResult { get; set; }
         protected IWebResponseData WebResponseData { get; set; }
 
         protected CachingWrapperStream WrappingStream { get; set; }
@@ -78,30 +75,6 @@ namespace Amazon.Runtime.Internal.Transform
                 if (this.CrcStream.Crc32 != this.Crc32Result)
                 {
                     throw new IOException("CRC value returned with response does not match the computed CRC value for the returned response body.");
-                }
-            }
-        }
-
-        internal void ValidateFlexibleCheckumsIfAvailable(ResponseMetadata responseMetadata)
-        {
-            if (FlexibleChecksumStream == null)
-            {
-                return;
-            }
-            
-            responseMetadata.ChecksumAlgorithm = ChecksumAlgorithm;
-            responseMetadata.ChecksumValidationStatus = ChecksumValidationStatus.PENDING_RESPONSE_READ;
-
-            if (FlexibleChecksumStream.CalculatedHash != null)
-            {
-                if (Convert.ToBase64String(FlexibleChecksumStream.CalculatedHash) != ExpectedFlexibleChecksumResult)
-                {
-                    responseMetadata.ChecksumValidationStatus = ChecksumValidationStatus.INVALID;
-                    throw new AmazonClientException("Expected hash not equal to calculated hash");
-                }
-                else
-                {
-                    responseMetadata.ChecksumValidationStatus = ChecksumValidationStatus.SUCCESSFUL;
                 }
             }
         }

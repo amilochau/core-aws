@@ -49,8 +49,8 @@ namespace Amazon.Runtime.Internal.Transform
         #region Private members
 
         private StreamReader streamReader = null;
-        private JsonReader jsonReader = null;
-        private JsonPathStack stack = new JsonPathStack();
+        private readonly JsonReader jsonReader = null;
+        private readonly JsonPathStack stack = new JsonPathStack();
         private JsonToken? currentToken = null;
         private bool disposed = false;
         private bool wasPeeked = false;
@@ -104,9 +104,7 @@ namespace Amazon.Runtime.Internal.Transform
                 }
             }
 
-            if (this.FlexibleChecksumStream != null) // either just flexible checksum, or flexible checksum wrapping the older CRC stream
-                streamReader = new StreamReader(this.FlexibleChecksumStream);
-            else if (this.CrcStream != null)
+            if (this.CrcStream != null)
                 streamReader = new StreamReader(this.CrcStream);
             else
                 streamReader = new StreamReader(responseStream);
@@ -123,24 +121,12 @@ namespace Amazon.Runtime.Internal.Transform
         ///     Returns the element depth of the parser's current position in the json
         ///     document being parsed.
         /// </summary>
-        public override int CurrentDepth
-        {
-            get
-            {
-                return this.stack.CurrentDepth;
-            }
-        }
+        public override int CurrentDepth => this.stack.CurrentDepth;
 
         /// <summary>
         /// The current Json path that is being unmarshalled.
         /// </summary>
-        public override string CurrentPath
-        {
-            get 
-            {
-                return this.stack.CurrentPath; 
-            }
-        }
+        public override string CurrentPath => this.stack.CurrentPath;
 
         /// <summary>
         ///     Reads to the next token in the json document, and updates the context
@@ -244,10 +230,7 @@ namespace Amazon.Runtime.Internal.Transform
         /// <summary>
         /// The type of the current token
         /// </summary>
-        public JsonToken CurrentTokenType
-        {
-            get { return currentToken.Value; }
-        }
+        public JsonToken CurrentTokenType => currentToken.Value;
 
         #endregion
 
@@ -256,10 +239,7 @@ namespace Amazon.Runtime.Internal.Transform
         /// <summary>
         /// Get the base stream of the jsonStream.
         /// </summary>
-        public Stream Stream
-        {
-            get { return streamReader.BaseStream; }
-        }
+        public Stream Stream => streamReader.BaseStream;
 
         #endregion
 

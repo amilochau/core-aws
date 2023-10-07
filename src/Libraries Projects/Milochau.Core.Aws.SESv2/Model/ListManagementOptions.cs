@@ -6,7 +6,6 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </summary>
     public partial class ListManagementOptions
     {
-
         /// <summary>
         /// Gets and sets the property ContactListName. 
         /// <para>
@@ -15,12 +14,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public string? ContactListName { get; set; }
 
-        // Check to see if ContactListName property is set
-        internal bool IsSetContactListName()
-        {
-            return this.ContactListName != null;
-        }
-
         /// <summary>
         /// Gets and sets the property TopicName. 
         /// <para>
@@ -28,11 +21,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public string? TopicName { get; set; }
-
-        // Check to see if TopicName property is set
-        internal bool IsSetTopicName()
-        {
-            return this.TopicName != null;
-        }
     }
 }

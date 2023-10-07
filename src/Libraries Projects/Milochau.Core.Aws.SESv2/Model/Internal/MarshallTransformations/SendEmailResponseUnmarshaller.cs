@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal.Transform;
 
@@ -13,34 +14,16 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        /// <param name="context"></param>
+        /// </summary>
         /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            SendEmailResponse response = new SendEmailResponse();
-
-            context.Read();
-            int targetDepth = context.CurrentDepth;
-            while (context.ReadAtDepth(targetDepth))
-            {
-                if (context.TestExpression("MessageId", targetDepth))
-                {
-                    var unmarshaller = StringUnmarshaller.Instance;
-                    response.MessageId = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-            }
-
-            return response;
+            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.SendEmailResponse)!; // @todo null?
         }
 
         /// <summary>
         /// Unmarshaller error response to exception.
-        /// </summary>  
-        /// <param name="context"></param>
-        /// <param name="innerException"></param>
-        /// <param name="statusCode"></param>
+        /// </summary>
         /// <returns></returns>
         public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
         {
@@ -59,11 +42,6 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
                 }
             }
             return new AmazonSimpleEmailServiceV2Exception(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
-        }
-
-        internal static SendEmailResponseUnmarshaller GetInstance()
-        {
-            return Instance;
         }
 
         /// <summary>

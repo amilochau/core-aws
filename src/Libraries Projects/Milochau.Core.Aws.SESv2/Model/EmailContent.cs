@@ -9,7 +9,6 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </summary>
     public partial class EmailContent
     {
-
         /// <summary>
         /// Gets and sets the property Raw. 
         /// <para>
@@ -51,12 +50,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public RawMessage? Raw { get; set; }
 
-        // Check to see if Raw property is set
-        internal bool IsSetRaw()
-        {
-            return this.Raw != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Simple. 
         /// <para>
@@ -65,12 +58,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public Message? Simple { get; set; }
 
-        // Check to see if Simple property is set
-        internal bool IsSetSimple()
-        {
-            return this.Simple != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Template. 
         /// <para>
@@ -78,12 +65,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public Template? Template { get; set; }
-
-        // Check to see if Template property is set
-        internal bool IsSetTemplate()
-        {
-            return this.Template != null;
-        }
-
     }
 }

@@ -38,12 +38,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public string? ConfigurationSetName { get; set; }
 
-        // Check to see if ConfigurationSetName property is set
-        internal bool IsSetConfigurationSetName()
-        {
-            return this.ConfigurationSetName != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Content. 
         /// <para>
@@ -53,12 +47,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public EmailContent? Content { get; set; }
 
-        // Check to see if Content property is set
-        internal bool IsSetContent()
-        {
-            return this.Content != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Destination. 
         /// <para>
@@ -66,12 +54,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public Destination? Destination { get; set; }
-
-        // Check to see if Destination property is set
-        internal bool IsSetDestination()
-        {
-            return this.Destination != null;
-        }
 
         /// <summary>
         /// Gets and sets the property EmailTags. 
@@ -83,12 +65,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public List<MessageTag>? EmailTags { get; set; }
 
-        // Check to see if EmailTags property is set
-        internal bool IsSetEmailTags()
-        {
-            return this.EmailTags != null && this.EmailTags.Count > 0; 
-        }
-
         /// <summary>
         /// Gets and sets the property FeedbackForwardingEmailAddress. 
         /// <para>
@@ -96,12 +72,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public string? FeedbackForwardingEmailAddress { get; set; }
-
-        // Check to see if FeedbackForwardingEmailAddress property is set
-        internal bool IsSetFeedbackForwardingEmailAddress()
-        {
-            return this.FeedbackForwardingEmailAddress != null;
-        }
 
         /// <summary>
         /// Gets and sets the property FeedbackForwardingEmailAddressIdentityArn. 
@@ -125,12 +95,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public string? FeedbackForwardingEmailAddressIdentityArn { get; set; }
 
-        // Check to see if FeedbackForwardingEmailAddressIdentityArn property is set
-        internal bool IsSetFeedbackForwardingEmailAddressIdentityArn()
-        {
-            return this.FeedbackForwardingEmailAddressIdentityArn != null;
-        }
-
         /// <summary>
         /// Gets and sets the property FromEmailAddress. 
         /// <para>
@@ -139,12 +103,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public string? FromEmailAddress { get; set; }
-
-        // Check to see if FromEmailAddress property is set
-        internal bool IsSetFromEmailAddress()
-        {
-            return this.FromEmailAddress != null;
-        }
 
         /// <summary>
         /// Gets and sets the property FromEmailAddressIdentityArn. 
@@ -173,12 +131,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public string? FromEmailAddressIdentityArn { get; set; }
 
-        // Check to see if FromEmailAddressIdentityArn property is set
-        internal bool IsSetFromEmailAddressIdentityArn()
-        {
-            return this.FromEmailAddressIdentityArn != null;
-        }
-
         /// <summary>
         /// Gets and sets the property ListManagementOptions. 
         /// <para>
@@ -188,12 +140,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public ListManagementOptions? ListManagementOptions { get; set; }
 
-        // Check to see if ListManagementOptions property is set
-        internal bool IsSetListManagementOptions()
-        {
-            return this.ListManagementOptions != null;
-        }
-
         /// <summary>
         /// Gets and sets the property ReplyToAddresses. 
         /// <para>
@@ -202,11 +148,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public List<string>? ReplyToAddresses { get; set; }
-
-        // Check to see if ReplyToAddresses property is set
-        internal bool IsSetReplyToAddresses()
-        {
-            return this.ReplyToAddresses != null && this.ReplyToAddresses.Count > 0; 
-        }
     }
 }

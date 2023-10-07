@@ -6,7 +6,6 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </summary>
     public partial class MessageTag
     {
-
         /// <summary>
         /// Gets and sets the property Name. 
         /// <para>
@@ -25,12 +24,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </summary>
         public string? Name { get; set; }
 
-        // Check to see if Name property is set
-        internal bool IsSetName()
-        {
-            return this.Name != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Value. 
         /// <para>
@@ -48,11 +41,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         ///  </li> </ul>
         /// </summary>
         public string? Value { get; set; }
-
-        // Check to see if Value property is set
-        internal bool IsSetValue()
-        {
-            return this.Value != null;
-        }
     }
 }

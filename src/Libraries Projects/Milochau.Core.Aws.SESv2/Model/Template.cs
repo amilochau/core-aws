@@ -8,7 +8,6 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </summary>
     public partial class Template
     {
-
         /// <summary>
         /// Gets and sets the property TemplateArn. 
         /// <para>
@@ -16,12 +15,6 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public string? TemplateArn { get; set; }
-
-        // Check to see if TemplateArn property is set
-        internal bool IsSetTemplateArn()
-        {
-            return this.TemplateArn != null;
-        }
 
         /// <summary>
         /// Gets and sets the property TemplateData. 
@@ -31,13 +24,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// The corresponding value defines the value to use for that variable.
         /// </para>
         /// </summary>
-        public string ?TemplateData { get; set; }
-
-        // Check to see if TemplateData property is set
-        internal bool IsSetTemplateData()
-        {
-            return this.TemplateData != null;
-        }
+        public string? TemplateData { get; set; }
 
         /// <summary>
         /// Gets and sets the property TemplateName. 
@@ -48,11 +35,5 @@ namespace Milochau.Core.Aws.SESv2.Model
         /// </para>
         /// </summary>
         public string? TemplateName { get; set; }
-
-        // Check to see if TemplateName property is set
-        internal bool IsSetTemplateName()
-        {
-            return this.TemplateName != null;
-        }
     }
 }

@@ -89,7 +89,6 @@ namespace Amazon.Runtime.Internal
             AmazonWebServiceResponse response = unmarshaller.UnmarshallResponse(context);
 
             context.ValidateCRC32IfAvailable();
-            context.ValidateFlexibleCheckumsIfAvailable(response.ResponseMetadata);
             return response;
         }
     }
