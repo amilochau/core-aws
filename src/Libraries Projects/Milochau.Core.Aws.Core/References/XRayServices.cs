@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.Core.References
 {
     public class XRayServices : AWSServiceHandlerManifest
     {
-        public static readonly XRayServices Instance = new XRayServices()
+        public static readonly XRayServices Instance = new XRayServices
         {
             Services = new Dictionary<string, AWSServiceHandler>
             {

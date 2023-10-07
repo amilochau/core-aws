@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// EmailContent Marshaller
     /// </summary>
-    public class EmailContentMarshaller : IRequestMarshaller<EmailContent, JsonMarshallerContext> 
+    public class EmailContentMarshaller : IRequestMarshaller<EmailContent> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,39 +32,39 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(EmailContent requestObject, JsonMarshallerContext context)
+        public void Marshall(EmailContent requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetRaw())
             {
-                context.Writer.WritePropertyName("Raw");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Raw");
+                writer.WriteObjectStart();
 
                 var marshaller = RawMessageMarshaller.Instance;
-                marshaller.Marshall(requestObject.Raw, context);
+                marshaller.Marshall(requestObject.Raw, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if(requestObject.IsSetSimple())
             {
-                context.Writer.WritePropertyName("Simple");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Simple");
+                writer.WriteObjectStart();
 
                 var marshaller = MessageMarshaller.Instance;
-                marshaller.Marshall(requestObject.Simple, context);
+                marshaller.Marshall(requestObject.Simple, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if(requestObject.IsSetTemplate())
             {
-                context.Writer.WritePropertyName("Template");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Template");
+                writer.WriteObjectStart();
 
                 var marshaller = TemplateMarshaller.Instance;
-                marshaller.Marshall(requestObject.Template, context);
+                marshaller.Marshall(requestObject.Template, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }

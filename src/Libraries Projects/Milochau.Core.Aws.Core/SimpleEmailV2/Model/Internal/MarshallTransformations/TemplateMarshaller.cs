@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Template Marshaller
     /// </summary>
-    public class TemplateMarshaller : IRequestMarshaller<Template, JsonMarshallerContext> 
+    public class TemplateMarshaller : IRequestMarshaller<Template> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,24 +32,24 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(Template requestObject, JsonMarshallerContext context)
+        public void Marshall(Template requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetTemplateArn())
             {
-                context.Writer.WritePropertyName("TemplateArn");
-                context.Writer.Write(requestObject.TemplateArn);
+                writer.WritePropertyName("TemplateArn");
+                writer.Write(requestObject.TemplateArn);
             }
 
             if(requestObject.IsSetTemplateData())
             {
-                context.Writer.WritePropertyName("TemplateData");
-                context.Writer.Write(requestObject.TemplateData);
+                writer.WritePropertyName("TemplateData");
+                writer.Write(requestObject.TemplateData);
             }
 
             if(requestObject.IsSetTemplateName())
             {
-                context.Writer.WritePropertyName("TemplateName");
-                context.Writer.Write(requestObject.TemplateName);
+                writer.WritePropertyName("TemplateName");
+                writer.Write(requestObject.TemplateName);
             }
 
         }

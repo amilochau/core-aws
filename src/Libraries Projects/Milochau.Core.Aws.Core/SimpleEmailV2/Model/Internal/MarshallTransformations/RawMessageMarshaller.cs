@@ -18,13 +18,14 @@
  */
 using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime.Internal.Util;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// RawMessage Marshaller
     /// </summary>
-    public class RawMessageMarshaller : IRequestMarshaller<RawMessage, JsonMarshallerContext> 
+    public class RawMessageMarshaller : IRequestMarshaller<RawMessage> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -32,12 +33,12 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(RawMessage requestObject, JsonMarshallerContext context)
+        public void Marshall(RawMessage requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetData())
             {
-                context.Writer.WritePropertyName("Data");
-                context.Writer.Write(StringUtils.FromMemoryStream(requestObject.Data));
+                writer.WritePropertyName("Data");
+                writer.Write(StringUtils.FromMemoryStream(requestObject.Data));
             }
 
         }

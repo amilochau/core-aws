@@ -30,16 +30,6 @@ namespace Amazon.XRay.Recorder.Core
     public interface IAWSXRayRecorder : IDisposable
     {
         /// <summary>
-        /// Gets or sets origin service
-        /// </summary>
-        string Origin { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sampling strategy
-        /// </summary>
-        ISamplingStrategy SamplingStrategy { get; set; }
-
-        /// <summary>
         /// Get or sets the streaming strategy
         /// </summary>
         IStreamingStrategy StreamingStrategy { get; set; }

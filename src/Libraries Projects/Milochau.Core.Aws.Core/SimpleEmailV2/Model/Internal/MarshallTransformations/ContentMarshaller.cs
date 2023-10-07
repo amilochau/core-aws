@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Content Marshaller
     /// </summary>
-    public class ContentMarshaller : IRequestMarshaller<Content, JsonMarshallerContext> 
+    public class ContentMarshaller : IRequestMarshaller<Content> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,18 +32,18 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(Content requestObject, JsonMarshallerContext context)
+        public void Marshall(Content requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetCharset())
             {
-                context.Writer.WritePropertyName("Charset");
-                context.Writer.Write(requestObject.Charset);
+                writer.WritePropertyName("Charset");
+                writer.Write(requestObject.Charset);
             }
 
             if(requestObject.IsSetData())
             {
-                context.Writer.WritePropertyName("Data");
-                context.Writer.Write(requestObject.Data);
+                writer.WritePropertyName("Data");
+                writer.Write(requestObject.Data);
             }
 
         }

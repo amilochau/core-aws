@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/AttributeValueUpdateMarshaller.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations
@@ -6,31 +7,29 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// AttributeValueUpdate Marshaller
     /// </summary>
-    public class AttributeValueUpdateMarshaller : IRequestMarshaller<AttributeValueUpdate, JsonMarshallerContext>
+    public class AttributeValueUpdateMarshaller : IRequestMarshaller<AttributeValueUpdate>
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="requestObject"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(AttributeValueUpdate requestObject, JsonMarshallerContext context)
+        public void Marshall(AttributeValueUpdate requestObject, JsonWriter writer)
         {
             if (requestObject.IsSetAction())
             {
-                context.Writer.WritePropertyName("Action");
-                context.Writer.Write(requestObject.Action!.Value);
+                writer.WritePropertyName("Action");
+                writer.Write(requestObject.Action!.Value);
             }
 
             if (requestObject.IsSetValue())
             {
-                context.Writer.WritePropertyName("Value");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Value");
+                writer.WriteObjectStart();
 
                 var marshaller = AttributeValueMarshaller.Instance;
-                marshaller.Marshall(requestObject.Value!, context);
+                marshaller.Marshall(requestObject.Value!, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }

@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Destination Marshaller
     /// </summary>
-    public class DestinationMarshaller : IRequestMarshaller<Destination, JsonMarshallerContext> 
+    public class DestinationMarshaller : IRequestMarshaller<Destination> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,39 +32,39 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(Destination requestObject, JsonMarshallerContext context)
+        public void Marshall(Destination requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetBccAddresses())
             {
-                context.Writer.WritePropertyName("BccAddresses");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("BccAddresses");
+                writer.WriteArrayStart();
                 foreach(var requestObjectBccAddressesListValue in requestObject.BccAddresses)
                 {
-                        context.Writer.Write(requestObjectBccAddressesListValue);
+                        writer.Write(requestObjectBccAddressesListValue);
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if(requestObject.IsSetCcAddresses())
             {
-                context.Writer.WritePropertyName("CcAddresses");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("CcAddresses");
+                writer.WriteArrayStart();
                 foreach(var requestObjectCcAddressesListValue in requestObject.CcAddresses)
                 {
-                        context.Writer.Write(requestObjectCcAddressesListValue);
+                        writer.Write(requestObjectCcAddressesListValue);
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if(requestObject.IsSetToAddresses())
             {
-                context.Writer.WritePropertyName("ToAddresses");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("ToAddresses");
+                writer.WriteArrayStart();
                 foreach(var requestObjectToAddressesListValue in requestObject.ToAddresses)
                 {
-                        context.Writer.Write(requestObjectToAddressesListValue);
+                        writer.Write(requestObjectToAddressesListValue);
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
         }

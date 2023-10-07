@@ -20,9 +20,6 @@
  *
  */
 using System;
-using System.Collections.Generic;
-
-using Amazon.Util.Internal;
 
 namespace Amazon.Runtime
 {

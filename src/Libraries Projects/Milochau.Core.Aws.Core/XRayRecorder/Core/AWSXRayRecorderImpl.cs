@@ -17,8 +17,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Context;
 using Amazon.XRay.Recorder.Core.Internal.Emitters;
@@ -40,26 +38,12 @@ namespace Amazon.XRay.Recorder.Core
         public const string EnvironmentVariableContextMissingStrategy = "AWS_XRAY_CONTEXT_MISSING";
 
         protected const long MaxSubsegmentSize = 100;
-
-        private ISegmentEmitter _emitter;
-        private bool disposed;
         protected ContextMissingStrategy cntxtMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-        private Dictionary<string, object> serviceContext = new Dictionary<string, object>();
 
         protected AWSXRayRecorderImpl(ISegmentEmitter emitter)
         {
-            this._emitter = emitter;
+            this.Emitter = emitter;
         }
-
-        /// <summary>
-        /// Gets or sets the origin of the service.
-        /// </summary>
-        public string Origin { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sampling strategy.
-        /// </summary>
-        public ISamplingStrategy SamplingStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets the context missing strategy.
@@ -102,11 +86,11 @@ namespace Amazon.XRay.Recorder.Core
         /// <summary>
         /// Emitter used to send Traces.
         /// </summary>
-        public ISegmentEmitter Emitter { get => _emitter; set => _emitter = value; }
+        public ISegmentEmitter Emitter { get; set; }
 
-        protected bool Disposed { get => disposed; set => disposed = value; }
+        protected bool Disposed { get; set; }
 
-        protected Dictionary<string, object> ServiceContext { get => serviceContext; set => serviceContext = value; }
+        protected Dictionary<string, object> ServiceContext { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Defines exception serialization stategy to process recorded exceptions. <see cref="Strategies.ExceptionSerializationStrategy"/>
@@ -277,7 +261,7 @@ namespace Amazon.XRay.Recorder.Core
         }
 
         /// <summary>
-        /// Sets the daemon address for <see cref="Emitter"/> and <see cref="DefaultSamplingStrategy"/> if set.
+        /// Sets the daemon address for <see cref="Emitter"/>.
         /// A notation of '127.0.0.1:2000' or 'tcp:127.0.0.1:2000 udp:127.0.0.2:2001' or 
         ///'udp:127.0.0.1:2000 tcp:127.0.0.2:2001'
         /// are acceptable.The former one means UDP and TCP are running at
@@ -291,12 +275,6 @@ namespace Amazon.XRay.Recorder.Core
             if (Emitter != null)
             {
                 Emitter.SetDaemonAddress(daemonAddress);
-            }
-
-            if (SamplingStrategy != null && SamplingStrategy.GetType().Equals(typeof(DefaultSamplingStrategy)))
-            {
-                DefaultSamplingStrategy defaultSampler = (DefaultSamplingStrategy)SamplingStrategy;
-                defaultSampler.LoadDaemonConfig(DaemonConfig.GetEndPoint(daemonAddress));
             }
         }
 
@@ -354,15 +332,7 @@ namespace Amazon.XRay.Recorder.Core
             var xrayContext = new ConcurrentDictionary<string, string>();
 
             xrayContext["sdk"] = "X-Ray for .NET Core";
-            string currentAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-            if (!string.IsNullOrEmpty(currentAssemblyLocation))
-            {
-                xrayContext["sdk_version"] = FileVersionInfo.GetVersionInfo(currentAssemblyLocation).ProductVersion;
-            }
-            else
-            {
-                xrayContext["sdk_version"] = "Unknown";
-            }
+            xrayContext["sdk_version"] = "Unknown";
 
             RuntimeContext["xray"] = xrayContext;
             ServiceContext["runtime"] = ".NET Core Framework";

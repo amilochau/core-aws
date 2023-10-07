@@ -42,172 +42,171 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
             {
                 JsonWriter writer = new JsonWriter(stringWriter);
                 writer.WriteObjectStart();
-                var context = new JsonMarshallerContext(request, writer);
                 if (publicRequest.IsSetAttributesToGet())
                 {
-                    context.Writer.WritePropertyName("AttributesToGet");
-                    context.Writer.WriteArrayStart();
+                    writer.WritePropertyName("AttributesToGet");
+                    writer.WriteArrayStart();
                     foreach (var publicRequestAttributesToGetListValue in publicRequest.AttributesToGet)
                     {
-                        context.Writer.Write(publicRequestAttributesToGetListValue);
+                        writer.Write(publicRequestAttributesToGetListValue);
                     }
-                    context.Writer.WriteArrayEnd();
+                    writer.WriteArrayEnd();
                 }
 
                 if (publicRequest.IsSetConditionalOperator())
                 {
-                    context.Writer.WritePropertyName("ConditionalOperator");
-                    context.Writer.Write(publicRequest.ConditionalOperator!.Value);
+                    writer.WritePropertyName("ConditionalOperator");
+                    writer.Write(publicRequest.ConditionalOperator!.Value);
                 }
 
                 if (publicRequest.IsSetConsistentRead())
                 {
-                    context.Writer.WritePropertyName("ConsistentRead");
-                    context.Writer.Write(publicRequest.ConsistentRead);
+                    writer.WritePropertyName("ConsistentRead");
+                    writer.Write(publicRequest.ConsistentRead);
                 }
 
                 if (publicRequest.IsSetExclusiveStartKey())
                 {
-                    context.Writer.WritePropertyName("ExclusiveStartKey");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ExclusiveStartKey");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExclusiveStartKeyKvp in publicRequest.ExclusiveStartKey)
                     {
-                        context.Writer.WritePropertyName(publicRequestExclusiveStartKeyKvp.Key);
+                        writer.WritePropertyName(publicRequestExclusiveStartKeyKvp.Key);
                         var publicRequestExclusiveStartKeyValue = publicRequestExclusiveStartKeyKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = AttributeValueMarshaller.Instance;
-                        marshaller.Marshall(publicRequestExclusiveStartKeyValue, context);
+                        marshaller.Marshall(publicRequestExclusiveStartKeyValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetExpressionAttributeNames())
                 {
-                    context.Writer.WritePropertyName("ExpressionAttributeNames");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ExpressionAttributeNames");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExpressionAttributeNamesKvp in publicRequest.ExpressionAttributeNames)
                     {
-                        context.Writer.WritePropertyName(publicRequestExpressionAttributeNamesKvp.Key);
+                        writer.WritePropertyName(publicRequestExpressionAttributeNamesKvp.Key);
                         var publicRequestExpressionAttributeNamesValue = publicRequestExpressionAttributeNamesKvp.Value;
 
-                        context.Writer.Write(publicRequestExpressionAttributeNamesValue);
+                        writer.Write(publicRequestExpressionAttributeNamesValue);
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetExpressionAttributeValues())
                 {
-                    context.Writer.WritePropertyName("ExpressionAttributeValues");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ExpressionAttributeValues");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExpressionAttributeValuesKvp in publicRequest.ExpressionAttributeValues)
                     {
-                        context.Writer.WritePropertyName(publicRequestExpressionAttributeValuesKvp.Key);
+                        writer.WritePropertyName(publicRequestExpressionAttributeValuesKvp.Key);
                         var publicRequestExpressionAttributeValuesValue = publicRequestExpressionAttributeValuesKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = AttributeValueMarshaller.Instance;
-                        marshaller.Marshall(publicRequestExpressionAttributeValuesValue, context);
+                        marshaller.Marshall(publicRequestExpressionAttributeValuesValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetFilterExpression())
                 {
-                    context.Writer.WritePropertyName("FilterExpression");
-                    context.Writer.Write(publicRequest.FilterExpression);
+                    writer.WritePropertyName("FilterExpression");
+                    writer.Write(publicRequest.FilterExpression);
                 }
 
                 if (publicRequest.IsSetIndexName())
                 {
-                    context.Writer.WritePropertyName("IndexName");
-                    context.Writer.Write(publicRequest.IndexName);
+                    writer.WritePropertyName("IndexName");
+                    writer.Write(publicRequest.IndexName);
                 }
 
                 if (publicRequest.IsSetKeyConditionExpression())
                 {
-                    context.Writer.WritePropertyName("KeyConditionExpression");
-                    context.Writer.Write(publicRequest.KeyConditionExpression);
+                    writer.WritePropertyName("KeyConditionExpression");
+                    writer.Write(publicRequest.KeyConditionExpression);
                 }
 
                 if (publicRequest.IsSetKeyConditions())
                 {
-                    context.Writer.WritePropertyName("KeyConditions");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("KeyConditions");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestKeyConditionsKvp in publicRequest.KeyConditions)
                     {
-                        context.Writer.WritePropertyName(publicRequestKeyConditionsKvp.Key);
+                        writer.WritePropertyName(publicRequestKeyConditionsKvp.Key);
                         var publicRequestKeyConditionsValue = publicRequestKeyConditionsKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = ConditionMarshaller.Instance;
-                        marshaller.Marshall(publicRequestKeyConditionsValue, context);
+                        marshaller.Marshall(publicRequestKeyConditionsValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.Limit.HasValue)
                 {
-                    context.Writer.WritePropertyName("Limit");
-                    context.Writer.Write(publicRequest.Limit.Value);
+                    writer.WritePropertyName("Limit");
+                    writer.Write(publicRequest.Limit.Value);
                 }
 
                 if (publicRequest.IsSetProjectionExpression())
                 {
-                    context.Writer.WritePropertyName("ProjectionExpression");
-                    context.Writer.Write(publicRequest.ProjectionExpression);
+                    writer.WritePropertyName("ProjectionExpression");
+                    writer.Write(publicRequest.ProjectionExpression);
                 }
 
                 if (publicRequest.IsSetQueryFilter())
                 {
-                    context.Writer.WritePropertyName("QueryFilter");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("QueryFilter");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestQueryFilterKvp in publicRequest.QueryFilter)
                     {
-                        context.Writer.WritePropertyName(publicRequestQueryFilterKvp.Key);
+                        writer.WritePropertyName(publicRequestQueryFilterKvp.Key);
                         var publicRequestQueryFilterValue = publicRequestQueryFilterKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = ConditionMarshaller.Instance;
-                        marshaller.Marshall(publicRequestQueryFilterValue, context);
+                        marshaller.Marshall(publicRequestQueryFilterValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
-                    context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
+                    writer.WritePropertyName("ReturnConsumedCapacity");
+                    writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetScanIndexForward())
                 {
-                    context.Writer.WritePropertyName("ScanIndexForward");
-                    context.Writer.Write(publicRequest.ScanIndexForward);
+                    writer.WritePropertyName("ScanIndexForward");
+                    writer.Write(publicRequest.ScanIndexForward);
                 }
 
                 if (publicRequest.IsSetSelect())
                 {
-                    context.Writer.WritePropertyName("Select");
-                    context.Writer.Write(publicRequest.Select!.Value);
+                    writer.WritePropertyName("Select");
+                    writer.Write(publicRequest.Select!.Value);
                 }
 
                 if (publicRequest.IsSetTableName())
                 {
-                    context.Writer.WritePropertyName("TableName");
-                    context.Writer.Write(publicRequest.TableName);
+                    writer.WritePropertyName("TableName");
+                    writer.Write(publicRequest.TableName);
                 }
 
                 writer.WriteObjectEnd();

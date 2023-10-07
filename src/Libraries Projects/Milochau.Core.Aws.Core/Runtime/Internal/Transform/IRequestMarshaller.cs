@@ -16,30 +16,8 @@ using ThirdParty.Json.LitJson;
 
 namespace Amazon.Runtime.Internal.Transform
 {
-    public interface IRequestMarshaller<R, T>
-        where T : MarshallerContext
+    public interface IRequestMarshaller<R>
     {
-        void Marshall(R requestObject, T context);
-    }
-
-    public abstract class MarshallerContext
-    {
-        public IRequest Request { get; private set; }
-
-        protected MarshallerContext(IRequest request)
-        {
-            Request = request;
-        }
-    }
-
-    public class JsonMarshallerContext : MarshallerContext
-    {
-        public JsonWriter Writer { get; private set; }
-
-        public JsonMarshallerContext(IRequest request, JsonWriter writer)
-            : base(request)
-        {
-            Writer = writer;
-        }
+        void Marshall(R requestObject, JsonWriter writer);
     }
 }

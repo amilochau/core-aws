@@ -57,95 +57,94 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
             {
                 JsonWriter writer = new JsonWriter(stringWriter);
                 writer.WriteObjectStart();
-                var context = new JsonMarshallerContext(request, writer);
                 if(publicRequest.IsSetConfigurationSetName())
                 {
-                    context.Writer.WritePropertyName("ConfigurationSetName");
-                    context.Writer.Write(publicRequest.ConfigurationSetName);
+                    writer.WritePropertyName("ConfigurationSetName");
+                    writer.Write(publicRequest.ConfigurationSetName);
                 }
 
                 if(publicRequest.IsSetContent())
                 {
-                    context.Writer.WritePropertyName("Content");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("Content");
+                    writer.WriteObjectStart();
 
                     var marshaller = EmailContentMarshaller.Instance;
-                    marshaller.Marshall(publicRequest.Content, context);
+                    marshaller.Marshall(publicRequest.Content, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if(publicRequest.IsSetDestination())
                 {
-                    context.Writer.WritePropertyName("Destination");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("Destination");
+                    writer.WriteObjectStart();
 
                     var marshaller = DestinationMarshaller.Instance;
-                    marshaller.Marshall(publicRequest.Destination, context);
+                    marshaller.Marshall(publicRequest.Destination, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if(publicRequest.IsSetEmailTags())
                 {
-                    context.Writer.WritePropertyName("EmailTags");
-                    context.Writer.WriteArrayStart();
+                    writer.WritePropertyName("EmailTags");
+                    writer.WriteArrayStart();
                     foreach(var publicRequestEmailTagsListValue in publicRequest.EmailTags)
                     {
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = MessageTagMarshaller.Instance;
-                        marshaller.Marshall(publicRequestEmailTagsListValue, context);
+                        marshaller.Marshall(publicRequestEmailTagsListValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteArrayEnd();
+                    writer.WriteArrayEnd();
                 }
 
                 if(publicRequest.IsSetFeedbackForwardingEmailAddress())
                 {
-                    context.Writer.WritePropertyName("FeedbackForwardingEmailAddress");
-                    context.Writer.Write(publicRequest.FeedbackForwardingEmailAddress);
+                    writer.WritePropertyName("FeedbackForwardingEmailAddress");
+                    writer.Write(publicRequest.FeedbackForwardingEmailAddress);
                 }
 
                 if(publicRequest.IsSetFeedbackForwardingEmailAddressIdentityArn())
                 {
-                    context.Writer.WritePropertyName("FeedbackForwardingEmailAddressIdentityArn");
-                    context.Writer.Write(publicRequest.FeedbackForwardingEmailAddressIdentityArn);
+                    writer.WritePropertyName("FeedbackForwardingEmailAddressIdentityArn");
+                    writer.Write(publicRequest.FeedbackForwardingEmailAddressIdentityArn);
                 }
 
                 if(publicRequest.IsSetFromEmailAddress())
                 {
-                    context.Writer.WritePropertyName("FromEmailAddress");
-                    context.Writer.Write(publicRequest.FromEmailAddress);
+                    writer.WritePropertyName("FromEmailAddress");
+                    writer.Write(publicRequest.FromEmailAddress);
                 }
 
                 if(publicRequest.IsSetFromEmailAddressIdentityArn())
                 {
-                    context.Writer.WritePropertyName("FromEmailAddressIdentityArn");
-                    context.Writer.Write(publicRequest.FromEmailAddressIdentityArn);
+                    writer.WritePropertyName("FromEmailAddressIdentityArn");
+                    writer.Write(publicRequest.FromEmailAddressIdentityArn);
                 }
 
                 if(publicRequest.IsSetListManagementOptions())
                 {
-                    context.Writer.WritePropertyName("ListManagementOptions");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ListManagementOptions");
+                    writer.WriteObjectStart();
 
                     var marshaller = ListManagementOptionsMarshaller.Instance;
-                    marshaller.Marshall(publicRequest.ListManagementOptions, context);
+                    marshaller.Marshall(publicRequest.ListManagementOptions, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if(publicRequest.IsSetReplyToAddresses())
                 {
-                    context.Writer.WritePropertyName("ReplyToAddresses");
-                    context.Writer.WriteArrayStart();
+                    writer.WritePropertyName("ReplyToAddresses");
+                    writer.WriteArrayStart();
                     foreach(var publicRequestReplyToAddressesListValue in publicRequest.ReplyToAddresses)
                     {
-                            context.Writer.Write(publicRequestReplyToAddressesListValue);
+                            writer.Write(publicRequestReplyToAddressesListValue);
                     }
-                    context.Writer.WriteArrayEnd();
+                    writer.WriteArrayEnd();
                 }
 
                 writer.WriteObjectEnd();

@@ -20,7 +20,6 @@ using Amazon.XRay.Recorder.Core.Internal.Emitters;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using Amazon.XRay.Recorder.Core.Sampling;
-using Amazon.XRay.Recorder.Core.Sampling.Local;
 
 namespace Amazon.XRay.Recorder.Core
 {
@@ -35,8 +34,6 @@ namespace Amazon.XRay.Recorder.Core
         public const String LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
 
         private static String _lambdaVariables;
-
-        private XRayOptions _xRayOptions = new XRayOptions();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AWSXRayRecorder" /> class.
@@ -55,7 +52,6 @@ namespace Amazon.XRay.Recorder.Core
         internal AWSXRayRecorder(ISegmentEmitter emitter) : base(emitter)
         {
             PopulateContexts();
-            SamplingStrategy = new LocalizedSamplingStrategy();
         }
 
         /// <summary>
@@ -82,7 +78,7 @@ namespace Amazon.XRay.Recorder.Core
         /// <summary>
         /// Instance of <see cref="XRayOptions"/> class.
         /// </summary>
-        public XRayOptions XRayOptions { get => _xRayOptions; set => _xRayOptions = value; }
+        public XRayOptions XRayOptions { get; set; } = new XRayOptions();
 
         /// <summary>
         /// Begin a tracing subsegment. A new segment will be created and added as a subsegment to previous segment/subsegment.

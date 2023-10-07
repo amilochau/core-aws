@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Body Marshaller
     /// </summary>
-    public class BodyMarshaller : IRequestMarshaller<Body, JsonMarshallerContext> 
+    public class BodyMarshaller : IRequestMarshaller<Body> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,28 +32,28 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(Body requestObject, JsonMarshallerContext context)
+        public void Marshall(Body requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetHtml())
             {
-                context.Writer.WritePropertyName("Html");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Html");
+                writer.WriteObjectStart();
 
                 var marshaller = ContentMarshaller.Instance;
-                marshaller.Marshall(requestObject.Html, context);
+                marshaller.Marshall(requestObject.Html, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if(requestObject.IsSetText())
             {
-                context.Writer.WritePropertyName("Text");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Text");
+                writer.WriteObjectStart();
 
                 var marshaller = ContentMarshaller.Instance;
-                marshaller.Marshall(requestObject.Text, context);
+                marshaller.Marshall(requestObject.Text, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }

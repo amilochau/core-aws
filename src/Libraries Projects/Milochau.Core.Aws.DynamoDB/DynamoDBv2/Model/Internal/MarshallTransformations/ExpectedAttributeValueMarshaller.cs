@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/ExpectedAttributeValueMarshaller.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations
@@ -6,53 +7,51 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// ExpectedAttributeValue Marshaller
     /// </summary>
-    public class ExpectedAttributeValueMarshaller : IRequestMarshaller<ExpectedAttributeValue, JsonMarshallerContext>
+    public class ExpectedAttributeValueMarshaller : IRequestMarshaller<ExpectedAttributeValue>
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="requestObject"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(ExpectedAttributeValue requestObject, JsonMarshallerContext context)
+        public void Marshall(ExpectedAttributeValue requestObject, JsonWriter writer)
         {
             if (requestObject.IsSetAttributeValueList())
             {
-                context.Writer.WritePropertyName("AttributeValueList");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("AttributeValueList");
+                writer.WriteArrayStart();
                 foreach (var requestObjectAttributeValueListListValue in requestObject.AttributeValueList)
                 {
-                    context.Writer.WriteObjectStart();
+                    writer.WriteObjectStart();
 
                     var marshaller = AttributeValueMarshaller.Instance;
-                    marshaller.Marshall(requestObjectAttributeValueListListValue, context);
+                    marshaller.Marshall(requestObjectAttributeValueListListValue, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if (requestObject.IsSetComparisonOperator())
             {
-                context.Writer.WritePropertyName("ComparisonOperator");
-                context.Writer.Write(requestObject.ComparisonOperator!.Value);
+                writer.WritePropertyName("ComparisonOperator");
+                writer.Write(requestObject.ComparisonOperator!.Value);
             }
 
             if (requestObject.Exists.HasValue)
             {
-                context.Writer.WritePropertyName("Exists");
-                context.Writer.Write(requestObject.Exists.Value);
+                writer.WritePropertyName("Exists");
+                writer.Write(requestObject.Exists.Value);
             }
 
             if (requestObject.IsSetValue())
             {
-                context.Writer.WritePropertyName("Value");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Value");
+                writer.WriteObjectStart();
 
                 var marshaller = AttributeValueMarshaller.Instance;
-                marshaller.Marshall(requestObject.Value!, context);
+                marshaller.Marshall(requestObject.Value!, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }

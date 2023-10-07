@@ -17,13 +17,14 @@
  * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
  */
 using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Message Marshaller
     /// </summary>
-    public class MessageMarshaller : IRequestMarshaller<Message, JsonMarshallerContext> 
+    public class MessageMarshaller : IRequestMarshaller<Message> 
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
@@ -31,28 +32,28 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// <param name="requestObject"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(Message requestObject, JsonMarshallerContext context)
+        public void Marshall(Message requestObject, JsonWriter writer)
         {
             if(requestObject.IsSetBody())
             {
-                context.Writer.WritePropertyName("Body");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Body");
+                writer.WriteObjectStart();
 
                 var marshaller = BodyMarshaller.Instance;
-                marshaller.Marshall(requestObject.Body, context);
+                marshaller.Marshall(requestObject.Body, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if(requestObject.IsSetSubject())
             {
-                context.Writer.WritePropertyName("Subject");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Subject");
+                writer.WriteObjectStart();
 
                 var marshaller = ContentMarshaller.Instance;
-                marshaller.Marshall(requestObject.Subject, context);
+                marshaller.Marshall(requestObject.Subject, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }
@@ -61,6 +62,5 @@ namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
         /// Singleton Marshaller.
         /// </summary>
         public readonly static MessageMarshaller Instance = new MessageMarshaller();
-
     }
 }
