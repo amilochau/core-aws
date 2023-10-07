@@ -42,118 +42,117 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
             {
                 JsonWriter writer = new JsonWriter(stringWriter);
                 writer.WriteObjectStart();
-                var context = new JsonMarshallerContext(request, writer);
                 if (publicRequest.IsSetConditionalOperator())
                 {
-                    context.Writer.WritePropertyName("ConditionalOperator");
-                    context.Writer.Write(publicRequest.ConditionalOperator);
+                    writer.WritePropertyName("ConditionalOperator");
+                    writer.Write(publicRequest.ConditionalOperator!.Value);
                 }
 
                 if (publicRequest.IsSetConditionExpression())
                 {
-                    context.Writer.WritePropertyName("ConditionExpression");
-                    context.Writer.Write(publicRequest.ConditionExpression);
+                    writer.WritePropertyName("ConditionExpression");
+                    writer.Write(publicRequest.ConditionExpression);
                 }
 
                 if (publicRequest.IsSetExpected())
                 {
-                    context.Writer.WritePropertyName("Expected");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("Expected");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExpectedKvp in publicRequest.Expected)
                     {
-                        context.Writer.WritePropertyName(publicRequestExpectedKvp.Key);
+                        writer.WritePropertyName(publicRequestExpectedKvp.Key);
                         var publicRequestExpectedValue = publicRequestExpectedKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = ExpectedAttributeValueMarshaller.Instance;
-                        marshaller.Marshall(publicRequestExpectedValue, context);
+                        marshaller.Marshall(publicRequestExpectedValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetExpressionAttributeNames())
                 {
-                    context.Writer.WritePropertyName("ExpressionAttributeNames");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ExpressionAttributeNames");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExpressionAttributeNamesKvp in publicRequest.ExpressionAttributeNames)
                     {
-                        context.Writer.WritePropertyName(publicRequestExpressionAttributeNamesKvp.Key);
+                        writer.WritePropertyName(publicRequestExpressionAttributeNamesKvp.Key);
                         var publicRequestExpressionAttributeNamesValue = publicRequestExpressionAttributeNamesKvp.Value;
 
-                        context.Writer.Write(publicRequestExpressionAttributeNamesValue);
+                        writer.Write(publicRequestExpressionAttributeNamesValue);
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetExpressionAttributeValues())
                 {
-                    context.Writer.WritePropertyName("ExpressionAttributeValues");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("ExpressionAttributeValues");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestExpressionAttributeValuesKvp in publicRequest.ExpressionAttributeValues)
                     {
-                        context.Writer.WritePropertyName(publicRequestExpressionAttributeValuesKvp.Key);
+                        writer.WritePropertyName(publicRequestExpressionAttributeValuesKvp.Key);
                         var publicRequestExpressionAttributeValuesValue = publicRequestExpressionAttributeValuesKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = AttributeValueMarshaller.Instance;
-                        marshaller.Marshall(publicRequestExpressionAttributeValuesValue, context);
+                        marshaller.Marshall(publicRequestExpressionAttributeValuesValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetKey())
                 {
-                    context.Writer.WritePropertyName("Key");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("Key");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestKeyKvp in publicRequest.Key)
                     {
-                        context.Writer.WritePropertyName(publicRequestKeyKvp.Key);
+                        writer.WritePropertyName(publicRequestKeyKvp.Key);
                         var publicRequestKeyValue = publicRequestKeyKvp.Value;
 
-                        context.Writer.WriteObjectStart();
+                        writer.WriteObjectStart();
 
                         var marshaller = AttributeValueMarshaller.Instance;
-                        marshaller.Marshall(publicRequestKeyValue, context);
+                        marshaller.Marshall(publicRequestKeyValue, writer);
 
-                        context.Writer.WriteObjectEnd();
+                        writer.WriteObjectEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
-                    context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    writer.WritePropertyName("ReturnConsumedCapacity");
+                    writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetReturnItemCollectionMetrics())
                 {
-                    context.Writer.WritePropertyName("ReturnItemCollectionMetrics");
-                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics);
+                    writer.WritePropertyName("ReturnItemCollectionMetrics");
+                    writer.Write(publicRequest.ReturnItemCollectionMetrics!.Value);
                 }
 
                 if (publicRequest.IsSetReturnValues())
                 {
-                    context.Writer.WritePropertyName("ReturnValues");
-                    context.Writer.Write(publicRequest.ReturnValues);
+                    writer.WritePropertyName("ReturnValues");
+                    writer.Write(publicRequest.ReturnValues!.Value);
                 }
 
                 if (publicRequest.IsSetReturnValuesOnConditionCheckFailure())
                 {
-                    context.Writer.WritePropertyName("ReturnValuesOnConditionCheckFailure");
-                    context.Writer.Write(publicRequest.ReturnValuesOnConditionCheckFailure);
+                    writer.WritePropertyName("ReturnValuesOnConditionCheckFailure");
+                    writer.Write(publicRequest.ReturnValuesOnConditionCheckFailure!.Value);
                 }
 
                 if (publicRequest.IsSetTableName())
                 {
-                    context.Writer.WritePropertyName("TableName");
-                    context.Writer.Write(publicRequest.TableName);
+                    writer.WritePropertyName("TableName");
+                    writer.Write(publicRequest.TableName);
                 }
 
                 writer.WriteObjectEnd();
@@ -164,23 +163,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static DeleteItemRequestMarshaller _instance = new DeleteItemRequestMarshaller();
-
-        internal static DeleteItemRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static DeleteItemRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static DeleteItemRequestMarshaller Instance { get; } = new DeleteItemRequestMarshaller();
     }
 }

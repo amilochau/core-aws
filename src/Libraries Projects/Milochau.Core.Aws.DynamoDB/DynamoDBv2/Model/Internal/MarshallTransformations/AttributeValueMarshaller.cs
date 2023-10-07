@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime.Internal.Util;
+using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/AttributeValueMarshaller.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations
@@ -7,112 +8,110 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// AttributeValue Marshaller
     /// </summary>
-    public class AttributeValueMarshaller : IRequestMarshaller<AttributeValue, JsonMarshallerContext>
+    public class AttributeValueMarshaller : IRequestMarshaller<AttributeValue>
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="requestObject"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(AttributeValue requestObject, JsonMarshallerContext context)
+        public void Marshall(AttributeValue requestObject, JsonWriter writer)
         {
             if (requestObject.IsSetB())
             {
-                context.Writer.WritePropertyName("B");
-                context.Writer.Write(StringUtils.FromMemoryStream(requestObject.B));
+                writer.WritePropertyName("B");
+                writer.Write(StringUtils.FromMemoryStream(requestObject.B));
             }
 
             if (requestObject.BOOL.HasValue)
             {
-                context.Writer.WritePropertyName("BOOL");
-                context.Writer.Write(requestObject.BOOL.Value);
+                writer.WritePropertyName("BOOL");
+                writer.Write(requestObject.BOOL.Value);
             }
 
             if (requestObject.IsSetBS())
             {
-                context.Writer.WritePropertyName("BS");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("BS");
+                writer.WriteArrayStart();
                 foreach (var requestObjectBSListValue in requestObject.BS!)
                 {
-                    context.Writer.Write(StringUtils.FromMemoryStream(requestObjectBSListValue));
+                    writer.Write(StringUtils.FromMemoryStream(requestObjectBSListValue));
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if (requestObject.IsSetL())
             {
-                context.Writer.WritePropertyName("L");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("L");
+                writer.WriteArrayStart();
                 foreach (var requestObjectLListValue in requestObject.L!)
                 {
-                    context.Writer.WriteObjectStart();
+                    writer.WriteObjectStart();
 
                     var marshaller = AttributeValueMarshaller.Instance;
-                    marshaller.Marshall(requestObjectLListValue, context);
+                    marshaller.Marshall(requestObjectLListValue, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if (requestObject.IsSetM())
             {
-                context.Writer.WritePropertyName("M");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("M");
+                writer.WriteObjectStart();
                 foreach (var requestObjectMKvp in requestObject.M!)
                 {
-                    context.Writer.WritePropertyName(requestObjectMKvp.Key);
+                    writer.WritePropertyName(requestObjectMKvp.Key);
                     var requestObjectMValue = requestObjectMKvp.Value;
 
-                    context.Writer.WriteObjectStart();
+                    writer.WriteObjectStart();
 
                     var marshaller = AttributeValueMarshaller.Instance;
-                    marshaller.Marshall(requestObjectMValue, context);
+                    marshaller.Marshall(requestObjectMValue, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if (requestObject.IsSetN())
             {
-                context.Writer.WritePropertyName("N");
-                context.Writer.Write(requestObject.N);
+                writer.WritePropertyName("N");
+                writer.Write(requestObject.N);
             }
 
             if (requestObject.IsSetNS())
             {
-                context.Writer.WritePropertyName("NS");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("NS");
+                writer.WriteArrayStart();
                 foreach (var requestObjectNSListValue in requestObject.NS!)
                 {
-                    context.Writer.Write(requestObjectNSListValue);
+                    writer.Write(requestObjectNSListValue);
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
             if (requestObject.NULL.HasValue)
             {
-                context.Writer.WritePropertyName("NULL");
-                context.Writer.Write(requestObject.NULL.Value);
+                writer.WritePropertyName("NULL");
+                writer.Write(requestObject.NULL.Value);
             }
 
             if (requestObject.IsSetS())
             {
-                context.Writer.WritePropertyName("S");
-                context.Writer.Write(requestObject.S);
+                writer.WritePropertyName("S");
+                writer.Write(requestObject.S);
             }
 
             if (requestObject.IsSetSS())
             {
-                context.Writer.WritePropertyName("SS");
-                context.Writer.WriteArrayStart();
+                writer.WritePropertyName("SS");
+                writer.WriteArrayStart();
                 foreach (var requestObjectSSListValue in requestObject.SS!)
                 {
-                    context.Writer.Write(requestObjectSSListValue);
+                    writer.Write(requestObjectSSListValue);
                 }
-                context.Writer.WriteArrayEnd();
+                writer.WriteArrayEnd();
             }
 
         }

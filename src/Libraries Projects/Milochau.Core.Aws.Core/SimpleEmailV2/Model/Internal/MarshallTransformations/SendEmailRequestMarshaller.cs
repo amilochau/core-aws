@@ -1,0 +1,177 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ * 
+ *  http://aws.amazon.com/apache2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+/*
+ * Do not modify this file. This file is generated from the sesv2-2019-09-27.normal.json service model.
+ */
+using System.Globalization;
+using System.IO;
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
+
+namespace Amazon.SimpleEmailV2.Model.Internal.MarshallTransformations
+{
+    /// <summary>
+    /// SendEmail Request Marshaller
+    /// </summary>       
+    public class SendEmailRequestMarshaller : IMarshaller<IRequest, SendEmailRequest> , IMarshaller<IRequest,AmazonWebServiceRequest>
+    {
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public IRequest Marshall(AmazonWebServiceRequest input)
+        {
+            return this.Marshall((SendEmailRequest)input);
+        }
+
+        /// <summary>
+        /// Marshaller the request object to the HTTP request.
+        /// </summary>  
+        /// <param name="publicRequest"></param>
+        /// <returns></returns>
+        public IRequest Marshall(SendEmailRequest publicRequest)
+        {
+            IRequest request = new DefaultRequest(publicRequest, "Amazon.SimpleEmailV2");
+            request.Headers["Content-Type"] = "application/json";
+            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2019-09-27";
+            request.HttpMethod = "POST";
+
+            request.ResourcePath = "/v2/email/outbound-emails";
+            using (StringWriter stringWriter = new StringWriter(CultureInfo.InvariantCulture))
+            {
+                JsonWriter writer = new JsonWriter(stringWriter);
+                writer.WriteObjectStart();
+                if(publicRequest.IsSetConfigurationSetName())
+                {
+                    writer.WritePropertyName("ConfigurationSetName");
+                    writer.Write(publicRequest.ConfigurationSetName);
+                }
+
+                if(publicRequest.IsSetContent())
+                {
+                    writer.WritePropertyName("Content");
+                    writer.WriteObjectStart();
+
+                    var marshaller = EmailContentMarshaller.Instance;
+                    marshaller.Marshall(publicRequest.Content, writer);
+
+                    writer.WriteObjectEnd();
+                }
+
+                if(publicRequest.IsSetDestination())
+                {
+                    writer.WritePropertyName("Destination");
+                    writer.WriteObjectStart();
+
+                    var marshaller = DestinationMarshaller.Instance;
+                    marshaller.Marshall(publicRequest.Destination, writer);
+
+                    writer.WriteObjectEnd();
+                }
+
+                if(publicRequest.IsSetEmailTags())
+                {
+                    writer.WritePropertyName("EmailTags");
+                    writer.WriteArrayStart();
+                    foreach(var publicRequestEmailTagsListValue in publicRequest.EmailTags)
+                    {
+                        writer.WriteObjectStart();
+
+                        var marshaller = MessageTagMarshaller.Instance;
+                        marshaller.Marshall(publicRequestEmailTagsListValue, writer);
+
+                        writer.WriteObjectEnd();
+                    }
+                    writer.WriteArrayEnd();
+                }
+
+                if(publicRequest.IsSetFeedbackForwardingEmailAddress())
+                {
+                    writer.WritePropertyName("FeedbackForwardingEmailAddress");
+                    writer.Write(publicRequest.FeedbackForwardingEmailAddress);
+                }
+
+                if(publicRequest.IsSetFeedbackForwardingEmailAddressIdentityArn())
+                {
+                    writer.WritePropertyName("FeedbackForwardingEmailAddressIdentityArn");
+                    writer.Write(publicRequest.FeedbackForwardingEmailAddressIdentityArn);
+                }
+
+                if(publicRequest.IsSetFromEmailAddress())
+                {
+                    writer.WritePropertyName("FromEmailAddress");
+                    writer.Write(publicRequest.FromEmailAddress);
+                }
+
+                if(publicRequest.IsSetFromEmailAddressIdentityArn())
+                {
+                    writer.WritePropertyName("FromEmailAddressIdentityArn");
+                    writer.Write(publicRequest.FromEmailAddressIdentityArn);
+                }
+
+                if(publicRequest.IsSetListManagementOptions())
+                {
+                    writer.WritePropertyName("ListManagementOptions");
+                    writer.WriteObjectStart();
+
+                    var marshaller = ListManagementOptionsMarshaller.Instance;
+                    marshaller.Marshall(publicRequest.ListManagementOptions, writer);
+
+                    writer.WriteObjectEnd();
+                }
+
+                if(publicRequest.IsSetReplyToAddresses())
+                {
+                    writer.WritePropertyName("ReplyToAddresses");
+                    writer.WriteArrayStart();
+                    foreach(var publicRequestReplyToAddressesListValue in publicRequest.ReplyToAddresses)
+                    {
+                            writer.Write(publicRequestReplyToAddressesListValue);
+                    }
+                    writer.WriteArrayEnd();
+                }
+
+                writer.WriteObjectEnd();
+                string snippet = stringWriter.ToString();
+                request.Content = System.Text.Encoding.UTF8.GetBytes(snippet);
+            }
+
+
+            return request;
+        }
+        private static SendEmailRequestMarshaller _instance = new SendEmailRequestMarshaller();        
+
+        internal static SendEmailRequestMarshaller GetInstance()
+        {
+            return _instance;
+        }
+
+        /// <summary>
+        /// Gets the singleton.
+        /// </summary>  
+        public static SendEmailRequestMarshaller Instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
+
+    }
+}

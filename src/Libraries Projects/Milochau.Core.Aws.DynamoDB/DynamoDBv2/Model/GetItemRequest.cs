@@ -27,13 +27,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        public List<string> AttributesToGet { get; set; } = new List<string>();
-
-        // Check to see if AttributesToGet property is set
-        internal bool IsSetAttributesToGet()
-        {
-            return AttributesToGet != null && AttributesToGet.Count > 0;
-        }
+        public List<string>? AttributesToGet { get; set; }
 
         /// <summary>
         /// Gets and sets the property ConsistentRead. 
@@ -44,12 +38,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// </para>
         /// </summary>
         public bool ConsistentRead { get; set; }
-
-        // Check to see if ConsistentRead property is set
-        internal bool IsSetConsistentRead()
-        {
-            return true;
-        }
 
         /// <summary>
         /// Gets and sets the property ExpressionAttributeNames. 
@@ -109,13 +97,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// Item Attributes</a> in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        public Dictionary<string, string> ExpressionAttributeNames { get; set; } = new Dictionary<string, string>();
-
-        // Check to see if ExpressionAttributeNames property is set
-        internal bool IsSetExpressionAttributeNames()
-        {
-            return ExpressionAttributeNames != null && ExpressionAttributeNames.Count > 0;
-        }
+        public Dictionary<string, string>? ExpressionAttributeNames { get; set; }
 
         /// <summary>
         /// Gets and sets the property Key. 
@@ -130,13 +112,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// primary key, you must provide values for both the partition key and the sort key.
         /// </para>
         /// </summary>
-        public Dictionary<string, AttributeValue> Key { get; set; } = new Dictionary<string, AttributeValue>();
-
-        // Check to see if Key property is set
-        internal bool IsSetKey()
-        {
-            return Key != null && Key.Count > 0;
-        }
+        public Dictionary<string, AttributeValue>? Key { get; set; }
 
         /// <summary>
         /// Gets and sets the property ProjectionExpression. 
@@ -158,22 +134,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// </summary>
         public string? ProjectionExpression { get; set; }
 
-        // Check to see if ProjectionExpression property is set
-        internal bool IsSetProjectionExpression()
-        {
-            return ProjectionExpression != null;
-        }
-
         /// <summary>
         /// Gets and sets the property ReturnConsumedCapacity.
         /// </summary>
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        // Check to see if ReturnConsumedCapacity property is set
-        internal bool IsSetReturnConsumedCapacity()
-        {
-            return ReturnConsumedCapacity != null;
-        }
 
         /// <summary>
         /// Gets and sets the property TableName. 
@@ -182,11 +146,5 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model
         /// </para>
         /// </summary>
         public string? TableName { get; set; }
-
-        // Check to see if TableName property is set
-        internal bool IsSetTableName()
-        {
-            return TableName != null;
-        }
     }
 }

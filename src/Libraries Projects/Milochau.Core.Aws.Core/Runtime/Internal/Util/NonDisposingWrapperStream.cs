@@ -1,0 +1,27 @@
+﻿using System.IO;
+
+namespace Amazon.Runtime.Internal.Util
+{
+    /// <summary>
+    /// A wrapper stream which supresses disposal of the underlying stream.
+    /// </summary>
+    public class NonDisposingWrapperStream : WrapperStream
+    {
+        /// <summary>
+        /// Constructor for NonDisposingWrapperStream.
+        /// </summary>
+        /// <param name="baseStream">The base stream to wrap.</param>
+        public NonDisposingWrapperStream(Stream baseStream) : base (baseStream)
+        {
+        }
+
+        /// <summary>
+        /// The Dispose implementation for this wrapper stream
+        /// does not close the underlying stream.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            // Suppress disposing the stream by not calling Dispose() on the base stream.            
+        }
+    }
+}

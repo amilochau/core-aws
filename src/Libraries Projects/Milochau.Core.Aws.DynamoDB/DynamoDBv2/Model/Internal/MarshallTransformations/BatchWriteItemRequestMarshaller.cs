@@ -42,41 +42,40 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
             {
                 JsonWriter writer = new JsonWriter(stringWriter);
                 writer.WriteObjectStart();
-                var context = new JsonMarshallerContext(request, writer);
                 if (publicRequest.IsSetRequestItems())
                 {
-                    context.Writer.WritePropertyName("RequestItems");
-                    context.Writer.WriteObjectStart();
+                    writer.WritePropertyName("RequestItems");
+                    writer.WriteObjectStart();
                     foreach (var publicRequestRequestItemsKvp in publicRequest.RequestItems)
                     {
-                        context.Writer.WritePropertyName(publicRequestRequestItemsKvp.Key);
+                        writer.WritePropertyName(publicRequestRequestItemsKvp.Key);
                         var publicRequestRequestItemsValue = publicRequestRequestItemsKvp.Value;
 
-                        context.Writer.WriteArrayStart();
+                        writer.WriteArrayStart();
                         foreach (var publicRequestRequestItemsValueListValue in publicRequestRequestItemsValue)
                         {
-                            context.Writer.WriteObjectStart();
+                            writer.WriteObjectStart();
 
                             var marshaller = WriteRequestMarshaller.Instance;
-                            marshaller.Marshall(publicRequestRequestItemsValueListValue, context);
+                            marshaller.Marshall(publicRequestRequestItemsValueListValue, writer);
 
-                            context.Writer.WriteObjectEnd();
+                            writer.WriteObjectEnd();
                         }
-                        context.Writer.WriteArrayEnd();
+                        writer.WriteArrayEnd();
                     }
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
 
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
-                    context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    writer.WritePropertyName("ReturnConsumedCapacity");
+                    writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetReturnItemCollectionMetrics())
                 {
-                    context.Writer.WritePropertyName("ReturnItemCollectionMetrics");
-                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics);
+                    writer.WritePropertyName("ReturnItemCollectionMetrics");
+                    writer.Write(publicRequest.ReturnItemCollectionMetrics!.Value);
                 }
 
                 writer.WriteObjectEnd();
@@ -87,23 +86,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static BatchWriteItemRequestMarshaller _instance = new BatchWriteItemRequestMarshaller();
-
-        internal static BatchWriteItemRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static BatchWriteItemRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static BatchWriteItemRequestMarshaller Instance { get; } = new BatchWriteItemRequestMarshaller();
     }
 }

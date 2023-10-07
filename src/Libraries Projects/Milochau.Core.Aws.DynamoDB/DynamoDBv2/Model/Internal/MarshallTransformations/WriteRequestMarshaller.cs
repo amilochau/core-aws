@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/WriteRequestMarshaller.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations
@@ -6,36 +7,34 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// WriteRequest Marshaller
     /// </summary>
-    public class WriteRequestMarshaller : IRequestMarshaller<WriteRequest, JsonMarshallerContext>
+    public class WriteRequestMarshaller : IRequestMarshaller<WriteRequest>
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="requestObject"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        public void Marshall(WriteRequest requestObject, JsonMarshallerContext context)
+        public void Marshall(WriteRequest requestObject, JsonWriter writer)
         {
             if (requestObject.DeleteRequest != null)
             {
-                context.Writer.WritePropertyName("DeleteRequest");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("DeleteRequest");
+                writer.WriteObjectStart();
 
                 var marshaller = DeleteRequestMarshaller.Instance;
-                marshaller.Marshall(requestObject.DeleteRequest, context);
+                marshaller.Marshall(requestObject.DeleteRequest, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
             if (requestObject.PutRequest != null)
             {
-                context.Writer.WritePropertyName("PutRequest");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("PutRequest");
+                writer.WriteObjectStart();
 
                 var marshaller = PutRequestMarshaller.Instance;
-                marshaller.Marshall(requestObject.PutRequest, context);
+                marshaller.Marshall(requestObject.PutRequest, writer);
 
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
         }
 

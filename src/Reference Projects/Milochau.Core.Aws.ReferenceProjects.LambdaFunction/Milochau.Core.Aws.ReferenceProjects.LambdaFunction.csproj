@@ -27,20 +27,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.8.8" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="AWSSDK.Core" Version="3.7.202.17" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="AWSSDK.Core" />
+    <TrimmerRootAssembly Include="Milochau.Core.Aws.Core" />
     <TrimmerRootAssembly Include="bootstrap" />
   </ItemGroup>
 

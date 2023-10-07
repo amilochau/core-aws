@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/PutRequestMarshaller.cs
 namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransformations
@@ -6,33 +7,31 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// PutRequest Marshaller
     /// </summary>
-    public class PutRequestMarshaller : IRequestMarshaller<PutRequest, JsonMarshallerContext>
+    public class PutRequestMarshaller : IRequestMarshaller<PutRequest>
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        /// <param name="requestObject"></param>
-        /// <param name="context"></param>
+        /// </summary>
         /// <returns></returns>
-        public void Marshall(PutRequest requestObject, JsonMarshallerContext context)
+        public void Marshall(PutRequest requestObject, JsonWriter writer)
         {
             if (requestObject.IsSetItem())
             {
-                context.Writer.WritePropertyName("Item");
-                context.Writer.WriteObjectStart();
+                writer.WritePropertyName("Item");
+                writer.WriteObjectStart();
                 foreach (var requestObjectItemKvp in requestObject.Item)
                 {
-                    context.Writer.WritePropertyName(requestObjectItemKvp.Key);
+                    writer.WritePropertyName(requestObjectItemKvp.Key);
                     var requestObjectItemValue = requestObjectItemKvp.Value;
 
-                    context.Writer.WriteObjectStart();
+                    writer.WriteObjectStart();
 
                     var marshaller = AttributeValueMarshaller.Instance;
-                    marshaller.Marshall(requestObjectItemValue, context);
+                    marshaller.Marshall(requestObjectItemValue, writer);
 
-                    context.Writer.WriteObjectEnd();
+                    writer.WriteObjectEnd();
                 }
-                context.Writer.WriteObjectEnd();
+                writer.WriteObjectEnd();
             }
 
         }

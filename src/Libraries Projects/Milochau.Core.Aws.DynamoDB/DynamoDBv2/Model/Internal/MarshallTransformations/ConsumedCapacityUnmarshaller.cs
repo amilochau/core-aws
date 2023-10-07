@@ -1,5 +1,4 @@
 ﻿using Amazon.Runtime.Internal.Transform;
-using System;
 using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/ConsumedCapacityUnmarshaller.cs
@@ -8,18 +7,8 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// Response Unmarshaller for ConsumedCapacity Object
     /// </summary>  
-    public class ConsumedCapacityUnmarshaller : IUnmarshaller<ConsumedCapacity, XmlUnmarshallerContext>, IUnmarshaller<ConsumedCapacity, JsonUnmarshallerContext>
+    public class ConsumedCapacityUnmarshaller : IUnmarshaller<ConsumedCapacity, JsonUnmarshallerContext>
     {
-        /// <summary>
-        /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        /// <param name="context"></param>
-        /// <returns></returns>
-        ConsumedCapacity IUnmarshaller<ConsumedCapacity, XmlUnmarshallerContext>.Unmarshall(XmlUnmarshallerContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  

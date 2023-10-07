@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using Amazon.Runtime;
+﻿using Amazon.Runtime;
 using Amazon.Util.Internal;
 using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Internal;
 
@@ -9,30 +8,19 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
     /// <summary>
     /// Configuration for accessing Amazon DynamoDB service
     /// </summary>
-    [AWSSignerType("v4")]
     public partial class AmazonDynamoDBConfig : ClientConfig
     {
         private static readonly string UserAgentString =
             InternalSDKUtils.BuildUserAgentString("3.7.202.4");
 
         private string _userAgent = UserAgentString;
-        ///<summary>
-        /// The ServiceId, which is the unique identifier for a service.
-        ///</summary>
-        public static new string ServiceId
-        {
-            get
-            {
-                return "DynamoDB";
-            }
-        }
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public AmazonDynamoDBConfig()
-            : base(new Amazon.Runtime.Internal.DefaultConfigurationProvider(AmazonDynamoDBDefaultConfiguration.GetAllConfigurations()))
+            : base()
         {
-            base.ServiceId = "DynamoDB";
             this.AuthenticationServiceName = "dynamodb";
             this.MaxErrorRetry = 10;
             this.EndpointProvider = new AmazonDynamoDBEndpointProvider();
@@ -50,17 +38,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         }
 
         /// <summary>
-        /// Gets the ServiceVersion property.
-        /// </summary>
-        public override string ServiceVersion
-        {
-            get
-            {
-                return "2012-08-10";
-            }
-        }
-
-        /// <summary>
         /// Gets the value of UserAgent property.
         /// </summary>
         public override string UserAgent
@@ -70,6 +47,5 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
                 return _userAgent;
             }
         }
-
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Amazon.Runtime.Internal.Transform;
-using System;
 using ThirdParty.Json.LitJson;
 
 // https://github.com/aws/aws-sdk-net/blob/master/sdk/src/Services/DynamoDBv2/Generated/Model/Internal/MarshallTransformations/DeleteRequestUnmarshaller.cs
@@ -8,18 +7,8 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
     /// <summary>
     /// Response Unmarshaller for DeleteRequest Object
     /// </summary>  
-    public class DeleteRequestUnmarshaller : IUnmarshaller<DeleteRequest, XmlUnmarshallerContext>, IUnmarshaller<DeleteRequest, JsonUnmarshallerContext>
+    public class DeleteRequestUnmarshaller : IUnmarshaller<DeleteRequest, JsonUnmarshallerContext>
     {
-        /// <summary>
-        /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        /// <param name="context"></param>
-        /// <returns></returns>
-        DeleteRequest IUnmarshaller<DeleteRequest, XmlUnmarshallerContext>.Unmarshall(XmlUnmarshallerContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
