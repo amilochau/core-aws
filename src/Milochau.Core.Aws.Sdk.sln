@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Integrati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Core", "Libraries Projects\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj", "{6CDD3F14-CEC0-4C91-A9D5-04C759C2E36C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Lambda", "Libraries Projects\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj", "{E21B5FD0-D15E-485E-957F-5C4AE9F15C19}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "Libraries Projects\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj", "{BAE2FC56-B410-494D-B020-6F3B025F19FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{6CDD3F14-CEC0-4C91-A9D5-04C759C2E36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CDD3F14-CEC0-4C91-A9D5-04C759C2E36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CDD3F14-CEC0-4C91-A9D5-04C759C2E36C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E21B5FD0-D15E-485E-957F-5C4AE9F15C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E21B5FD0-D15E-485E-957F-5C4AE9F15C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E21B5FD0-D15E-485E-957F-5C4AE9F15C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E21B5FD0-D15E-485E-957F-5C4AE9F15C19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

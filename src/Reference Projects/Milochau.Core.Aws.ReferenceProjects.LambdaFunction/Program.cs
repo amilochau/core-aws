@@ -1,12 +1,9 @@
-﻿using Amazon.Lambda;
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
-using Amazon.Lambda.SNSEvents;
-using Amazon.SimpleEmailV2;
+using Milochau.Core.Aws.Core.Lambda.Events;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
-using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
-using Milochau.Core.Aws.DynamoDB.DynamoDBv2;
+using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 using System;
 using System.IO;
@@ -14,6 +11,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Milochau.Core.Aws.SESv2;
+using Milochau.Core.Aws.Lambda;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {

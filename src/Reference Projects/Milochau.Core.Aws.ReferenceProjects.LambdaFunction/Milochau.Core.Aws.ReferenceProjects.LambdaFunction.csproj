@@ -30,6 +30,8 @@
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
     <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
+    <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj" />
+    <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

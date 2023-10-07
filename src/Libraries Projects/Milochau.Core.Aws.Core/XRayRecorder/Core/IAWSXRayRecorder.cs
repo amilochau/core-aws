@@ -17,7 +17,6 @@
 
 using System;
 using System.Collections.Generic;
-using Amazon.XRay.Recorder.Core.Sampling;
 using Amazon.XRay.Recorder.Core.Strategies;
 using Amazon.XRay.Recorder.Core.Internal.Context;
 using Amazon.XRay.Recorder.Core.Internal.Emitters;

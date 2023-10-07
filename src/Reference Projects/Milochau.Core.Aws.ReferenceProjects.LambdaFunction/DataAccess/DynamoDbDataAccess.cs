@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using Milochau.Core.Aws.DynamoDB.DynamoDBv2;
-using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model;
 using Milochau.Core.Aws.DynamoDB;
+using Milochau.Core.Aws.DynamoDB.Model;
 using System.Linq;
+using Milochau.Core.Aws.DynamoDB.Helpers;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
