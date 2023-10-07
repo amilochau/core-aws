@@ -20,8 +20,6 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <param name="errorResponse"></param>
         /// <returns></returns>
         public GenericException Unmarshall(JsonUnmarshallerContext context, Amazon.Runtime.Internal.ErrorResponse errorResponse)
         {

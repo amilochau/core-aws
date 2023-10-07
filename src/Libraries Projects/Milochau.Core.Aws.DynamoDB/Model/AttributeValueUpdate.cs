@@ -120,12 +120,6 @@
         /// </summary>
         public AttributeAction? Action { get; set; }
 
-        // Check to see if Action property is set
-        internal bool IsSetAction()
-        {
-            return Action != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Value. 
         /// <para>
@@ -143,11 +137,5 @@
         /// </para>
         /// </summary>
         public AttributeValue? Value { get; set; }
-
-        // Check to see if Value property is set
-        internal bool IsSetValue()
-        {
-            return Value != null;
-        }
     }
 }

@@ -37,12 +37,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public ConditionalOperator? ConditionalOperator { get; set; }
 
-        // Check to see if ConditionalOperator property is set
-        internal bool IsSetConditionalOperator()
-        {
-            return ConditionalOperator != null;
-        }
-
         /// <summary>
         /// Gets and sets the property ConditionExpression. 
         /// <para>
@@ -79,12 +73,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public string? ConditionExpression { get; set; }
 
-        // Check to see if ConditionExpression property is set
-        internal bool IsSetConditionExpression()
-        {
-            return ConditionExpression != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Expected. 
         /// <para>
@@ -94,12 +82,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, ExpectedAttributeValue>? Expected { get; set; }
-
-        // Check to see if Expected property is set
-        internal bool IsSetExpected()
-        {
-            return Expected != null && Expected.Count > 0;
-        }
 
         /// <summary>
         /// Gets and sets the property ExpressionAttributeNames. 
@@ -161,12 +143,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public Dictionary<string, string>? ExpressionAttributeNames { get; set; }
 
-        // Check to see if ExpressionAttributeNames property is set
-        internal bool IsSetExpressionAttributeNames()
-        {
-            return ExpressionAttributeNames != null && ExpressionAttributeNames.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property ExpressionAttributeValues. 
         /// <para>
@@ -207,12 +183,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public Dictionary<string, AttributeValue>? ExpressionAttributeValues { get; set; }
 
-        // Check to see if ExpressionAttributeValues property is set
-        internal bool IsSetExpressionAttributeValues()
-        {
-            return ExpressionAttributeValues != null && ExpressionAttributeValues.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property Key. 
         /// <para>
@@ -229,22 +199,10 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public Dictionary<string, AttributeValue>? Key { get; set; }
 
-        // Check to see if Key property is set
-        internal bool IsSetKey()
-        {
-            return Key != null && Key.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property ReturnConsumedCapacity.
         /// </summary>
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        // Check to see if ReturnConsumedCapacity property is set
-        internal bool IsSetReturnConsumedCapacity()
-        {
-            return ReturnConsumedCapacity != null;
-        }
 
         /// <summary>
         /// Gets and sets the property ReturnItemCollectionMetrics. 
@@ -256,12 +214,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
-
-        // Check to see if ReturnItemCollectionMetrics property is set
-        internal bool IsSetReturnItemCollectionMetrics()
-        {
-            return ReturnItemCollectionMetrics != null;
-        }
 
         /// <summary>
         /// Gets and sets the property ReturnValues. 
@@ -294,12 +246,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public ReturnValue? ReturnValues { get; set; }
 
-        // Check to see if ReturnValues property is set
-        internal bool IsSetReturnValues()
-        {
-            return ReturnValues != null;
-        }
-
         /// <summary>
         /// Gets and sets the property ReturnValuesOnConditionCheckFailure. 
         /// <para>
@@ -315,12 +261,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; set; }
 
-        // Check to see if ReturnValuesOnConditionCheckFailure property is set
-        internal bool IsSetReturnValuesOnConditionCheckFailure()
-        {
-            return ReturnValuesOnConditionCheckFailure != null;
-        }
-
         /// <summary>
         /// Gets and sets the property TableName. 
         /// <para>
@@ -328,11 +268,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public string? TableName { get; set; }
-
-        // Check to see if TableName property is set
-        internal bool IsSetTableName()
-        {
-            return TableName != null;
-        }
     }
 }

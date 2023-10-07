@@ -16,11 +16,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? Key { get; set; }
-
-        // Check to see if Key property is set
-        internal bool IsSetKey()
-        {
-            return Key != null && Key.Count > 0;
-        }
     }
 }

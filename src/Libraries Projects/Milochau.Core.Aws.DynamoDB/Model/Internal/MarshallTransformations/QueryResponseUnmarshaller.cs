@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
     /// <summary>

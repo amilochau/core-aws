@@ -31,12 +31,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public MemoryStream? B { get; set; }
 
-        // Check to see if B property is set
-        internal bool IsSetB()
-        {
-            return B != null;
-        }
-
         /// <summary>
         /// Gets and sets the property BOOL. 
         /// <para>
@@ -61,12 +55,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public List<MemoryStream>? BS { get; set; }
 
-        // Check to see if BS property is set
-        internal bool IsSetBS()
-        {
-            return BS != null && BS.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property L. 
         /// <para>
@@ -79,12 +67,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public List<AttributeValue>? L { get; set; }
 
-        // Check to see if L property is set
-        internal bool IsSetL()
-        {
-            return L != null && L.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property M. 
         /// <para>
@@ -96,12 +78,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? M { get; set; }
-
-        // Check to see if M property is set
-        internal bool IsSetM()
-        {
-            return M != null && M.Count > 0;
-        }
 
         /// <summary>
         /// Gets and sets the property N. 
@@ -121,12 +97,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public string? N { get; set; }
 
-        // Check to see if N property is set
-        internal bool IsSetN()
-        {
-            return N != null;
-        }
-
         /// <summary>
         /// Gets and sets the property NS. 
         /// <para>
@@ -144,12 +114,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public List<string>? NS { get; set; }
-
-        // Check to see if NS property is set
-        internal bool IsSetNS()
-        {
-            return NS != null && NS.Count > 0;
-        }
 
         /// <summary>
         /// Gets and sets the property NULL. 
@@ -175,12 +139,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public string? S { get; set; }
 
-        // Check to see if S property is set
-        internal bool IsSetS()
-        {
-            return S != null;
-        }
-
         /// <summary>
         /// Gets and sets the property SS. 
         /// <para>
@@ -192,11 +150,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public List<string>? SS { get; set; }
-
-        // Check to see if SS property is set
-        internal bool IsSetSS()
-        {
-            return SS != null && SS.Count > 0;
-        }
     }
 }

@@ -156,22 +156,10 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public Dictionary<string, List<WriteRequest>>? RequestItems { get; set; }
 
-        // Check to see if RequestItems property is set
-        internal bool IsSetRequestItems()
-        {
-            return RequestItems != null && RequestItems.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property ReturnConsumedCapacity.
         /// </summary>
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        // Check to see if ReturnConsumedCapacity property is set
-        internal bool IsSetReturnConsumedCapacity()
-        {
-            return ReturnConsumedCapacity != null;
-        }
 
         /// <summary>
         /// Gets and sets the property ReturnItemCollectionMetrics. 
@@ -183,11 +171,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
-
-        // Check to see if ReturnItemCollectionMetrics property is set
-        internal bool IsSetReturnItemCollectionMetrics()
-        {
-            return ReturnItemCollectionMetrics != null;
-        }
     }
 }

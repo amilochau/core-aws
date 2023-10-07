@@ -64,12 +64,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public List<AttributeValue>? AttributeValueList { get; set; }
 
-        // Check to see if AttributeValueList property is set
-        internal bool IsSetAttributeValueList()
-        {
-            return AttributeValueList != null && AttributeValueList.Count > 0;
-        }
-
         /// <summary>
         /// Gets and sets the property ComparisonOperator. 
         /// <para>
@@ -275,12 +269,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public ComparisonOperator? ComparisonOperator { get; set; }
 
-        // Check to see if ComparisonOperator property is set
-        internal bool IsSetComparisonOperator()
-        {
-            return ComparisonOperator != null;
-        }
-
         /// <summary>
         /// Gets and sets the property Exists. 
         /// <para>
@@ -340,11 +328,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public AttributeValue? Value { get; set; }
-
-        // Check to see if Value property is set
-        internal bool IsSetValue()
-        {
-            return Value != null;
-        }
     }
 }

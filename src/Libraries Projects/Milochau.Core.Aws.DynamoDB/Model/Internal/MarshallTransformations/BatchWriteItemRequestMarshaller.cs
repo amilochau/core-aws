@@ -4,6 +4,7 @@ using Amazon.Runtime;
 using System.Globalization;
 using System.IO;
 using ThirdParty.Json.LitJson;
+using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
@@ -24,63 +25,20 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <summary>
         /// Marshaller the request object to the HTTP request.
         /// </summary>  
-        /// <param name="publicRequest"></param>
         /// <returns></returns>
         public IRequest Marshall(BatchWriteItemRequest publicRequest)
         {
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2");
-            string target = "DynamoDB_20120810.BatchWriteItem";
-            request.Headers["X-Amz-Target"] = target;
+            var serializedRequest = JsonSerializer.Serialize(publicRequest, AwsJsonSerializerContext.Default.BatchWriteItemRequest);
+
+            IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2")
+            {
+                HttpMethod = "POST",
+                ResourcePath = "/",
+                Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
+            };
+            request.Headers["X-Amz-Target"] = "DynamoDB_20120810.BatchWriteItem";
             request.Headers["Content-Type"] = "application/x-amz-json-1.0";
             request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2012-08-10";
-            request.HttpMethod = "POST";
-
-            request.ResourcePath = "/";
-            using (StringWriter stringWriter = new StringWriter(CultureInfo.InvariantCulture))
-            {
-                JsonWriter writer = new JsonWriter(stringWriter);
-                writer.WriteObjectStart();
-                if (publicRequest.IsSetRequestItems())
-                {
-                    writer.WritePropertyName("RequestItems");
-                    writer.WriteObjectStart();
-                    foreach (var publicRequestRequestItemsKvp in publicRequest.RequestItems!)
-                    {
-                        writer.WritePropertyName(publicRequestRequestItemsKvp.Key);
-                        var publicRequestRequestItemsValue = publicRequestRequestItemsKvp.Value;
-
-                        writer.WriteArrayStart();
-                        foreach (var publicRequestRequestItemsValueListValue in publicRequestRequestItemsValue)
-                        {
-                            writer.WriteObjectStart();
-
-                            var marshaller = WriteRequestMarshaller.Instance;
-                            marshaller.Marshall(publicRequestRequestItemsValueListValue, writer);
-
-                            writer.WriteObjectEnd();
-                        }
-                        writer.WriteArrayEnd();
-                    }
-                    writer.WriteObjectEnd();
-                }
-
-                if (publicRequest.IsSetReturnConsumedCapacity())
-                {
-                    writer.WritePropertyName("ReturnConsumedCapacity");
-                    writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
-                }
-
-                if (publicRequest.IsSetReturnItemCollectionMetrics())
-                {
-                    writer.WritePropertyName("ReturnItemCollectionMetrics");
-                    writer.Write(publicRequest.ReturnItemCollectionMetrics!.Value);
-                }
-
-                writer.WriteObjectEnd();
-                string snippet = stringWriter.ToString();
-                request.Content = System.Text.Encoding.UTF8.GetBytes(snippet);
-            }
-
 
             return request;
         }
