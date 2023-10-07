@@ -34,26 +34,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             : base(value)
         {
         }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static AttributeAction FindValue(string value)
-        {
-            return FindValue<AttributeAction>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator AttributeAction(string value)
-        {
-            return FindValue(value);
-        }
     }
 
     /// <summary>
@@ -86,26 +66,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             : base(value)
         {
         }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ReturnConsumedCapacity FindValue(string value)
-        {
-            return FindValue<ReturnConsumedCapacity>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ReturnConsumedCapacity(string value)
-        {
-            return FindValue(value);
-        }
     }
 
     /// <summary>
@@ -135,26 +95,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             : base(value)
         {
         }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ReturnItemCollectionMetrics FindValue(string value)
-        {
-            return FindValue<ReturnItemCollectionMetrics>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ReturnItemCollectionMetrics(string value)
-        {
-            return FindValue(value);
-        }
     }
 
     /// <summary>
@@ -183,26 +123,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         public ConditionalOperator(string value)
             : base(value)
         {
-        }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ConditionalOperator FindValue(string value)
-        {
-            return FindValue<ConditionalOperator>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ConditionalOperator(string value)
-        {
-            return FindValue(value);
         }
     }
 
@@ -245,26 +165,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
             : base(value)
         {
         }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ReturnValue FindValue(string value)
-        {
-            return FindValue<ReturnValue>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ReturnValue(string value)
-        {
-            return FindValue(value);
-        }
     }
 
     /// <summary>
@@ -293,26 +193,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         public ReturnValuesOnConditionCheckFailure(string value)
             : base(value)
         {
-        }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ReturnValuesOnConditionCheckFailure FindValue(string value)
-        {
-            return FindValue<ReturnValuesOnConditionCheckFailure>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ReturnValuesOnConditionCheckFailure(string value)
-        {
-            return FindValue(value);
         }
     }
 
@@ -350,26 +230,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         public Select(string value)
             : base(value)
         {
-        }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static Select FindValue(string value)
-        {
-            return FindValue<Select>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator Select(string value)
-        {
-            return FindValue(value);
         }
     }
 
@@ -443,26 +303,6 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2
         public ComparisonOperator(string value)
             : base(value)
         {
-        }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static ComparisonOperator FindValue(string value)
-        {
-            return FindValue<ComparisonOperator>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator ComparisonOperator(string value)
-        {
-            return FindValue(value);
         }
     }
 }

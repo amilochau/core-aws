@@ -99,32 +99,4 @@ namespace Amazon.Runtime.Internal.Util
 
         #endregion
     }
-
-    public class HashingWrapperCRC32C : HashingWrapper
-    {
-        public HashingWrapperCRC32C()
-            : base(CryptoUtilFactory.GetChecksumInstance(CoreChecksumAlgorithm.CRC32C))
-        { }
-    }
-
-    public class HashingWrapperCRC32 : HashingWrapper
-    {
-        public HashingWrapperCRC32()
-            : base(CryptoUtilFactory.GetChecksumInstance(CoreChecksumAlgorithm.CRC32))
-        { }
-    }
-
-    public class HashingWrapperSHA256 : HashingWrapper
-    {
-        public HashingWrapperSHA256()
-            : base(CryptoUtilFactory.GetChecksumInstance(CoreChecksumAlgorithm.SHA256))
-        { }
-    }
-
-    public class HashingWrapperSHA1 : HashingWrapper
-    {
-        public HashingWrapperSHA1()
-            : base(CryptoUtilFactory.GetChecksumInstance(CoreChecksumAlgorithm.SHA1))
-        { }
-    }
 }

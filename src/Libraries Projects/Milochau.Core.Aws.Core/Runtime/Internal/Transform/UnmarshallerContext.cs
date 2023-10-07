@@ -118,38 +118,6 @@ namespace Amazon.Runtime.Internal.Transform
             }
         }
 
-        protected void SetupFlexibleChecksumStream(IWebResponseData responseData, Stream responseStream, long contentLength, IRequestContext requestContext)
-        {
-            var algorithm = ChecksumUtils.SelectChecksumForResponseValidation(requestContext?.OriginalRequest?.ChecksumResponseAlgorithms, responseData);
-
-            if (algorithm == CoreChecksumAlgorithm.NONE)
-            {
-                return;
-            }
-
-            ChecksumAlgorithm = algorithm;
-            ExpectedFlexibleChecksumResult = responseData.GetHeaderValue(ChecksumUtils.GetChecksumHeaderKey(algorithm));
-            var checksum = Convert.FromBase64String(ExpectedFlexibleChecksumResult);
-
-            switch (algorithm)
-            {
-                case CoreChecksumAlgorithm.CRC32C:
-                    FlexibleChecksumStream = new HashStream<HashingWrapperCRC32C>(responseStream, checksum, contentLength);
-                    break;
-                case CoreChecksumAlgorithm.CRC32:
-                    FlexibleChecksumStream = new HashStream<HashingWrapperCRC32>(responseStream, checksum, contentLength);
-                    break;
-                case CoreChecksumAlgorithm.SHA256:
-                    FlexibleChecksumStream = new HashStream<HashingWrapperSHA256>(responseStream, checksum, contentLength);
-                    break;
-                case CoreChecksumAlgorithm.SHA1:
-                    FlexibleChecksumStream = new HashStream<HashingWrapperSHA1>(responseStream, checksum, contentLength);
-                    break;
-                default:
-                    throw new AmazonClientException($"Unsupported checksum algorithm {algorithm}");
-            }
-        }
-
         /// <summary>
         ///     Tests the specified expression against the current position in the XML
         ///     document </summary>

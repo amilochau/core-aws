@@ -18,6 +18,7 @@ using Amazon.Util;
 using Amazon.Util.Internal;
 using System;
 using System.Globalization;
+using System.Net.Http;
 using System.Text;
 
 namespace Amazon.Runtime.Internal
@@ -26,25 +27,17 @@ namespace Amazon.Runtime.Internal
     /// The HTTP handler contains common logic for issuing an HTTP request that is 
     /// independent of the underlying HTTP infrastructure.
     /// </summary>
-    /// <typeparam name="TRequestContent"></typeparam>
-    public class HttpHandler<TRequestContent> : PipelineHandler
+    public class HttpHandler : PipelineHandler
     {
-        private IHttpRequestFactory<TRequestContent> _requestFactory;
-
-        /// <summary>
-        /// The sender parameter used in any events raised by this handler.
-        /// </summary>
-        public object CallbackSender { get; private set; }
+        private IHttpRequestFactory<HttpContent> _requestFactory;
 
         /// <summary>
         /// The constructor for HttpHandler.
         /// </summary>
         /// <param name="requestFactory">The request factory used to create HTTP Requests.</param>
-        /// <param name="callbackSender">The sender parameter used in any events raised by this handler.</param>
-        public HttpHandler(IHttpRequestFactory<TRequestContent> requestFactory, object callbackSender)
+        public HttpHandler()
         {
-            _requestFactory = requestFactory;
-            this.CallbackSender = callbackSender;
+            _requestFactory = new HttpRequestMessageFactory();
         }
 
         /// <summary>
@@ -56,7 +49,7 @@ namespace Amazon.Runtime.Internal
         /// <returns>A task that represents the asynchronous operation.</returns>
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
-            IHttpRequest<TRequestContent> httpRequest = null;
+            IHttpRequest<HttpContent> httpRequest = null;
             try
             {
                 IRequest wrappedRequest = executionContext.RequestContext.Request;
@@ -103,7 +96,7 @@ namespace Amazon.Runtime.Internal
             }
         }
 
-        private static async System.Threading.Tasks.Task CompleteFailedRequest(IExecutionContext executionContext, IHttpRequest<TRequestContent> httpRequest)
+        private static async System.Threading.Tasks.Task CompleteFailedRequest(IExecutionContext executionContext, IHttpRequest<HttpContent> httpRequest)
         {
             // In some cases where writing the request body fails, HttpWebRequest.Abort
             // may not dispose of the underlying Socket, so we need to retrieve and dispose
@@ -128,8 +121,8 @@ namespace Amazon.Runtime.Internal
         /// <param name="requestContent">Content to be written.</param>
         /// <param name="httpRequest">The HTTP request.</param>
         /// <param name="requestContext">The request context.</param>
-        private void WriteContentToRequestBody(TRequestContent requestContent,
-            IHttpRequest<TRequestContent> httpRequest,
+        private void WriteContentToRequestBody(HttpContent requestContent,
+            IHttpRequest<HttpContent> httpRequest,
             IRequestContext requestContext)
         {
             byte[] requestData = requestContext.Request.Content;
@@ -141,7 +134,7 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         /// <param name="requestContext">The async request.</param>
         /// <returns>The web request that actually makes the call.</returns>
-        protected virtual IHttpRequest<TRequestContent> CreateWebRequest(IRequestContext requestContext)
+        protected virtual IHttpRequest<HttpContent> CreateWebRequest(IRequestContext requestContext)
         {
             IRequest request = requestContext.Request;
             Uri url = AmazonServiceClient.ComposeUrl(request);

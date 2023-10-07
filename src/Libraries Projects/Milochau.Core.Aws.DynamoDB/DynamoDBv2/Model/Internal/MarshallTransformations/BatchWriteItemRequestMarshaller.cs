@@ -70,13 +70,13 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
                     context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    context.Writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetReturnItemCollectionMetrics())
                 {
                     context.Writer.WritePropertyName("ReturnItemCollectionMetrics");
-                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics);
+                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics!.Value);
                 }
 
                 writer.WriteObjectEnd();

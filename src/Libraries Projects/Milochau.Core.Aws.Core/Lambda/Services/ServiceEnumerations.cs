@@ -52,25 +52,5 @@ namespace Amazon.Lambda
             : base(value)
         {
         }
-
-        /// <summary>
-        /// Finds the constant for the unique value.
-        /// </summary>
-        /// <param name="value">The unique value for the constant</param>
-        /// <returns>The constant for the unique value</returns>
-        public static InvocationType FindValue(string value)
-        {
-            return FindValue<InvocationType>(value);
-        }
-
-        /// <summary>
-        /// Utility method to convert strings to the constant class.
-        /// </summary>
-        /// <param name="value">The string value to convert to the constant class.</param>
-        /// <returns></returns>
-        public static implicit operator InvocationType(string value)
-        {
-            return FindValue(value);
-        }
     }
 }

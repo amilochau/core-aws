@@ -57,7 +57,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetConditionalOperator())
                 {
                     context.Writer.WritePropertyName("ConditionalOperator");
-                    context.Writer.Write(publicRequest.ConditionalOperator);
+                    context.Writer.Write(publicRequest.ConditionalOperator!.Value);
                 }
 
                 if (publicRequest.IsSetConsistentRead())
@@ -189,7 +189,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
                     context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    context.Writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetScanIndexForward())
@@ -201,7 +201,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetSelect())
                 {
                     context.Writer.WritePropertyName("Select");
-                    context.Writer.Write(publicRequest.Select);
+                    context.Writer.Write(publicRequest.Select!.Value);
                 }
 
                 if (publicRequest.IsSetTableName())
@@ -218,23 +218,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static QueryRequestMarshaller _instance = new QueryRequestMarshaller();
-
-        internal static QueryRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static QueryRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static QueryRequestMarshaller Instance { get; } = new QueryRequestMarshaller();
     }
 }

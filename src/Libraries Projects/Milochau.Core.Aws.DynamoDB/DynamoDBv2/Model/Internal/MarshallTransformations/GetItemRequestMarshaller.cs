@@ -102,7 +102,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
                     context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    context.Writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetTableName())
@@ -119,23 +119,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static GetItemRequestMarshaller _instance = new GetItemRequestMarshaller();
-
-        internal static GetItemRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static GetItemRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static GetItemRequestMarshaller Instance { get; } = new GetItemRequestMarshaller();
     }
 }

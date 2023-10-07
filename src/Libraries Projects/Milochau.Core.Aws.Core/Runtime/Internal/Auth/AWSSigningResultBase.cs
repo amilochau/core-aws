@@ -24,11 +24,6 @@ namespace Amazon.Runtime.Internal.Auth
     /// </summary>
     public abstract class AWSSigningResultBase
     {
-        private readonly string _awsAccessKeyId;
-        private readonly DateTime _originalDateTime;
-        private readonly string _signedHeaders;
-        private readonly string _scope;
-
         /// <summary>
         /// Constructs a new signing result instance for a computed signature
         /// </summary>
@@ -37,47 +32,28 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="signedHeaders">The collection of headers names that were included in the signature</param>
         /// <param name="scope">Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)</param>
         public AWSSigningResultBase(string awsAccessKeyId,
-                                    DateTime signedAt,
                                     string signedHeaders,
                                     string scope)
         {
-            _awsAccessKeyId = awsAccessKeyId;
-            _originalDateTime = signedAt;
-            _signedHeaders = signedHeaders;
-            _scope = scope;
+            AccessKeyId = awsAccessKeyId;
+            SignedHeaders = signedHeaders;
+            Scope = scope;
         }
 
         /// <summary>
         /// The access key that was used in signature computation.
         /// </summary>
-        public string AccessKeyId
-        {
-            get { return _awsAccessKeyId; }
-        }
-
-        /// <summary>
-        /// ISO8601 formatted date/time that the signature was computed
-        /// </summary>
-        public string ISO8601DateTime
-        {
-            get { return AWS4Signer.FormatDateTime(_originalDateTime, AWSSDKUtils.ISO8601BasicDateTimeFormat); }
-        }
+        public string AccessKeyId { get; }
 
         /// <summary>
         /// The ;-delimited collection of header names that were included in the signature computation
         /// </summary>
-        public string SignedHeaders
-        {
-            get { return _signedHeaders; }
-        }
+        public string SignedHeaders { get; }
 
         /// <summary>
         /// Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)
         /// </summary>
-        public string Scope
-        {
-            get { return _scope; }
-        }
+        public string Scope { get; }
 
         public abstract string Signature { get; }
 

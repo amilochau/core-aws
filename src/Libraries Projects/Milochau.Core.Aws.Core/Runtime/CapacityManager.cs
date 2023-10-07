@@ -21,7 +21,7 @@ namespace Amazon.Runtime.Internal
     /// <summary>
     /// This class is responsible for keeping track of Retry capacity across different ServiceURLs.
     /// </summary>
-    public class CapacityManager:IDisposable
+    public class CapacityManager: IDisposable
     {
         /// <summary>
         /// CapacityType determines the type of capacity to obtain or use.
@@ -61,26 +61,12 @@ namespace Amazon.Runtime.Internal
             }
         }
 
-        public CapacityManager(int throttleRetryCount, int throttleRetryCost, int throttleCost) 
-            : this(throttleRetryCount, throttleRetryCost, throttleCost, throttleRetryCost)
-        {    
-        }
-
         public CapacityManager(int throttleRetryCount, int throttleRetryCost, int throttleCost, int timeoutRetryCost)
         {
             retryCost = throttleRetryCost;
             initialRetryTokens = throttleRetryCount;
             noRetryIncrement = throttleCost;
             this.timeoutRetryCost = timeoutRetryCost;
-        }
-
-        /// <summary>
-        /// This method acquires a said retry capacity if the container has the capacity.
-        /// </summary>
-        /// <param name="retryCapacity">Contains the RetryCapacity object for the said ServiceURL.</param>
-        public bool TryAcquireCapacity(RetryCapacity retryCapacity)
-        {
-            return TryAcquireCapacity(retryCapacity, CapacityType.Retry);
         }
 
         /// <summary>
@@ -107,18 +93,6 @@ namespace Amazon.Runtime.Internal
                     return false;
                 }
             }
-        }
-
-        /// <summary>
-        /// This method calls a method to release capacity back 
-        /// based on whether it was a successful response or a successful retry response. This is invoked by a retry request response.
-        /// </summary>
-        /// <param name="isRetryRequest">if this request is a retry, use a different capacity cost</param>
-        /// <param name="retryCapacity">Contains the RetryCapacity object for the said ServiceURL.</param>
-        [Obsolete("This method is no longer used in favor of allowing the caller to specify the type of capacity to release.")]
-        public void TryReleaseCapacity(bool isRetryRequest, RetryCapacity retryCapacity) 
-        {
-            ReleaseCapacity(isRetryRequest ? CapacityType.Retry : CapacityType.Increment, retryCapacity);
         }
 
         /// <summary>
@@ -250,22 +224,14 @@ namespace Amazon.Runtime.Internal
     /// </summary>
     public class RetryCapacity
     {
-        //maximum capacity in a bucket.
-        private readonly int _maxCapacity;
         //available ncapacity in a bucket for a given ServiceURL.
         public int AvailableCapacity { get; set; }
         //maximum capacity in a bucket.
-        public int MaxCapacity
-        {
-            get
-            {
-                return _maxCapacity;
-            }
-        }
+        public int MaxCapacity { get; }
 
         public RetryCapacity(int maxCapacity)
         {
-            _maxCapacity = maxCapacity;
+            MaxCapacity = maxCapacity;
             this.AvailableCapacity = maxCapacity;
         }
     }

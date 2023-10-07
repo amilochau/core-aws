@@ -79,11 +79,6 @@ namespace Amazon.Lambda.Model
     /// </summary>
     public partial class InvokeRequest : AmazonLambdaRequest
     {
-        private string _clientContextBase64;
-        private string _functionName;
-        private InvocationType _invocationType;
-        private MemoryStream _payloadStream;
-        private string _qualifier;
 
         /// <summary>
         /// Gets and sets the property ClientContextBase64. 
@@ -92,16 +87,12 @@ namespace Amazon.Lambda.Model
         /// function in the context object.
         /// </para>
         /// </summary>
-        public string ClientContextBase64
-        {
-            get { return this._clientContextBase64; }
-            set { this._clientContextBase64 = value; }
-        }
+        public string ClientContextBase64 { get; set; }
 
         // Check to see if ClientContextBase64 property is set
         internal bool IsSetClientContextBase64()
         {
-            return this._clientContextBase64 != null;
+            return this.ClientContextBase64 != null;
         }
 
         /// <summary>
@@ -133,16 +124,12 @@ namespace Amazon.Lambda.Model
         /// to 64 characters in length.
         /// </para>
         /// </summary>
-        public string FunctionName
-        {
-            get { return this._functionName; }
-            set { this._functionName = value; }
-        }
+        public string FunctionName { get; set; }
 
         // Check to see if FunctionName property is set
         internal bool IsSetFunctionName()
         {
-            return this._functionName != null;
+            return this.FunctionName != null;
         }
 
         /// <summary>
@@ -169,16 +156,12 @@ namespace Amazon.Lambda.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        public InvocationType InvocationType
-        {
-            get { return this._invocationType; }
-            set { this._invocationType = value; }
-        }
+        public InvocationType InvocationType { get; set; }
 
         // Check to see if InvocationType property is set
         internal bool IsSetInvocationType()
         {
-            return this._invocationType != null;
+            return this.InvocationType != null;
         }
 
         /// <summary>
@@ -192,11 +175,7 @@ namespace Amazon.Lambda.Model
         /// You can also specify a file path. For example, <code>--payload file://payload.json</code>.
         /// </para>
         /// </summary>
-        public MemoryStream PayloadStream
-        {
-            get { return this._payloadStream; }
-            set { this._payloadStream = value; }
-        }
+        public MemoryStream PayloadStream { get; set; }
 
         /// <summary>
         /// Gets and sets the property Qualifier. 
@@ -204,16 +183,12 @@ namespace Amazon.Lambda.Model
         /// Specify a version or alias to invoke a published version of the function.
         /// </para>
         /// </summary>
-        public string Qualifier
-        {
-            get { return this._qualifier; }
-            set { this._qualifier = value; }
-        }
+        public string Qualifier { get; set; }
 
         // Check to see if Qualifier property is set
         internal bool IsSetQualifier()
         {
-            return this._qualifier != null;
+            return this.Qualifier != null;
         }
     }
 }

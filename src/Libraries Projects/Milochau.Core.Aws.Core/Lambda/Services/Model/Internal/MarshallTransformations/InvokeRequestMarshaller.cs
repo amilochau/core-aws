@@ -78,30 +78,17 @@ namespace Amazon.Lambda.Model.Internal.MarshallTransformations
         
             if (publicRequest.IsSetInvocationType()) 
             {
-                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType;
+                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType.Value;
             }
         
             request.UseQueryString = true;
 
             return request;
         }
-        private static InvokeRequestMarshaller _instance = new InvokeRequestMarshaller();        
-
-        internal static InvokeRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static InvokeRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static InvokeRequestMarshaller Instance { get; } = new InvokeRequestMarshaller();
     }
 }

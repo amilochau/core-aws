@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetConditionalOperator())
                 {
                     context.Writer.WritePropertyName("ConditionalOperator");
-                    context.Writer.Write(publicRequest.ConditionalOperator);
+                    context.Writer.Write(publicRequest.ConditionalOperator!.Value);
                 }
 
                 if (publicRequest.IsSetConditionExpression())
@@ -129,25 +129,25 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
                 if (publicRequest.IsSetReturnConsumedCapacity())
                 {
                     context.Writer.WritePropertyName("ReturnConsumedCapacity");
-                    context.Writer.Write(publicRequest.ReturnConsumedCapacity);
+                    context.Writer.Write(publicRequest.ReturnConsumedCapacity!.Value);
                 }
 
                 if (publicRequest.IsSetReturnItemCollectionMetrics())
                 {
                     context.Writer.WritePropertyName("ReturnItemCollectionMetrics");
-                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics);
+                    context.Writer.Write(publicRequest.ReturnItemCollectionMetrics!.Value);
                 }
 
                 if (publicRequest.IsSetReturnValues())
                 {
                     context.Writer.WritePropertyName("ReturnValues");
-                    context.Writer.Write(publicRequest.ReturnValues);
+                    context.Writer.Write(publicRequest.ReturnValues!.Value);
                 }
 
                 if (publicRequest.IsSetReturnValuesOnConditionCheckFailure())
                 {
                     context.Writer.WritePropertyName("ReturnValuesOnConditionCheckFailure");
-                    context.Writer.Write(publicRequest.ReturnValuesOnConditionCheckFailure);
+                    context.Writer.Write(publicRequest.ReturnValuesOnConditionCheckFailure!.Value);
                 }
 
                 if (publicRequest.IsSetTableName())
@@ -164,23 +164,10 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
 
             return request;
         }
-        private static PutItemRequestMarshaller _instance = new PutItemRequestMarshaller();
-
-        internal static PutItemRequestMarshaller GetInstance()
-        {
-            return _instance;
-        }
 
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static PutItemRequestMarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-
+        public static PutItemRequestMarshaller Instance { get; } = new PutItemRequestMarshaller();
     }
 }

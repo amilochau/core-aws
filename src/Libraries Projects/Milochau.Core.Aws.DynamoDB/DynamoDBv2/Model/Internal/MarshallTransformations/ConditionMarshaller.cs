@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
             if (requestObject.IsSetComparisonOperator())
             {
                 context.Writer.WritePropertyName("ComparisonOperator");
-                context.Writer.Write(requestObject.ComparisonOperator);
+                context.Writer.Write(requestObject.ComparisonOperator!.Value);
             }
 
         }

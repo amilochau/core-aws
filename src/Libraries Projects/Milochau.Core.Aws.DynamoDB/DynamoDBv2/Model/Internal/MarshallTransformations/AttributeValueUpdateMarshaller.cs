@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
             if (requestObject.IsSetAction())
             {
                 context.Writer.WritePropertyName("Action");
-                context.Writer.Write(requestObject.Action);
+                context.Writer.Write(requestObject.Action!.Value);
             }
 
             if (requestObject.IsSetValue())
@@ -39,6 +39,5 @@ namespace Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model.Internal.MarshallTransform
         /// Singleton Marshaller.
         /// </summary>
         public readonly static AttributeValueUpdateMarshaller Instance = new AttributeValueUpdateMarshaller();
-
     }
 }

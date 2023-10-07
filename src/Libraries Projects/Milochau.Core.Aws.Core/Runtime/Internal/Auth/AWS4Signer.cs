@@ -28,13 +28,12 @@ namespace Amazon.Runtime.Internal.Auth
     /// </summary>
     public class AWS4Signer : AbstractAWSSigner
     {
-        
+        public const int V4_SIGNATURE_LENGTH = 64;
+
         public const string Scheme = "AWS4";
         public const string Algorithm = "HMAC-SHA256";
-        public const string Sigv4aAlgorithm = "ECDSA-P256-SHA256";
 
         public const string AWS4AlgorithmTag = Scheme + "-" + Algorithm;
-        public const string AWS4aAlgorithmTag = Scheme + "-" + Sigv4aAlgorithm;
 
         public const string Terminator = "aws4_request";
         public static readonly byte[] TerminatorBytes = Encoding.UTF8.GetBytes(Terminator);
@@ -43,11 +42,8 @@ namespace Amazon.Runtime.Internal.Auth
         public const string SignedHeaders = "SignedHeaders";
         public const string Signature = "Signature";
 
-        public const string EmptyBodySha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         public const string StreamingBodySha256 = "STREAMING-AWS4-HMAC-SHA256-PAYLOAD";
         public const string StreamingBodySha256WithTrailer = "STREAMING-AWS4-HMAC-SHA256-PAYLOAD-TRAILER";
-        public const string V4aStreamingBodySha256 = "STREAMING-AWS4-ECDSA-P256-SHA256-PAYLOAD";
-        public const string V4aStreamingBodySha256WithTrailer = "STREAMING-AWS4-ECDSA-P256-SHA256-PAYLOAD-TRAILER";
         public const string AWSChunkedEncoding = "aws-chunked";
 
         public const string UnsignedPayload = "UNSIGNED-PAYLOAD";
@@ -190,7 +186,7 @@ namespace Amazon.Runtime.Internal.Auth
                 ? StreamingBodySha256WithTrailer
                 : StreamingBodySha256;
 
-            var bodyHash = SetRequestBodyHash(request, SignPayload, bodySha, ChunkedUploadWrapperStream.V4_SIGNATURE_LENGTH);
+            var bodyHash = SetRequestBodyHash(request, SignPayload, bodySha, V4_SIGNATURE_LENGTH);
             var sortedHeaders = SortAndPruneHeaders(request.Headers);
 
             var canonicalRequest = CanonicalizeRequest(request.Endpoint,
@@ -333,7 +329,7 @@ namespace Amazon.Runtime.Internal.Auth
 
             var stringToSign = stringToSignBuilder.ToString();
             var signature = ComputeKeyedHash(key, stringToSign);
-            return new AWS4SigningResult(awsAccessKey, signedAt, signedHeaders, scope, key, signature);
+            return new AWS4SigningResult(awsAccessKey, signedHeaders, scope, signature);
         }
 
         /// <summary>

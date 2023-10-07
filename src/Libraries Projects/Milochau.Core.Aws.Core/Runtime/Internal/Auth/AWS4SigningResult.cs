@@ -27,7 +27,6 @@ namespace Amazon.Runtime.Internal.Auth
     /// </summary>
     public class AWS4SigningResult : AWSSigningResultBase
     {
-        private readonly byte[] _signingKey;
         private readonly byte[] _signature;
 
         /// <summary>
@@ -40,25 +39,12 @@ namespace Amazon.Runtime.Internal.Auth
         /// <param name="signingKey">Returns the key that was used to compute the signature</param>
         /// <param name="signature">Computed signature</param>
         public AWS4SigningResult(string awsAccessKeyId,
-                                 DateTime signedAt,
                                  string signedHeaders,
                                  string scope,
-                                 byte[] signingKey,
                                  byte[] signature) :
-            base(awsAccessKeyId, signedAt, signedHeaders, scope)
+            base(awsAccessKeyId, signedHeaders, scope)
         {
-            _signingKey = signingKey;
             _signature = signature;
-        }
-
-        /// <summary>
-        /// Returns a copy of the key that was used to compute the signature
-        /// </summary>
-        public byte[] GetSigningKey()
-        {
-            var kSigningCopy = new byte[_signingKey.Length];
-            _signingKey.CopyTo(kSigningCopy, 0);
-            return kSigningCopy;
         }
 
         /// <summary>

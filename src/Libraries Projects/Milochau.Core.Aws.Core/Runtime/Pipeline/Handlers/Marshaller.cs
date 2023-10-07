@@ -48,8 +48,7 @@ namespace Amazon.Runtime.Internal
             var requestContext = executionContext.RequestContext;
             requestContext.Request = requestContext.Marshaller.Marshall(requestContext.OriginalRequest);
 
-            var userAgent = $"{requestContext.ClientConfig.UserAgent} " +
-                $"{(executionContext.RequestContext.IsAsync ? "ClientAsync" : "ClientSync")}";
+            var userAgent = $"{requestContext.ClientConfig.UserAgent} ClientAsync";
 
             requestContext.Request.Headers[HeaderKeys.UserAgentHeader] = userAgent;
 

@@ -28,18 +28,7 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Default set of exception handlers.
         /// </summary>
-        private IDictionary<Type, IExceptionHandler> _exceptionHandlers;
-
-        /// <summary>
-        /// Default set of exception handlers.
-        /// </summary>
-        public IDictionary<Type, IExceptionHandler> ExceptionHandlers
-        {
-            get
-            {
-                return _exceptionHandlers;
-            }
-        }
+        public IDictionary<Type, IExceptionHandler> ExceptionHandlers { get; }
 
         /// <summary>
         /// Constructor for ErrorHandler.
@@ -47,7 +36,7 @@ namespace Amazon.Runtime.Internal
         /// <param name="logger">an ILogger instance.</param>
         public ErrorHandler()
         {
-            _exceptionHandlers = new Dictionary<Type, IExceptionHandler>
+            ExceptionHandlers = new Dictionary<Type, IExceptionHandler>
             {
                 {typeof(HttpErrorResponseException), new HttpErrorResponseExceptionHandler()}
             };
@@ -123,7 +112,7 @@ namespace Amazon.Runtime.Internal
             var exceptionTypeInfo = TypeFactory.GetTypeInfo(exception.GetType());
             do
             {
-                IExceptionHandler exceptionHandler = null;
+                IExceptionHandler exceptionHandler;
 
                 if (this.ExceptionHandlers.TryGetValue(exceptionType, out exceptionHandler))
                 {

@@ -31,10 +31,6 @@ namespace Amazon.Runtime
     /// </summary>
     public class ConstantClass
     {
-        static readonly object staticFieldsLock = new object();
-        static Dictionary<Type, Dictionary<string, ConstantClass>> staticFields =
-            new Dictionary<Type, Dictionary<string, ConstantClass>>();
-
         protected ConstantClass(string value)
         {
             this.Value = value;
@@ -47,86 +43,6 @@ namespace Amazon.Runtime
         {
             get;
             private set;
-        }
-
-
-        public override string ToString()
-        {
-            return this.Intern().Value;
-        }
-
-        public static implicit operator string(ConstantClass value)
-        {
-            if (value == null)
-                return null;
-            return value.Intern().Value;
-        }
-
-        /// <summary>
-        /// Attempt to find correct-cased constant value using whatever cased value the user
-        /// has provided. This is primarily useful for mapping any-cased values from a CLI
-        /// tool to the specific casing required by the service, avoiding the need for the
-        /// user to (a) remember the specific case and (b) actually type it correctly.
-        /// </summary>
-        /// <returns>The properly cased service constant matching the value</returns>
-        internal ConstantClass Intern()
-        {
-            if (!staticFields.ContainsKey(this.GetType()))
-                LoadFields(this.GetType());
-
-            var map = staticFields[this.GetType()];
-            ConstantClass foundValue;
-            return map.TryGetValue(this.Value, out foundValue) ? foundValue : this;
-        }
-
-        protected static T FindValue<T>(string value) where T : ConstantClass
-        {
-            if (value == null)
-                return null;
-
-            if (!staticFields.ContainsKey(typeof(T)))
-                LoadFields(typeof (T));
-
-            var fields = staticFields[typeof(T)];
-            ConstantClass foundValue;
-            if (!fields.TryGetValue(value, out foundValue))
-            {
-                var typeInfo = TypeFactory.GetTypeInfo(typeof(T));
-                var constructor = typeInfo.GetConstructor(new ITypeInfo[] { TypeFactory.GetTypeInfo(typeof(string)) });
-                return constructor.Invoke(new object[] { value }) as T;
-            }
-
-            return foundValue as T;
-        }
-
-        private static void LoadFields(Type t)
-        {
-            if (staticFields.ContainsKey(t))
-                return;
-
-            lock (staticFieldsLock)
-            {
-                if (staticFields.ContainsKey(t)) return;
-
-                var map = new Dictionary<string, ConstantClass>(StringComparer.OrdinalIgnoreCase);
-
-                var typeInfo = TypeFactory.GetTypeInfo(t);
-                foreach (var fieldInfo in typeInfo.GetFields())
-                {
-                    if (fieldInfo.IsStatic && fieldInfo.FieldType == t)
-                    {
-                        var cc = fieldInfo.GetValue(null) as ConstantClass;
-                        map[cc.Value] = cc;
-                    }
-                }
-
-                // create copy of dictionary with new value
-                var newDictionary = new Dictionary<Type, Dictionary<string, ConstantClass>>(staticFields);
-                newDictionary[t] = map;
-
-                // swap in the new dictionary
-                staticFields = newDictionary;
-            }
         }
 
         public override int GetHashCode()

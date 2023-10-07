@@ -70,23 +70,6 @@ namespace Amazon.Runtime.Internal.Transform
             bool maintainResponseBody,
             IWebResponseData responseData,
             bool isException = false)
-            : this(responseStream, maintainResponseBody, responseData, isException, null)
-        { }
-
-        /// <summary>
-        /// Wrap the jsonstring for unmarshalling.
-        /// </summary>
-        /// <param name="responseStream">Stream that contains the JSON for unmarshalling</param>
-        /// <param name="maintainResponseBody"> If set to true, maintains a copy of the complete response body constraint to log response size as the stream is being read.</param>
-        /// <param name="responseData">Response data coming back from the request</param>
-        /// <param name="isException">If set to true, maintains a copy of the complete response body as the stream is being read.</param>
-        /// <param name="requestContext">Context for the request that produced this response</param>
-        public JsonUnmarshallerContext(
-            Stream responseStream,
-            bool maintainResponseBody,
-            IWebResponseData responseData,
-            bool isException,
-            IRequestContext requestContext)
         {
             if (isException || maintainResponseBody)
             {
@@ -118,7 +101,6 @@ namespace Amazon.Runtime.Internal.Transform
                     string.IsNullOrEmpty(responseData.GetHeaderValue("Content-Encoding")))
                 {
                     base.SetupCRCStream(responseData, responseStream, contentLength);
-                    base.SetupFlexibleChecksumStream(responseData, CrcStream ?? responseStream, contentLength, requestContext);
                 }
             }
 
@@ -369,14 +351,10 @@ namespace Amazon.Runtime.Internal.Transform
         private class JsonPathStack
         {
             private Stack<PathSegment> stack = new Stack<PathSegment>();
-            int currentDepth = 0;
             private StringBuilder stackStringBuilder = new StringBuilder(128);
             private string stackString;
 
-            public int CurrentDepth
-            {
-                get { return this.currentDepth; }
-            }
+            public int CurrentDepth { get; private set; } = 0;
 
             public string CurrentPath
             {
@@ -393,7 +371,7 @@ namespace Amazon.Runtime.Internal.Transform
             {
                 if (segment.SegmentType == PathSegmentType.Delimiter)
                 {
-                    currentDepth++;
+                    CurrentDepth++;
                 }
 
                 stackStringBuilder.Append(segment.Value);
@@ -406,7 +384,7 @@ namespace Amazon.Runtime.Internal.Transform
                 var segment = this.stack.Pop();
                 if (segment.SegmentType == PathSegmentType.Delimiter)
                 {
-                    currentDepth--;
+                    CurrentDepth--;
                 }
 
                 stackStringBuilder.Remove(stackStringBuilder.Length - segment.Value.Length, segment.Value.Length);

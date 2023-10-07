@@ -73,9 +73,7 @@ namespace Amazon.Runtime
                     Marshaller = options.RequestMarshaller,
                     OriginalRequest = request,
                     Unmarshaller = options.ResponseUnmarshaller,
-                    IsAsync = true,
                     CancellationToken = cancellationToken,
-                    Options = options
                 },
                 new ResponseContext()
             );
@@ -118,8 +116,7 @@ namespace Amazon.Runtime
 
         private void BuildRuntimePipeline()
         {
-            var httpRequestFactory = new HttpRequestMessageFactory();
-            var httpHandler = new HttpHandler<System.Net.Http.HttpContent>(httpRequestFactory, this);
+            var httpHandler = new HttpHandler();
 
             //Determine which retry policy to use based on the retry mode
             RetryPolicy retryPolicy = new StandardRetryPolicy(Config);

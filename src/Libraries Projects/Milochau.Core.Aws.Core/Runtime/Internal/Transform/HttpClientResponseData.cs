@@ -35,7 +35,6 @@ namespace Amazon.Runtime.Internal.Transform
             _response = new HttpResponseMessageBody(response);
 
             this.StatusCode = response.StatusCode;
-            this.IsSuccessStatusCode = response.IsSuccessStatusCode;
             this.ContentLength = response.Content.Headers.ContentLength ?? 0;
 
             if (response.Content.Headers.ContentType != null)
@@ -46,8 +45,6 @@ namespace Amazon.Runtime.Internal.Transform
         }
 
         public HttpStatusCode StatusCode { get; private set; }
-
-        public bool IsSuccessStatusCode { get; private set; }
 
         public string ContentType { get; private set; }
 

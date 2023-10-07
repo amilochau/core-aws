@@ -26,21 +26,17 @@ namespace Amazon.Runtime
         string RequestName { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
-        InvokeOptionsBase Options { get; }
         AbstractAWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
         ImmutableCredentials ImmutableCredentials { get; set; }
 
         IRequest Request { get; set; }
         bool IsSigned { get; set; }
-        bool IsAsync { get; }
         int Retries { get; set; }
         CapacityManager.CapacityType LastCapacityType { get; set; }
         int EndpointDiscoveryRetries { get; set; }
 
         System.Threading.CancellationToken CancellationToken { get; }
-
-        bool IsLastExceptionRetryable { get; set; }
 
         Guid InvocationId { get; }
     }
@@ -62,14 +58,12 @@ namespace Amazon.Runtime.Internal
 {
     public class RequestContext : IRequestContext
     {
-        AbstractAWSSigner clientSigner;
-
         public RequestContext(AbstractAWSSigner clientSigner)
         {
             if (clientSigner == null)
                 throw new ArgumentNullException("clientSigner");
 
-            this.clientSigner = clientSigner;
+            this.Signer = clientSigner;
             this.InvocationId = Guid.NewGuid();
         }
 
@@ -79,19 +73,11 @@ namespace Amazon.Runtime.Internal
         public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
         public int EndpointDiscoveryRetries { get; set; }
         public bool IsSigned { get; set; }
-        public bool IsAsync { get; set; }
         public AmazonWebServiceRequest OriginalRequest { get; set; }
         public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; set; }
         public ResponseUnmarshaller Unmarshaller { get; set; }
-        public InvokeOptionsBase Options { get; set; }        
         public ImmutableCredentials ImmutableCredentials { get; set; }
-        public AbstractAWSSigner Signer
-        {
-            get
-            {
-                return clientSigner;
-            }
-        }
+        public AbstractAWSSigner Signer { get; }
 
         public System.Threading.CancellationToken CancellationToken { get; set; }
 
@@ -99,12 +85,6 @@ namespace Amazon.Runtime.Internal
         {
             get { return this.OriginalRequest.GetType().Name; }
         }
-
-        /// <summary>
-        /// Property to denote that the last exception returned by an AWS Service
-        /// was retryable or not.
-        /// </summary>
-        public bool IsLastExceptionRetryable { get; set; }
 
         public Guid InvocationId { get; private set; }
     }
