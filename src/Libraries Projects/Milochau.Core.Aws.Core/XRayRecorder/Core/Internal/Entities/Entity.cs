@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using Amazon.XRay.Recorder.Core.Exceptions;
@@ -15,11 +13,9 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
     /// <summary>
     /// Represents the common part for both Segment and Subsegment.
     /// </summary>
-    [Serializable]
     public abstract class Entity
     {
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
-        private readonly Lazy<ConcurrentDictionary<string, IDictionary>> _lazyMetadata = new Lazy<ConcurrentDictionary<string, IDictionary>>();
 
         private string _traceId;
         private string _id;

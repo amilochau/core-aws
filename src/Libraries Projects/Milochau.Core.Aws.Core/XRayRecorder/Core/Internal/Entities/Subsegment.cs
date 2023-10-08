@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Entities
 {
@@ -7,7 +6,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
     /// A trace subsegment tracks unit of computation within a trace segment (e.g. a method or function) or a downstream call.
     /// </summary>
     /// <seealso cref="Entity" />
-    [Serializable]
     public class Subsegment : Entity
     {
         /// <summary>

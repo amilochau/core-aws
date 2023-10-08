@@ -83,11 +83,3 @@ namespace Amazon.XRay.Recorder.Core.Strategies
         }
     }
 }
-
-/*
- * @todo Remove that
- * Entity / Segment --- FacadeSegment
- * Subsegment
- * IDictionary<string, object>
- * Cause
-*/

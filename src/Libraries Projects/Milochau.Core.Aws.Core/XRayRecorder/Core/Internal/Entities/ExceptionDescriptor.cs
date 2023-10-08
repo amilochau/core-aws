@@ -1,31 +1,21 @@
-//-----------------------------------------------------------------------------
-// <copyright file="ExceptionDescriptor.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
 using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Entities
 {
+    public class InternalStackFrame
+    {
+        [JsonPropertyName("path")]
+        public string Path { get; set; }
+
+        [JsonPropertyName("line")]
+        public int Line { get; set; }
+    }
+
     /// <summary>
     /// AWS X-Ray Descriptor of Exception
     /// </summary>
-    [Serializable]
     public class ExceptionDescriptor
     {
         /// <summary>
@@ -44,42 +34,49 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <summary>
         /// Gets or sets the id of the descriptor.
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
+        [JsonPropertyName("message")]
         public string Message { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the stack.
         /// </summary>
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "The value of stack is not supposed to change after set.")]
-        public StackFrame[] Stack { get; set; }
+        [JsonPropertyName("stack")]
+        public InternalStackFrame[]? Stack { get; set; }
 
         /// <summary>
         /// Gets or sets the truncated.
         /// </summary>
-        public int Truncated { get; set; }
+        [JsonPropertyName("truncated")]
+        public int? Truncated { get; set; }
 
         /// <summary>
         /// Gets or sets the cause.
         /// </summary>
-        public string Cause { get; set; }
+        [JsonPropertyName("cause")]
+        public string? Cause { get; set; }
 
         /// <summary>
         /// Gets or sets the exception.
         /// </summary>
+        [JsonIgnore]
         public Exception Exception { get; set; }
 
         /// <summary>
         /// The exception's "remote" attribute should be set to true if the exception on a "remote" subsegment is caused by or originated from a downstream service.
         /// </summary>
+        [JsonPropertyName("remote")]
         public bool Remote { get; set;}
     }
 }
