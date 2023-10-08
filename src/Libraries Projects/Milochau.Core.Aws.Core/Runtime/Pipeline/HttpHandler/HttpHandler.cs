@@ -150,9 +150,7 @@ namespace Amazon.Runtime.Internal
                     // Mapping parameters to query string or body are mutually exclusive.
                     if (!request.UseQueryString)
                     {
-                        string queryString = AWSSDKUtils.GetParametersAsString(request);
-                        content = Encoding.UTF8.GetBytes(queryString);
-                        request.Content = content;
+                        request.Content = Encoding.UTF8.GetBytes(string.Empty);
                         request.SetContentFromParameters = true;
                     }
                     else

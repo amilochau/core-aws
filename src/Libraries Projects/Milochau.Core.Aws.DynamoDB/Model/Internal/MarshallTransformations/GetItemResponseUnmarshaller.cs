@@ -1,7 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime;
 using System;
-using System.IO;
 using System.Net;
 using System.Text.Json;
 
@@ -31,16 +30,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
             errorResponse.InnerException = innerException;
             errorResponse.StatusCode = statusCode;
 
-            var responseBodyBytes = context.GetResponseBodyBytes();
-
-            using (var streamCopy = new MemoryStream(responseBodyBytes))
-            using (var contextCopy = new JsonUnmarshallerContext(streamCopy, false, null))
-            {
-                if (errorResponse.Code != null)
-                {
-                    return GenericExceptionUnmarshaller.Instance.Unmarshall(contextCopy, errorResponse);
-                }
-            }
             return new AmazonDynamoDBException(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 

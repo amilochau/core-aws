@@ -205,12 +205,6 @@ namespace Amazon.Runtime
                 }
             }
 
-            if (internalRequest.UseQueryString && internalRequest.Parameters?.Count > 0)
-            {
-                var queryString = AWSSDKUtils.GetParametersAsString(internalRequest);
-                sb.AppendFormat("{0}{1}", delim, queryString);
-            }
-
             var parameterizedPath = string.Concat(resourcePath, sb);
 
             var hasSlash = url.AbsoluteUri.EndsWith("/", StringComparison.Ordinal) || parameterizedPath.StartsWith("/", StringComparison.Ordinal);

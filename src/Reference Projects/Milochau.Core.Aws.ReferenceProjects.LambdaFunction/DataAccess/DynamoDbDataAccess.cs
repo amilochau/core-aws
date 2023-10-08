@@ -29,9 +29,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest
             {
-                TableName = $"{ConventionsPrefix}-table-maps",
+                TableName = $"{ConventionsPrefix}-table-maps__",
                 Key = new Dictionary<string, AttributeValue>()
-                    //.Append("id", "0dc388584487498c98c98a4b9d2cad3c")
+                    .Append("id", "0dc388584487498c98c98a4b9d2cad3c")
                     .ToDictionary(x => x.Key, x => x.Value),
             }, cancellationToken);
         }

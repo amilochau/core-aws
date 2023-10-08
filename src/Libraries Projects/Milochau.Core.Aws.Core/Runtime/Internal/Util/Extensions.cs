@@ -31,7 +31,7 @@ namespace Amazon.Runtime.Internal.Util
             if (request.ContentStream != null || request.Content != null)
                 return true;
 
-            return request.Parameters.Count > 0;
+            return false;
         }
     }
 }

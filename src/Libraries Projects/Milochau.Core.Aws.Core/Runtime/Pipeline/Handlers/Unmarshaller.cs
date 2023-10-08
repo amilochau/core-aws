@@ -77,8 +77,7 @@ namespace Amazon.Runtime.Internal
             }
             finally
             {
-                if (!unmarshaller.HasStreamingProperty)
-                    responseContext.HttpResponse.ResponseBody.Dispose();
+                responseContext.HttpResponse.ResponseBody.Dispose();
             }
         }
 

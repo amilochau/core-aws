@@ -12,12 +12,9 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
-using ThirdParty.Json.LitJson;
 using Amazon.Runtime.Internal.Util;
 
 namespace Amazon.Runtime.Internal.Transform
@@ -45,15 +42,12 @@ namespace Amazon.Runtime.Internal.Transform
     /// </summary>
     public class JsonUnmarshallerContext : UnmarshallerContext
     {
-        private const string DELIMITER = "/";        
         #region Private members
 
         private StreamReader streamReader = null;
-        private readonly JsonReader jsonReader = null;
         private readonly JsonPathStack stack = new JsonPathStack();
-        private JsonToken? currentToken = null;
         private bool disposed = false;
-        private bool wasPeeked = false;
+
         #endregion
 
         #region Constructors
@@ -108,129 +102,16 @@ namespace Amazon.Runtime.Internal.Transform
                 streamReader = new StreamReader(this.CrcStream);
             else
                 streamReader = new StreamReader(responseStream);
-
-            jsonReader = new JsonReader(streamReader);
         }
 
         #endregion
 
         #region Overrides
 
-
-        /// <summary>
-        ///     Returns the element depth of the parser's current position in the json
-        ///     document being parsed.
-        /// </summary>
-        public override int CurrentDepth => this.stack.CurrentDepth;
-
         /// <summary>
         /// The current Json path that is being unmarshalled.
         /// </summary>
         public override string CurrentPath => this.stack.CurrentPath;
-
-        /// <summary>
-        ///     Reads to the next token in the json document, and updates the context
-        ///     accordingly.
-        /// </summary>
-        /// <returns>
-        ///     True if a token was read, false if there are no more tokens to read.
-        /// </returns>
-        public override bool Read()
-        {
-            if (wasPeeked)
-            {
-                wasPeeked = false;
-                return currentToken == null;
-            }
-            
-            bool result = jsonReader.Read();
-            if (result)
-            {
-                currentToken = jsonReader.Token;
-                UpdateContext();
-            }
-            else
-            {
-                currentToken = null;
-            }
-            wasPeeked = false;
-            return result;
-        }
-
-        /// <summary>
-        /// Peeks at the next token. This peek implementation
-        /// reads the next token and makes the subsequent Read() return the same data.
-        /// If Peek is called successively, it will return the same data.
-        /// Only the first one calls Read(), subsequent calls 
-        /// will return the same data until a Read() call is made.
-        /// </summary>
-        /// <param name="token">Token to peek.</param>
-        /// <returns>Returns true if the peeked token matches given token.</returns>
-        public bool Peek(JsonToken token)
-        {
-            if (wasPeeked)
-                return currentToken != null && currentToken == token;
-
-            if (Read())
-            {
-                wasPeeked = true;
-                return currentToken == token;
-            }
-            return false;
-        }
-
-        /// <summary>
-        ///     Returns the text contents of the current token being parsed.
-        /// </summary>
-        /// <returns>
-        ///     The text contents of the current token being parsed.
-        /// </returns>
-        public override string ReadText()
-        {
-            object data = jsonReader.Value;
-            string text;
-            switch (currentToken)
-            {
-                case JsonToken.Null:
-                    text = null;
-                    break;
-                case JsonToken.String:
-                case JsonToken.PropertyName:
-                    text = data as string;
-                    break;
-                case JsonToken.Boolean:
-                case JsonToken.Int:
-                case JsonToken.UInt:
-                case JsonToken.Long:
-                case JsonToken.ULong:
-                    IFormattable iformattable = data as IFormattable;
-                    if (iformattable != null)
-                        text = iformattable.ToString(null, CultureInfo.InvariantCulture);
-                    else
-                        text = data.ToString();
-                    break;
-                case JsonToken.Double:
-                    var formattable = data as IFormattable;
-                    if (formattable != null)
-                        text = formattable.ToString("R", CultureInfo.InvariantCulture);
-                    else
-                        text = data.ToString();
-                    break;
-                default:
-                    throw new AmazonClientException(
-                            "We expected a VALUE token but got: " + currentToken);
-            }
-            return text;
-        }
-
-        #endregion
-
-        #region Public properties
-
-        /// <summary>
-        /// The type of the current token
-        /// </summary>
-        public JsonToken CurrentTokenType => currentToken.Value;
 
         #endregion
 
@@ -240,61 +121,6 @@ namespace Amazon.Runtime.Internal.Transform
         /// Get the base stream of the jsonStream.
         /// </summary>
         public Stream Stream => streamReader.BaseStream;
-
-        #endregion
-
-        #region Private methods
-
-        private void UpdateContext()
-        {
-            if (!currentToken.HasValue) return;
-
-            if (currentToken.Value == JsonToken.ObjectStart || currentToken.Value == JsonToken.ArrayStart)
-            {
-                // Push '/' for object start and array start.
-                stack.Push(new PathSegment
-                {
-                    SegmentType = PathSegmentType.Delimiter,
-                    Value = DELIMITER
-                });
-            }
-            else if (currentToken.Value == JsonToken.ObjectEnd || currentToken.Value == JsonToken.ArrayEnd)
-            {
-                if (stack.Peek().SegmentType == PathSegmentType.Delimiter)
-                {
-                    // Pop '/' associated with corresponding object start and array start.
-                    stack.Pop();
-                    if (stack.Count > 0 && stack.Peek().SegmentType != PathSegmentType.Delimiter)
-                    {
-                        // Pop the property name associated with the
-                        // object or array if present.
-                        // e.g. {"a":["1","2","3"]}
-                        stack.Pop();
-                    }
-                }
-            }
-            else if (currentToken.Value == JsonToken.PropertyName)
-            {
-                string t = ReadText();
-
-                // Push property name, it's appended to the stack's CurrentPath,
-                // it this does not affect the depth.
-                stack.Push(new PathSegment
-                {
-                    SegmentType = PathSegmentType.Value,
-                    Value = t
-                });
-            }
-            else if (currentToken.Value != JsonToken.None && stack.Peek().SegmentType != PathSegmentType.Delimiter)
-            {
-                // Pop if you encounter a simple data type or null
-                // This will pop the property name associated with it in cases like  {"a":"b"}.
-                // Exclude the case where it's a value in an array so we dont end poping the start of array and
-                // property name e.g. {"a":["1","2","3"]}
-                stack.Pop();
-            }
-
-        }
 
         #endregion
 

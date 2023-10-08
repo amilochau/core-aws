@@ -34,12 +34,10 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             request.Headers["Content-Type"] = "application/json";
             request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2015-03-31";
 
-            if (!publicRequest.IsSetFunctionName())
+            if (publicRequest.FunctionName == null)
                 throw new AmazonLambdaException("Request object does not have required field FunctionName set");
             request.AddPathResource("{FunctionName}", publicRequest.FunctionName);
 
-            if (publicRequest.IsSetQualifier())
-                request.Parameters.Add("Qualifier", publicRequest.Qualifier);
             request.ResourcePath = "/2015-03-31/functions/{FunctionName}/invocations";
 
             request.ContentStream = publicRequest.PayloadStream ?? new MemoryStream();
@@ -55,14 +53,14 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
                 request.Headers.Remove(Amazon.Util.HeaderKeys.ContentTypeHeader);
             }
 
-            if (publicRequest.IsSetClientContextBase64())
+            if (publicRequest.ClientContextBase64 != null)
             {
                 request.Headers["X-Amz-Client-Context"] = publicRequest.ClientContextBase64;
             }
 
-            if (publicRequest.IsSetInvocationType())
+            if (publicRequest.InvocationType != null)
             {
-                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType!.Value;
+                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType.Value;
             }
 
             request.UseQueryString = true;

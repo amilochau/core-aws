@@ -7,7 +7,7 @@
     <Description>Milochau.Core.Aws.Core contains AWS SDK core utilities for Milochau.Core.Aws framework.</Description>
 
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
 
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>

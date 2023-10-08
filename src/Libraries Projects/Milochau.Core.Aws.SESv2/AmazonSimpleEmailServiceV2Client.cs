@@ -104,7 +104,7 @@ namespace Milochau.Core.Aws.SESv2
         /// </param>
         /// 
         /// <returns>The response from the SendEmail service method, as returned by SimpleEmailServiceV2.</returns>
-        /// <exception cref="Milochau.Core.Aws.SESv2.Model.GenericException">
+        /// <exception cref="AmazonSimpleEmailServiceV2Exception">
         /// The message can't be sent because
         /// restricted.
         /// </exception>

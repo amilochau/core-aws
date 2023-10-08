@@ -92,7 +92,7 @@ namespace Amazon.Runtime
             return StringComparer.OrdinalIgnoreCase.Equals(this.Value, value);
         }
 
-        public static bool operator ==(ConstantClass a, ConstantClass b)
+        public static bool operator ==(ConstantClass? a, ConstantClass? b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
@@ -111,7 +111,7 @@ namespace Amazon.Runtime
             }
         }
 
-        public static bool operator !=(ConstantClass a, ConstantClass b)
+        public static bool operator !=(ConstantClass? a, ConstantClass? b)
         {
             return !(a == b);
         }

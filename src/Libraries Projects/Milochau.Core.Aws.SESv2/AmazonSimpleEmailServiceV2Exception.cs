@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.SESv2
         /// <summary>
         /// Construct instance of AmazonSimpleEmailServiceV2Exception
         /// </summary>
-        public AmazonSimpleEmailServiceV2Exception(string message, ErrorType errorType, string? errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonSimpleEmailServiceV2Exception(string message, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
             : base(message, errorType, errorCode, requestId, statusCode)
         {
         }
@@ -44,7 +44,7 @@ namespace Milochau.Core.Aws.SESv2
         /// <summary>
         /// Construct instance of AmazonSimpleEmailServiceV2Exception
         /// </summary>
-        public AmazonSimpleEmailServiceV2Exception(string message, Exception innerException, ErrorType errorType, string? errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonSimpleEmailServiceV2Exception(string message, Exception innerException, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
             : base(message, innerException, errorType, errorCode, requestId, statusCode)
         {
         }

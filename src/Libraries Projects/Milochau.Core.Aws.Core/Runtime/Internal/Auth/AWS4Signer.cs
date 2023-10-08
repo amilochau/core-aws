@@ -152,7 +152,7 @@ namespace Amazon.Runtime.Internal.Auth
             ValidateRequest(request);
             var signedAt = InitializeHeaders(request.Headers, request.Endpoint);
             
-            var serviceSigningName = !string.IsNullOrEmpty(request.OverrideSigningServiceName) ? request.OverrideSigningServiceName : clientConfig.AuthenticationServiceName;
+            var serviceSigningName = clientConfig.AuthenticationServiceName;
 
             request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName);
             SetXAmzTrailerHeader(request.Headers, request.TrailingHeaders);
@@ -645,15 +645,6 @@ namespace Amazon.Runtime.Internal.Auth
                 foreach (var subResource in request.SubResources)
                 {
                     parametersToCanonicalize.Add(new KeyValuePair<string,string>(subResource.Key, subResource.Value));
-                }
-            }
-
-            if (request.UseQueryString && request.Parameters != null && request.Parameters.Count > 0)
-            {
-                var requestParameters = request.ParameterCollection.GetSortedParametersList();
-                foreach (var queryParameter in requestParameters.Where(queryParameter => queryParameter.Value != null))
-                {
-                    parametersToCanonicalize.Add(new KeyValuePair<string,string>(queryParameter.Key, queryParameter.Value));
                 }
             }
 

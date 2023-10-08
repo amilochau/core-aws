@@ -172,7 +172,7 @@ namespace Milochau.Core.Aws.Lambda
         /// </param>
         /// 
         /// <returns>The response from the Invoke service method, as returned by Lambda.</returns>
-        /// <exception cref="Milochau.Core.Aws.Lambda.Model.GenericException">
+        /// <exception cref="AmazonLambdaException">
         /// An error occurred.
         /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/lambda-2015-03-31/Invoke">REST API Reference for Invoke Operation</seealso>

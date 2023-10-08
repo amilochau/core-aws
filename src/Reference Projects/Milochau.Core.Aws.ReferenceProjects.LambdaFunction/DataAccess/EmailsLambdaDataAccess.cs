@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task SendSummaryAsync(EmailRequest emailRequest, CancellationToken cancellationToken)
         {
-            await amazonLambda.InvokeAsync(new Milochau.Core.Aws.Lambda.Model.InvokeRequest
+            await amazonLambda.InvokeAsync(new Lambda.Model.InvokeRequest
             {
                 FunctionName = $"emails-{ConventionsHost}-fn-async-send-emails",
                 InvocationType = InvocationType.Event,

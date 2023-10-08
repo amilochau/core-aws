@@ -71,12 +71,6 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </summary>
         public string? ClientContextBase64 { get; set; }
 
-        // Check to see if ClientContextBase64 property is set
-        internal bool IsSetClientContextBase64()
-        {
-            return this.ClientContextBase64 != null;
-        }
-
         /// <summary>
         /// Gets and sets the property FunctionName. 
         /// <para>
@@ -108,12 +102,6 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </summary>
         public string? FunctionName { get; set; }
 
-        // Check to see if FunctionName property is set
-        internal bool IsSetFunctionName()
-        {
-            return this.FunctionName != null;
-        }
-
         /// <summary>
         /// Gets and sets the property InvocationType. 
         /// <para>
@@ -140,12 +128,6 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </summary>
         public InvocationType? InvocationType { get; set; }
 
-        // Check to see if InvocationType property is set
-        internal bool IsSetInvocationType()
-        {
-            return this.InvocationType != null;
-        }
-
         /// <summary>
         /// Gets and sets the property PayloadStream. 
         /// <para>
@@ -158,20 +140,6 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         /// </summary>
         public MemoryStream? PayloadStream { get; set; }
-
-        /// <summary>
-        /// Gets and sets the property Qualifier. 
-        /// <para>
-        /// Specify a version or alias to invoke a published version of the function.
-        /// </para>
-        /// </summary>
-        public string? Qualifier { get; set; }
-
-        // Check to see if Qualifier property is set
-        internal bool IsSetQualifier()
-        {
-            return this.Qualifier != null;
-        }
 
         /// <summary>
         /// Gets and sets the property Payload. When this property is set the PayloadStream

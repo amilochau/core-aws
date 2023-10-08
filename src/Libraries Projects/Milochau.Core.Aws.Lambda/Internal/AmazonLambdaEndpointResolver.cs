@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.Lambda.Internal
             var config = (AmazonLambdaConfig)requestContext.ClientConfig;
             return new EndpointParameters
             {
-                Region = config.RegionEndpoint?.SystemName
+                Region = config.RegionEndpoint.SystemName
             };
         }
     }

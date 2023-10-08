@@ -137,7 +137,7 @@ namespace Amazon.Util
          */
         internal static string GetParametersAsString(IRequest request)
         {
-            return GetParametersAsString(request.ParameterCollection);
+            return string.Empty;
         }
 
         /// <summary>
@@ -163,33 +163,6 @@ namespace Amazon.Util
             }
 
             return Encoding.UTF8.GetBytes(content);
-        }
-
-        /**
-         * Convert Dictionary of parameters to Url encoded query string
-         */
-        internal static string GetParametersAsString(ParameterCollection parameterCollection)
-        {
-            var sortedParameters = parameterCollection.GetSortedParametersList();
-
-            StringBuilder data = new StringBuilder(512);
-            foreach (var kvp in sortedParameters)
-            {
-                var key = kvp.Key;
-                var value = kvp.Value;
-                if (value != null)
-                {
-                    data.Append(key);
-                    data.Append('=');
-                    data.Append(AWSSDKUtils.UrlEncode(value, false));
-                    data.Append('&');
-                }
-            }
-            string result = data.ToString();
-            if (result.Length == 0)
-                return string.Empty;
-
-            return result.Remove(result.Length - 1);
         }
 
         /// <summary>

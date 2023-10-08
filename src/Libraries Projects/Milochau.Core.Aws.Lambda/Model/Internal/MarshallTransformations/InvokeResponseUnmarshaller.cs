@@ -48,16 +48,6 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             errorResponse.InnerException = innerException;
             errorResponse.StatusCode = statusCode;
 
-            var responseBodyBytes = context.GetResponseBodyBytes();
-
-            using (var streamCopy = new MemoryStream(responseBodyBytes))
-            using (var contextCopy = new JsonUnmarshallerContext(streamCopy, false, null))
-            {
-                if (errorResponse.Code != null)
-                {
-                    return GenericExceptionUnmarshaller.Instance.Unmarshall(contextCopy, errorResponse);
-                }
-            }
             return new AmazonLambdaException(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 
