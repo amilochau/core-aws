@@ -38,7 +38,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// are the same.
         /// </para>
         /// </summary>
-        public int Count { get; set; }
+        public int? Count { get; set; }
 
         /// <summary>
         /// Gets and sets the property Items. 
@@ -84,6 +84,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// same as <code>Count</code>.
         /// </para>
         /// </summary>
-        public int ScannedCount { get; set; }
+        public int? ScannedCount { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Amazon.Runtime;
 using System;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
@@ -17,41 +18,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            UpdateItemResponse response = new UpdateItemResponse();
-
-            context.Read();
-            int targetDepth = context.CurrentDepth;
-            while (context.ReadAtDepth(targetDepth))
-            {
-                if (context.TestExpression("Attributes", targetDepth))
-                {
-                    var unmarshaller = new DictionaryUnmarshaller<string, AttributeValue, StringUnmarshaller, AttributeValueUnmarshaller>(StringUnmarshaller.Instance, AttributeValueUnmarshaller.Instance);
-                    response.Attributes = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("ConsumedCapacity", targetDepth))
-                {
-                    var unmarshaller = ConsumedCapacityUnmarshaller.Instance;
-                    response.ConsumedCapacity = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("ItemCollectionMetrics", targetDepth))
-                {
-                    var unmarshaller = ItemCollectionMetricsUnmarshaller.Instance;
-                    response.ItemCollectionMetrics = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-            }
-
-            return response;
+            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.UpdateItemResponse)!; // @todo null?
         }
 
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <param name="innerException"></param>
-        /// <param name="statusCode"></param>
         /// <returns></returns>
         public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
         {

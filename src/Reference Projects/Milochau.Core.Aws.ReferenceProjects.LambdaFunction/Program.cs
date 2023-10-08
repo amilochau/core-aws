@@ -1,7 +1,7 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Milochau.Core.Aws.Core.Lambda.Events;
-using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;

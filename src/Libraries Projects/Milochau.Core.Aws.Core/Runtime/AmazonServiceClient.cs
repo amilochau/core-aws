@@ -141,7 +141,7 @@ namespace Amazon.Runtime
             CustomizeRuntimePipeline(RuntimePipeline);
 
             // Apply global pipeline customizations
-            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(GetType(), RuntimePipeline);
+            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(RuntimePipeline);
         }
 
         /// <summary>

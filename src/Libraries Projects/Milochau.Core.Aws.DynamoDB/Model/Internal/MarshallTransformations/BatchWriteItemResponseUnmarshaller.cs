@@ -1,9 +1,9 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
@@ -18,41 +18,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            BatchWriteItemResponse response = new BatchWriteItemResponse();
-
-            context.Read();
-            int targetDepth = context.CurrentDepth;
-            while (context.ReadAtDepth(targetDepth))
-            {
-                if (context.TestExpression("ConsumedCapacity", targetDepth))
-                {
-                    var unmarshaller = new ListUnmarshaller<ConsumedCapacity, ConsumedCapacityUnmarshaller>(ConsumedCapacityUnmarshaller.Instance);
-                    response.ConsumedCapacity = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("ItemCollectionMetrics", targetDepth))
-                {
-                    var unmarshaller = new DictionaryUnmarshaller<string, List<ItemCollectionMetrics>, StringUnmarshaller, ListUnmarshaller<ItemCollectionMetrics, ItemCollectionMetricsUnmarshaller>>(StringUnmarshaller.Instance, new ListUnmarshaller<ItemCollectionMetrics, ItemCollectionMetricsUnmarshaller>(ItemCollectionMetricsUnmarshaller.Instance));
-                    response.ItemCollectionMetrics = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("UnprocessedItems", targetDepth))
-                {
-                    var unmarshaller = new DictionaryUnmarshaller<string, List<WriteRequest>, StringUnmarshaller, ListUnmarshaller<WriteRequest, WriteRequestUnmarshaller>>(StringUnmarshaller.Instance, new ListUnmarshaller<WriteRequest, WriteRequestUnmarshaller>(WriteRequestUnmarshaller.Instance));
-                    response.UnprocessedItems = unmarshaller.Unmarshall(context);
-                    continue;
-                }
-            }
-
-            return response;
+            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.BatchWriteItemResponse)!; // @todo null?
         }
 
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <param name="innerException"></param>
-        /// <param name="statusCode"></param>
         /// <returns></returns>
         public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
         {
