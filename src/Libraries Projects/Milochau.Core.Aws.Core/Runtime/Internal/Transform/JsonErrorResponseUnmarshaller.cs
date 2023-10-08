@@ -53,7 +53,7 @@ namespace Amazon.Runtime.Internal.Transform
         /// <returns>An <c>ErrorResponse</c> object.</returns>
         public ErrorResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            string requestId = null;
+            string? requestId = null;
             GetValuesFromJsonIfPossible(context, out InternalException internalException);
 
             // If an error code was not found, check for the x-amzn-ErrorType header. 
@@ -92,7 +92,7 @@ namespace Amazon.Runtime.Internal.Transform
             }
 
             // strip extra data from type, leaving only the exception type name
-            internalException.Type = internalException?.Type.Substring(internalException.Type.LastIndexOf("#", StringComparison.Ordinal) + 1);
+            internalException.Type = internalException.Type?.Substring(internalException.Type.LastIndexOf("#", StringComparison.Ordinal) + 1);
 
             // if no message was found create a generic message
             if (string.IsNullOrEmpty(internalException.Message))
@@ -135,7 +135,7 @@ namespace Amazon.Runtime.Internal.Transform
             internalException = JsonSerializer.Deserialize(context.Stream, InternalExceptionJsonSerializerContext.Default.InternalException);
         }
 
-        private static JsonErrorResponseUnmarshaller instance;
+        private static JsonErrorResponseUnmarshaller? instance;
 
         /// <summary>
         /// Return an instance of JsonErrorResponseUnmarshaller.

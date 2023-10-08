@@ -13,6 +13,8 @@ using System.Threading;
 using Amazon.Runtime.Internal.Transform;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.References;
+using System.Reflection.Metadata;
+using System.Linq;
 
 namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 {
@@ -35,6 +37,13 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         private static bool TryReadPropertyValue(object obj, string propertyName, out object value)
         {
             value = 0;
+            
+            return false;
+
+            /* @todo This code does not work as reflection is disabled, but we could find alternatives to trace:
+             * - RequestDescriptors
+             * - RequestParameters
+             * - ResponseParameters
 
             try
             {
@@ -66,6 +75,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             {
                 return false;
             }
+            */
         }
 
         /// <summary>
@@ -123,7 +133,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         /// </summary>
         private void ProcessBeginRequest(IExecutionContext executionContext)
         {
-            var request = executionContext.RequestContext.Request;
+            var request = executionContext.RequestContext.Request!;
             Entity? entity = null;
             try
             {
@@ -176,7 +186,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
-            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request.ServiceName);
+            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request!.ServiceName);
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
             subsegment.AddToAws("region", client.RegionEndpoint?.SystemName);
@@ -302,6 +312,15 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
+            // @todo The following code is the new code, to improve traces with XRay from requests
+            var xrayRequestParameters = request.GetXRayRequestParameters();
+            foreach (var item in xrayRequestParameters.Where(x => x.Value != null))
+            {
+                entity.AddToAws(item.Key, item.Value);
+            }
+
+            /*
+             * @todo The following code is the original code.
             if (operationHandler.RequestParameters != null)
             {
                 foreach (string parameter in operationHandler.RequestParameters)
@@ -312,6 +331,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                     }
                 }
             }
+            */
 
             if (operationHandler.RequestDescriptors != null)
             {
@@ -377,7 +397,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         private static bool ExcludeServiceOperation(IExecutionContext executionContext)
         {
             var requestContext = executionContext.RequestContext;
-            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request.ServiceName);
+            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request!.ServiceName);
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
             return AWSXRaySDKUtils.IsBlacklistedOperation(serviceName,operation);

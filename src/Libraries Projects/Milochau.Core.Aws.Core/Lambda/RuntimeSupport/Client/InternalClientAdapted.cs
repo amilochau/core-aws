@@ -23,12 +23,6 @@ namespace Amazon.Lambda.RuntimeSupport
 
     internal partial interface IInternalRuntimeApiClient
     {
-        /// <summary>Non-recoverable initialization error. Runtime should exit after reporting the error. Error will be served in response to the first invoke.</summary>
-        /// <returns>Accepted</returns>
-        /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task<SwaggerResponse<StatusResponse>> ErrorAsync(string lambda_Runtime_Function_Error_Type, string errorJson, System.Threading.CancellationToken cancellationToken);
-
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
@@ -65,7 +59,7 @@ namespace Amazon.Lambda.RuntimeSupport
         private const int MAX_HEADER_SIZE_BYTES = 1024 * 1024;
 
         private const string ErrorContentType = "application/vnd.aws.lambda.error+json";
-        private System.Net.Http.HttpClient _httpClient;
+        private readonly System.Net.Http.HttpClient _httpClient;
 
         public InternalRuntimeApiClient(System.Net.Http.HttpClient httpClient)
         {
@@ -73,99 +67,6 @@ namespace Amazon.Lambda.RuntimeSupport
         }
 
         public string BaseUrl { get; set; } = "/2018-06-01";
-
-        /// <summary>Non-recoverable initialization error. Runtime should exit after reporting the error. Error will be served in response to the first invoke.</summary>
-        /// <returns>Accepted</returns>
-        /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<SwaggerResponse<StatusResponse>> ErrorAsync(string lambda_Runtime_Function_Error_Type, string errorJson, System.Threading.CancellationToken cancellationToken)
-        {
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/runtime/init/error");
-
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    if (lambda_Runtime_Function_Error_Type != null)
-                        request_.Headers.TryAddWithoutValidation("Lambda-Runtime-Function-Error-Type", ConvertToString(lambda_Runtime_Function_Error_Type, System.Globalization.CultureInfo.InvariantCulture));
-                    using (var content_ = new System.Net.Http.StringContent(errorJson))
-                    {
-                        content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(ErrorContentType);
-                        request_.Content = content_;
-                        request_.Method = new System.Net.Http.HttpMethod("POST");
-                        request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                        var url_ = urlBuilder_.ToString();
-                        request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                        var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                        try
-                        {
-                            var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                            if (response_.Content != null && response_.Content.Headers != null)
-                            {
-                                foreach (var item_ in response_.Content.Headers)
-                                    headers_[item_.Key] = item_.Value;
-                            }
-
-                            if (response_.StatusCode == HttpStatusCode.Accepted)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                var result_ = default(StatusResponse);
-                                try
-                                {
-                                    result_ = JsonSerializer.Deserialize<StatusResponse>(responseData_, RuntimeApiSerializationContext.Default.StatusResponse);
-                                    return new SwaggerResponse<StatusResponse>(headers_, result_);
-                                }
-                                catch (System.Exception exception_)
-                                {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
-                                }
-                            }
-                            else
-                            if (response_.StatusCode == HttpStatusCode.Forbidden)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                var result_ = default(ErrorResponse);
-                                try
-                                {
-                                    result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
-                                }
-                                catch (System.Exception exception_)
-                                {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
-                                }
-                                throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, headers_, result_, null);
-                            }
-                            else
-                            if (response_.StatusCode == HttpStatusCode.InternalServerError)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, headers_, null);
-                            }
-                            else
-                            if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                            }
-
-                            return new SwaggerResponse<StatusResponse>(headers_, default(StatusResponse));
-                        }
-                        finally
-                        {
-                            if (response_ != null)
-                                response_.Dispose();
-                        }
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
 
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
@@ -204,19 +105,19 @@ namespace Amazon.Lambda.RuntimeSupport
                         }
                         catch (System.Exception exception_)
                         {
-                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                         }
-                        throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                        throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
                     }
                     else if (response_.StatusCode == HttpStatusCode.InternalServerError)
                     {
                         var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, headers_, null);
+                        throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
                     }
                     else if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
                     {
                         var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
                     }
 
                     return new SwaggerResponse<System.IO.Stream>(headers_, new System.IO.MemoryStream(0));
@@ -280,9 +181,9 @@ namespace Amazon.Lambda.RuntimeSupport
                             }
                             catch (System.Exception exception_)
                             {
-                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                             }
-                            throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                            throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, result_, null);
                         }
                         else
                         if (response_.StatusCode == HttpStatusCode.Forbidden)
@@ -295,9 +196,9 @@ namespace Amazon.Lambda.RuntimeSupport
                             }
                             catch (System.Exception exception_)
                             {
-                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                             }
-                            throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                            throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
                         }
                         else
                         if (response_.StatusCode == HttpStatusCode.RequestEntityTooLarge)
@@ -310,21 +211,21 @@ namespace Amazon.Lambda.RuntimeSupport
                             }
                             catch (System.Exception exception_)
                             {
-                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                             }
-                            throw new RuntimeApiClientException<ErrorResponse>("Payload Too Large", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                            throw new RuntimeApiClientException<ErrorResponse>("Payload Too Large", (int)response_.StatusCode, responseData_, result_, null);
                         }
                         else
                         if (response_.StatusCode == HttpStatusCode.InternalServerError)
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
                         }
                         else
                         if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                            throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
                         }
 
                         return new SwaggerResponse<StatusResponse>(headers_, default(StatusResponse));
@@ -354,11 +255,11 @@ namespace Amazon.Lambda.RuntimeSupport
         public async System.Threading.Tasks.Task<SwaggerResponse<StatusResponse>> ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, System.Threading.CancellationToken cancellationToken)
         {
             if (awsRequestId == null)
-                throw new System.ArgumentNullException("awsRequestId");
+                throw new System.ArgumentNullException(nameof(awsRequestId));
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/runtime/invocation/{AwsRequestId}/error");
-            urlBuilder_.Replace("{AwsRequestId}", System.Uri.EscapeDataString(ConvertToString(awsRequestId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{AwsRequestId}", System.Uri.EscapeDataString(awsRequestId));
 
             var client_ = _httpClient;
             try
@@ -366,7 +267,7 @@ namespace Amazon.Lambda.RuntimeSupport
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     if (lambda_Runtime_Function_Error_Type != null)
-                        request_.Headers.TryAddWithoutValidation("Lambda-Runtime-Function-Error-Type", ConvertToString(lambda_Runtime_Function_Error_Type, System.Globalization.CultureInfo.InvariantCulture));
+                        request_.Headers.TryAddWithoutValidation("Lambda-Runtime-Function-Error-Type", lambda_Runtime_Function_Error_Type);
 
                     // This is the unmodeled X-Ray header to report back the cause of errors.
                     if (xrayCause != null && System.Text.Encoding.UTF8.GetByteCount(xrayCause) < MAX_HEADER_SIZE_BYTES)
@@ -415,7 +316,7 @@ namespace Amazon.Lambda.RuntimeSupport
                                 }
                                 catch (System.Exception exception_)
                                 {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                                 }
                             }
                             else
@@ -429,9 +330,9 @@ namespace Amazon.Lambda.RuntimeSupport
                                 }
                                 catch (System.Exception exception_)
                                 {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                                 }
-                                throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                                throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, result_, null);
                             }
                             else
                             if (response_.StatusCode == HttpStatusCode.Forbidden)
@@ -444,21 +345,21 @@ namespace Amazon.Lambda.RuntimeSupport
                                 }
                                 catch (System.Exception exception_)
                                 {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                                 }
-                                throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, headers_, result_, null);
+                                throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
                             }
                             else
                             if (response_.StatusCode == HttpStatusCode.InternalServerError)
                             {
                                 var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, headers_, null);
+                                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
                             }
                             else
                             if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
                             {
                                 var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
                             }
 
                             return new SwaggerResponse<StatusResponse>(headers_, default(StatusResponse));
@@ -474,42 +375,6 @@ namespace Amazon.Lambda.RuntimeSupport
             finally
             {
             }
-        }
-
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
-        {
-            if (value is System.Enum)
-            {
-                string name = System.Enum.GetName(value.GetType(), value);
-                if (name != null)
-                {
-                    var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
-                    if (field != null)
-                    {
-                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
-                            as System.Runtime.Serialization.EnumMemberAttribute;
-                        if (attribute != null)
-                        {
-                            return attribute.Value;
-                        }
-                    }
-                }
-            }
-            else if (value is bool)
-            {
-                return System.Convert.ToString(value, cultureInfo).ToLowerInvariant();
-            }
-            else if (value is byte[])
-            {
-                return System.Convert.ToBase64String((byte[])value);
-            }
-            else if (value != null && value.GetType().IsArray)
-            {
-                var array = System.Linq.Enumerable.OfType<object>((System.Array)value);
-                return string.Join(",", System.Linq.Enumerable.Select(array, o => ConvertToString(o, cultureInfo)));
-            }
-
-            return System.Convert.ToString(value, cultureInfo);
         }
     }
 
@@ -547,18 +412,12 @@ namespace Amazon.Lambda.RuntimeSupport
 
     public partial class RuntimeApiClientException : System.Exception
     {
-        public int StatusCode { get; private set; }
-
         public string Response { get; private set; }
 
-        public System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
-
-        public RuntimeApiClientException(string message, int statusCode, string response, System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException)
+        public RuntimeApiClientException(string message, int statusCode, string response, System.Exception? innerException)
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
         {
-            StatusCode = statusCode;
             Response = response;
-            Headers = headers;
         }
 
         public override string ToString()
@@ -571,8 +430,8 @@ namespace Amazon.Lambda.RuntimeSupport
     {
         public TResult Result { get; private set; }
 
-        public RuntimeApiClientException(string message, int statusCode, string response, System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException)
-            : base(message, statusCode, response, headers, innerException)
+        public RuntimeApiClientException(string message, int statusCode, string response, TResult result, System.Exception? innerException)
+            : base(message, statusCode, response, innerException)
         {
             Result = result;
         }

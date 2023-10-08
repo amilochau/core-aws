@@ -27,7 +27,7 @@ namespace Amazon.Runtime
         /// determines the endpoint to use.  If this is not set
         /// then the client will fallback to the value of ServiceURL.
         /// </summary>
-        RegionEndpoint RegionEndpoint { get; }
+        RegionEndpoint? RegionEndpoint { get; }
 
         /// <summary>
         /// The constant used to lookup in the region hash the endpoint.
@@ -40,14 +40,14 @@ namespace Amazon.Runtime
         /// During service client creation it is set to service's default generated EndpointProvider,
         /// but can be changed to use custom user supplied EndpointProvider.
         /// </summary>
-        IEndpointProvider EndpointProvider { get; }
+        IEndpointProvider? EndpointProvider { get; }
 
         /// <summary>
         /// Gets the AuthenticationServiceName property.
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
         /// </summary>
-        string AuthenticationServiceName { get; }
+        string? AuthenticationServiceName { get; }
 
         /// <summary>
         /// Gets the UserAgent property.

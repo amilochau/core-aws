@@ -435,11 +435,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, Condition>? QueryFilter { get; set; }
 
         /// <summary>
-        /// Gets and sets the property ReturnConsumedCapacity.
-        /// </summary>
-        public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        /// <summary>
         /// Gets and sets the property ScanIndexForward. 
         /// <para>
         /// Specifies the order for index traversal: If <code>true</code> (default), the traversal

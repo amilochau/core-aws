@@ -71,12 +71,12 @@ namespace Amazon.Runtime
             return Hashing.Hash(AccessKey, SecretKey, Token);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (object.ReferenceEquals(this, obj))
                 return true;
 
-            ImmutableCredentials ic = obj as ImmutableCredentials;
+            ImmutableCredentials? ic = obj as ImmutableCredentials;
             if (ic == null)
                 return false;
 

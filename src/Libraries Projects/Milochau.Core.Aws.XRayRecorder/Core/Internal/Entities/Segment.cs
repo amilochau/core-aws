@@ -13,7 +13,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
     public class Segment : Entity
     {
         private long _size;           // Total number of subsegments
-        private readonly Lazy<ConcurrentDictionary<string, object>> _lazyService = new Lazy<ConcurrentDictionary<string, object>>();
 
         /// <summary>
         /// Gets the size of subsegments.

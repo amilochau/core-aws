@@ -327,7 +327,7 @@ namespace Amazon.Runtime.Internal.Auth
         /// <returns>Computed signing key</returns>
         public static byte[] ComposeSigningKey(string awsSecretAccessKey, string region, string date, string service)
         {
-            char[] ksecret = null;
+            char[]? ksecret = null;
 
             try
             {
@@ -363,7 +363,7 @@ namespace Amazon.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        public static string SetRequestBodyHash(IRequest request)
+        public static string? SetRequestBodyHash(IRequest request)
         {
             // If unsigned payload, set the appropriate magic string in the header and return it
             if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : false)
@@ -389,8 +389,7 @@ namespace Amazon.Runtime.Internal.Auth
             }
 
             // if the body hash has been precomputed and already placed in the header, just extract and return it
-            string computedContentHash;
-            var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out computedContentHash);
+            var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out string? computedContentHash);
             if (shaHeaderPresent)
                 return computedContentHash;
 
@@ -480,7 +479,7 @@ namespace Amazon.Runtime.Internal.Auth
 
         public static string DetermineSigningRegion(IClientConfig clientConfig, string serviceName)
         {
-            string authenticationRegion = null;
+            string? authenticationRegion = null;
 
             if (!string.IsNullOrEmpty(authenticationRegion))
                 return authenticationRegion.ToLowerInvariant();
@@ -523,7 +522,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
-                                                    string precomputedBodyHash,
+                                                    string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
             return CanonicalizeRequestHelper(endpoint,
@@ -540,7 +539,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
-                                                    string precomputedBodyHash,
+                                                    string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
             var canonicalRequest = new StringBuilder();
@@ -557,8 +556,7 @@ namespace Amazon.Runtime.Internal.Auth
             }
             else
             {
-                string contentHash;
-                if (sortedHeaders.TryGetValue(HeaderKeys.XAmzContentSha256Header, out contentHash))
+                if (sortedHeaders.TryGetValue(HeaderKeys.XAmzContentSha256Header, out string? contentHash))
                     canonicalRequest.Append(contentHash);
             }
 

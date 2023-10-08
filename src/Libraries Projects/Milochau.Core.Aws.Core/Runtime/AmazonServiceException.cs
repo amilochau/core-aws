@@ -53,7 +53,7 @@ namespace Amazon.Runtime
         {
         }
 
-        public AmazonServiceException(string message, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonServiceException(string message, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode))
         {
@@ -63,7 +63,7 @@ namespace Amazon.Runtime
             this.StatusCode = statusCode;
         }
 
-        public AmazonServiceException(string message, Exception innerException, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonServiceException(string message, Exception innerException, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode), 
                 innerException)
@@ -74,7 +74,7 @@ namespace Amazon.Runtime
             this.StatusCode = statusCode;
         }
 
-        static string BuildGenericErrorMessage(string errorCode, HttpStatusCode statusCode)
+        static string BuildGenericErrorMessage(string? errorCode, HttpStatusCode statusCode)
         {
             return string.Format(CultureInfo.InvariantCulture,  
                 "Error making request with Error Code {0} and Http Status Code {1}. No further error information was returned by the service.", errorCode, statusCode);
@@ -93,7 +93,7 @@ namespace Amazon.Runtime
         /// <summary>
         /// The id of the request which generated the exception.
         /// </summary>
-        public string RequestId { get; set; }
+        public string? RequestId { get; set; }
 
         /// <summary>
         /// The HTTP status code from the service response
@@ -104,7 +104,7 @@ namespace Amazon.Runtime
         /// Flag indicating if the exception is retryable and the associated retry
         /// details. A null value indicates that the exception is not retryable.
         /// </summary>
-        public virtual RetryableDetails Retryable => null;
+        public virtual RetryableDetails? Retryable => null;
     }
 
     /// <summary>

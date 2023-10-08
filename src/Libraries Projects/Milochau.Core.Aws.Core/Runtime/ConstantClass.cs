@@ -47,7 +47,7 @@ namespace Amazon.Runtime
             return this.Value.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null)
             {
@@ -77,7 +77,7 @@ namespace Amazon.Runtime
             return false;
         }
 
-        public virtual bool Equals(ConstantClass obj)
+        public virtual bool Equals(ConstantClass? obj)
         {
             if ((object)obj == null)
             {

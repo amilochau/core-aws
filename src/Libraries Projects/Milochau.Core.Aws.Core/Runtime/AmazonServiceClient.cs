@@ -67,14 +67,7 @@ namespace Amazon.Runtime
             ThrowIfDisposed();
 
             var executionContext = new ExecutionContext(
-                new RequestContext(Signer)
-                {
-                    ClientConfig = this.Config,
-                    Marshaller = options.RequestMarshaller,
-                    OriginalRequest = request,
-                    Unmarshaller = options.ResponseUnmarshaller,
-                    CancellationToken = cancellationToken,
-                },
+                new RequestContext(Signer, Config, options.RequestMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
                 new ResponseContext()
             );
             return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);

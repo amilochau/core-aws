@@ -92,7 +92,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Strategies
             }
 
             // The exception is not described. Start describe it.
-            ExceptionDescriptor curDescriptor = new ExceptionDescriptor(e);
+            ExceptionDescriptor curDescriptor = new ExceptionDescriptor(e.Message, e.GetType().Name);
             while (e != null)
             {
                 InternalStackFrame[] frames = new StackTrace(e, true).GetFrames().Select(x => new InternalStackFrame
@@ -122,7 +122,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Strategies
                 if (e != null)
                 {
                     // Inner exception alreay described
-                    var newDescriptor = new ExceptionDescriptor(e);
+                    var newDescriptor = new ExceptionDescriptor(e.Message, e.GetType().Name);
                     curDescriptor.Cause = newDescriptor.Id;
                     curDescriptor = newDescriptor;
                 }

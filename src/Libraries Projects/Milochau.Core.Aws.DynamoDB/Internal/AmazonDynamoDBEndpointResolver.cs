@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.DynamoDB.Internal
             var config = (AmazonDynamoDBConfig)requestContext.ClientConfig;
             return new EndpointParameters
             {
-                Region = config.RegionEndpoint.SystemName
+                Region = config.RegionEndpoint?.SystemName
             };
         }
     }

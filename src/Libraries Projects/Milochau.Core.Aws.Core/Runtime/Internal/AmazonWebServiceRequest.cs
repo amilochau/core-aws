@@ -13,15 +13,15 @@
  * permissions and limitations under the License.
  */
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Amazon.Runtime
 {
     public abstract partial class AmazonWebServiceRequest
     {
-        /// <summary>
-        /// Checksum algorithms that are supported for validating the integrity of this request's response
-        /// </summary>
-        protected internal virtual ReadOnlyCollection<CoreChecksumAlgorithm> ChecksumResponseAlgorithms => new List<CoreChecksumAlgorithm>(0).AsReadOnly();
+        /// <summary>Get request parameters for XRay</summary>
+        public virtual Dictionary<string, string?> GetXRayRequestParameters()
+        {
+            return new Dictionary<string, string?>();
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <summary>
         /// Construct instance of AmazonDynamoDBException
         /// </summary>
-        public AmazonDynamoDBException(string message, Amazon.Runtime.ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonDynamoDBException(string message, Amazon.Runtime.ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message, errorType, errorCode, requestId, statusCode)
         {
         }
@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <summary>
         /// Construct instance of AmazonDynamoDBException
         /// </summary>
-        public AmazonDynamoDBException(string message, Exception innerException, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonDynamoDBException(string message, Exception innerException, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message, innerException, errorType, errorCode, requestId, statusCode)
         {
         }

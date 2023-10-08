@@ -64,8 +64,7 @@ namespace Amazon.Runtime.Internal
             var unmarshaller = requestContext.Unmarshaller;
             try
             {
-                var responseStream = await responseContext.HttpResponse.
-                    ResponseBody.OpenResponseAsync().ConfigureAwait(false);
+                var responseStream = await responseContext.HttpResponse.ResponseBody.OpenResponseAsync().ConfigureAwait(false);
                 var context = unmarshaller.CreateContext(responseContext.HttpResponse,
                     false,
                     responseStream,

@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.XRayRecorder.Models

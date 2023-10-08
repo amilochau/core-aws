@@ -6,21 +6,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>Query</code> operation.
     /// </summary>
-    public partial class QueryResponse : AmazonWebServiceResponse
+    public partial class QueryResponse : AmazonDynamoDBResponse
     {
-        /// <summary>
-        /// Gets and sets the property ConsumedCapacity. 
-        /// <para>
-        /// The capacity units consumed by the <code>Query</code> operation. The data returned
-        /// includes the total provisioned throughput consumed, along with statistics for the
-        /// table and any indexes involved in the operation. <code>ConsumedCapacity</code> is
-        /// only returned if the <code>ReturnConsumedCapacity</code> parameter was specified.
-        /// For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughputIntro.html">Provisioned
-        /// Throughput</a> in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public ConsumedCapacity? ConsumedCapacity { get; set; }
-
         /// <summary>
         /// Gets and sets the property Count. 
         /// <para>

@@ -47,9 +47,9 @@ namespace Amazon.Internal
         /// </summary>
         /// <param name="serviceName">Name of the service in endpoints.json</param>
         /// <returns>Matching endpoint from endpoints.json, or a computed endpoint if possible</returns>
-        public RegionEndpoint.Endpoint GetEndpointForService(string serviceName)
+        public RegionEndpoint.Endpoint? GetEndpointForService(string serviceName)
         {
-            RegionEndpoint.Endpoint endpointObject = null;
+            RegionEndpoint.Endpoint? endpointObject = null;
 
             // lock on _partitionJsonData because:
             // a) ParseAllServices() will mutate _partitionJsonData, so it needs to be run inside a critical section.
@@ -176,7 +176,7 @@ namespace Amazon.Internal
                                  .Replace("{dnsSuffix}", dnsSuffix);
 
 
-            string authRegion = null;
+            string? authRegion = null;
             var credentialScope = mergedEndpoint.CredentialScope;
             if (credentialScope != null)
             {
@@ -189,7 +189,7 @@ namespace Amazon.Internal
 
         private void AddVariantEndpointsToServiceMap(MergedEndpoint mergedEndpoint, string regionName, string serviceName, Dictionary<HashSet<string>, EndpointsPartitionDefaultsVariant> mergedVariants)
         {
-            string authRegion = null;
+            string? authRegion = null;
             var credentialScope = mergedEndpoint.CredentialScope;
             if (credentialScope != null)
             {
@@ -223,9 +223,9 @@ namespace Amazon.Internal
             }
         }
 
-        private static string DetermineAuthRegion(MergedEndpointCredentialScope credentialScope)
+        private static string? DetermineAuthRegion(MergedEndpointCredentialScope credentialScope)
         {
-            string authRegion = null;
+            string? authRegion = null;
             if (credentialScope.Region != null)
             {
                 authRegion = credentialScope.Region;
@@ -245,7 +245,7 @@ namespace Amazon.Internal
             /// </summary>
             private Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>> _variantMap = new Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>>();
 
-            public void Add(string serviceName, RegionEndpoint.Endpoint endpoint, HashSet<string> variants = null)
+            public void Add(string serviceName, RegionEndpoint.Endpoint endpoint, HashSet<string>? variants = null)
             {
                 if (variants == null || variants.Count == 0)
                 {
@@ -261,7 +261,7 @@ namespace Amazon.Internal
                 }
             }
 
-            public bool TryGetEndpoint(string serviceName, out RegionEndpoint.Endpoint endpoint)
+            public bool TryGetEndpoint(string serviceName, out RegionEndpoint.Endpoint? endpoint)
             {
                 return _serviceMap.TryGetValue(serviceName, out endpoint);
             }
@@ -333,8 +333,7 @@ namespace Amazon.Internal
                 {
                     _readerWriterLock.EnterReadLock();
 
-                    IRegionEndpoint endpoint;
-                    if (_regionEndpointMap.TryGetValue(regionName, out endpoint))
+                    if (_regionEndpointMap.TryGetValue(regionName, out IRegionEndpoint? endpoint))
                     {
                         return endpoint;
                     }
@@ -351,9 +350,8 @@ namespace Amazon.Internal
                 {
                     _readerWriterLock.EnterWriteLock();
 
-                    IRegionEndpoint endpoint;
                     // Check again to see if region is in cache in case another thread got the write lock before and filled the cache.
-                    if (_regionEndpointMap.TryGetValue(regionName, out endpoint))
+                    if (_regionEndpointMap.TryGetValue(regionName, out IRegionEndpoint? endpoint))
                     {
                         return endpoint;
                     }
@@ -396,8 +394,7 @@ namespace Amazon.Internal
             {
                 _readerWriterLock.EnterReadLock();
 
-                IRegionEndpoint regionEndpoint;
-                if (_nonStandardRegionNameToObjectMap.TryGetValue(regionName, out regionEndpoint))
+                if (_nonStandardRegionNameToObjectMap.TryGetValue(regionName, out IRegionEndpoint? regionEndpoint))
                 {
                     return regionEndpoint;
                 }
@@ -414,9 +411,8 @@ namespace Amazon.Internal
             {
                 _readerWriterLock.EnterWriteLock();
 
-                IRegionEndpoint regionEndpoint;
                 // Check again to see if region is in cache in case another thread got the write lock before and filled the cache.
-                if (_nonStandardRegionNameToObjectMap.TryGetValue(regionName, out regionEndpoint))
+                if (_nonStandardRegionNameToObjectMap.TryGetValue(regionName, out IRegionEndpoint? regionEndpoint))
                 {
                     return regionEndpoint;
                 }

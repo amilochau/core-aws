@@ -60,7 +60,7 @@ namespace Amazon.Runtime
         /// Gets a handle to the request content.
         /// </summary>
         /// <returns>The request content.</returns>
-        TRequestContent GetRequestContent();
+        TRequestContent? GetRequestContent();
 
         /// <summary>
         /// Returns the HTTP response.
@@ -81,7 +81,7 @@ namespace Amazon.Runtime
         /// </summary>
         /// <returns></returns>
 
-        System.Threading.Tasks.Task<TRequestContent> GetRequestContentAsync();
+        System.Threading.Tasks.Task<TRequestContent?> GetRequestContentAsync();
 
         /// <summary>
         /// Returns the HTTP response.

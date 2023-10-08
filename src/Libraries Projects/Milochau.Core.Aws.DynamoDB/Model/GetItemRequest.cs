@@ -134,16 +134,20 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public string? ProjectionExpression { get; set; }
 
         /// <summary>
-        /// Gets and sets the property ReturnConsumedCapacity.
-        /// </summary>
-        public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        /// <summary>
         /// Gets and sets the property TableName. 
         /// <para>
         /// The name of the table containing the requested item.
         /// </para>
         /// </summary>
         public string? TableName { get; set; }
+
+        /// <summary>Get request parameters for XRay</summary>
+        public override Dictionary<string, string?> GetXRayRequestParameters()
+        {
+            return new Dictionary<string, string?>
+            {
+                { "table_name", TableName },
+            };
+        }
     }
 }

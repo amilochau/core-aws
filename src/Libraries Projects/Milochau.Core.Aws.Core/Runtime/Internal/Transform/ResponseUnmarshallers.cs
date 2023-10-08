@@ -74,7 +74,7 @@ namespace Amazon.Runtime.Internal.Transform
     {
         public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
         {
-            JsonUnmarshallerContext context = input as JsonUnmarshallerContext;
+            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
             if (context == null)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
@@ -93,7 +93,7 @@ namespace Amazon.Runtime.Internal.Transform
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
         {
-            JsonUnmarshallerContext context = input as JsonUnmarshallerContext;
+            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
             if (context == null)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 

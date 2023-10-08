@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.SESv2.Internal
             var config = (AmazonSimpleEmailServiceV2Config)requestContext.ClientConfig;
             return new EndpointParameters
             {
-                Region = config.RegionEndpoint.SystemName
+                Region = config.RegionEndpoint?.SystemName
             };
         }
     }

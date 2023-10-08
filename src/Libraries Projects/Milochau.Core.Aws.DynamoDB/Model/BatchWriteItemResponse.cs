@@ -6,29 +6,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>BatchWriteItem</code> operation.
     /// </summary>
-    public partial class BatchWriteItemResponse : AmazonWebServiceResponse
+    public partial class BatchWriteItemResponse : AmazonDynamoDBResponse
     {
-        /// <summary>
-        /// Gets and sets the property ConsumedCapacity. 
-        /// <para>
-        /// The capacity units consumed by the entire <code>BatchWriteItem</code> operation.
-        /// </para>
-        ///  
-        /// <para>
-        /// Each element consists of:
-        /// </para>
-        ///  <ul> <li> 
-        /// <para>
-        ///  <code>TableName</code> - The table that consumed the provisioned throughput.
-        /// </para>
-        ///  </li> <li> 
-        /// <para>
-        ///  <code>CapacityUnits</code> - The total number of capacity units consumed.
-        /// </para>
-        ///  </li> </ul>
-        /// </summary>
-        public List<ConsumedCapacity>? ConsumedCapacity { get; set; }
-
         /// <summary>
         /// Gets and sets the property ItemCollectionMetrics. 
         /// <para>

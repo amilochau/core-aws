@@ -113,9 +113,8 @@ namespace Amazon.Runtime.Internal
             var exceptionTypeInfo = exception.GetType().GetTypeInfo().BaseType;
             do
             {
-                IExceptionHandler exceptionHandler;
 
-                if (this.ExceptionHandlers.TryGetValue(exceptionType, out exceptionHandler))
+                if (this.ExceptionHandlers.TryGetValue(exceptionType, out IExceptionHandler? exceptionHandler))
                 {
                     return await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
                 }

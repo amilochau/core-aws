@@ -27,7 +27,7 @@ namespace Amazon.Runtime
         /// </summary>
         internal const long UpperLimitCompressionSizeBytes = 10485760;
 
-        private RegionEndpoint regionEndpoint = null;
+        private RegionEndpoint? regionEndpoint = null;
         private bool probeForRegionEndpoint = true;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
@@ -47,7 +47,7 @@ namespace Amazon.Runtime
         /// profile, etc.
         /// </para>
         /// </summary>
-        public RegionEndpoint RegionEndpoint
+        public RegionEndpoint? RegionEndpoint
         {
             get
             {
@@ -78,7 +78,7 @@ namespace Amazon.Runtime
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
         /// </summary>
-        public string AuthenticationServiceName { get; set; } = null;
+        public string? AuthenticationServiceName { get; set; } = null;
 
         /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should
@@ -125,6 +125,6 @@ namespace Amazon.Runtime
         /// During service client creation it is set to service's default generated EndpointProvider,
         /// but can be changed to use custom user supplied EndpointProvider.
         /// </summary>
-        public IEndpointProvider EndpointProvider { get; set; }
+        public IEndpointProvider? EndpointProvider { get; set; }
     }
 }

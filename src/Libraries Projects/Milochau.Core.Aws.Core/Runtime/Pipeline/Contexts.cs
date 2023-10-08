@@ -23,14 +23,13 @@ namespace Amazon.Runtime
     public interface IRequestContext
     {
         AmazonWebServiceRequest OriginalRequest { get; }
-        string RequestName { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
         AbstractAWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
-        ImmutableCredentials ImmutableCredentials { get; set; }
+        ImmutableCredentials? ImmutableCredentials { get; set; }
 
-        IRequest Request { get; set; }
+        IRequest? Request { get; set; }
         bool IsSigned { get; set; }
         int Retries { get; set; }
         CapacityManager.CapacityType LastCapacityType { get; set; }
@@ -43,8 +42,8 @@ namespace Amazon.Runtime
 
     public interface IResponseContext
     {
-        AmazonWebServiceResponse Response { get; set; }
-        IWebResponseData HttpResponse { get; set; }
+        AmazonWebServiceResponse? Response { get; set; }
+        IWebResponseData? HttpResponse { get; set; }
     }
 
     public interface IExecutionContext
@@ -58,41 +57,42 @@ namespace Amazon.Runtime.Internal
 {
     public class RequestContext : IRequestContext
     {
-        public RequestContext(AbstractAWSSigner clientSigner)
+        public RequestContext(AbstractAWSSigner signer,
+            IClientConfig clientConfig,
+            IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
+            ResponseUnmarshaller unmarshaller,
+            AmazonWebServiceRequest originalRequest,
+            System.Threading.CancellationToken cancellationToken)
         {
-            if (clientSigner == null)
-                throw new ArgumentNullException("clientSigner");
-
-            this.Signer = clientSigner;
-            this.InvocationId = Guid.NewGuid();
+            Signer = signer;
+            ClientConfig = clientConfig;
+            Marshaller = marshaller;
+            Unmarshaller = unmarshaller;
+            OriginalRequest = originalRequest;
+            CancellationToken = cancellationToken;
         }
 
-        public IRequest Request { get; set; }
-        public IClientConfig ClientConfig { get; set; }
+        public Guid InvocationId { get; } = Guid.NewGuid();
+
+        public AbstractAWSSigner Signer { get; }
+        public IClientConfig ClientConfig { get; }
+        public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
+        public ResponseUnmarshaller Unmarshaller { get; }
+        public AmazonWebServiceRequest OriginalRequest { get; }
+        public System.Threading.CancellationToken CancellationToken { get; }
+
+        public IRequest? Request { get; set; }
         public int Retries { get; set; }
         public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
         public int EndpointDiscoveryRetries { get; set; }
         public bool IsSigned { get; set; }
-        public AmazonWebServiceRequest OriginalRequest { get; set; }
-        public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; set; }
-        public ResponseUnmarshaller Unmarshaller { get; set; }
-        public ImmutableCredentials ImmutableCredentials { get; set; }
-        public AbstractAWSSigner Signer { get; }
-
-        public System.Threading.CancellationToken CancellationToken { get; set; }
-
-        public string RequestName
-        {
-            get { return this.OriginalRequest.GetType().Name; }
-        }
-
-        public Guid InvocationId { get; private set; }
+        public ImmutableCredentials? ImmutableCredentials { get; set; }
     }
 
     public class ResponseContext : IResponseContext
     {
-        public AmazonWebServiceResponse Response { get; set; }        
-        public IWebResponseData HttpResponse { get; set; }
+        public AmazonWebServiceResponse? Response { get; set; }        
+        public IWebResponseData? HttpResponse { get; set; }
     }
 
     public class ExecutionContext : IExecutionContext

@@ -199,11 +199,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, AttributeValue>? Key { get; set; }
 
         /// <summary>
-        /// Gets and sets the property ReturnConsumedCapacity.
-        /// </summary>
-        public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
-
-        /// <summary>
         /// Gets and sets the property ReturnItemCollectionMetrics. 
         /// <para>
         /// Determines whether item collection metrics are returned. If set to <code>SIZE</code>,

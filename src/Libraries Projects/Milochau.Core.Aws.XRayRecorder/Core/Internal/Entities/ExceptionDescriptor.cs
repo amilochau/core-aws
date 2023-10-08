@@ -29,12 +29,11 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// <summary>
         /// Initializes a new instance of the <see cref="ExceptionDescriptor"/> class.
         /// </summary>
-        public ExceptionDescriptor(Exception exception)
+        public ExceptionDescriptor(string message, string type)
         {
             Id = ThreadSafeRandom.GenerateHexNumber(ExceptionDescriptorIdLength);
-            Message = exception.Message;
-            Type = exception.GetType().Name;
-            Exception = exception;
+            Message = message;
+            Type = type;
         }
 
         /// <summary>
@@ -72,12 +71,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// </summary>
         [JsonPropertyName("cause")]
         public string? Cause { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exception.
-        /// </summary>
-        [JsonIgnore]
-        public Exception Exception { get; set; }
 
         /// <summary>
         /// The exception's "remote" attribute should be set to true if the exception on a "remote" subsegment is caused by or originated from a downstream service.

@@ -119,12 +119,10 @@ namespace Amazon.Runtime
         /// Gets a handle to the request content.
         /// </summary>
         /// <returns>The request content.</returns>
-#pragma warning disable CA1024
-        public HttpContent GetRequestContent()
+        public HttpContent? GetRequestContent()
         {
             return _request.Content;
         }
-#pragma warning restore CA1024
 
         /// <summary>
         /// Returns the HTTP response.
@@ -138,7 +136,7 @@ namespace Amazon.Runtime
             }
             catch (AggregateException e)
             {
-                throw e.InnerException;
+                throw e.InnerException!;
             }
         }
 
@@ -210,7 +208,7 @@ namespace Amazon.Runtime
         /// Gets a handle to the request content.
         /// </summary>
         /// <returns></returns>
-        public System.Threading.Tasks.Task<HttpContent> GetRequestContentAsync()
+        public System.Threading.Tasks.Task<HttpContent?> GetRequestContentAsync()
         {
             return System.Threading.Tasks.Task.FromResult(_request.Content);
         }

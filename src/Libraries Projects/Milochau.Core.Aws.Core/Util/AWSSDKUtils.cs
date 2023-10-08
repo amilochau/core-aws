@@ -25,6 +25,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Amazon.Runtime.Internal;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Amazon.Util
 {
@@ -420,8 +421,8 @@ namespace Amazon.Util
         public static string UrlEncode(int rfcNumber, string data, bool path)
         {
             StringBuilder encoded = new StringBuilder(data.Length * 2);
-            string validUrlCharacters;
-            if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out validUrlCharacters))
+
+            if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out string? validUrlCharacters))
                 validUrlCharacters = ValidUrlCharacters;
 
             string unreservedChars = String.Concat(validUrlCharacters, (path ? ValidPathCharacters : ""));
@@ -524,7 +525,7 @@ namespace Amazon.Util
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string CompressSpaces(string data)
+        public static string? CompressSpaces(string? data)
         {
             if (data == null)
             {

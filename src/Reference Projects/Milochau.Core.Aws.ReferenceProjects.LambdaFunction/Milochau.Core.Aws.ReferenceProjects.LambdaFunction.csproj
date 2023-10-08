@@ -13,6 +13,7 @@
     <PublishAot>true</PublishAot>
     <StripSymbols>true</StripSymbols>
 
+    <StackTraceSupport>false</StackTraceSupport>
     <OptimizationPreference>Size</OptimizationPreference>
     <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
     <DebuggerSupport>false</DebuggerSupport>
@@ -36,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="Milochau.Core.Aws.Core" />
     <TrimmerRootAssembly Include="bootstrap" />
   </ItemGroup>
 
