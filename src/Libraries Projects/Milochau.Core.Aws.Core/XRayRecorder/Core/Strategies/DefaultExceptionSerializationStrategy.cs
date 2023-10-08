@@ -1,20 +1,4 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="DefaultExceptionSerializationStrategy.cs" company="Amazon.com">
-//      Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -110,7 +94,7 @@ namespace Amazon.XRay.Recorder.Core.Strategies
             IEnumerable<ExceptionDescriptor> existingExceptionDescriptors = null;
             if (subsegments != null)
             {
-                existingExceptionDescriptors = subsegments.Where(subsegment => subsegment.Cause != null && subsegment.Cause.IsExceptionAdded).SelectMany(subsegment => subsegment.Cause.ExceptionDescriptors);
+                existingExceptionDescriptors = subsegments.Where(subsegment => subsegment.Cause != null && subsegment.Cause.ExceptionDescriptors != null).SelectMany(subsegment => subsegment.Cause.ExceptionDescriptors);
             }
 
             ExceptionDescriptor existingDescriptor = null;
@@ -136,11 +120,15 @@ namespace Amazon.XRay.Recorder.Core.Strategies
                 curDescriptor.Exception = e;
                 curDescriptor.Message = e.Message;
                 curDescriptor.Type = e.GetType().Name;
-                StackFrame[] frames = new StackTrace(e, true).GetFrames();
+                InternalStackFrame[] frames = new StackTrace(e, true).GetFrames().Select(x => new InternalStackFrame
+                {
+                    Path = x.GetFileName(),
+                    Line = x.GetFileLineNumber(),
+                }).ToArray();
                 if (frames != null && frames.Length > MaxStackFrameSize)
                 {
-                    curDescriptor.Truncated = frames.Length - MaxStackFrameSize;
-                    curDescriptor.Stack = new StackFrame[MaxStackFrameSize];
+                    curDescriptor.Truncated = frames.Length - MaxStackFrameSize > 0 ? frames.Length - MaxStackFrameSize : null;
+                    curDescriptor.Stack = new InternalStackFrame[MaxStackFrameSize];
                     Array.Copy(frames, curDescriptor.Stack, MaxStackFrameSize);
                 }
                 else

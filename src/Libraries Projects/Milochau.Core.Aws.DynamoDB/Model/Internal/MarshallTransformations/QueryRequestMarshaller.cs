@@ -1,9 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime;
-using System.Globalization;
-using System.IO;
-using ThirdParty.Json.LitJson;
 using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations

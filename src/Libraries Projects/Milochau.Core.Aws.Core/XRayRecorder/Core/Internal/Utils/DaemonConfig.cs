@@ -1,20 +1,4 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="DaemonConfig.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Net;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Utils
@@ -51,11 +35,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
         internal EndPoint _udpEndpoint;
 
         /// <summary>
-        /// Gets or sets TCP endpoint.
-        /// </summary>
-        internal EndPoint _tcpEndpoint;
-        
-        /// <summary>
         /// Gets IP for UDP endpoint.
         /// </summary>
         public IPEndPoint UDPEndpoint {
@@ -63,24 +42,13 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             set => _udpEndpoint = EndPoint.Of(value);
         }
 
-        /// <summary>
-        /// Gets IP for TCP endpoint.
-        /// </summary>
-        public IPEndPoint TCPEndpoint
-        {
-            get => _tcpEndpoint.GetIPEndPoint();
-            set => _tcpEndpoint = EndPoint.Of(value);
-        }
-
         public DaemonConfig()
         {
             _udpEndpoint = EndPoint.Of(DefaultEndpoint);
-            _tcpEndpoint = EndPoint.Of(DefaultEndpoint);
         }
 
         internal static DaemonConfig ParsEndpoint(string daemonAddress)
         {
-
             if (!IPEndPointExtension.TryParse(daemonAddress, out DaemonConfig daemonEndPoint))
             {
                 daemonEndPoint = new DaemonConfig();

@@ -1,20 +1,3 @@
-//-----------------------------------------------------------------------------
-// <copyright file="IPEndPointExtension.cs" company="Amazon.com">
-//      Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Amazon.XRay.Recorder.Core.Internal.Utils
 {
     /// <summary>
-    /// Provides extension function to <see cref="System.Net.IPEndPoint"/>.
+    /// Provides extension function to <see cref="IPEndPoint"/>.
     /// </summary>
     public static class IPEndPointExtension
     {
@@ -203,7 +186,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             if (TryParse(daemonAddress[0], out EndPoint udpEndpoint))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = udpEndpoint;
                 return true;
             }
             else
@@ -225,7 +207,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             if (TryParse(udpAddress, out EndPoint udpEndpoint) && TryParse(tcpAddress, out EndPoint tcpEndpoint))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = tcpEndpoint;
                 return true;
             }
 

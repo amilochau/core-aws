@@ -1,24 +1,6 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="LambdaContextContainer.netstandard.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
-using Amazon.XRay.Recorder.Core.Exceptions;
+﻿using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Context
@@ -34,7 +16,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Context
         /// Get entity (segment/subsegment) from the context.
         /// </summary>
         /// <returns>The segment get from context.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "It's a wrapper for AsyncLocal.")]
         public override Entity GetEntity()
         {
             Entity entity = _entityHolder.Value;

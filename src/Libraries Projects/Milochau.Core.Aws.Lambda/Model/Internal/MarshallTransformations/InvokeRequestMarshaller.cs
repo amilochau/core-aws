@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
     /// <summary>
     /// Invoke Request Marshaller
     /// </summary>       
-    public class InvokeRequestMarshaller : IMarshaller<IRequest, InvokeRequest> , IMarshaller<IRequest,AmazonWebServiceRequest>
+    public class InvokeRequestMarshaller : IMarshaller<IRequest, InvokeRequest>, IMarshaller<IRequest, AmazonWebServiceRequest>
     {
         /// <summary>
         /// Marshaller the request object to the HTTP request.
@@ -24,45 +24,47 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Marshaller the request object to the HTTP request.
         /// </summary>  
-        /// <param name="publicRequest"></param>
         /// <returns></returns>
         public IRequest Marshall(InvokeRequest publicRequest)
         {
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.Lambda");
+            IRequest request = new DefaultRequest(publicRequest, "Amazon.Lambda")
+            {
+                HttpMethod = "POST"
+            };
             request.Headers["Content-Type"] = "application/json";
             request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2015-03-31";
-            request.HttpMethod = "POST";
 
             if (!publicRequest.IsSetFunctionName())
                 throw new AmazonLambdaException("Request object does not have required field FunctionName set");
             request.AddPathResource("{FunctionName}", publicRequest.FunctionName);
-            
+
             if (publicRequest.IsSetQualifier())
                 request.Parameters.Add("Qualifier", publicRequest.Qualifier);
             request.ResourcePath = "/2015-03-31/functions/{FunctionName}/invocations";
-            request.ContentStream =  publicRequest.PayloadStream ?? new MemoryStream();
-            if(request.ContentStream.CanSeek)
+
+            request.ContentStream = publicRequest.PayloadStream ?? new MemoryStream();
+            if (request.ContentStream.CanSeek)
             {
                 request.ContentStream.Seek(0, SeekOrigin.Begin);
             }
             request.Headers[Amazon.Util.HeaderKeys.ContentLengthHeader] =
                 request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
-            request.Headers[Amazon.Util.HeaderKeys.ContentTypeHeader] = "binary/octet-stream"; 
+            request.Headers[Amazon.Util.HeaderKeys.ContentTypeHeader] = "binary/octet-stream";
             if (request.ContentStream != null && request.ContentStream.Length == 0)
             {
                 request.Headers.Remove(Amazon.Util.HeaderKeys.ContentTypeHeader);
             }
-        
-            if (publicRequest.IsSetClientContextBase64()) 
+
+            if (publicRequest.IsSetClientContextBase64())
             {
                 request.Headers["X-Amz-Client-Context"] = publicRequest.ClientContextBase64;
             }
-        
-            if (publicRequest.IsSetInvocationType()) 
+
+            if (publicRequest.IsSetInvocationType())
             {
                 request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType!.Value;
             }
-        
+
             request.UseQueryString = true;
 
             return request;

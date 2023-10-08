@@ -1,21 +1,4 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="TraceHeader.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -54,75 +37,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// Gets or sets the sample decision
         /// </summary>
         public SampleDecision Sampled { get; set; }
-
-        /// <summary>
-        /// Convert the string representation of a trace header to an instance of <see cref="TraceHeader"/>.
-        /// </summary>
-        /// <param name="rawHeader">A string from HTTP request containing a trace header</param>
-        /// <param name="header">When the method returns, contains the <see cref="TraceHeader"/> object converted from <paramref name="rawHeader"/>,
-        /// if the conversion succeeded, or null if the conversion failed. The conversion fails if the <paramref name="rawHeader"/> is null or empty,
-        /// is not of the correct format. This parameter is passed uninitialized; any value originally supplied will be overwritten.</param>
-        /// <returns>true if <paramref name="rawHeader"/> converted successfully; otherwise, false. Root trace id
-        /// required while parent id and sample decision is optional.</returns>
-        public static bool TryParse(string rawHeader, out TraceHeader header)
-        {
-            header = null;
-
-            try
-            {
-                if (string.IsNullOrEmpty(rawHeader))
-                {
-                    return false;
-                }
-
-                var result = new TraceHeader();
-
-                Dictionary<string, string> keyValuePairs = rawHeader.Split(_validSeparators, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(value => value.Trim().Split('='))
-                    .ToDictionary(pair => pair[0], pair => pair[1]);
-
-
-                // Root trace id is required
-                if (!keyValuePairs.TryGetValue(RootKey, out string tmpValue))
-                {
-                    return false;
-                }
-
-                if (!TraceId.IsIdValid(tmpValue))
-                {
-                    return false;
-                }
-
-                result.RootTraceId = tmpValue;
-
-                // Parent id is optional
-                if (keyValuePairs.TryGetValue(ParentKey, out tmpValue))
-                {
-                    if (!Entity.IsIdValid(tmpValue))
-                    {
-                        return false;
-                    }
-
-                    result.ParentId = tmpValue;
-                }
-
-                // Sample decision is optional
-                if (keyValuePairs.TryGetValue(SampledKey, out tmpValue) && char.TryParse(tmpValue, out char tmpChar))
-                {
-                    if (Enum.IsDefined(typeof(SampleDecision), (int)tmpChar))
-                    {
-                        result.Sampled = (SampleDecision)tmpChar;
-                    }
-                }
-
-                header = result;
-                return true;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return false;
-            }
-        }
 
         /// <summary>
         /// Convert the string representation of a trace header to an instance of <see cref="TraceHeader"/>.
@@ -190,7 +104,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
                 return result;
             }
         }
-
 
         /// <summary>
         /// Convert a Segment to an instance of <see cref="TraceHeader"/>.

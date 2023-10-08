@@ -1,24 +1,7 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="AWSXRayRecorder.netcore.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-using System;
+﻿using System;
 using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Emitters;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
-using Amazon.XRay.Recorder.Core.Internal.Utils;
 using Amazon.XRay.Recorder.Core.Sampling;
 
 namespace Amazon.XRay.Recorder.Core
@@ -26,10 +9,10 @@ namespace Amazon.XRay.Recorder.Core
     /// <summary>
     /// A collection of methods used to record tracing information for AWS X-Ray.
     /// </summary>
-    /// <seealso cref="Amazon.XRay.Recorder.Core.IAWSXRayRecorder" />
+    /// <seealso cref="IAWSXRayRecorder" />
     public class AWSXRayRecorder : AWSXRayRecorderImpl
     {
-        static AWSXRayRecorder _instance = new AWSXRayRecorderBuilder().Build();
+        static AWSXRayRecorder _instance = AWSXRayRecorderBuilder.Build();
         public const String LambdaTaskRootKey = "LAMBDA_TASK_ROOT";
         public const String LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
 
@@ -51,7 +34,6 @@ namespace Amazon.XRay.Recorder.Core
         /// <param name="emitter">Segment emitter</param>
         internal AWSXRayRecorder(ISegmentEmitter emitter) : base(emitter)
         {
-            PopulateContexts();
         }
 
         /// <summary>
@@ -64,7 +46,7 @@ namespace Amazon.XRay.Recorder.Core
             {
                 if (_instance == null)
                 {
-                    _instance = new AWSXRayRecorderBuilder().Build();
+                    _instance = AWSXRayRecorderBuilder.Build();
                 }
 
                 return _instance;
@@ -74,11 +56,6 @@ namespace Amazon.XRay.Recorder.Core
                 _instance = value;
             }
         }
-
-        /// <summary>
-        /// Instance of <see cref="XRayOptions"/> class.
-        /// </summary>
-        public XRayOptions XRayOptions { get; set; } = new XRayOptions();
 
         /// <summary>
         /// Begin a tracing subsegment. A new segment will be created and added as a subsegment to previous segment/subsegment.
@@ -91,11 +68,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             try
             {
-                if (IsTracingDisabled())
-                {
-                    return;
-                }
-
                 ProcessSubsegmentInLambdaContext(name, timestamp);
             }
             catch (EntityNotAvailableException e)
@@ -180,11 +152,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             try
             {
-                if (IsTracingDisabled())
-                {
-                    return;
-                }
-
                 ProcessEndSubsegmentInLambdaContext(timestamp);
             }
             catch (EntityNotAvailableException e)
@@ -257,13 +224,10 @@ namespace Amazon.XRay.Recorder.Core
                 // Need to clean up the segment, but do not emit it.
                 FacadeSegment facadeSegment = (FacadeSegment)TraceContext.GetEntity();
 
-                if (!IsTracingDisabled())
+                PrepEndSegment(facadeSegment);
+                if (facadeSegment.RootSegment != null && facadeSegment.RootSegment.Size >= 0)
                 {
-                    PrepEndSegment(facadeSegment);
-                    if (facadeSegment.RootSegment != null && facadeSegment.RootSegment.Size >= 0)
-                    {
-                        StreamingStrategy.Stream(facadeSegment, Emitter); //Facade segment is not emitted, all its subsegments, if emmittable, are emitted
-                    }
+                    StreamingStrategy.Stream(facadeSegment, Emitter); //Facade segment is not emitted, all its subsegments, if emmittable, are emitted
                 }
 
                 TraceContext.ClearEntity();
@@ -285,15 +249,6 @@ namespace Amazon.XRay.Recorder.Core
         {
             var lambdaTraceHeader = Environment.GetEnvironmentVariable(LambdaTraceHeaderKey);
             return lambdaTraceHeader;
-        }
-
-        /// <summary>
-        /// Checks whether Tracing is enabled or disabled.
-        /// </summary>
-        /// <returns> Returns true if Tracing is disabled else false.</returns>
-        public override bool IsTracingDisabled()
-        {
-            return XRayOptions.IsXRayTracingDisabled;
         }
     }
 }

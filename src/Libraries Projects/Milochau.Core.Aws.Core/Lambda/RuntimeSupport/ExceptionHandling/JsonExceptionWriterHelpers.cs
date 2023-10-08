@@ -24,8 +24,8 @@ namespace Amazon.Lambda.RuntimeSupport
         /// It was adapted from the PutString method in the LitJson.JsonWriter class.
         ///
         /// TODO: rewrite the *JsonExceptionWriter classes to use a JSON library instead of building strings directly.
+        /// @todo
         /// </summary>
-        /// <param name="str"></param>
         public static string EscapeStringForJson(string str)
         {
             if (str == null)
