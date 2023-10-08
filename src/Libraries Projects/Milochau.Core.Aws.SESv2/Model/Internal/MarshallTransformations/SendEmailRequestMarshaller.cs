@@ -1,10 +1,7 @@
-using System.Globalization;
-using System.IO;
 using System.Text.Json;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
 using Amazon.Runtime.Internal.Transform;
-using ThirdParty.Json.LitJson;
 
 namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
 {

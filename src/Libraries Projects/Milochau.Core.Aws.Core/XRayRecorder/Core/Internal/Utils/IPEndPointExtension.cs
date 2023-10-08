@@ -24,7 +24,7 @@ using System.Text.RegularExpressions;
 namespace Amazon.XRay.Recorder.Core.Internal.Utils
 {
     /// <summary>
-    /// Provides extension function to <see cref="System.Net.IPEndPoint"/>.
+    /// Provides extension function to <see cref="IPEndPoint"/>.
     /// </summary>
     public static class IPEndPointExtension
     {
@@ -203,7 +203,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             if (TryParse(daemonAddress[0], out EndPoint udpEndpoint))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = udpEndpoint;
                 return true;
             }
             else
@@ -225,7 +224,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             if (TryParse(udpAddress, out EndPoint udpEndpoint) && TryParse(tcpAddress, out EndPoint tcpEndpoint))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = tcpEndpoint;
                 return true;
             }
 

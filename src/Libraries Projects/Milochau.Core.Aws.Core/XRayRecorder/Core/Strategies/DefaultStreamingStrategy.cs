@@ -68,7 +68,7 @@ namespace Amazon.XRay.Recorder.Core.Strategies
                 entity.Subsegments.RemoveAll(x => x.HasStreamed);
             }
 
-            if (entity.Sampled != SampleDecision.Sampled || entity is Segment || entity.IsInProgress || entity.Reference > 0 || entity.IsSubsegmentsAdded)
+            if (entity.Sampled != SampleDecision.Sampled || entity is Segment || entity.IsInProgress || entity.Reference > 0 || entity.Subsegments != null)
             {
                 return;
             }
@@ -83,3 +83,11 @@ namespace Amazon.XRay.Recorder.Core.Strategies
         }
     }
 }
+
+/*
+ * @todo Remove that
+ * Entity / Segment --- FacadeSegment
+ * Subsegment
+ * IDictionary<string, object>
+ * Cause
+*/

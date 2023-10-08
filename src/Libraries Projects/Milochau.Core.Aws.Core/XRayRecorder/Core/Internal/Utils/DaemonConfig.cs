@@ -51,11 +51,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
         internal EndPoint _udpEndpoint;
 
         /// <summary>
-        /// Gets or sets TCP endpoint.
-        /// </summary>
-        internal EndPoint _tcpEndpoint;
-        
-        /// <summary>
         /// Gets IP for UDP endpoint.
         /// </summary>
         public IPEndPoint UDPEndpoint {
@@ -63,24 +58,13 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
             set => _udpEndpoint = EndPoint.Of(value);
         }
 
-        /// <summary>
-        /// Gets IP for TCP endpoint.
-        /// </summary>
-        public IPEndPoint TCPEndpoint
-        {
-            get => _tcpEndpoint.GetIPEndPoint();
-            set => _tcpEndpoint = EndPoint.Of(value);
-        }
-
         public DaemonConfig()
         {
             _udpEndpoint = EndPoint.Of(DefaultEndpoint);
-            _tcpEndpoint = EndPoint.Of(DefaultEndpoint);
         }
 
         internal static DaemonConfig ParsEndpoint(string daemonAddress)
         {
-
             if (!IPEndPointExtension.TryParse(daemonAddress, out DaemonConfig daemonEndPoint))
             {
                 daemonEndPoint = new DaemonConfig();

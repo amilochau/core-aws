@@ -28,11 +28,12 @@ namespace Amazon.XRay.Recorder.Core
         /// Build a instance of <see cref="AWSXRayRecorder"/> with existing configuration added to the builder.
         /// </summary>
         /// <returns>A new instance of <see cref="AWSXRayRecorder"/>.</returns>
-        public AWSXRayRecorder Build()
+        public static AWSXRayRecorder Build()
         {
-            var recorder = new AWSXRayRecorder();
-            recorder.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-            return recorder;
+            return new AWSXRayRecorder
+            {
+                ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR
+            };
         }
     }
 }

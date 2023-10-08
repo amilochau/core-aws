@@ -1,26 +1,10 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="Entity.cs" company="Amazon.com">
-//      Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Amazon.XRay.Recorder.Core.Exceptions;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
@@ -34,18 +18,11 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
     [Serializable]
     public abstract class Entity
     {
-        private const string DefaultMetadataNamespace = "default";
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
-        private readonly Lazy<List<Subsegment>> _lazySubsegments = new Lazy<List<Subsegment>>();
-        private readonly Lazy<ConcurrentDictionary<string, object>> _lazyHttp = new Lazy<ConcurrentDictionary<string, object>>();
-        private readonly Lazy<Annotations> _lazyAnnotations = new Lazy<Annotations>();
-        private readonly Lazy<ConcurrentDictionary<string, string>> _lazySql = new Lazy<ConcurrentDictionary<string, string>>();
         private readonly Lazy<ConcurrentDictionary<string, IDictionary>> _lazyMetadata = new Lazy<ConcurrentDictionary<string, IDictionary>>();
-        private readonly Lazy<ConcurrentDictionary<string, object>> _lazyAws = new Lazy<ConcurrentDictionary<string, object>>();
 
         private string _traceId;
         private string _id;
-        private string _name;
         private string _parentId;
         private long _referenceCounter;      // Reference count
 
@@ -55,17 +32,18 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <param name="name">The name.</param>
         public Entity(string name)
         {
-            Id = GenerateId();
+            Id = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
             IsInProgress = true;
-            this.Name = name;
+            Name = name;
             IncrementReferenceCounter();
         }
 
         /// <summary>
         /// Gets or sets the unique id for the trace.
         /// </summary>
-        /// <exception cref="System.ArgumentException">Trace id is invalid. - value</exception>
-        public string TraceId
+        /// <exception cref="ArgumentException">Trace id is invalid. - value</exception>
+        [JsonPropertyName("trace_id")]
+        public string? TraceId
         {
             get
             {
@@ -89,7 +67,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <value>
         /// The unique for Entity.
         /// </value>
-        /// <exception cref="System.ArgumentException">The id is invalid. - value</exception>
+        /// <exception cref="ArgumentException">The id is invalid. - value</exception>
+        [JsonPropertyName("id")]
         public string Id
         {
             get
@@ -111,54 +90,14 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <summary>
         /// Gets or sets the start time of this segment with Unix time in seconds.
         /// </summary>
+        [JsonPropertyName("start_time")]
         public decimal StartTime { get; set; }
 
         /// <summary>
         /// Gets or sets the end time of this segment with Unix time in seconds.
         /// </summary>
+        [JsonPropertyName("end_time")]
         public decimal EndTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the service component.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        /// <exception cref="System.ArgumentNullException">Thrown when value is null.</exception>
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-
-            set
-            {
-                _name = value ?? throw new ArgumentNullException(nameof(value));
-            }
-        }
-        
-        /// <summary>
-        /// Gets a readonly copy of the subsegment list.
-        /// </summary>
-        public List<Subsegment> Subsegments
-        {
-            get
-            {
-                return _lazySubsegments.Value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether any subsegments have been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if there are subsegments added; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSubsegmentsAdded
-        {
-            get { return _lazySubsegments.IsValueCreated && _lazySubsegments.Value.Any(); }
-        }
 
         /// <summary>
         /// Gets or sets the unique id of upstream segment
@@ -166,8 +105,9 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <value>
         /// The unique id for parent Entity.
         /// </value>
-        /// <exception cref="System.ArgumentException">The parent id is invalid. - value</exception>
-        public string ParentId
+        /// <exception cref="ArgumentException">The parent id is invalid. - value</exception>
+        [JsonPropertyName("parent_id")]
+        public string? ParentId
         {
             get
             {
@@ -186,178 +126,110 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Gets the annotations of the segment
-        /// </summary>
-        public Annotations Annotations
-        {
-            get
-            {
-                return _lazyAnnotations.Value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether any annotations have been added.
+        /// Gets or sets the name of the service component.
         /// </summary>
         /// <value>
-        /// <c>true</c> if annotations have been added; otherwise, <c>false</c>.
+        /// The name.
         /// </value>
-        public bool IsAnnotationsAdded
-        {
-            get
-            {
-                return _lazyAnnotations.IsValueCreated && _lazyAnnotations.Value.Any();
-            }
-        }
+        /// <exception cref="ArgumentNullException">Thrown when value is null.</exception>
+        [JsonPropertyName("name")]
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets a readonly copy of the subsegment list.
+        /// </summary>
+        [JsonPropertyName("name")]
+        public List<Subsegment>? Subsegments { get; set; }
+
+        /// <summary>
+        /// Gets aws information
+        /// </summary>
+        [JsonPropertyName("aws")]
+        public IDictionary<string, object>? Aws { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the segment has faulted or failed
         /// </summary>
+        [JsonPropertyName("fault")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool HasFault { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the segment has errored
         /// </summary>
+        [JsonPropertyName("error")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool HasError { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the remote segment is throttled
         /// </summary>
+        [JsonPropertyName("throttle")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool IsThrottled { get; set; }
 
         /// <summary>
         /// Gets the cause of fault or error
         /// </summary>
-        public Cause Cause { get; private set; }
+        [JsonPropertyName("cause")]
+        public Cause? Cause { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the segment is in progress
         /// </summary>
+        [JsonIgnore]
         public bool IsInProgress { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been streamed 
         /// </summary>
+        [JsonIgnore]
         public bool HasStreamed { get; set; }
 
         /// <summary>
         /// Gets reference of this instance of segment
         /// </summary>
-        public long Reference
-        {
-            get
-            {
-                return Interlocked.Read(ref _referenceCounter);
-            }
-        }
+        [JsonIgnore]
+        public long Reference => Interlocked.Read(ref _referenceCounter);
 
         /// <summary>
         /// Gets the http attribute
         /// </summary>
-        public IDictionary<string, object> Http
-        {
-            get
-            {
-                return _lazyHttp.Value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether any HTTP information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if HTTP information has been added; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsHttpAdded
-        {
-            get
-            {
-                return _lazyHttp.IsValueCreated && !_lazyHttp.Value.IsEmpty;
-            }
-        }
-
-        /// <summary>
-        /// Gets the SQL information
-        /// </summary>
-        public IDictionary<string, string> Sql
-        {
-            get
-            {
-                return _lazySql.Value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether any SQL information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if SQL information has been added; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSqlAdded
-        {
-            get
-            {
-                return _lazySql.IsValueCreated && !_lazySql.Value.IsEmpty;
-            }
-        }
-
-        /// <summary>
-        /// Gets the metadata.
-        /// </summary>
-        public IDictionary<string, IDictionary> Metadata
-        {
-            get
-            {
-                return _lazyMetadata.Value;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether any metadata has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if metadata has been added; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsMetadataAdded
-        {
-            get
-            {
-                return _lazyMetadata.IsValueCreated && !_lazyMetadata.Value.IsEmpty;
-            }    
-        }
+        [JsonPropertyName("http")]
+        public IDictionary<string, object>? Http { get; set; }
 
         /// <summary>
         /// Gets or sets the sample decision
         /// </summary>
+        [JsonIgnore]
         public SampleDecision Sampled { get; set; }
 
         /// <summary>
         /// Gets or sets the root segment
         /// </summary>
+        [JsonIgnore]
         public Segment RootSegment { get; set; }
 
-        /// <summary>
-        /// Gets aws information
-        /// </summary>
-        public IDictionary<string, object> Aws
+        public void AddToAws(string key, object value)
         {
-            get
+            lock (Aws)
             {
-                return _lazyAws.Value;
+                if (Aws == null)
+                {
+                    Aws = new ConcurrentDictionary<string, object>();
+                }
+                Aws.Add(key, value);
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether aws information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if aws information has added; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAwsAdded
+        public void AddToHttp(string key, object value)
         {
-            get
+            lock (Http)
             {
-                return _lazyAws.IsValueCreated && !_lazyAws.Value.IsEmpty;
+                if (Http == null)
+                {
+                    Http = new ConcurrentDictionary<string, object>();
+                }
+                Http.Add(key, value);
             }
         }
 
@@ -369,15 +241,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         public static bool IsIdValid(string id)
         {
             return id.Length == SegmentIdHexDigits && long.TryParse(id, NumberStyles.HexNumber, null, out _);
-        }
-
-        /// <summary>
-        /// Generates the id for entity.
-        /// </summary>
-        /// <returns>An id for entity.</returns>
-        public static string GenerateId()
-        {
-            return ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
         }
 
         /// <summary>
@@ -399,21 +262,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         /// <summary>
         /// Sets start time of the entity to the provided timestamp.
         /// </summary>
-        public void SetStartTime(decimal timestamp)
-        {
-            StartTime = timestamp;
-        }
-        /// <summary>
-        /// Sets end time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetEndTime(decimal timestamp)
-        {
-            EndTime = timestamp;
-        }
-
-        /// <summary>
-        /// Sets start time of the entity to the provided timestamp.
-        /// </summary>
         public void SetStartTime(DateTime timestamp)
         {
             StartTime = timestamp.ToUnixTimeSeconds();
@@ -428,62 +276,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Adds the specified key and value as annotation to current segment.
-        /// The type of value is restricted. Only <see cref="string" />, <see cref="int" />, <see cref="long" />,
-        /// <see cref="double" /> and <see cref="bool" /> are supported.
-        /// </summary>
-        /// <param name="key">The key of the annotation to add</param>
-        /// <param name="value">The value of the annotation to add</param>
-        /// <exception cref="System.ArgumentException">Key cannot be null or empty - key</exception>
-        /// <exception cref="System.ArgumentNullException">value</exception>
-        /// <exception cref="InvalidAnnotationException">The annotation to be added is invalid.</exception>
-        public void AddAnnotation(string key, object value)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Key cannot be null or empty", nameof(key));
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            if (value is int)
-            {
-                _lazyAnnotations.Value.Add(key, (int)value);
-                return;
-            }
-
-            if (value is long)
-            {
-                _lazyAnnotations.Value.Add(key, (long)value);
-                return;
-            }
-
-            string stringValue = value as string;
-            if (stringValue != null)
-            {
-                _lazyAnnotations.Value.Add(key, stringValue);
-                return;
-            }
-
-            if (value is double)
-            {
-                _lazyAnnotations.Value.Add(key, (double)value);
-                return;
-            }
-
-            if (value is bool)
-            {
-                _lazyAnnotations.Value.Add(key, (bool)value);
-                return;
-            }
-
-            throw new InvalidAnnotationException(string.Format(CultureInfo.InvariantCulture, "Failed to add key={0}, value={1}, valueType={2} because the type is not supported.", key, value.ToString(), value.GetType().ToString()));
-        }
-
-        /// <summary>
         /// Add a subsegment
         /// </summary>
         /// <param name="subsegment">The subsegment to add</param>
@@ -495,9 +287,13 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
                 throw new EntityNotAvailableException("Cannot add subsegment to a completed segment.");
             }
 
-            lock (_lazySubsegments.Value)
+            lock (Subsegments)
             {
-                _lazySubsegments.Value.Add(subsegment);
+                if (Subsegments == null)
+                {
+                    Subsegments = new List<Subsegment>();
+                }
+                Subsegments.Add(subsegment);
             }
 
             IncrementReferenceCounter();
@@ -515,27 +311,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
             HasFault = true;
             Cause = new Cause();
             Cause.AddException(AWSXRayRecorder.Instance.ExceptionSerializationStrategy.DescribeException(e, Subsegments));
-        }
-
-        /// <summary>
-        /// Adds the specific key and value to metadata under default namespace.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string key, object value)
-        {
-            AddMetadata(DefaultMetadataNamespace, key, value);
-        }
-
-        /// <summary>
-        /// Adds the specific key and value to metadata under given namespace.
-        /// </summary>
-        /// <param name="nameSpace">The name space.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string nameSpace, string key, object value)
-        {
-            _lazyMetadata.Value.GetOrAdd(nameSpace, new ConcurrentDictionary<string, object>())[key] = value;
         }
 
         /// <summary>
@@ -567,6 +342,5 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         {
             return Interlocked.Increment(ref _referenceCounter);
         }
-
     }
 }

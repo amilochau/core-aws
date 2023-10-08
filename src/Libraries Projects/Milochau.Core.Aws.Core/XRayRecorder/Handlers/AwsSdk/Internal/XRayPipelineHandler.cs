@@ -132,7 +132,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             return originalString;
         }
 
-        private static void AddMapKeyProperty(IDictionary<string, object> aws, object obj, string propertyName, string renameTo = null)
+        private static void AddMapKeyProperty(Entity entity, object obj, string propertyName, string renameTo = null)
         {
             if (!TryReadPropertyValue(obj, propertyName, out object propertyValue))
             {
@@ -147,10 +147,10 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             }
 
             var newPropertyName = string.IsNullOrEmpty(renameTo) ? propertyName : renameTo;
-            aws[newPropertyName.FromCamelCaseToSnakeCase()] = dictionaryValue.Keys;
+            entity.AddToAws(newPropertyName.FromCamelCaseToSnakeCase(), dictionaryValue.Keys);
         }
 
-        private static void AddListLengthProperty(IDictionary<string, object> aws, object obj, string propertyName, string renameTo = null)
+        private static void AddListLengthProperty(Entity entity, object obj, string propertyName, string renameTo = null)
         {
             if (!TryReadPropertyValue(obj, propertyName, out object propertyValue))
             {
@@ -165,7 +165,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             }
 
             var newPropertyName = string.IsNullOrEmpty(renameTo) ? propertyName : renameTo;
-            aws[newPropertyName.FromCamelCaseToSnakeCase()] = listValue.Count;
+            entity.AddToAws(newPropertyName.FromCamelCaseToSnakeCase(), listValue.Count);
         }
 
         /// <summary>
@@ -229,39 +229,39 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request.ServiceName);
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
-            subsegment.Aws["region"] = client.RegionEndpoint?.SystemName;
-            subsegment.Aws["operation"] = operation;
+            subsegment.AddToAws("region", client.RegionEndpoint?.SystemName);
+            subsegment.AddToAws("operation", operation);
             if (responseContext.Response == null)
             {
                 if (requestContext.Request.Headers.TryGetValue("x-amzn-RequestId", out string requestId))
                 {
-                    subsegment.Aws["request_id"] = requestId;
+                    subsegment.AddToAws("request_id", requestId);
                 }
                 // s3 doesn't follow request header id convention
                 else
                 {
                     if (requestContext.Request.Headers.TryGetValue("x-amz-request-id", out requestId))
                     {
-                        subsegment.Aws["request_id"] = requestId;
+                        subsegment.AddToAws("request_id", requestId);
                     }
 
                     if (requestContext.Request.Headers.TryGetValue("x-amz-id-2", out requestId))
                     {
-                        subsegment.Aws["id_2"] = requestId;
+                        subsegment.AddToAws("id_2", requestId);
                     }
                 }
             }
             else
             {
-                subsegment.Aws["request_id"] = responseContext.Response.ResponseMetadata.RequestId;
+                subsegment.AddToAws("request_id", responseContext.Response.ResponseMetadata.RequestId);
 
                 // try getting x-amz-id-2 if dealing with s3 request
                 if (responseContext.Response.ResponseMetadata.Metadata.TryGetValue("x-amz-id-2", out string extendedRequestId))
                 {
-                    subsegment.Aws["id_2"] = extendedRequestId;
+                    subsegment.AddToAws("id_2", extendedRequestId);
                 }
 
-                AddResponseSpecificInformation(serviceName, operation, responseContext.Response, subsegment.Aws);
+                AddResponseSpecificInformation(serviceName, operation, responseContext.Response, subsegment);
             }
 
             if (responseContext.HttpResponse != null)
@@ -269,7 +269,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 AddHttpInformation(responseContext.HttpResponse);
             }
 
-            AddRequestSpecificInformation(serviceName, operation, requestContext.OriginalRequest, subsegment.Aws);
+            AddRequestSpecificInformation(serviceName, operation, requestContext.OriginalRequest, subsegment);
             _recorder.EndSubsegment();
         }
 
@@ -317,10 +317,10 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             responseAttributes["status"] = statusCode;
             _recorder.AddHttpInformation("response", responseAttributes);
 
-            subsegment.Aws["request_id"] = ex.RequestId;
+            subsegment.AddToAws("request_id", ex.RequestId);
         }
 
-        private void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, IDictionary<string, object> aws)
+        private void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, Entity entity)
         {
             if (serviceName == null)
             {
@@ -337,9 +337,9 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (aws == null)
+            if (entity == null)
             {
-                throw new ArgumentNullException(nameof(aws));
+                throw new ArgumentNullException(nameof(entity));
             }
 
             if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
@@ -358,7 +358,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 {
                     if (TryReadPropertyValue(request, parameter, out object propertyValue))
                     {
-                        aws[parameter.FromCamelCaseToSnakeCase()] = propertyValue;
+                        entity.AddToAws(parameter.FromCamelCaseToSnakeCase(), propertyValue);
                     }
                 }
             }
@@ -372,17 +372,17 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
                     if (descriptor.Map && descriptor.GetKeys)
                     {
-                        AddMapKeyProperty(aws, request, propertyName, descriptor.RenameTo);
+                        AddMapKeyProperty(entity, request, propertyName, descriptor.RenameTo);
                     }
                     else if (descriptor.List && descriptor.GetCount)
                     {
-                        AddListLengthProperty(aws, request, propertyName, descriptor.RenameTo);
+                        AddListLengthProperty(entity, request, propertyName, descriptor.RenameTo);
                     }
                 }
             }
         }
 
-        private void AddResponseSpecificInformation(string serviceName, string operation, AmazonWebServiceResponse response, IDictionary<string, object> aws)
+        private void AddResponseSpecificInformation(string serviceName, string operation, AmazonWebServiceResponse response, Entity entity)
         {
             if (serviceName == null)
             {
@@ -399,9 +399,9 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (aws == null)
+            if (entity == null)
             {
-                throw new ArgumentNullException(nameof(aws));
+                throw new ArgumentNullException(nameof(entity));
             }
 
             if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler serviceHandler))
@@ -420,7 +420,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
                 {
                     if (TryReadPropertyValue(response, parameter, out object propertyValue))
                     {
-                        aws[parameter.FromCamelCaseToSnakeCase()] = propertyValue;
+                        entity.AddToAws(parameter.FromCamelCaseToSnakeCase(), propertyValue);
                     }
                 }
             }
@@ -434,11 +434,11 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
 
                     if (descriptor.Map && descriptor.GetKeys)
                     {
-                        XRayPipelineHandler.AddMapKeyProperty(aws, response, propertyName, descriptor.RenameTo);
+                        AddMapKeyProperty(entity, response, propertyName, descriptor.RenameTo);
                     }
                     else if (descriptor.List && descriptor.GetCount)
                     {
-                        XRayPipelineHandler.AddListLengthProperty(aws, response, propertyName, descriptor.RenameTo);
+                        AddListLengthProperty(entity, response, propertyName, descriptor.RenameTo);
                     }
                 }
             }
@@ -475,11 +475,6 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
             return AWSXRaySDKUtils.IsBlacklistedOperation(serviceName,operation);
         }
 
-        private static bool IsTracingDisabled()
-        {
-            return AWSXRayRecorder.Instance.IsTracingDisabled();
-        }
-
         /// <summary>
         /// Process Asynchronous <see cref="AmazonServiceClient"/> operations. A subsegment is started at the beginning of 
         /// the request and ended at the end of the request.
@@ -488,7 +483,7 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
         {
             T ret = null;
 
-            if (XRayPipelineHandler.IsTracingDisabled() || XRayPipelineHandler.ExcludeServiceOperation(executionContext))
+            if (XRayPipelineHandler.ExcludeServiceOperation(executionContext))
             {
                 ret = await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
             }
@@ -524,11 +519,11 @@ namespace Amazon.XRay.Recorder.Handlers.AwsSdk.Internal
     public class XRayPipelineCustomizer : IRuntimePipelineCustomizer
     {
         public string UniqueName { get { return "X-Ray Registration Customization"; } }
-        private Boolean registerAll;
+
         private List<Type> types = new List<Type>();
         private ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
-   
-        public bool RegisterAll { get => registerAll; set => registerAll = value; }
+
+        public bool RegisterAll { get; set; }
 
         public void Customize(Type serviceClientType, RuntimePipeline pipeline)
         {

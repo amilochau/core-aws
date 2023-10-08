@@ -30,26 +30,14 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
     public class Cause
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Cause"/> class.
-        /// </summary>
-        public Cause()
-        {
-        }
-
-        /// <summary>
         /// List of <see cref="ExceptionDescriptor"/>
         /// </summary>
-        private Lazy<List<ExceptionDescriptor>> _exceptions = new Lazy<List<ExceptionDescriptor>>();
+        private readonly Lazy<List<ExceptionDescriptor>> _exceptions = new Lazy<List<ExceptionDescriptor>>();
 
         /// <summary>
         /// Gets the working directory
         /// </summary>
         public string WorkingDirectory { get;  private set; }
-
-        /// <summary>
-        /// Gets the paths
-        /// </summary>
-        public IList<string> Paths { get; private set; }
 
         /// <summary>
         /// Gets a read-only copy of the list of exception to the cause

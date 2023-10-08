@@ -57,11 +57,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Entities
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ExceptionDescriptor"/> is remove.
-        /// </summary>
-        public bool Remove { get; set; }
-
-        /// <summary>
         /// Gets or sets the stack.
         /// </summary>
         [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "The value of stack is not supposed to change after set.")]

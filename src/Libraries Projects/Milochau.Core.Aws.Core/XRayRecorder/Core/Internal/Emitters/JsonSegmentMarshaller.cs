@@ -1,23 +1,5 @@
-﻿//-----------------------------------------------------------------------------
-// <copyright file="JsonSegmentMarshaller.cs" company="Amazon.com">
-//      Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-//      Licensed under the Apache License, Version 2.0 (the "License").
-//      You may not use this file except in compliance with the License.
-//      A copy of the License is located at
-//
-//      http://aws.amazon.com/apache2.0
-//
-//      or in the "license" file accompanying this file. This file is distributed
-//      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-//      express or implied. See the License for the specific language governing
-//      permissions and limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using Amazon.Runtime;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
@@ -41,7 +23,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             JsonMapper.RegisterExporter<Entity>(EntityExporter);
             JsonMapper.RegisterExporter<ExceptionDescriptor>(ExceptionDescriptorExporter);
             JsonMapper.RegisterExporter<Cause>(CauseExporter);
-            JsonMapper.RegisterExporter<Annotations>(AnnotationsExporter);
             JsonMapper.RegisterExporter<HttpMethod>(HttpMethodExporter);
             JsonMapper.RegisterExporter<ConstantClass>(ConstantClassExporter);
             JsonMapper.RegisterExporter<Delegate>(DelegateExporter);
@@ -63,12 +44,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
 
             WriteEntityFields(entity, writer);
 
-            var segment = entity as Segment;
-            if (segment != null)
-            {
-                WriteSegmentFields(segment, writer);
-            }
-
             var subsegment = entity as Subsegment;
             if (subsegment != null)
             {
@@ -80,11 +55,8 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
 
         private static void WriteEntityFields(Entity entity, JsonWriter writer)
         {
-            if (!string.IsNullOrEmpty(entity.TraceId))
-            {
-                writer.WritePropertyName("trace_id");
-                writer.Write(entity.TraceId);
-            }
+            writer.WritePropertyName("trace_id");
+            writer.Write(entity.TraceId);
 
             writer.WritePropertyName("id");
             writer.Write(entity.Id);
@@ -95,116 +67,41 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             writer.WritePropertyName("end_time");
             writer.Write(entity.EndTime);
 
-            if (entity.ParentId != null)
-            {
-                writer.WritePropertyName("parent_id");
-                writer.Write(entity.ParentId);
-            }
+            writer.WritePropertyName("parent_id");
+            writer.Write(entity.ParentId);
 
             writer.WritePropertyName("name");
             writer.Write(entity.Name);
 
-            if (entity.IsSubsegmentsAdded)
-            {
-                writer.WritePropertyName("subsegments");
-                JsonMapper.ToJson(entity.Subsegments, writer);
-            }
+            writer.WritePropertyName("subsegments");
+            JsonMapper.ToJson(entity.Subsegments, writer);
 
-            if (entity.IsAwsAdded)
-            {
-                writer.WritePropertyName("aws");
-                JsonMapper.ToJson(entity.Aws, writer);
-            }
+            writer.WritePropertyName("aws");
+            JsonMapper.ToJson(entity.Aws, writer);
 
-            if (entity.HasFault)
-            {
-                writer.WritePropertyName("fault");
-                writer.Write(entity.HasFault);
-            }
+            writer.WritePropertyName("fault");
+            writer.Write(entity.HasFault);
 
-            if (entity.HasError)
-            {
-                writer.WritePropertyName("error");
-                writer.Write(entity.HasError);
-            }
+            writer.WritePropertyName("error");
+            writer.Write(entity.HasError);
 
-            if (entity.IsThrottled)
-            {
-                writer.WritePropertyName("throttle");
-                writer.Write(true);
-            }
+            writer.WritePropertyName("throttle");
+            writer.Write(true);
 
-            if (entity.Cause != null)
-            {
-                writer.WritePropertyName("cause");
-                JsonMapper.ToJson(entity.Cause, writer);
-            }
+            writer.WritePropertyName("cause");
+            JsonMapper.ToJson(entity.Cause, writer);
 
-            if (entity.IsAnnotationsAdded)
-            {
-                writer.WritePropertyName("annotations");
-                JsonMapper.ToJson(entity.Annotations, writer);
-            }
-
-            if (entity.IsMetadataAdded)
-            {
-                writer.WritePropertyName("metadata");
-                JsonMapper.ToJson(entity.Metadata, writer);
-            }
-
-            if (entity.IsHttpAdded)
-            {
-                writer.WritePropertyName("http");
-                JsonMapper.ToJson(entity.Http, writer);
-            }
-
-            if (entity.IsSqlAdded)
-            {
-                writer.WritePropertyName("sql");
-                JsonMapper.ToJson(entity.Sql, writer);
-            }
-        }
-
-        private static void WriteSegmentFields(Segment segment, JsonWriter writer)
-        {
-            if (segment.Origin != null)
-            {
-                writer.WritePropertyName("origin");
-                writer.Write(segment.Origin);
-            }
-
-            if (segment.IsServiceAdded)
-            {
-                writer.WritePropertyName("service");
-                JsonMapper.ToJson(segment.Service, writer);
-            }
-
-            if (segment.User != null)
-            {
-                writer.WritePropertyName("user");
-                JsonMapper.ToJson(segment.User, writer);
-            }
+            writer.WritePropertyName("http");
+            JsonMapper.ToJson(entity.Http, writer);
         }
 
         private static void WriteSubsegmentFields(Subsegment subsegment, JsonWriter writer)
         {
-            if (subsegment.Type != null)
-            {
-                writer.WritePropertyName("type");
-                writer.Write(subsegment.Type);
-            }
+            writer.WritePropertyName("type");
+            writer.Write(subsegment.Type);
 
-            if (subsegment.Namespace != null)
-            {
-                writer.WritePropertyName("namespace");
-                JsonMapper.ToJson(subsegment.Namespace, writer);
-            }
-
-            if (subsegment.IsPrecursorIdAdded)
-            {
-                writer.WritePropertyName("precursor_ids");
-                JsonMapper.ToJson(subsegment.PrecursorIds.ToArray(), writer);
-            }
+            writer.WritePropertyName("namespace");
+            JsonMapper.ToJson(subsegment.Namespace, writer);
         }
 
         private static void CauseExporter(Cause cause, JsonWriter writer)
@@ -227,12 +124,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             {
                 writer.WritePropertyName("working_directory");
                 writer.Write(cause.WorkingDirectory);
-            }
-
-            if (cause.Paths != null)
-            {
-                writer.WritePropertyName("paths");
-                JsonMapper.ToJson(cause.Paths, writer);
             }
 
             if (cause.IsExceptionAdded)
@@ -293,18 +184,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             } 
             
             writer.WriteObjectEnd();    // exception
-        }
-
-        private static void AnnotationsExporter(Annotations annotations, JsonWriter writer)
-        {
-            writer.WriteObjectStart();
-            foreach (var annotation in annotations)
-            {
-                writer.WritePropertyName(annotation.Key);
-                JsonMapper.ToJson(annotation.Value, writer);
-            }
-
-            writer.WriteObjectEnd();
         }
 
         private static void HttpMethodExporter(HttpMethod method, JsonWriter writer)

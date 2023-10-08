@@ -63,16 +63,6 @@ namespace Amazon.XRay.Recorder.Core.Internal.Utils
         }
 
         /// <summary>
-        /// Thread safe version of System.Random.NextDouble().
-        /// Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
-        /// </summary>
-        /// <returns>A double-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
-        public static double NextDouble()
-        {
-            return _local.Value.NextDouble();
-        }
-
-        /// <summary>
         /// Fills the elements of a specified array of bytes with random numbers
         /// </summary>
         /// <param name="buffer">An array of bytes to contain random numbers</param>
