@@ -912,94 +912,11 @@ namespace ThirdParty.Json.LitJson
             }
         }
 
-        public static void ToJson (object obj, JsonWriter writer)
-        {
-            WriteValue (obj, writer, false, 0);
-        }
-
-        public static JsonData ToObject (JsonReader reader)
-        {
-            return (JsonData) ToWrapper (
-                delegate { return new JsonData (); }, reader);
-        }
-
-        public static JsonData ToObject (TextReader reader)
-        {
-            JsonReader json_reader = new JsonReader (reader);
-
-            return (JsonData) ToWrapper (
-                delegate { return new JsonData (); }, json_reader);
-        }
-
-        public static JsonData ToObject (string json)
-        {
-            return (JsonData) ToWrapper (
-                delegate { return new JsonData (); }, json);
-        }
-
-        public static T ToObject<T> (JsonReader reader)
-        {
-            return (T) ReadValue (typeof (T), reader);
-        }
-
-        public static T ToObject<T> (TextReader reader)
-        {
-            JsonReader json_reader = new JsonReader (reader);
-
-            return (T) ReadValue (typeof (T), json_reader);
-        }
-
         public static T ToObject<T> (string json)
         {
             JsonReader reader = new JsonReader (json);
 
             return (T) ReadValue (typeof (T), reader);
-        }
-
-        public static IJsonWrapper ToWrapper (WrapperFactory factory,
-                                              JsonReader reader)
-        {
-            return ReadValue (factory, reader);
-        }
-
-        public static IJsonWrapper ToWrapper (WrapperFactory factory,
-                                              string json)
-        {
-            JsonReader reader = new JsonReader (json);
-
-            return ReadValue (factory, reader);
-        }
-
-        public static void RegisterExporter<T> (ExporterFunc<T> exporter)
-        {
-            ExporterFunc exporter_wrapper =
-                delegate (object obj, JsonWriter writer) {
-                    exporter ((T) obj, writer);
-                };
-
-            custom_exporters_table[typeof (T)] = exporter_wrapper;
-        }
-
-        public static void RegisterImporter<TJson, TValue> (
-            ImporterFunc<TJson, TValue> importer)
-        {
-            ImporterFunc importer_wrapper =
-                delegate (object input) {
-                    return importer ((TJson) input);
-                };
-
-            RegisterImporter (custom_importers_table, typeof (TJson),
-                              typeof (TValue), importer_wrapper);
-        }
-
-        public static void UnregisterExporters ()
-        {
-            custom_exporters_table.Clear ();
-        }
-
-        public static void UnregisterImporters ()
-        {
-            custom_importers_table.Clear ();
         }
     }
     

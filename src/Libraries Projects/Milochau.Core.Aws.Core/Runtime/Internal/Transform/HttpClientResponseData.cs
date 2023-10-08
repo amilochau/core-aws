@@ -26,7 +26,6 @@ namespace Amazon.Runtime.Internal.Transform
     public class HttpClientResponseData : IWebResponseData
     {
         HttpResponseMessageBody _response;
-        string[] _headerNames;
         Dictionary<string, string> _headers;
         HashSet<string> _headerNamesSet;
 
@@ -64,11 +63,6 @@ namespace Amazon.Runtime.Internal.Transform
             return _headerNamesSet.Contains(headerName);
         }
 
-        public string[] GetHeaderNames()
-        {
-            return _headerNames;
-        }
-
         private void CopyHeaderValues(HttpResponseMessage response)
         {
             List<string> headerNames = new List<string>();
@@ -93,8 +87,7 @@ namespace Amazon.Runtime.Internal.Transform
                     }
                 }
             }
-            _headerNames = headerNames.ToArray();
-            _headerNamesSet = new HashSet<string>(_headerNames, StringComparer.OrdinalIgnoreCase);
+            _headerNamesSet = new HashSet<string>(headerNames, StringComparer.OrdinalIgnoreCase);
         }
 
         private string GetFirstHeaderValue(HttpHeaders headers, string key)
@@ -157,7 +150,5 @@ namespace Amazon.Runtime.Internal.Transform
                 _disposed = true;
             }
         }
-
-        
     }
 }

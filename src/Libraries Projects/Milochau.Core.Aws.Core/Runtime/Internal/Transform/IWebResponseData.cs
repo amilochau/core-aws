@@ -23,7 +23,6 @@ namespace Amazon.Runtime.Internal.Transform
         long ContentLength { get; }
         string ContentType { get; }
         HttpStatusCode StatusCode { get; }
-        string[] GetHeaderNames();
         bool IsHeaderPresent(string headerName);
         string GetHeaderValue(string headerName);
 

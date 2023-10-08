@@ -16,6 +16,7 @@
 using Amazon.Runtime.Internal.Transform;
 using Amazon.Util;
 using System;
+using System.IO;
 
 namespace Amazon.Runtime.Internal
 {

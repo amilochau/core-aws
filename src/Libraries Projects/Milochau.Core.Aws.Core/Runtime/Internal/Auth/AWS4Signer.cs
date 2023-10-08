@@ -56,27 +56,6 @@ namespace Amazon.Runtime.Internal.Auth
             HeaderKeys.AmzSdkRequest
         };
 
-        public AWS4Signer()
-            : this(true)
-        {
-        }
-
-        public AWS4Signer(bool signPayload)
-        {
-            SignPayload = signPayload;
-        }
-
-        public bool SignPayload
-        {
-            get;
-            private set;
-        }
-
-        public override ClientProtocol Protocol
-        {
-            get { return ClientProtocol.RestProtocol; }
-        }
-
         /// <summary>
         /// Calculates and signs the specified request using the AWS4 signing protocol by using the
         /// AWS account credentials given in the method parameters. The resulting signature is added
@@ -181,12 +160,7 @@ namespace Amazon.Runtime.Internal.Auth
             var parametersToCanonicalize = GetParametersToCanonicalize(request);
             var canonicalParameters = CanonicalizeQueryParameters(parametersToCanonicalize);
 
-            // If the request should use a fixed x-amz-content-sha256 header value, determine the appropriate one
-            var bodySha = request.TrailingHeaders?.Count > 0
-                ? StreamingBodySha256WithTrailer
-                : StreamingBodySha256;
-
-            var bodyHash = SetRequestBodyHash(request, SignPayload, bodySha, V4_SIGNATURE_LENGTH);
+            var bodyHash = SetRequestBodyHash(request);
             var sortedHeaders = SortAndPruneHeaders(request.Headers);
 
             var canonicalRequest = CanonicalizeRequest(request.Endpoint,
@@ -389,10 +363,10 @@ namespace Amazon.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        public static string SetRequestBodyHash(IRequest request, bool signPayload, string chunkedBodyHash, int signatureLength)
+        public static string SetRequestBodyHash(IRequest request)
         {
             // If unsigned payload, set the appropriate magic string in the header and return it
-            if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : !signPayload)
+            if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : false)
             {
                 if (request.TrailingHeaders?.Count > 0)
                 {

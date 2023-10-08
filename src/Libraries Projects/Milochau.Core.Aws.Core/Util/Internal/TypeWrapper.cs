@@ -38,8 +38,6 @@ namespace Amazon.Util.Internal
 
         MethodInfo GetMethod(string name, ITypeInfo[] paramTypes);
 
-        ConstructorInfo GetConstructor(ITypeInfo[] paramTypes);
-
         PropertyInfo GetProperty(string name);
 
         bool IsAssignableFrom(ITypeInfo typeInfo);
@@ -97,7 +95,6 @@ namespace Amazon.Util.Internal
             public abstract bool IsAssignableFrom(ITypeInfo typeInfo);
             public abstract bool IsClass { get; }
             public abstract bool IsEnum { get; }
-            public abstract ConstructorInfo GetConstructor(ITypeInfo[] paramTypes);
        }
     }
 

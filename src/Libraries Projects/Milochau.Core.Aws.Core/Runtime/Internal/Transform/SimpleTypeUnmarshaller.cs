@@ -141,21 +141,6 @@ namespace Amazon.Runtime.Internal.Transform
     }
 
     /// <summary>
-    /// Unmarshaller for decimal fields
-    /// </summary>
-    public class DecimalUnmarshaller : IUnmarshaller<decimal, JsonUnmarshallerContext>
-    {
-        private DecimalUnmarshaller() { }
-
-        private static DecimalUnmarshaller _instance = new DecimalUnmarshaller();
-
-        public decimal Unmarshall(JsonUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<decimal>.Unmarshall(context);
-        }
-    }
-
-    /// <summary>
     /// Unmarshaller for bool fields
     /// </summary>
     public class BoolUnmarshaller : IUnmarshaller<bool, JsonUnmarshallerContext>
@@ -207,19 +192,6 @@ namespace Amazon.Runtime.Internal.Transform
     }
 
     /// <summary>
-    /// Unmarshaller for byte fields
-    /// </summary>
-    public class ByteUnmarshaller : IUnmarshaller<byte, JsonUnmarshallerContext>
-    {
-        private ByteUnmarshaller() { }
-
-        public byte Unmarshall(JsonUnmarshallerContext context)
-        {
-            return SimpleTypeUnmarshaller<byte>.Unmarshall(context);
-        }
-    }
-
-    /// <summary>
     /// Unmarshaller for DateTime fields
     /// </summary>
     public class DateTimeUnmarshaller : IUnmarshaller<DateTime, JsonUnmarshallerContext>
@@ -264,34 +236,6 @@ namespace Amazon.Runtime.Internal.Transform
     }
 
     /// <summary>
-    /// Unmarshaller for nullable DateTime fields. Implemented only for JSON context
-    /// to handle cases where value can be null e.g. {'Priority': null}.
-    /// </summary>
-    public class NullableDateTimeUnmarshaller : IUnmarshaller<DateTime?, JsonUnmarshallerContext>
-    {
-        private NullableDateTimeUnmarshaller() { }
-
-        public DateTime? Unmarshall(JsonUnmarshallerContext context)
-        {
-            context.Read();
-            string text = context.ReadText();
-            return DateTimeUnmarshaller.UnmarshallInternal(text, treatAsNullable: true);
-        }
-    }
-
-    public class DateTimeEpochLongMillisecondsUnmarshaller : IUnmarshaller<DateTime, JsonUnmarshallerContext>
-    {
-        private DateTimeEpochLongMillisecondsUnmarshaller() { }
-
-        public DateTime Unmarshall(JsonUnmarshallerContext context)
-        {
-            long millseconds = LongUnmarshaller.Instance.Unmarshall(context);
-            var ret = Amazon.Util.AWSSDKUtils.EPOCH_START.AddMilliseconds(millseconds);
-            return ret;
-        }
-    }
-
-    /// <summary>
     /// Unmarshaller for MemoryStream fields
     /// </summary>
     public class MemoryStreamUnmarshaller : IUnmarshaller<MemoryStream, JsonUnmarshallerContext>
@@ -328,14 +272,6 @@ namespace Amazon.Runtime.Internal.Transform
         private ResponseMetadataUnmarshaller() { }
 
         private static ResponseMetadataUnmarshaller _instance = new ResponseMetadataUnmarshaller();
-
-        public static ResponseMetadataUnmarshaller Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
 
         public ResponseMetadata Unmarshall(JsonUnmarshallerContext context)
         {

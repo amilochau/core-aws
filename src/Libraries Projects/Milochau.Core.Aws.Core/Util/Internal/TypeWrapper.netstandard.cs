@@ -57,45 +57,6 @@ namespace Amazon.Util.Internal
                 return this._type.GetFields();
             }
 
-            private static readonly Type objectType = typeof(object);
-            private static bool IsBackingField(MemberInfo mi)
-            {
-                var isBackingField = mi.Name.IndexOf("k__BackingField", StringComparison.Ordinal) >= 0;
-                return isBackingField;
-            }
-            private static IEnumerable<MemberInfo> GetMembers_Helper(TypeInfo ti)
-            {
-                // Keep track of properties already returned. This makes sure properties that are overridden in sub classes are not returned back multiple times.
-                var processedProperties = new HashSet<string>();
-                Func<MemberInfo, bool> alreadyProcessProperty = (member) =>
-                {
-                    return (member is PropertyInfo) && !processedProperties.Add(member.Name);
-                };
-
-                var members = ti.DeclaredMembers;
-                foreach (var member in members)
-                {
-                    if (!IsBackingField(member) && !alreadyProcessProperty(member))
-                        yield return member;
-                }
-
-                var baseType = ti.BaseType;
-                var isObject = (baseType == objectType);
-                if (baseType != null && !isObject)
-                {
-                    var baseTi = baseType.GetTypeInfo();
-                    var baseMembers = GetMembers_Helper(baseTi).ToList();
-
-                    foreach (var baseMember in baseMembers)
-                    {
-                        if(!alreadyProcessProperty(baseMember))
-                        {
-                            yield return baseMember;
-                        }
-                    }
-                }
-            }
-
             public override bool IsClass
             {
                 get { return this._typeInfo.IsClass; }
@@ -123,15 +84,6 @@ namespace Amazon.Util.Internal
             public override bool IsAssignableFrom(ITypeInfo typeInfo)
             {
                 return this._typeInfo.IsAssignableFrom(((TypeInfoWrapper)typeInfo)._typeInfo);
-            }
-
-            public override ConstructorInfo GetConstructor(ITypeInfo[] paramTypes)
-            {
-                Type[] types = new Type[paramTypes.Length];
-                for (int i = 0; i < paramTypes.Length; i++)
-                    types[i] = ((AbstractTypeInfo)paramTypes[i]).Type;
-
-                return this._type.GetConstructor(types);
             }
         }
     }

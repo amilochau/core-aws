@@ -39,7 +39,6 @@ namespace Amazon.Runtime
         /// </summary>
         public string Token { get; private set; }
 
-
         /// <summary>
         /// Gets the UseToken property for the current credentials.
         /// Specifies if Token property is non-empty.
@@ -47,7 +46,6 @@ namespace Amazon.Runtime
         public bool UseToken { get { return !string.IsNullOrEmpty(Token); } }
 
         #endregion
-
 
         #region Constructors
 
@@ -89,5 +87,4 @@ namespace Amazon.Runtime
 
         #endregion
     }
-
 }
