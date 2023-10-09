@@ -4,13 +4,13 @@
     "Development": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchBrowser": true,
       "applicationUrl": "http://localhost:4000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONVENTION__APPLICATION": "maps",
+        "CONVENTION__APPLICATION": "test",
         "CONVENTION__HOST": "dev",
-        "CONVENTION__PREFIX": "maps-dev",
-        "___AWS_SESSION_TOKEN": ""
+        "CONVENTION__PREFIX": "test-dev"
       }
     }
   }

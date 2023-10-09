@@ -1,4 +1,5 @@
 using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System;

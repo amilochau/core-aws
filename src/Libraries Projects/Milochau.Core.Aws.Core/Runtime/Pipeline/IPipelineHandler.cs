@@ -1,4 +1,6 @@
-﻿namespace Milochau.Core.Aws.Core.Runtime.Pipeline
+﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+
+namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 {
     /// <summary>
     /// Interface for a handler in a pipeline.

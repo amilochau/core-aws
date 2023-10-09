@@ -147,7 +147,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             }
 
             // await sesDataAccess.SendEmailAsync(new(), cancellationToken);
-            await dynamoDbDataAccess.GetMessageAsync(cancellationToken);
+            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
 
             await Task.CompletedTask;
 

@@ -14,5 +14,14 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? Item { get; set; }
+
+        /// <summary>Get response parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayResponseParameters()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "ConsumedCapacity", ConsumedCapacity },
+            };
+        }
     }
 }

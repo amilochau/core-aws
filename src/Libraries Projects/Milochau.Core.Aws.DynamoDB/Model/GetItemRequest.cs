@@ -142,11 +142,13 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public string? TableName { get; set; }
 
         /// <summary>Get request parameters for XRay</summary>
-        public override Dictionary<string, string?> GetXRayRequestParameters()
+        public override Dictionary<string, object?> GetXRayRequestParameters()
         {
-            return new Dictionary<string, string?>
+            return new Dictionary<string, object?>
             {
                 { "table_name", TableName },
+                { "consistent_read", ConsistentRead },
+                { "projection_expression", ProjectionExpression },
             };
         }
     }

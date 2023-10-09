@@ -1,4 +1,4 @@
-using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 using System.IO;
 
 namespace Milochau.Core.Aws.Lambda.Model
