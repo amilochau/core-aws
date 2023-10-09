@@ -31,7 +31,7 @@ namespace AWSSDK.Runtime.Internal.Util
             var requestException = e as System.Net.Http.HttpRequestException;
             if (requestException?.Data?.Contains("StatusCode") == true)
             {
-                return (HttpStatusCode)requestException.Data["StatusCode"];
+                return (HttpStatusCode)requestException.Data["StatusCode"]!;
             }
 
             if (e?.InnerException != null)
@@ -45,11 +45,10 @@ namespace AWSSDK.Runtime.Internal.Util
         internal static bool IsInnerException<T>(Exception exception)
             where T : Exception
         {
-            T innerException;
-            return IsInnerException<T>(exception, out innerException);
+            return IsInnerException<T>(exception, out T? innerException);
         }
 
-        internal static bool IsInnerException<T>(Exception exception, out T inner)
+        internal static bool IsInnerException<T>(Exception exception, out T? inner)
             where T : Exception
         {
             inner = null;

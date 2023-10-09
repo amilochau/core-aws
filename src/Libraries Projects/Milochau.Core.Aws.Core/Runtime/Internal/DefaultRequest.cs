@@ -46,9 +46,6 @@ namespace Amazon.Runtime.Internal
 
             this.ServiceName = serviceName;
             this.OriginalRequest = request;
-
-            ParameterCollection = new ParameterCollection();
-            Parameters = new ParametersDictionaryFacade(ParameterCollection);
         }
 
         /// <summary>
@@ -83,16 +80,6 @@ namespace Amazon.Runtime.Internal
         /// Returns a dictionary of the headers included in this request.
         /// </summary>
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// Returns a dictionary of the parameters included in this request.
-        /// </summary>
-        public IDictionary<string, string> Parameters { get; }
-
-        /// <summary>
-        /// Collection of parameters included in this request.
-        /// </summary>
-        public ParameterCollection ParameterCollection { get; }
 
         /// <summary>
         /// Returns the subresources that should be appended to the resource path.
@@ -221,13 +208,6 @@ namespace Amazon.Runtime.Internal
         /// The region in which the service request was signed.
         /// </summary>
         public string DeterminedSigningRegion { get; set; }
-
-        /// <summary>
-        /// If the request needs to be signed with a different service name 
-        /// than the client config AuthenticationServiceName, set it here to override
-        /// the result of DetermineService in AWS4Signer
-        /// </summary>
-        public string OverrideSigningServiceName { get; set; }
 
         /// <summary>
         /// Returns a dictionary of the trailing headers included

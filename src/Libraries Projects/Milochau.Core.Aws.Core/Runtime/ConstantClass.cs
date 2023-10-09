@@ -47,7 +47,7 @@ namespace Amazon.Runtime
             return this.Value.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null)
             {
@@ -77,7 +77,7 @@ namespace Amazon.Runtime
             return false;
         }
 
-        public virtual bool Equals(ConstantClass obj)
+        public virtual bool Equals(ConstantClass? obj)
         {
             if ((object)obj == null)
             {
@@ -92,7 +92,7 @@ namespace Amazon.Runtime
             return StringComparer.OrdinalIgnoreCase.Equals(this.Value, value);
         }
 
-        public static bool operator ==(ConstantClass a, ConstantClass b)
+        public static bool operator ==(ConstantClass? a, ConstantClass? b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
@@ -111,7 +111,7 @@ namespace Amazon.Runtime
             }
         }
 
-        public static bool operator !=(ConstantClass a, ConstantClass b)
+        public static bool operator !=(ConstantClass? a, ConstantClass? b)
         {
             return !(a == b);
         }

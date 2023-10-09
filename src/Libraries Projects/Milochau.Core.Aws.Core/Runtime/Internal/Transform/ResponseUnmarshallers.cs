@@ -38,17 +38,9 @@ namespace Amazon.Runtime.Internal.Transform
                 isException);
         }
 
-        public virtual bool HasStreamingProperty
-        {
-            get { return false; }
-        }
+        #region IResponseUnmarshaller<AmazonWebServiceResponse,UnmarshallerContext> Members
 
-#region IResponseUnmarshaller<AmazonWebServiceResponse,UnmarshallerContext> Members
-
-        public virtual AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode);
 
 #endregion
 
@@ -82,7 +74,7 @@ namespace Amazon.Runtime.Internal.Transform
     {
         public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
         {
-            JsonUnmarshallerContext context = input as JsonUnmarshallerContext;
+            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
             if (context == null)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
@@ -101,7 +93,7 @@ namespace Amazon.Runtime.Internal.Transform
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
         {
-            JsonUnmarshallerContext context = input as JsonUnmarshallerContext;
+            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
             if (context == null)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 

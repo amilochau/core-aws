@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using Milochau.Core.Aws.DynamoDB.DynamoDBv2;
-using Milochau.Core.Aws.DynamoDB.DynamoDBv2.Model;
 using Milochau.Core.Aws.DynamoDB;
+using Milochau.Core.Aws.DynamoDB.Model;
 using System.Linq;
+using Milochau.Core.Aws.DynamoDB.Helpers;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -29,7 +29,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest
             {
-                TableName = $"{ConventionsPrefix}-table-maps",
+                TableName = $"{ConventionsPrefix}-table-maps__",
                 Key = new Dictionary<string, AttributeValue>()
                     .Append("id", "0dc388584487498c98c98a4b9d2cad3c")
                     .ToDictionary(x => x.Key, x => x.Value),

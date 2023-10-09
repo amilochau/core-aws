@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using System.Text;
-using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
+using Milochau.Core.Aws.Core.Lambda.Events;
 
 namespace Milochau.Core.Aws.Integration
 {

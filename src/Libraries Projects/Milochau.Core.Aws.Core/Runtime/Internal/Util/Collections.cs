@@ -78,9 +78,7 @@ namespace Amazon.Runtime.Internal.Util
     /// The AWS .NET SDK does not send empty collections to services, unless
     /// the collection is of this type.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    internal class AlwaysSendDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+    internal class AlwaysSendDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey: notnull
     {
         public AlwaysSendDictionary()
             : base() { }

@@ -125,7 +125,7 @@ namespace Amazon.Lambda.RuntimeSupport
             {
                 jsonBuilder.Append(TabString($"\"{INNER_EXCEPTIONS}\": [", nextTabDepth));
 
-                for (int i = 0; i < innerExceptions.Count; i++)
+                for (int i = 0; i < innerExceptions!.Count; i++)
                 {
                     var isLastOne = i == innerExceptions.Count - 1;
                     var innerException2 = innerExceptions[i];

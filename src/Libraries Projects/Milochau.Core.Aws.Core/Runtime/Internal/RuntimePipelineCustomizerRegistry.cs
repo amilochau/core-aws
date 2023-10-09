@@ -51,14 +51,14 @@ namespace Amazon.Runtime.Internal
         /// </summary>
         /// <param name="pipeline">The service clients runtime pipeline.</param>
         /// <param name="type">Type object for the service client being created</param>
-        internal void ApplyCustomizations(Type type, RuntimePipeline pipeline)
+        internal void ApplyCustomizations(RuntimePipeline pipeline)
         {
             _rwlock.EnterReadLock();
             try
             {
                 foreach (var customizer in _customizers)
                 {
-                    customizer.Customize(type, pipeline);
+                    customizer.Customize(pipeline);
                 }
             }
             finally
@@ -104,8 +104,6 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Called on service clients as they are being constructed to customize their runtime pipeline.
         /// </summary>
-        /// <param name="pipeline"></param>
-        /// <param name="type">Type object for the service client being created</param>
-        void Customize(Type type, RuntimePipeline pipeline);
+        void Customize(RuntimePipeline pipeline);
     }
 }

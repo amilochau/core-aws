@@ -10,7 +10,7 @@ namespace Amazon.Lambda.TestUtilities
         /// <summary>
         /// The AWS request ID associated with the request.
         /// </summary>
-        public string? AwsRequestId { get; set; }
+        public string AwsRequestId { get; set; } = string.Empty;
 
         /// <summary>
         /// Lambda logger associated with the Context object. For the TestLambdaContext this is default to the TestLambdaLogger.

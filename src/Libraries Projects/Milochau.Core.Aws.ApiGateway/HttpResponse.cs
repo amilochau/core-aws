@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization.Metadata;
 using System.Text.Json;
-using Milochau.Core.Aws.ApiGateway.APIGatewayEvents;
+using Milochau.Core.Aws.Core.Lambda.Events;
 
 namespace Milochau.Core.Aws.ApiGateway
 {

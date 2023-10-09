@@ -25,6 +25,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Amazon.Runtime.Internal;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Amazon.Util
 {
@@ -137,7 +138,7 @@ namespace Amazon.Util
          */
         internal static string GetParametersAsString(IRequest request)
         {
-            return GetParametersAsString(request.ParameterCollection);
+            return string.Empty;
         }
 
         /// <summary>
@@ -163,33 +164,6 @@ namespace Amazon.Util
             }
 
             return Encoding.UTF8.GetBytes(content);
-        }
-
-        /**
-         * Convert Dictionary of parameters to Url encoded query string
-         */
-        internal static string GetParametersAsString(ParameterCollection parameterCollection)
-        {
-            var sortedParameters = parameterCollection.GetSortedParametersList();
-
-            StringBuilder data = new StringBuilder(512);
-            foreach (var kvp in sortedParameters)
-            {
-                var key = kvp.Key;
-                var value = kvp.Value;
-                if (value != null)
-                {
-                    data.Append(key);
-                    data.Append('=');
-                    data.Append(AWSSDKUtils.UrlEncode(value, false));
-                    data.Append('&');
-                }
-            }
-            string result = data.ToString();
-            if (result.Length == 0)
-                return string.Empty;
-
-            return result.Remove(result.Length - 1);
         }
 
         /// <summary>
@@ -447,8 +421,8 @@ namespace Amazon.Util
         public static string UrlEncode(int rfcNumber, string data, bool path)
         {
             StringBuilder encoded = new StringBuilder(data.Length * 2);
-            string validUrlCharacters;
-            if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out validUrlCharacters))
+
+            if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out string? validUrlCharacters))
                 validUrlCharacters = ValidUrlCharacters;
 
             string unreservedChars = String.Concat(validUrlCharacters, (path ? ValidPathCharacters : ""));
@@ -551,7 +525,7 @@ namespace Amazon.Util
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static string CompressSpaces(string data)
+        public static string? CompressSpaces(string? data)
         {
             if (data == null)
             {

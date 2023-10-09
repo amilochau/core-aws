@@ -53,16 +53,16 @@ namespace Amazon.Runtime.Internal.Util
         /// Returns the first base non-WrapperStream.
         /// </summary>
         /// <returns>First base stream that is non-WrapperStream.</returns>
-        public Stream GetNonWrapperBaseStream()
+        public Stream? GetNonWrapperBaseStream()
         {
-            Stream baseStream = this;
+            Stream? baseStream = this;
             do
             {
                 var partialStream = baseStream as PartialWrapperStream;
                 if (partialStream != null)
                     return partialStream;
 
-                baseStream = (baseStream as WrapperStream).BaseStream;
+                baseStream = (baseStream as WrapperStream)?.BaseStream;
             } while (baseStream is WrapperStream);
             return baseStream;
         }
@@ -73,16 +73,16 @@ namespace Amazon.Runtime.Internal.Util
         /// <returns>First base stream that is non-WrapperStream.</returns>
         public Stream GetSeekableBaseStream()
         {
-            Stream baseStream = this;
+            Stream? baseStream = this;
             do
             {
                 if (baseStream.CanSeek)
                     return baseStream;
 
-                baseStream = (baseStream as WrapperStream).BaseStream;
+                baseStream = (baseStream as WrapperStream)?.BaseStream;
             } while (baseStream is WrapperStream);
 
-            if (!baseStream.CanSeek)
+            if (baseStream == null || !baseStream.CanSeek)
                 throw new InvalidOperationException("Unable to find seekable stream");
 
             return baseStream;
@@ -95,15 +95,15 @@ namespace Amazon.Runtime.Internal.Util
         /// <returns>Base non-WrapperStream.</returns>
         public static Stream GetNonWrapperBaseStream(Stream stream)
         {
-            WrapperStream wrapperStream = stream as WrapperStream;
+            WrapperStream? wrapperStream = stream as WrapperStream;
             if (wrapperStream == null)
                 return stream;
             return wrapperStream.GetNonWrapperBaseStream();
         }
 
-        public Stream SearchWrappedStream(Func<Stream, bool> condition)
+        public Stream? SearchWrappedStream(Func<Stream, bool> condition)
         {
-            Stream baseStream = this;
+            Stream? baseStream = this;
             do
             {
                 if (condition(baseStream))
@@ -112,15 +112,15 @@ namespace Amazon.Runtime.Internal.Util
                 if (!(baseStream is WrapperStream))
                     return null;
 
-                baseStream = (baseStream as WrapperStream).BaseStream;
+                baseStream = (baseStream as WrapperStream)?.BaseStream;
             } while (baseStream != null);
 
             return baseStream;
         }
 
-        public static Stream SearchWrappedStream(Stream stream, Func<Stream, bool> condition)
+        public static Stream? SearchWrappedStream(Stream stream, Func<Stream, bool> condition)
         {
-            WrapperStream wrapperStream = stream as WrapperStream;
+            WrapperStream? wrapperStream = stream as WrapperStream;
             if (wrapperStream == null)
                 return condition(stream) ? stream : null;
             return wrapperStream.SearchWrappedStream(condition);

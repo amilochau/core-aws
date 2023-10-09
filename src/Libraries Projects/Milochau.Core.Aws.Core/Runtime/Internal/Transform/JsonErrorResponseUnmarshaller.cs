@@ -14,11 +14,32 @@
  */
 
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amazon.Util;
-using ThirdParty.Json.LitJson;
 
 namespace Amazon.Runtime.Internal.Transform
 {
+
+    internal class InternalException
+    {
+        [JsonPropertyName("__type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
+
+        [JsonPropertyName("code")]
+        public string? Code { get; set; }
+    }
+
+    /// <summary>JSON serialization context</summary>
+    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSerializable(typeof(InternalException))]
+    internal partial class InternalExceptionJsonSerializerContext : JsonSerializerContext
+    {
+    }
+
     /// <summary>
     ///    First-pass unmarshaller for all errors
     /// </summary>
@@ -32,15 +53,12 @@ namespace Amazon.Runtime.Internal.Transform
         /// <returns>An <c>ErrorResponse</c> object.</returns>
         public ErrorResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            string type;
-            string message;
-            string code;
-            string requestId = null;
-            GetValuesFromJsonIfPossible(context, out type, out message, out code);
+            string? requestId = null;
+            GetValuesFromJsonIfPossible(context, out InternalException internalException);
 
             // If an error code was not found, check for the x-amzn-ErrorType header. 
             // This header is returned by rest-json services.
-            if (string.IsNullOrEmpty(type) &&
+            if (string.IsNullOrEmpty(internalException.Type) &&
                 context.ResponseData.IsHeaderPresent(HeaderKeys.XAmzErrorType))
             {
                 var errorType = context.ResponseData.GetHeaderValue(HeaderKeys.XAmzErrorType);
@@ -53,7 +71,7 @@ namespace Amazon.Runtime.Internal.Transform
                     {
                         errorType = errorType.Substring(0, index);
                     }
-                    type = errorType;
+                    internalException.Type = errorType;
                 }
             }
 
@@ -63,36 +81,35 @@ namespace Amazon.Runtime.Internal.Transform
             {
                 var errorMessage = context.ResponseData.GetHeaderValue(HeaderKeys.XAmznErrorMessage);
                 if (!string.IsNullOrEmpty(errorMessage))
-                    message = errorMessage;
+                    internalException.Message = errorMessage;
             }
 
             // if both "__type" and HeaderKeys.XAmzErrorType were not specified, use "code" as type
             // this impacts Glacier
-            if (string.IsNullOrEmpty(type) &&
-                !string.IsNullOrEmpty(code))
+            if (string.IsNullOrEmpty(internalException.Type) && !string.IsNullOrEmpty(internalException.Code))
             {
-                type = code;
+                internalException.Type = internalException.Code;
             }
 
             // strip extra data from type, leaving only the exception type name
-            type = type == null ? null : type.Substring(type.LastIndexOf("#", StringComparison.Ordinal) + 1);
+            internalException.Type = internalException.Type?.Substring(internalException.Type.LastIndexOf("#", StringComparison.Ordinal) + 1);
 
             // if no message was found create a generic message
-            if (string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(internalException.Message))
             {
-                if (string.IsNullOrEmpty(type))
+                if (string.IsNullOrEmpty(internalException.Type))
                 {
                     if (string.IsNullOrEmpty(context.ResponseBody))
-                        message = "The service returned an error. See inner exception for details.";
+                        internalException.Message = "The service returned an error. See inner exception for details.";
                     else
-                        message = "The service returned an error with HTTP Body: " + context.ResponseBody;
+                        internalException.Message = "The service returned an error with HTTP Body: " + context.ResponseBody;
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(context.ResponseBody))
-                        message = "The service returned an error with Error Code " + type + ".";
+                        internalException.Message = "The service returned an error with Error Code " + internalException.Type + ".";
                     else
-                        message = "The service returned an error with Error Code " + type + " and HTTP Body: " + context.ResponseBody;
+                        internalException.Message = "The service returned an error with Error Code " + internalException.Type + " and HTTP Body: " + context.ResponseBody;
                 }
             }
 
@@ -105,53 +122,20 @@ namespace Amazon.Runtime.Internal.Transform
 
             return new ErrorResponse
             {
-                Code = type,
-                Message = message,
+                Code = internalException.Type,
+                Message = internalException.Message,
                 // type is not applicable to JSON services, setting to Unknown
                 Type = ErrorType.Unknown,
                 RequestId = requestId
             };
         }
 
-        private static void GetValuesFromJsonIfPossible(JsonUnmarshallerContext context, out string type, out string message, out string code)
+        private static void GetValuesFromJsonIfPossible(JsonUnmarshallerContext context, out InternalException internalException)
         {
-            code = null;
-            type = null;
-            message = null;
-
-            while (TryReadContext(context))
-            {
-                if (context.TestExpression("__type"))
-                {
-                    type = StringUnmarshaller.GetInstance().Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("message"))
-                {
-                    message = StringUnmarshaller.GetInstance().Unmarshall(context);
-                    continue;
-                }
-                if (context.TestExpression("code"))
-                {
-                    code = StringUnmarshaller.GetInstance().Unmarshall(context);
-                    continue;
-                }
-            }
+            internalException = JsonSerializer.Deserialize(context.Stream, InternalExceptionJsonSerializerContext.Default.InternalException);
         }
 
-        private static bool TryReadContext(JsonUnmarshallerContext context)
-        {
-            try
-            {
-                return context.Read();
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
-        }
-
-        private static JsonErrorResponseUnmarshaller instance;
+        private static JsonErrorResponseUnmarshaller? instance;
 
         /// <summary>
         /// Return an instance of JsonErrorResponseUnmarshaller.

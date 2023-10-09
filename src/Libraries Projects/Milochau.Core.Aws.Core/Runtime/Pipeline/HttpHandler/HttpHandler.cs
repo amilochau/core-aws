@@ -49,7 +49,7 @@ namespace Amazon.Runtime.Internal
         /// <returns>A task that represents the asynchronous operation.</returns>
         public override async System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
-            IHttpRequest<HttpContent> httpRequest = null;
+            IHttpRequest<HttpContent>? httpRequest = null;
             try
             {
                 IRequest wrappedRequest = executionContext.RequestContext.Request;
@@ -59,7 +59,7 @@ namespace Amazon.Runtime.Internal
                 // Send request body if present.
                 if (wrappedRequest.HasRequestBody())
                 {
-                    System.Runtime.ExceptionServices.ExceptionDispatchInfo edi = null;
+                    System.Runtime.ExceptionServices.ExceptionDispatchInfo? edi = null;
                     try
                     {
                         // In .NET Framework, there needs to be a cancellation token in this method since GetRequestStreamAsync
@@ -150,9 +150,7 @@ namespace Amazon.Runtime.Internal
                     // Mapping parameters to query string or body are mutually exclusive.
                     if (!request.UseQueryString)
                     {
-                        string queryString = AWSSDKUtils.GetParametersAsString(request);
-                        content = Encoding.UTF8.GetBytes(queryString);
-                        request.Content = content;
+                        request.Content = Encoding.UTF8.GetBytes(string.Empty);
                         request.SetContentFromParameters = true;
                     }
                     else

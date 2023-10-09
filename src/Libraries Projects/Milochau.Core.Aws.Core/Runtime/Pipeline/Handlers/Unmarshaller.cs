@@ -64,8 +64,7 @@ namespace Amazon.Runtime.Internal
             var unmarshaller = requestContext.Unmarshaller;
             try
             {
-                var responseStream = await responseContext.HttpResponse.
-                    ResponseBody.OpenResponseAsync().ConfigureAwait(false);
+                var responseStream = await responseContext.HttpResponse.ResponseBody.OpenResponseAsync().ConfigureAwait(false);
                 var context = unmarshaller.CreateContext(responseContext.HttpResponse,
                     false,
                     responseStream,
@@ -77,8 +76,7 @@ namespace Amazon.Runtime.Internal
             }
             finally
             {
-                if (!unmarshaller.HasStreamingProperty)
-                    responseContext.HttpResponse.ResponseBody.Dispose();
+                responseContext.HttpResponse.ResponseBody.Dispose();
             }
         }
 
@@ -89,7 +87,6 @@ namespace Amazon.Runtime.Internal
             AmazonWebServiceResponse response = unmarshaller.UnmarshallResponse(context);
 
             context.ValidateCRC32IfAvailable();
-            context.ValidateFlexibleCheckumsIfAvailable(response.ResponseMetadata);
             return response;
         }
     }

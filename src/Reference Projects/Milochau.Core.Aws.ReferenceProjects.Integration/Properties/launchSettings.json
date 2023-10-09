@@ -9,7 +9,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CONVENTION__APPLICATION": "maps",
         "CONVENTION__HOST": "dev",
-        "CONVENTION__PREFIX": "maps-dev"
+        "CONVENTION__PREFIX": "maps-dev",
+        "___AWS_SESSION_TOKEN": ""
       }
     }
   }

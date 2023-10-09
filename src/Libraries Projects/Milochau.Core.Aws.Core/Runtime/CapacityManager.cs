@@ -122,10 +122,9 @@ namespace Amazon.Runtime.Internal
         /// <summary>
         /// Ths method fetches the RetryCapacity for the given ServiceURL from CapacityManager.CapacityContainer
         /// </summary>
-        public RetryCapacity GetRetryCapacity(string serviceURL)
+        public RetryCapacity? GetRetryCapacity(string serviceURL)
         {
-            RetryCapacity retryCapacity;
-            if (!(TryGetRetryCapacity(serviceURL, out retryCapacity)))
+            if (!TryGetRetryCapacity(serviceURL, out RetryCapacity? retryCapacity))
             {
                 retryCapacity = AddNewRetryCapacity(serviceURL);
             }
@@ -155,7 +154,7 @@ namespace Amazon.Runtime.Internal
         // were to deplete the entire capacity.The default value is set at 1.
         private readonly int noRetryIncrement;
 
-        private static bool TryGetRetryCapacity(string key, out RetryCapacity value)
+        private static bool TryGetRetryCapacity(string key, out RetryCapacity? value)
         {
             _rwlock.EnterReadLock();
             try
@@ -174,11 +173,10 @@ namespace Amazon.Runtime.Internal
 
         private RetryCapacity AddNewRetryCapacity(string serviceURL)
         {
-            RetryCapacity retryCapacity;
             _rwlock.EnterUpgradeableReadLock();
             try
             {
-                if (!(_serviceUrlToCapacityMap.TryGetValue(serviceURL, out retryCapacity)))
+                if (!(_serviceUrlToCapacityMap.TryGetValue(serviceURL, out RetryCapacity? retryCapacity)))
                 {
                     _rwlock.EnterWriteLock();
                     try

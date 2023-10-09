@@ -1,4 +1,4 @@
-﻿using Amazon.SimpleEmailV2;
+﻿using Milochau.Core.Aws.SESv2;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -26,16 +26,16 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task SendEmailAsync(FunctionRequest emailRequest, CancellationToken cancellationToken)
         {
-            var response = await amazonSimpleEmailServiceV2.SendEmailAsync(new Amazon.SimpleEmailV2.Model.SendEmailRequest
+            var response = await amazonSimpleEmailServiceV2.SendEmailAsync(new Milochau.Core.Aws.SESv2.Model.SendEmailRequest
             {
                 FromEmailAddress = "noreply@dev.milochau.com",
-                Destination = new Amazon.SimpleEmailV2.Model.Destination
+                Destination = new Milochau.Core.Aws.SESv2.Model.Destination
                 {
                     ToAddresses = new List<string> { "aaa@outlook.com" },
                 },
-                Content = new Amazon.SimpleEmailV2.Model.EmailContent
+                Content = new Milochau.Core.Aws.SESv2.Model.EmailContent
                 {
-                    Template = new Amazon.SimpleEmailV2.Model.Template
+                    Template = new Milochau.Core.Aws.SESv2.Model.Template
                     {
                         TemplateName = "emails-dev-template-contacts-summary",
                         TemplateData = JsonSerializer.Serialize(new EmailRequestContent

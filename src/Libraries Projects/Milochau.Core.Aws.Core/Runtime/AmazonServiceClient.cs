@@ -67,14 +67,7 @@ namespace Amazon.Runtime
             ThrowIfDisposed();
 
             var executionContext = new ExecutionContext(
-                new RequestContext(Signer)
-                {
-                    ClientConfig = this.Config,
-                    Marshaller = options.RequestMarshaller,
-                    OriginalRequest = request,
-                    Unmarshaller = options.ResponseUnmarshaller,
-                    CancellationToken = cancellationToken,
-                },
+                new RequestContext(Signer, Config, options.RequestMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
                 new ResponseContext()
             );
             return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);
@@ -141,7 +134,7 @@ namespace Amazon.Runtime
             CustomizeRuntimePipeline(RuntimePipeline);
 
             // Apply global pipeline customizations
-            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(GetType(), RuntimePipeline);
+            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(RuntimePipeline);
         }
 
         /// <summary>
@@ -203,12 +196,6 @@ namespace Amazon.Runtime
                         sb.AppendFormat("={0}", subResource.Value);
                     delim = "&";
                 }
-            }
-
-            if (internalRequest.UseQueryString && internalRequest.Parameters?.Count > 0)
-            {
-                var queryString = AWSSDKUtils.GetParametersAsString(internalRequest);
-                sb.AppendFormat("{0}{1}", delim, queryString);
             }
 
             var parameterizedPath = string.Concat(resourcePath, sb);

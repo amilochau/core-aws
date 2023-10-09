@@ -6,10 +6,14 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Milochau.Core.Aws.Core contains AWS SDK core utilities for Milochau.Core.Aws framework.</Description>
 
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>disable</Nullable>
 
     <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
   </PropertyGroup>
 
 </Project>

@@ -47,22 +47,6 @@ namespace Amazon.Runtime.Internal
         }
 
         /// <summary>
-        /// Returns a dictionary of the parameters included in this request.
-        /// </summary>
-        IDictionary<String, String> Parameters
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Collection of parameters included in this request.
-        /// </summary>
-        ParameterCollection ParameterCollection
-        {
-            get;
-        }
-
-        /// <summary>
         /// Returns the subresources that should be appended to the resource path.
         /// This is used primarily for Amazon S3, where object keys can contain '?'
         /// characters, making string-splitting of a resource path potentially 
@@ -160,13 +144,6 @@ namespace Amazon.Runtime.Internal
         /// use.
         /// </summary>
         string ComputeContentStreamHash();
-
-        /// <summary>
-        /// If the request needs to be signed with a different service name 
-        /// than the client config AuthenticationServiceName, set it here to override
-        /// the result of DetermineService in AWS4Signer
-        /// </summary>
-        string OverrideSigningServiceName { get; set; }
 
         /// <summary>
         /// The name of the service to which this request is being sent.

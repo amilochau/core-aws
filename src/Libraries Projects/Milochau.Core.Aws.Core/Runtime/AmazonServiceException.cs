@@ -27,11 +27,6 @@ namespace Amazon.Runtime
     /// </summary>
     public class AmazonServiceException : Exception
     {
-        private ErrorType errorType;
-        private string errorCode;
-        private string requestId;
-        private HttpStatusCode statusCode;
-
         public AmazonServiceException()
             : base()
         {
@@ -50,7 +45,7 @@ namespace Amazon.Runtime
         public AmazonServiceException(string message, Exception innerException, HttpStatusCode statusCode)
             : base(message, innerException)
         {
-            this.statusCode = statusCode;
+            this.StatusCode = statusCode;
         }
 
         public AmazonServiceException(Exception innerException)
@@ -58,28 +53,28 @@ namespace Amazon.Runtime
         {
         }
 
-        public AmazonServiceException(string message, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonServiceException(string message, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode))
         {
-            this.errorCode = errorCode;
-            this.errorType = errorType;
-            this.requestId = requestId;
-            this.statusCode = statusCode;
+            this.ErrorCode = errorCode;
+            this.ErrorType = errorType;
+            this.RequestId = requestId;
+            this.StatusCode = statusCode;
         }
 
-        public AmazonServiceException(string message, Exception innerException, ErrorType errorType, string errorCode, string requestId, HttpStatusCode statusCode)
+        public AmazonServiceException(string message, Exception innerException, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode), 
                 innerException)
         {
-            this.errorCode = errorCode;
-            this.errorType = errorType;
-            this.requestId = requestId;
-            this.statusCode = statusCode;
+            this.ErrorCode = errorCode;
+            this.ErrorType = errorType;
+            this.RequestId = requestId;
+            this.StatusCode = statusCode;
         }
 
-        static string BuildGenericErrorMessage(string errorCode, HttpStatusCode statusCode)
+        static string BuildGenericErrorMessage(string? errorCode, HttpStatusCode statusCode)
         {
             return string.Format(CultureInfo.InvariantCulture,  
                 "Error making request with Error Code {0} and Http Status Code {1}. No further error information was returned by the service.", errorCode, statusCode);
@@ -88,50 +83,28 @@ namespace Amazon.Runtime
         /// <summary>
         /// Whether the error was attributable to <c>Sender</c> or <c>Reciever</c>.
         /// </summary>
-        public ErrorType ErrorType
-        {
-            get { return this.errorType; }
-            set { this.errorType = value; }
-        }
+        public ErrorType ErrorType { get; set; }
 
         /// <summary>
         /// The error code returned by the service
         /// </summary>
-        public string ErrorCode
-        {
-            get { return this.errorCode; }
-            set { this.errorCode = value; }
-        }
+        public string? ErrorCode { get; set; }
 
         /// <summary>
         /// The id of the request which generated the exception.
         /// </summary>
-        public string RequestId
-        {
-            get { return this.requestId; }
-            set { this.requestId = value; }
-        }
+        public string? RequestId { get; set; }
 
         /// <summary>
         /// The HTTP status code from the service response
         /// </summary>
-        public HttpStatusCode StatusCode
-        {
-            get { return this.statusCode; }
-            set { this.statusCode = value; }
-        }
+        public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
         /// Flag indicating if the exception is retryable and the associated retry
         /// details. A null value indicates that the exception is not retryable.
         /// </summary>
-        public virtual RetryableDetails Retryable
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public virtual RetryableDetails? Retryable => null;
     }
 
     /// <summary>

@@ -56,27 +56,6 @@ namespace Amazon.Runtime.Internal.Auth
             HeaderKeys.AmzSdkRequest
         };
 
-        public AWS4Signer()
-            : this(true)
-        {
-        }
-
-        public AWS4Signer(bool signPayload)
-        {
-            SignPayload = signPayload;
-        }
-
-        public bool SignPayload
-        {
-            get;
-            private set;
-        }
-
-        public override ClientProtocol Protocol
-        {
-            get { return ClientProtocol.RestProtocol; }
-        }
-
         /// <summary>
         /// Calculates and signs the specified request using the AWS4 signing protocol by using the
         /// AWS account credentials given in the method parameters. The resulting signature is added
@@ -173,7 +152,7 @@ namespace Amazon.Runtime.Internal.Auth
             ValidateRequest(request);
             var signedAt = InitializeHeaders(request.Headers, request.Endpoint);
             
-            var serviceSigningName = !string.IsNullOrEmpty(request.OverrideSigningServiceName) ? request.OverrideSigningServiceName : clientConfig.AuthenticationServiceName;
+            var serviceSigningName = clientConfig.AuthenticationServiceName;
 
             request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName);
             SetXAmzTrailerHeader(request.Headers, request.TrailingHeaders);
@@ -181,12 +160,7 @@ namespace Amazon.Runtime.Internal.Auth
             var parametersToCanonicalize = GetParametersToCanonicalize(request);
             var canonicalParameters = CanonicalizeQueryParameters(parametersToCanonicalize);
 
-            // If the request should use a fixed x-amz-content-sha256 header value, determine the appropriate one
-            var bodySha = request.TrailingHeaders?.Count > 0
-                ? StreamingBodySha256WithTrailer
-                : StreamingBodySha256;
-
-            var bodyHash = SetRequestBodyHash(request, SignPayload, bodySha, V4_SIGNATURE_LENGTH);
+            var bodyHash = SetRequestBodyHash(request);
             var sortedHeaders = SortAndPruneHeaders(request.Headers);
 
             var canonicalRequest = CanonicalizeRequest(request.Endpoint,
@@ -353,7 +327,7 @@ namespace Amazon.Runtime.Internal.Auth
         /// <returns>Computed signing key</returns>
         public static byte[] ComposeSigningKey(string awsSecretAccessKey, string region, string date, string service)
         {
-            char[] ksecret = null;
+            char[]? ksecret = null;
 
             try
             {
@@ -389,10 +363,10 @@ namespace Amazon.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        public static string SetRequestBodyHash(IRequest request, bool signPayload, string chunkedBodyHash, int signatureLength)
+        public static string? SetRequestBodyHash(IRequest request)
         {
             // If unsigned payload, set the appropriate magic string in the header and return it
-            if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : !signPayload)
+            if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : false)
             {
                 if (request.TrailingHeaders?.Count > 0)
                 {
@@ -415,8 +389,7 @@ namespace Amazon.Runtime.Internal.Auth
             }
 
             // if the body hash has been precomputed and already placed in the header, just extract and return it
-            string computedContentHash;
-            var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out computedContentHash);
+            var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out string? computedContentHash);
             if (shaHeaderPresent)
                 return computedContentHash;
 
@@ -506,7 +479,7 @@ namespace Amazon.Runtime.Internal.Auth
 
         public static string DetermineSigningRegion(IClientConfig clientConfig, string serviceName)
         {
-            string authenticationRegion = null;
+            string? authenticationRegion = null;
 
             if (!string.IsNullOrEmpty(authenticationRegion))
                 return authenticationRegion.ToLowerInvariant();
@@ -549,7 +522,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
-                                                    string precomputedBodyHash,
+                                                    string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
             return CanonicalizeRequestHelper(endpoint,
@@ -566,7 +539,7 @@ namespace Amazon.Runtime.Internal.Auth
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
                                                     string canonicalQueryString,
-                                                    string precomputedBodyHash,
+                                                    string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
             var canonicalRequest = new StringBuilder();
@@ -583,8 +556,7 @@ namespace Amazon.Runtime.Internal.Auth
             }
             else
             {
-                string contentHash;
-                if (sortedHeaders.TryGetValue(HeaderKeys.XAmzContentSha256Header, out contentHash))
+                if (sortedHeaders.TryGetValue(HeaderKeys.XAmzContentSha256Header, out string? contentHash))
                     canonicalRequest.Append(contentHash);
             }
 
@@ -671,15 +643,6 @@ namespace Amazon.Runtime.Internal.Auth
                 foreach (var subResource in request.SubResources)
                 {
                     parametersToCanonicalize.Add(new KeyValuePair<string,string>(subResource.Key, subResource.Value));
-                }
-            }
-
-            if (request.UseQueryString && request.Parameters != null && request.Parameters.Count > 0)
-            {
-                var requestParameters = request.ParameterCollection.GetSortedParametersList();
-                foreach (var queryParameter in requestParameters.Where(queryParameter => queryParameter.Value != null))
-                {
-                    parametersToCanonicalize.Add(new KeyValuePair<string,string>(queryParameter.Key, queryParameter.Value));
                 }
             }
 

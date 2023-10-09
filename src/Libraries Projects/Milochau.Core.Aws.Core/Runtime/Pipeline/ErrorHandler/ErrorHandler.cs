@@ -16,6 +16,7 @@
 using Amazon.Util.Internal;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Amazon.Runtime.Internal
 {
@@ -109,17 +110,16 @@ namespace Amazon.Runtime.Internal
             // Start by checking if there is a matching handler for the specific exception type,
             // if not check for handlers for it's base type till we find a match.
             var exceptionType = exception.GetType();
-            var exceptionTypeInfo = TypeFactory.GetTypeInfo(exception.GetType());
+            var exceptionTypeInfo = exception.GetType().GetTypeInfo().BaseType;
             do
             {
-                IExceptionHandler exceptionHandler;
 
-                if (this.ExceptionHandlers.TryGetValue(exceptionType, out exceptionHandler))
+                if (this.ExceptionHandlers.TryGetValue(exceptionType, out IExceptionHandler? exceptionHandler))
                 {
                     return await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
                 }
                 exceptionType = exceptionTypeInfo.BaseType;
-                exceptionTypeInfo = TypeFactory.GetTypeInfo(exceptionTypeInfo.BaseType);
+                exceptionTypeInfo = exceptionTypeInfo.BaseType.GetTypeInfo().BaseType;
 
             } while (exceptionType != typeof(Exception));
 

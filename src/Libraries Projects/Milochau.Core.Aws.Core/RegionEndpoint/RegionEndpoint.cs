@@ -57,7 +57,7 @@ namespace Amazon
         /// </summary>
         /// <param name="regionEndpoint">The region endpoint to find the possible override for</param>
         /// <returns></returns>
-        public static RegionEndpoint GetRegionEndpointOverride(RegionEndpoint regionEndpoint)
+        public static RegionEndpoint? GetRegionEndpointOverride(RegionEndpoint regionEndpoint)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Amazon
 
         private static RegionEndpoint GetEndpoint(string systemName, string displayName)
         {
-            RegionEndpoint regionEndpoint = null;
+            RegionEndpoint? regionEndpoint = null;
             if (displayName == null)
             {
                 lock (_hashBySystemName)
@@ -106,7 +106,7 @@ namespace Amazon
             return regionEndpoint;
         }
 
-        private static IRegionEndpointProvider _regionEndpointProvider;
+        private static IRegionEndpointProvider? _regionEndpointProvider;
         private static IRegionEndpointProvider RegionEndpointProvider
         {
             get
@@ -183,7 +183,7 @@ namespace Amazon
         /// </summary>
         public class Endpoint
         {
-            internal Endpoint(string hostname, string authregion)
+            internal Endpoint(string hostname, string? authregion)
             {
                 this.Hostname = hostname;
                 this.AuthRegion = authregion;
@@ -197,7 +197,7 @@ namespace Amazon
             /// <summary>
             /// The authentication region to be used in request signing.
             /// </summary>
-            public string AuthRegion { get; private set; }
+            public string? AuthRegion { get; private set; }
         }
     }
 }

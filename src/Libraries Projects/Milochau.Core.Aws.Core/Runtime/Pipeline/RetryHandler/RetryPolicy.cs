@@ -65,7 +65,7 @@ namespace Amazon.Runtime
         /// requests and response context.</param>
         /// <param name="exception">If the prior request failed, this exception is expected to be 
         /// the exception that occurred during the prior request failure.</param>
-        public virtual Task ObtainSendTokenAsync(IExecutionContext executionContext, Exception exception)
+        public virtual Task ObtainSendTokenAsync(IExecutionContext executionContext, Exception? exception)
         {
             return Task.CompletedTask;
         }
@@ -102,7 +102,7 @@ namespace Amazon.Runtime
         /// <summary>
         /// The standard set of throttling error codes
         /// </summary>
-        public virtual ICollection<string> ThrottlingErrorCodes { get; protected set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        public virtual ICollection<string?> ThrottlingErrorCodes { get; protected set; } = new HashSet<string?>(StringComparer.OrdinalIgnoreCase)
         {
             "Throttling",
             "ThrottlingException",
@@ -122,7 +122,7 @@ namespace Amazon.Runtime
         /// <summary>
         /// The standard set of timeout error codes to retry on.
         /// </summary>
-        public ICollection<string> TimeoutErrorCodesToRetryOn { get; protected set; } = new HashSet<string>()
+        public ICollection<string?> TimeoutErrorCodesToRetryOn { get; protected set; } = new HashSet<string?>()
         {
             "RequestTimeout",
             "RequestTimeoutException"
@@ -164,7 +164,7 @@ namespace Amazon.Runtime
         /// Its properties include the available capacity left for making a retry request and the maximum
         /// capacity size.
         /// </summary>
-        protected RetryCapacity RetryCapacity { get; set; }
+        protected RetryCapacity? RetryCapacity { get; set; }
 
         /// <summary>
         /// Returns true if the request is in a state where it can be retried, else false.
@@ -333,7 +333,7 @@ namespace Amazon.Runtime
         }
 
         private const string sslErrorZeroReturn = "SSL_ERROR_ZERO_RETURN";
-        public static bool IsTransientSslError(Exception exception)
+        public static bool IsTransientSslError(Exception? exception)
         {
             var isAuthenticationException = false;
             // Scan down the exceptions chain for a sslErrorZeroReturn keyword in the Message,
@@ -387,7 +387,6 @@ namespace Amazon.Runtime
 
         private bool IsClockskew(IExecutionContext executionContext, Exception exception)
         {
-            var clientConfig = executionContext.RequestContext.ClientConfig;
             var ase = exception as AmazonServiceException;
 
             var isHead =
@@ -434,7 +433,7 @@ namespace Amazon.Runtime
 
             return false;
         }
-        private static bool TryParseDateHeader(AmazonServiceException ase, out DateTime serverTime)
+        private static bool TryParseDateHeader(AmazonServiceException? ase, out DateTime serverTime)
         {
             var webData = GetWebData(ase);
 
@@ -459,7 +458,7 @@ namespace Amazon.Runtime
             serverTime = DateTime.MinValue;
             return false;
         }
-        private static bool TryParseExceptionMessage(AmazonServiceException ase, out DateTime serverTime)
+        private static bool TryParseExceptionMessage(AmazonServiceException? ase, out DateTime serverTime)
         {
             if (ase != null && !string.IsNullOrEmpty(ase.Message))
             {
@@ -499,11 +498,11 @@ namespace Amazon.Runtime
 
         #endregion
 
-        private static IWebResponseData GetWebData(AmazonServiceException ase)
+        private static IWebResponseData? GetWebData(AmazonServiceException? ase)
         {
             if (ase != null)
             {
-                Exception e = ase;
+                Exception? e = ase;
                 do
                 {
                     var here = e as HttpErrorResponseException;
@@ -516,7 +515,7 @@ namespace Amazon.Runtime
             return null;
         }
 
-        protected static bool ContainErrorMessage(Exception exception, HashSet<string> errorMessages)
+        protected static bool ContainErrorMessage(Exception? exception, HashSet<string> errorMessages)
         {
             if (exception == null)
                 return false;

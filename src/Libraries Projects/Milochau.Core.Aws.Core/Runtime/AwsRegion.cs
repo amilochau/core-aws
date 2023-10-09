@@ -80,21 +80,12 @@ namespace Amazon.Runtime
         {
             lock(_lock)
             {
-                if (cachedRegion != null)
-                    return cachedRegion.Region;
-
-                List<Exception> errors = new List<Exception>();
-                try
+                if (cachedRegion == null)
                 {
                     cachedRegion = new EnvironmentVariableAWSRegion();
                 }
-                catch (Exception e)
-                {
-                    cachedRegion = null;
-                    errors.Add(e);
-                }
 
-                return cachedRegion?.Region;
+                return cachedRegion.Region;
             }
         }
     }

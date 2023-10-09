@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
+    <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
   </ItemGroup>
 
 </Project>

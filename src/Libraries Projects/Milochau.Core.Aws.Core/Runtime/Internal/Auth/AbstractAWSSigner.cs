@@ -17,17 +17,8 @@ using System.Threading.Tasks;
 
 namespace Amazon.Runtime.Internal.Auth
 {
-    public enum ClientProtocol { QueryStringProtocol, RestProtocol, Unknown }
-
     public abstract class AbstractAWSSigner
     {
-        /// <summary>
-        /// Signals to the <see cref="Signer"/> Pipeline Handler
-        /// if a Signer requires valid <see cref="ImmutableCredentials"/> in order
-        /// to correctly <see cref="Sign(IRequest,IClientConfig,ImmutableCredentials)"/>.
-        /// </summary>
-        public virtual bool RequiresCredentials { get; } = true;
-
         public abstract void Sign(IRequest request, IClientConfig clientConfig, string awsAccessKeyId, string awsSecretAccessKey);
 
         public virtual void Sign(IRequest request, IClientConfig clientConfig, ImmutableCredentials credentials)
@@ -35,7 +26,7 @@ namespace Amazon.Runtime.Internal.Auth
             Sign(request, clientConfig, credentials?.AccessKey, credentials?.SecretKey);
         }
 
-        public virtual System.Threading.Tasks.Task SignAsync(
+        public virtual Task SignAsync(
             IRequest request, 
             IClientConfig clientConfig,
             ImmutableCredentials credentials,
@@ -44,7 +35,5 @@ namespace Amazon.Runtime.Internal.Auth
             Sign(request, clientConfig, credentials);
             return Task.CompletedTask;
         }
-
-        public abstract ClientProtocol Protocol { get; }
     }
 }

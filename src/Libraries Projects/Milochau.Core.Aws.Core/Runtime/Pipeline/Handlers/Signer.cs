@@ -67,23 +67,12 @@ namespace Amazon.Runtime.Internal
             ImmutableCredentials immutableCredentials = requestContext.ImmutableCredentials;
 
             // credentials would be null in the case of anonymous users getting public resources from S3
-            if (immutableCredentials == null && requestContext.Signer.RequiresCredentials)
+            if (immutableCredentials == null)
                 return;
 
             if (immutableCredentials?.UseToken == true)
             {
-                ClientProtocol protocol = requestContext.Signer.Protocol;
-                switch (protocol)
-                {
-                    case ClientProtocol.QueryStringProtocol:
-                        requestContext.Request.Parameters["SecurityToken"] = immutableCredentials.Token;
-                        break;
-                    case ClientProtocol.RestProtocol:
-                        requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = immutableCredentials.Token;
-                        break;
-                    default:
-                        throw new InvalidDataException("Cannot determine protocol");
-                }
+                requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = immutableCredentials.Token;
             }
 
             await requestContext.Signer
