@@ -10,12 +10,12 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
 {
     public class RegionEndpointV3 : IRegionEndpoint
     {
-        private ServiceMap _serviceMap = new ServiceMap();
+        private readonly ServiceMap _serviceMap = new ServiceMap();
         public string RegionName { get; private set; }
         public string DisplayName { get; private set; }
 
-        private EndpointsPartition partition;
-        private Dictionary<string, EndpointsPartitionService> services;
+        private readonly EndpointsPartition partition;
+        private readonly Dictionary<string, EndpointsPartitionService> services;
 
         private bool _servicesLoaded = false;
 
@@ -224,12 +224,12 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
             /// <summary>
             /// Stores the plain endpoints for each service in the current region
             /// </summary>
-            private Dictionary<string, RegionEndpoint.Endpoint> _serviceMap = new Dictionary<string, RegionEndpoint.Endpoint>();
+            private readonly Dictionary<string, RegionEndpoint.Endpoint> _serviceMap = new Dictionary<string, RegionEndpoint.Endpoint>();
 
             /// <summary>
             /// Stores the variants for each service in the current region, identified by the set of variant tags.
             /// </summary>
-            private Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>> _variantMap = new Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>>();
+            private readonly Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>> _variantMap = new Dictionary<string, Dictionary<HashSet<string>, RegionEndpoint.Endpoint>>();
 
             public void Add(string serviceName, RegionEndpoint.Endpoint endpoint, HashSet<string>? variants = null)
             {
@@ -257,11 +257,11 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
 
     public class RegionEndpointProviderV3 : IRegionEndpointProvider, IDisposable
     {
-        private Dictionary<string, IRegionEndpoint> _regionEndpointMap = new Dictionary<string, IRegionEndpoint>();
-        private Dictionary<string, IRegionEndpoint> _nonStandardRegionNameToObjectMap = new Dictionary<string, IRegionEndpoint>();
+        private readonly Dictionary<string, IRegionEndpoint> _regionEndpointMap = new Dictionary<string, IRegionEndpoint>();
+        private readonly Dictionary<string, IRegionEndpoint> _nonStandardRegionNameToObjectMap = new Dictionary<string, IRegionEndpoint>();
 
 
-        private ReaderWriterLockSlim _readerWriterLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim _readerWriterLock = new ReaderWriterLockSlim();
 
         private static string GetUnknownRegionDescription(string regionName)
         {
@@ -345,8 +345,7 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
                     var partitions = Endpoints.Reference.Partitions;
                     foreach (var partition in partitions)
                     {
-                        string description;
-                        if (IsRegionInPartition(regionName, partition, out description))
+                        if (IsRegionInPartition(regionName, partition, out string description))
                         {
                             endpoint = new RegionEndpointV3(regionName, description, partition, partition.Services);
                             _regionEndpointMap.Add(regionName, endpoint);

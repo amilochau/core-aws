@@ -4,7 +4,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 {
     public abstract class EncryptionWrapper : IEncryptionWrapper
     {
-        private SymmetricAlgorithm algorithm;
+        private readonly SymmetricAlgorithm algorithm;
         private ICryptoTransform encryptor;
         private const int encryptionKeySize = 256;
 

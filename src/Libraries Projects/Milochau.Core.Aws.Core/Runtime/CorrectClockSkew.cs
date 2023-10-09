@@ -9,8 +9,8 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public static class CorrectClockSkew
     {
-        private static IDictionary<string, TimeSpan> clockCorrectionDictionary = new Dictionary<string, TimeSpan>();
-        private static ReaderWriterLockSlim clockCorrectionDictionaryLock = new ReaderWriterLockSlim();
+        private static readonly IDictionary<string, TimeSpan> clockCorrectionDictionary = new Dictionary<string, TimeSpan>();
+        private static readonly ReaderWriterLockSlim clockCorrectionDictionaryLock = new ReaderWriterLockSlim();
 
         /// <summary>
         /// Return clock skew correction value for an endpoint if there is one.

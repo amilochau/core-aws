@@ -4,9 +4,9 @@ namespace Milochau.Core.Aws.Core.Runtime
 {
     public class StreamTransferProgressArgs : EventArgs
     {
-        long _incrementTransferred;
-        long _total;
-        long _transferred;
+        readonly long _incrementTransferred;
+        readonly long _total;
+        readonly long _transferred;
 
         /// <summary>
         /// The constructor takes the number of

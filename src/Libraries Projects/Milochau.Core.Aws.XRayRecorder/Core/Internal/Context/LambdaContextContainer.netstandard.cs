@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Context
     /// </summary>
     public class LambdaContextContainer : TraceContextImpl
     {
-        private static AsyncLocal<Entity?> _entityHolder = new AsyncLocal<Entity?>();
+        private static readonly AsyncLocal<Entity?> _entityHolder = new AsyncLocal<Entity?>();
 
         /// <summary>
         /// Get entity (segment/subsegment) from the context.

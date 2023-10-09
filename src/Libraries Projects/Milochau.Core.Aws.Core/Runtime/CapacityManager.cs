@@ -120,10 +120,10 @@ namespace Milochau.Core.Aws.Core.Runtime
         private bool _disposed;
 
         //Dictionary that keeps track of the available capacity by ServiceURLs
-        private static Dictionary<string, RetryCapacity> _serviceUrlToCapacityMap = new Dictionary<string, RetryCapacity>();
+        private static readonly Dictionary<string, RetryCapacity> _serviceUrlToCapacityMap = new Dictionary<string, RetryCapacity>();
 
         //Read write slim lock for performing said operations on CapacityManager._serviceUrlToCapacityMap.
-        private static ReaderWriterLockSlim _rwlock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _rwlock = new ReaderWriterLockSlim();
 
         // This parameter sets the cost of making a retry call on a request.The default value is set at 5.
         private readonly int retryCost;

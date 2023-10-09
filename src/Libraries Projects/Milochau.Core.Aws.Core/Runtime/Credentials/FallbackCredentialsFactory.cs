@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Credentials
     public static class FallbackCredentialsFactory
     {
         // Lock to control caching credentials across multiple threads.
-        private static ReaderWriterLockSlim cachedCredentialsLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim cachedCredentialsLock = new ReaderWriterLockSlim();
     
         private static AWSCredentials cachedCredentials;
         public static AWSCredentials GetCredentials()

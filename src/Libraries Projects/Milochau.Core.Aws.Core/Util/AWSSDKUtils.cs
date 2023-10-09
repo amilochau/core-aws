@@ -54,7 +54,7 @@ namespace Milochau.Core.Aws.Core.Util
         /// <summary>
         /// The set of accepted and valid Url path characters per RFC3986.
         /// </summary>
-        private static string ValidPathCharacters = DetermineValidPathCharacters();
+        private static readonly string ValidPathCharacters = DetermineValidPathCharacters();
 
         /// <summary>
         /// The set of characters which are not to be encoded as part of the X-Amzn-Trace-Id header values

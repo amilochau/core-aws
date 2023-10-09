@@ -11,15 +11,15 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
     public partial class RegionEndpoint
     {
         #region Statics
-        private static Dictionary<string, RegionEndpoint> _hashBySystemName = new Dictionary<string, RegionEndpoint>(StringComparer.OrdinalIgnoreCase);
-        private static ReaderWriterLockSlim _regionEndpointOverrideLock = new ReaderWriterLockSlim(); // controls access to _hashRegionEndpointOverride
+        private static readonly Dictionary<string, RegionEndpoint> _hashBySystemName = new Dictionary<string, RegionEndpoint>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ReaderWriterLockSlim _regionEndpointOverrideLock = new ReaderWriterLockSlim(); // controls access to _hashRegionEndpointOverride
 
         /// <summary>
         /// Represents the endpoint overridding rules in the endpoints.json
         /// Is used to map private region (ie us-east-1-regional) to public regions (us-east-1)
         /// For signing purposes. Map is keyed by region SystemName.
         /// </summary>
-        private static Dictionary<string, RegionEndpoint> _hashRegionEndpointOverride = new Dictionary<string, RegionEndpoint>();
+        private static readonly Dictionary<string, RegionEndpoint> _hashRegionEndpointOverride = new Dictionary<string, RegionEndpoint>();
 
         /// <summary>
         /// Gets the region based on its system name like "us-west-1"

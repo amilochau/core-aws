@@ -4,7 +4,7 @@ namespace Milochau.Core.Aws.Core.Util
 {
     public static partial class CryptoUtilFactory
     {
-        static CryptoUtil util = new CryptoUtil();
+        static readonly CryptoUtil util = new CryptoUtil();
 
         public static ICryptoUtil CryptoInstance
         {

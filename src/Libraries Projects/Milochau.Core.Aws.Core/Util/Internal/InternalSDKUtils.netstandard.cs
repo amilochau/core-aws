@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Core.Util.Internal
         private const string UnknownPlaceholder = "Unknown";
         private const string UnknownPlatform = "unknown_platform";
 
-        private static string _userAgentBaseName = "aws-sdk-dotnet-coreclr";
+        private static readonly string _userAgentBaseName = "aws-sdk-dotnet-coreclr";
         private static readonly string SpecialPlatformInformation;
 
 #pragma warning disable CA1810 // Initialize reference type static fields inline

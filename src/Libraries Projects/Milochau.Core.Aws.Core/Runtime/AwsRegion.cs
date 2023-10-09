@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public static class FallbackRegionFactory
     {
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         static FallbackRegionFactory()
         {

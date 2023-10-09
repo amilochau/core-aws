@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <summary>
         /// Set of content header names.
         /// </summary>
-        private static HashSet<string> ContentHeaderNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> ContentHeaderNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderKeys.ContentLengthHeader,
             HeaderKeys.ContentTypeHeader,
@@ -47,8 +47,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         };
 
         private bool _disposed;
-        private HttpRequestMessage _request;
-        private HttpClient _httpClient;
+        private readonly HttpRequestMessage _request;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// The constructor for HttpWebRequestMessage.

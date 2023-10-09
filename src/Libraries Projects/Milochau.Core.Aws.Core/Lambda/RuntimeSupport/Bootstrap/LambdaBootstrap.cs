@@ -22,9 +22,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// </summary>
         private static readonly TimeSpan RuntimeApiHttpTimeout = TimeSpan.FromHours(12);
 
-        private LambdaBootstrapHandler _handler;
+        private readonly LambdaBootstrapHandler _handler;
 
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         internal IRuntimeApiClient Client { get; set; }
 
         /// <summary>

@@ -68,9 +68,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             //if the json unmarshaller context is being called internally without there being a http response then the response data would be null
             if(responseData != null)
             {
-                long contentLength;
-                
-                bool parsedContentLengthHeader = long.TryParse(responseData.GetHeaderValue("Content-Length"), out contentLength);
+
+                bool parsedContentLengthHeader = long.TryParse(responseData.GetHeaderValue("Content-Length"), out long contentLength);
 
                 // Temporary work around checking Content-Encoding for an issue with NetStandard on Linux returning Content-Length for a gzipped response.
                 // Causing the SDK to attempt a CRC check over the gzipped response data with a CRC value for the uncompressed value. 
@@ -142,8 +141,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         private class JsonPathStack
         {
-            private Stack<PathSegment> stack = new Stack<PathSegment>();
-            private StringBuilder stackStringBuilder = new StringBuilder(128);
+            private readonly Stack<PathSegment> stack = new Stack<PathSegment>();
+            private readonly StringBuilder stackStringBuilder = new StringBuilder(128);
             private string stackString;
 
             public int CurrentDepth { get; private set; } = 0;

@@ -138,16 +138,16 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers
         class WrapperTextWriter : TextWriter
         {
             private readonly TextWriter _innerWriter;
-            private string _defaultLogLevel;
+            private readonly string _defaultLogLevel;
 
             const string LOG_LEVEL_ENVIRONMENT_VARIABLE = "AWS_LAMBDA_HANDLER_LOG_LEVEL";
             const string LOG_FORMAT_ENVIRONMENT_VARIABLE = "AWS_LAMBDA_HANDLER_LOG_FORMAT";
 
-            private LogLevel _minmumLogLevel = LogLevel.Information;
+            private readonly LogLevel _minmumLogLevel = LogLevel.Information;
 
             enum LogFormatType { Default, Unformatted }
 
-            private LogFormatType _logFormatType = LogFormatType.Default;
+            private readonly LogFormatType _logFormatType = LogFormatType.Default;
 
             public string CurrentAwsRequestId { get; set; } = string.Empty;
 

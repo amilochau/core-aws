@@ -7,7 +7,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
     /// </summary>
     public class Unmarshaller : PipelineHandler
     {
-        private bool _supportsResponseLogging;
+        private readonly bool _supportsResponseLogging;
 
         /// <summary>
         /// The constructor for Unmarshaller.

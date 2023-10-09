@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
     public class HttpClientResponseData : IWebResponseData
     {
-        HttpResponseMessageBody _response;
+        readonly HttpResponseMessageBody _response;
         Dictionary<string, string> _headers;
         HashSet<string> _headerNamesSet;
 
@@ -37,8 +37,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         public string GetHeaderValue(string headerName)
         {
-            string headerValue;
-            if(_headers.TryGetValue(headerName, out headerValue))
+            if (_headers.TryGetValue(headerName, out string headerValue))
                 return headerValue;
 
             return string.Empty;
@@ -78,8 +77,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         private string GetFirstHeaderValue(HttpHeaders headers, string key)
         {
-            IEnumerable<string> headerValues = null;
-            if (headers.TryGetValues(key, out headerValues))
+            if (headers.TryGetValues(key, out IEnumerable<string> headerValues))
                 return headerValues.FirstOrDefault();
 
             return string.Empty;
@@ -93,7 +91,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
     public class HttpResponseMessageBody : IHttpResponseBody
     {
-        HttpResponseMessage _response;
+        readonly HttpResponseMessage _response;
         bool _disposed = false;
 
         public HttpResponseMessageBody(HttpResponseMessage response)

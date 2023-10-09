@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// </summary>
     public class LambdaBootstrapBuilder
     {
-        private HandlerWrapper _handlerWrapper;
+        private readonly HandlerWrapper _handlerWrapper;
 
         private LambdaBootstrapBuilder(HandlerWrapper handlerWrapper)
         {

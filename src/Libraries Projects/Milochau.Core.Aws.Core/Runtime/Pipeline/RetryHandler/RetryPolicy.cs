@@ -270,8 +270,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
             }
 
             //Check for WebExceptions that are considered transient
-            WebException webException;
-            if (ExceptionUtils.IsInnerException(exception, out webException))
+            if (ExceptionUtils.IsInnerException(exception, out WebException webException))
             {
                 if (WebExceptionStatusesToRetryOn.Contains(webException.Status))
                 {
@@ -353,7 +352,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
 
         #region Clock skew correction
 
-        private static HashSet<string> clockSkewErrorCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> clockSkewErrorCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "RequestTimeTooSkewed",
             "RequestExpired",
@@ -367,7 +366,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         private const string clockSkewMessageParen = "(";
         private const string clockSkewMessagePlusSeparator = " + ";
         private const string clockSkewMessageMinusSeparator = " - ";
-        private static TimeSpan clockSkewMaxThreshold = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan clockSkewMaxThreshold = TimeSpan.FromMinutes(5);
 
         private bool IsClockskew(IExecutionContext executionContext, Exception exception)
         {
@@ -386,10 +385,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                 var realNow = DateTime.UtcNow;
                 var correctedNow = CorrectClockSkew.GetCorrectedUtcNowForEndpoint(endpoint);
 
-                DateTime serverTime;
 
                 // Try getting server time from the headers
-                bool serverTimeDetermined = TryParseDateHeader(ase, out serverTime);
+                bool serverTimeDetermined = TryParseDateHeader(ase, out DateTime serverTime);
 
                 // If that fails, try to parse it from the exception message
                 if (!serverTimeDetermined)

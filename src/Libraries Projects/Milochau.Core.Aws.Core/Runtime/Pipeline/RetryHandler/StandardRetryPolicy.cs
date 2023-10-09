@@ -37,7 +37,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
     /// </summary>
     public partial class StandardRetryPolicy : RetryPolicy
     {
-        private static Random _randomJitter = new Random();
+        private static readonly Random _randomJitter = new Random();
                 
         //The status code returned from a service request when an invalid endpoint is used.
         private const int INVALID_ENDPOINT_EXCEPTION_STATUSCODE = 421;        

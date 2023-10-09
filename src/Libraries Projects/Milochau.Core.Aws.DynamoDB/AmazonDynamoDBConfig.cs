@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.DynamoDB
         private static readonly string UserAgentString =
             InternalSDKUtils.BuildUserAgentString("3.7.202.4");
 
-        private string _userAgent = UserAgentString;
+        private readonly string _userAgent = UserAgentString;
 
         /// <summary>
         /// Default constructor

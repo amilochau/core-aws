@@ -20,7 +20,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         ReaderWriterLockSlim _rwlock = new ReaderWriterLockSlim();
 
         // List is used instead of a dictionary to maintain order
-        IList<IRuntimePipelineCustomizer> _customizers = new List<IRuntimePipelineCustomizer>();
+        readonly IList<IRuntimePipelineCustomizer> _customizers = new List<IRuntimePipelineCustomizer>();
 
         /// <summary>
         /// Registers a customizer that will be applied for all service clients created. Each customizer has a unique name associated with it. If a customizer is registered more 

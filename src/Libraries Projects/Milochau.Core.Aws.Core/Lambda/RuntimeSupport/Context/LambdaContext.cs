@@ -6,9 +6,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
     internal class LambdaContext : ILambdaContext
     {
-        private LambdaEnvironment _lambdaEnvironment;
-        private RuntimeApiHeaders _runtimeApiHeaders;
-        private IConsoleLoggerWriter _consoleLogger;
+        private readonly LambdaEnvironment _lambdaEnvironment;
+        private readonly RuntimeApiHeaders _runtimeApiHeaders;
+        private readonly IConsoleLoggerWriter _consoleLogger;
 
         public LambdaContext(RuntimeApiHeaders runtimeApiHeaders, LambdaEnvironment lambdaEnvironment, IConsoleLoggerWriter consoleLogger)
         {

@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         private static readonly InvocationResponse EmptyInvocationResponse =
             new InvocationResponse(new MemoryStream(0), false);
 
-        private MemoryStream OutputStream = new MemoryStream();
+        private readonly MemoryStream OutputStream = new MemoryStream();
 
         public LambdaBootstrapHandler Handler { get; private set; }
 

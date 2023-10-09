@@ -11,8 +11,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
     /// </summary>
     public class PartialWrapperStream : WrapperStream
     {
-        private long initialPosition;
-        private long partSize;
+        private readonly long initialPosition;
+        private readonly long partSize;
 
         public PartialWrapperStream(Stream stream, long partSize)
             : base(stream)

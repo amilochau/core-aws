@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
     internal class LambdaConsoleLogger : ILambdaLogger
     {
-        private IConsoleLoggerWriter _consoleLoggerRedirector;
+        private readonly IConsoleLoggerWriter _consoleLoggerRedirector;
 
         public LambdaConsoleLogger(IConsoleLoggerWriter consoleLoggerRedirector)
         {

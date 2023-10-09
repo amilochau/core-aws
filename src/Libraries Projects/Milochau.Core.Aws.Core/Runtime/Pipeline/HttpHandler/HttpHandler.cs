@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
     /// </summary>
     public class HttpHandler : PipelineHandler
     {
-        private IHttpRequestFactory<HttpContent> _requestFactory;
+        private readonly IHttpRequestFactory<HttpContent> _requestFactory;
 
         /// <summary>
         /// The constructor for HttpHandler.

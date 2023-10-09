@@ -8,7 +8,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// </summary>
     internal class NonDisposingStreamWrapper : Stream
     {
-        Stream _wrappedStream;
+        readonly Stream _wrappedStream;
 
         public NonDisposingStreamWrapper(Stream wrappedStream)
         {

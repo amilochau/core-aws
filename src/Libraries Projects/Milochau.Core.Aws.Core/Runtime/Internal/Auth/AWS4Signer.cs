@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         public const string UnsignedPayload = "UNSIGNED-PAYLOAD";
         public const string UnsignedPayloadWithTrailer = "STREAMING-UNSIGNED-PAYLOAD-TRAILER";
 
-        private static IEnumerable<string> _headersToIgnoreWhenSigning = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+        private static readonly IEnumerable<string> _headersToIgnoreWhenSigning = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
             HeaderKeys.XAmznTraceIdHeader,
             HeaderKeys.TransferEncodingHeader,
             HeaderKeys.AmzSdkInvocationId,

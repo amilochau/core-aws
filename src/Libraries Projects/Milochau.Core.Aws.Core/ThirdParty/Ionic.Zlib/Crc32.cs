@@ -77,7 +77,7 @@ namespace ThirdParty.Ionic.Zlib
             }
         }
 
-        private static UInt32[] crc32Table;
+        private static readonly UInt32[] crc32Table;
         private UInt32 _RunningCrc32Result = 0xFFFFFFFF;
 
     }
@@ -98,9 +98,9 @@ namespace ThirdParty.Ionic.Zlib
     /// </remarks>
     public class CrcCalculatorStream : System.IO.Stream
     {
-        private System.IO.Stream _InnerStream;
-        private CRC32 _Crc32;
-        private Int64 _length = 0;
+        private readonly System.IO.Stream _InnerStream;
+        private readonly CRC32 _Crc32;
+        private readonly Int64 _length = 0;
 
         /// <summary>
         /// The constructor.

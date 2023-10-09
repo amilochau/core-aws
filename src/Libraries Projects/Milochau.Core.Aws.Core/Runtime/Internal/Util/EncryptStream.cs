@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 
         protected IEncryptionWrapper Algorithm { get; set; }
         private const int internalEncryptionBlockSize = 16;
-        private byte[] internalBuffer;
+        private readonly byte[] internalBuffer;
         private bool performedLastBlockTransform;
 
         #endregion
