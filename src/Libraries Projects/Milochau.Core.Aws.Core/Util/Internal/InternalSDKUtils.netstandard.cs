@@ -6,8 +6,6 @@ namespace Milochau.Core.Aws.Core.Util.Internal
     public static partial class InternalSDKUtils
     {
         private const string UnknownPlaceholder = "Unknown";
-        private const string UnknownPlatform = "unknown_platform";
-
         private static readonly string _userAgentBaseName = "aws-sdk-dotnet-coreclr";
 
         private static string GetValidSubstringOrUnknown(string str, int start, int end)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
@@ -12,7 +13,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         private const string ERROR_MESSAGE = "message";
         private const string ERROR_TYPE = "type";
         private const string STACK_TRACE = "stack";
-        private const string STACK_FRAME_METHOD = "label";
         private const string STACK_FRAME_FILE = "path";
         private const string STACK_FRAME_LINE = "line";
 

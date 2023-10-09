@@ -406,7 +406,7 @@ namespace Milochau.Core.Aws.Core.Util
 
             string unreservedChars = string.Concat(validUrlCharacters, path ? ValidPathCharacters : "");
 
-            foreach (char symbol in System.Text.Encoding.UTF8.GetBytes(data))
+            foreach (char symbol in Encoding.UTF8.GetBytes(data).Select(v => (char)v))
             {
                 if (unreservedChars.IndexOf(symbol) != -1)
                 {
@@ -449,7 +449,7 @@ namespace Milochau.Core.Aws.Core.Util
         internal static string EncodeTraceIdHeaderValue(string value)
         {
             var encoded = new StringBuilder(value.Length * 2);
-            foreach (char symbol in System.Text.Encoding.UTF8.GetBytes(value))
+            foreach (char symbol in Encoding.UTF8.GetBytes(value).Select(v => (char)v))
             {
                 if (ValidTraceIdHeaderValueCharacters.IndexOf(symbol) != -1)
                 {

@@ -126,7 +126,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             {
                 currentPosition += Algorithm.AppendBlock(buffer, offset, internalEncryptionBlockSize, internalBuffer, 0);
                 Buffer.BlockCopy(internalBuffer, 0, buffer, offset, internalEncryptionBlockSize);
-                offset = offset + internalEncryptionBlockSize;
+                offset += internalEncryptionBlockSize;
             }
 
             if ((Length - Position) < internalEncryptionBlockSize)

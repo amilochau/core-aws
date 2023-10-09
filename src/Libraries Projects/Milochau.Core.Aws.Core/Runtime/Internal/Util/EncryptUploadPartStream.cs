@@ -107,7 +107,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             {
                 numBytesRead += Algorithm.AppendBlock(buffer, offset, InternalEncryptionBlockSize, internalBuffer, 0);
                 Buffer.BlockCopy(internalBuffer, 0, buffer, offset, InternalEncryptionBlockSize);
-                offset = offset + InternalEncryptionBlockSize;
+                offset += InternalEncryptionBlockSize;
             }
 
             Buffer.BlockCopy(buffer, numBytesRead - InternalEncryptionBlockSize, InitializationVector, 0, InternalEncryptionBlockSize);

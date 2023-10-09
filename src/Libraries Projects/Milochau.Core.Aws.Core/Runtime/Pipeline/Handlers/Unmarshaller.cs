@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         /// <param name="executionContext">
         /// The execution context, it contains the request and response context.
         /// </param>
-        private async System.Threading.Tasks.Task UnmarshallAsync(IExecutionContext executionContext)
+        private static async System.Threading.Tasks.Task UnmarshallAsync(IExecutionContext executionContext)
         {
             var requestContext = executionContext.RequestContext;
             var responseContext = executionContext.ResponseContext;
