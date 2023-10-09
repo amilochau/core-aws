@@ -31,10 +31,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
             WorkingDirectory = Directory.GetCurrentDirectory();
             lock (exceptionDescriptorsLock)
             {
-                if (ExceptionDescriptors == null)
-                {
-                    ExceptionDescriptors = new List<ExceptionDescriptor>();
-                }
+                ExceptionDescriptors ??= new List<ExceptionDescriptor>();
                 ExceptionDescriptors.AddRange(exceptionDescriptors);
             }
         }

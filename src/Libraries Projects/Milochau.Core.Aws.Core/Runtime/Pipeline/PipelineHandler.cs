@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         public virtual System.Threading.Tasks.Task<T> InvokeAsync<T>(IExecutionContext executionContext)
             where T : AmazonWebServiceResponse, new()
         {
-            if (this.InnerHandler != null)
+            if (InnerHandler != null)
             {
                 return InnerHandler.InvokeAsync<T>(executionContext);    
             }

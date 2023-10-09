@@ -62,8 +62,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Credentials
             if (object.ReferenceEquals(this, obj))
                 return true;
 
-            ImmutableCredentials? ic = obj as ImmutableCredentials;
-            if (ic == null)
+            if (obj is not ImmutableCredentials ic)
                 return false;
 
             return AWSSDKUtils.AreEqual(

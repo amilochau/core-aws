@@ -13,9 +13,9 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
     public class AWSXRayRecorder : AWSXRayRecorderImpl
     {
         static AWSXRayRecorder _instance = AWSXRayRecorderBuilder.Build();
-        private const String LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
+        private const string LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
 
-        private static String? _lambdaVariables;
+        private static string? _lambdaVariables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AWSXRayRecorder" /> class.
@@ -43,10 +43,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = AWSXRayRecorderBuilder.Build();
-                }
+                _instance ??= AWSXRayRecorderBuilder.Build();
 
                 return _instance;
             }

@@ -20,9 +20,9 @@ namespace Milochau.Core.Aws.DynamoDB
         public AmazonDynamoDBConfig()
             : base()
         {
-            this.AuthenticationServiceName = "dynamodb";
-            this.MaxErrorRetry = 10;
-            this.EndpointProvider = new AmazonDynamoDBEndpointProvider();
+            AuthenticationServiceName = "dynamodb";
+            MaxErrorRetry = 10;
+            EndpointProvider = new AmazonDynamoDBEndpointProvider();
         }
 
         /// <summary>

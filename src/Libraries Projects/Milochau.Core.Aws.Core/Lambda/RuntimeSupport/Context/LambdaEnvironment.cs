@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             RuntimeServerHostAndPort = Environment.GetEnvironmentVariable(EnvVarServerHostAndPort);
         }
 
-        internal void SetXAmznTraceId(string xAmznTraceId)
+        internal static void SetXAmznTraceId(string xAmznTraceId)
         {
             Environment.SetEnvironmentVariable(EnvVarTraceId, xAmznTraceId);
         }

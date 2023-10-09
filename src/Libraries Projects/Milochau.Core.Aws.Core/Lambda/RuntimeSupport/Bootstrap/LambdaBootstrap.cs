@@ -56,7 +56,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>A Task that represents the operation.</returns>
-        public async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RunAsync(CancellationToken cancellationToken = default)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -73,34 +73,32 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
         internal async Task InvokeOnceAsync(CancellationToken cancellationToken = default)
         {
-            using (var invocation = await Client.GetNextInvocationAsync(cancellationToken))
-            {
-                InvocationResponse response = null;
-                bool invokeSucceeded = false;
+            using var invocation = await Client.GetNextInvocationAsync(cancellationToken);
+            InvocationResponse response = null;
+            bool invokeSucceeded = false;
 
+            try
+            {
+                response = await _handler(invocation);
+                invokeSucceeded = true;
+            }
+            catch (Exception exception)
+            {
+                WriteUnhandledExceptionToLog(exception);
+                await Client.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception);
+            }
+
+            if (invokeSucceeded)
+            {
                 try
                 {
-                    response = await _handler(invocation);
-                    invokeSucceeded = true;
+                    await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
                 }
-                catch (Exception exception)
+                finally
                 {
-                    WriteUnhandledExceptionToLog(exception);
-                    await Client.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception);
-                }
-
-                if (invokeSucceeded)
-                {
-                    try
+                    if (response != null && response.DisposeOutputStream)
                     {
-                        await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
-                    }
-                    finally
-                    {
-                        if (response != null && response.DisposeOutputStream)
-                        {
-                            response.OutputStream?.Dispose();
-                        }
+                        response.OutputStream?.Dispose();
                     }
                 }
             }
@@ -135,7 +133,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             return client;
         }
 
-        private void WriteUnhandledExceptionToLog(Exception exception)
+        private static void WriteUnhandledExceptionToLog(Exception exception)
         {
             // Console.Error.WriteLine are redirected to the IConsoleLoggerWriter which
             // will take care of writing to the function's log stream.

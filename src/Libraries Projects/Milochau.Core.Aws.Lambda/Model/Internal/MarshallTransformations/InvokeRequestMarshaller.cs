@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <returns></returns>
         public IRequest Marshall(AmazonWebServiceRequest input)
         {
-            return this.Marshall((InvokeRequest)input);
+            return Marshall((InvokeRequest)input);
         }
 
         /// <summary>

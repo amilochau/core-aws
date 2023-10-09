@@ -38,8 +38,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// or garbage collected.</param>
         protected virtual void Dispose(bool disposing)
         {
-            var disposable = _algorithm as IDisposable;
-            if (disposing && disposable != null)
+            if (disposing && _algorithm is IDisposable disposable)
             {
                 disposable.Dispose();
                 _algorithm = null;
@@ -73,7 +72,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 

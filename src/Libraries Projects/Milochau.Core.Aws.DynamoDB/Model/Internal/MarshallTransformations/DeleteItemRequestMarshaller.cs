@@ -17,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// @todo remove this method?
         public IRequest Marshall(AmazonWebServiceRequest input)
         {
-            return this.Marshall((DeleteItemRequest)input);
+            return Marshall((DeleteItemRequest)input);
         }
 
         /// <summary>

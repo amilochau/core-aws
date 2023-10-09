@@ -131,7 +131,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// be not be encoded; encoding will be done for these parameters as part of the 
         /// construction of the canonical request.
         /// </remarks>
-        public AWS4SigningResult SignRequest(IRequest request,
+        public static AWS4SigningResult SignRequest(IRequest request,
                                              IClientConfig clientConfig,
                                              string awsAccessKeyId,
                                              string awsSecretAccessKey)
@@ -589,9 +589,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             {
                 // Refer https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html. (Step #4: "To create the canonical headers list, convert all header names to lowercase and remove leading spaces and trailing spaces. Convert sequential spaces in the header value to a single space.").
                 builder.Append(entry.Key.ToLowerInvariant());
-                builder.Append(":");
+                builder.Append(':');
                 builder.Append(AWSSDKUtils.CompressSpaces(entry.Value)?.Trim());
-                builder.Append("\n");
+                builder.Append('\n');
             }
             return builder.ToString();
         }
@@ -608,7 +608,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             foreach (var header in sortedHeaders)
             {
                 if (builder.Length > 0)
-                    builder.Append(";");
+                    builder.Append(';');
                 builder.Append(header.Key.ToLowerInvariant());
             }
             
@@ -667,7 +667,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                 var value = param.Value;
 
                 if (canonicalQueryString.Length > 0)
-                    canonicalQueryString.Append("&");
+                    canonicalQueryString.Append('&');
                 if (uriEncodeParameters)
                 {
                     if (string.IsNullOrEmpty(value))

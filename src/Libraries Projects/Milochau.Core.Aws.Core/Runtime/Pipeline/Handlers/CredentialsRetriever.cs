@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         /// <param name="credentials">An AWSCredentials instance.</param>
         public CredentialsRetriever(AWSCredentials credentials)
         {
-            this.Credentials = credentials;
+            Credentials = credentials;
         }
 
         protected AWSCredentials Credentials

@@ -26,7 +26,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// <summary></summary>
         protected AWSXRayRecorderImpl(ISegmentEmitter emitter)
         {
-            this.Emitter = emitter;
+            Emitter = emitter;
         }
 
         /// <summary>
@@ -103,9 +103,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         {
             try
             {
-                var subsegment = TraceContext.GetEntity() as Subsegment;
-
-                if (subsegment == null)
+                if (TraceContext.GetEntity() is not Subsegment subsegment)
                 {
                     return;
                 }
@@ -203,10 +201,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// <param name="daemonAddress">The daemon address.</param>
         public void SetDaemonAddress(string daemonAddress)
         {
-            if (Emitter != null)
-            {
-                Emitter.SetDaemonAddress(daemonAddress);
-            }
+            Emitter?.SetDaemonAddress(daemonAddress);
         }
 
         /// <summary>
@@ -231,10 +226,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
 
             if (disposing)
             {
-                if (Emitter != null)
-                {
-                    Emitter.Dispose();
-                }
+                Emitter?.Dispose();
 
                 Disposed = true;
             }
@@ -244,7 +236,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// Sets segment IsInProgress to false and releases the segment.
         /// </summary>
         /// <param name="segment">Instance of <see cref="Segment"/>.</param>
-        protected void PrepEndSegment(Segment segment)
+        protected static void PrepEndSegment(Segment segment)
         {
             segment.IsInProgress = false;
             segment.Release();

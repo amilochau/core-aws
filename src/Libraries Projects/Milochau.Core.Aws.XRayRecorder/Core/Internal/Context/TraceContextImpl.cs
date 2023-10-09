@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Context
         /// Checks whether enity is present in trace context.
         /// </summary>
         /// <returns>True if entity is present incontext container else false.</returns>
-        public abstract Boolean IsEntityPresent();
+        public abstract bool IsEntityPresent();
 
         /// <summary>
         /// If the entity is missing from the context, the behavior is defined using <see cref="ContextMissingStrategy"/>

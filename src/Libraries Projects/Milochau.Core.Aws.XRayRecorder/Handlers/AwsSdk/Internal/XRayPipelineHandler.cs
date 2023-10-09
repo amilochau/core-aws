@@ -116,9 +116,8 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
-            var dictionaryValue = propertyValue as IDictionary;
 
-            if (dictionaryValue == null)
+            if (propertyValue is not IDictionary dictionaryValue)
             {
                 return;
             }
@@ -279,7 +278,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             subsegment.AddToAws("request_id", ex.RequestId);
         }
 
-        private void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, Entity entity)
+        private static void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, Entity entity)
         {
             if (serviceName == null)
             {
@@ -347,7 +346,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             }
         }
 
-        private void AddResponseSpecificInformation(string serviceName, string operation, AmazonWebServiceResponse response, Entity entity)
+        private static void AddResponseSpecificInformation(string serviceName, string operation, AmazonWebServiceResponse response, Entity entity)
         {
             if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler? serviceHandler))
             {

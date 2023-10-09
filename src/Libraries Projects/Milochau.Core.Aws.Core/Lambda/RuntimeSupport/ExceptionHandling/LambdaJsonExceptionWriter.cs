@@ -27,7 +27,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         public static string WriteJson(ExceptionInfo ex)
         {
             if (ex == null)
-                throw new ArgumentNullException("ex");
+                throw new ArgumentNullException(nameof(ex));
 
             MeteredStringBuilder jsonBuilder = new MeteredStringBuilder(TEXT_ENCODING, MAX_PAYLOAD_SIZE);
             string json = AppendJson(ex, 0, false, MAX_PAYLOAD_SIZE - jsonBuilder.SizeInBytes);
@@ -149,8 +149,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
 
             string[] stackTraceElements = stackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.None)
                 .Select(s => s.Trim())
-                .Where(s => !String.IsNullOrWhiteSpace(s))
-                .Select(s => TabString(($"\"{JsonExceptionWriterHelpers.EscapeStringForJson(s)}\""), tab + 1))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => TabString($"\"{JsonExceptionWriterHelpers.EscapeStringForJson(s)}\"", tab + 1))
                 .ToArray();
 
             if (stackTraceElements.Length == 0)
@@ -172,7 +172,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             StringBuilder stringBuilder = new StringBuilder();
             for (int x = 0; x < tabDepth * INDENT_SIZE; x++)
             {
-                stringBuilder.Append(" ");
+                stringBuilder.Append(' ');
             }
             stringBuilder.Append(str);
 

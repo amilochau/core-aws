@@ -27,7 +27,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// requests and response context.</param>
         public override Task WaitBeforeRetryAsync(IExecutionContext executionContext)
         {
-            var delay = CalculateRetryDelay(executionContext.RequestContext.Retries, this.MaxBackoffInMilliseconds);
+            var delay = CalculateRetryDelay(executionContext.RequestContext.Retries, MaxBackoffInMilliseconds);
             return Task.Delay(delay, executionContext.RequestContext.CancellationToken);
         }
     }
@@ -59,7 +59,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// the service URL for the request.</param>
         public StandardRetryPolicy(IClientConfig config)
         {
-            this.MaxRetries = config.MaxErrorRetry;
+            MaxRetries = config.MaxErrorRetry;
             RetryCapacity = CapacityManagerInstance.GetRetryCapacity(GetRetryCapacityKey(config));
         }
 
@@ -188,7 +188,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// <returns>Return false if the request can be retried, based on number of retries.</returns>
         public override bool RetryLimitReached(IExecutionContext executionContext)
         {
-            return executionContext.RequestContext.Retries >= this.MaxRetries;
+            return executionContext.RequestContext.Retries >= MaxRetries;
         }
 
         protected static int CalculateRetryDelay(int retries, int maxBackoffInMilliseconds)

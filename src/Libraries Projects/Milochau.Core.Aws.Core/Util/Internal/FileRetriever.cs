@@ -34,18 +34,18 @@ namespace Milochau.Core.Aws.Core.Util.Internal
 
         public async Task<string> ReadAllTextAsync(string path, CancellationToken token = default)
         {
-            using (var fs = File.OpenRead(path))
-            using (var reader = new StreamReader(fs))
-                return await reader.ReadToEndAsync().ConfigureAwait(false);
-                
+            using var fs = File.OpenRead(path);
+            using var reader = new StreamReader(fs);
+            return await reader.ReadToEndAsync().ConfigureAwait(false);
+
         }
 
         public async Task WriteAllTextAsync(string path, string contents, CancellationToken token = default)
         {
             //we use  FileMode.Create because we want to truncate the file first if the file exists then write to it.
-            using (var fs = new FileStream(path, FileMode.Create))
-            using (var writer = new StreamWriter(fs))
-                await writer.WriteAsync(contents).ConfigureAwait(false);
+            using var fs = new FileStream(path, FileMode.Create);
+            using var writer = new StreamWriter(fs);
+            await writer.WriteAsync(contents).ConfigureAwait(false);
 
         }
     }

@@ -8,8 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
     {
         internal static HttpStatusCode? DetermineHttpStatusCode(Exception e)
         {
-            var response = (e as WebException)?.Response as HttpWebResponse;
-            if (response != null)
+            if ((e as WebException)?.Response is HttpWebResponse response)
             {
                 return response.StatusCode;
             }
@@ -31,7 +30,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         internal static bool IsInnerException<T>(Exception exception)
             where T : Exception
         {
-            return IsInnerException<T>(exception, out T? innerException);
+            return IsInnerException<T>(exception, out _);
         }
 
         internal static bool IsInnerException<T>(Exception exception, out T? inner)
@@ -54,10 +53,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
                     {
                         return true;
                     }
-                }                
+                }
 
-                var aggregateException = currentException as AggregateException;
-                if (aggregateException != null)
+                if (currentException is AggregateException aggregateException)
                 {
                     foreach (var e in aggregateException.InnerExceptions)
                     {

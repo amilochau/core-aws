@@ -205,7 +205,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
             addressMap[address2[0]] = address2[1] + _addressPortDelimiter + address2[2];
             string udpAddress = addressMap[_udpKey];
             string tcpAddress = addressMap[_tcpKey];
-            if (TryParse(udpAddress, out EndPoint? udpEndpoint) && TryParse(tcpAddress, out EndPoint? tcpEndpoint))
+            if (TryParse(udpAddress, out EndPoint? udpEndpoint) && TryParse(tcpAddress, out EndPoint? _))
             {
                 endPoint._udpEndpoint = udpEndpoint;
                 return true;

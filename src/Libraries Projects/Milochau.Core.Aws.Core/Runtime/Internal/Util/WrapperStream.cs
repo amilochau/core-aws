@@ -21,10 +21,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// <param name="baseStream"></param>
         public WrapperStream(Stream baseStream)
         {
-            if (baseStream == null)
-                throw new ArgumentNullException("baseStream");
-
-            BaseStream = baseStream;
+            BaseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
         }
 
         /// <summary>
@@ -36,8 +33,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             Stream? baseStream = this;
             do
             {
-                var partialStream = baseStream as PartialWrapperStream;
-                if (partialStream != null)
+                if (baseStream is PartialWrapperStream partialStream)
                     return partialStream;
 
                 baseStream = (baseStream as WrapperStream)?.BaseStream;
@@ -73,8 +69,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// <returns>Base non-WrapperStream.</returns>
         public static Stream GetNonWrapperBaseStream(Stream stream)
         {
-            WrapperStream? wrapperStream = stream as WrapperStream;
-            if (wrapperStream == null)
+            if (stream is not WrapperStream wrapperStream)
                 return stream;
             return wrapperStream.GetNonWrapperBaseStream();
         }
@@ -98,8 +93,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 
         public static Stream? SearchWrappedStream(Stream stream, Func<Stream, bool> condition)
         {
-            WrapperStream? wrapperStream = stream as WrapperStream;
-            if (wrapperStream == null)
+            if (stream is not WrapperStream wrapperStream)
                 return condition(stream) ? stream : null;
             return wrapperStream.SearchWrappedStream(condition);
         }

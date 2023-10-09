@@ -98,7 +98,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             do
             {
 
-                if (this.ExceptionHandlers.TryGetValue(exceptionType, out IExceptionHandler? exceptionHandler))
+                if (ExceptionHandlers.TryGetValue(exceptionType, out IExceptionHandler? exceptionHandler))
                 {
                     return await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
                 }

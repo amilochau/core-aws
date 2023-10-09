@@ -16,18 +16,17 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         public string RequestId
         {
-            get { return this.requestIdField; }
-            set { this.requestIdField = value; }
+            get { return requestIdField; }
+            set { requestIdField = value; }
         }
 
         public IDictionary<string, string> Metadata
         {
             get
             {
-                if (this._metadata == null)
-                    this._metadata = new Dictionary<string, string>();
+                _metadata ??= new Dictionary<string, string>();
 
-                return this._metadata;
+                return _metadata;
             }
         }
 

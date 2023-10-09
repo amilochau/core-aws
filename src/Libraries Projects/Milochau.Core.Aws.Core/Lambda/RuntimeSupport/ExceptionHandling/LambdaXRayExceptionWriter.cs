@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             string workingDirJson = TabString($"\"{WORKING_DIR}\": \"{workingDir}\"", 1);
             string exceptionJson = TabString($"\"{EXCEPTION}\": [ {exceptionTxt} ]", 1);
 
-            var paths = new string[0];
+            var paths = System.Array.Empty<string>();
             // Build the paths list by getting all the unique file names in the stack trace elements
             if (ex.StackFrames != null)
             {
@@ -125,7 +125,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             StringBuilder stringBuilder = new StringBuilder();
             for (int x = 0; x < tabDepth * INDENT_SIZE; x++)
             {
-                stringBuilder.Append(" ");
+                stringBuilder.Append(' ');
             }
             stringBuilder.Append(str);
 

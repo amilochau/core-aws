@@ -7,20 +7,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
     /// </summary>
     public class Unmarshaller : PipelineHandler
     {
-        private readonly bool _supportsResponseLogging;
-
-        /// <summary>
-        /// The constructor for Unmarshaller.
-        /// </summary>
-        /// <param name="supportsResponseLogging">
-        /// Boolean value which indicated if the unmarshaller 
-        /// handler supports response logging.
-        /// </param>
-        public Unmarshaller(bool supportsResponseLogging)
-        {
-            _supportsResponseLogging = supportsResponseLogging;
-        }
-
         /// <summary>
         /// Unmarshalls the response returned by the HttpHandler.
         /// </summary>
@@ -65,7 +51,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             }
         }
 
-        private AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context,
+        private static AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context,
             IRequestContext requestContext)
         {
             var unmarshaller = requestContext.Unmarshaller;

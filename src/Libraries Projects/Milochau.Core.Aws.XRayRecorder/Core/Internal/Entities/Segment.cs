@@ -27,11 +27,11 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// <param name="parentId">Unique id of the upstream segment.</param>
         public Segment(string name, string? traceId = null, string? parentId = null) : base(name)
         {
-            this.TraceId = traceId ?? Entities.TraceId.NewId();
+            TraceId = traceId ?? Entities.TraceId.NewId();
 
             if (parentId != null)
             {
-                this.ParentId = parentId;
+                ParentId = parentId;
             }
 
             RootSegment = this;

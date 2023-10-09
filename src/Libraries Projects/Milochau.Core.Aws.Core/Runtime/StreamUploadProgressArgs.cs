@@ -18,9 +18,9 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <param name="total">The total number of bytes to be transferred</param>
         public StreamTransferProgressArgs(long incrementTransferred, long transferred, long total)
         {
-            this._incrementTransferred = incrementTransferred;
-            this._transferred = transferred;
-            this._total = total;
+            _incrementTransferred = incrementTransferred;
+            _transferred = transferred;
+            _total = total;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         public int PercentDone
         {
-            get { return (int)((_transferred * 100) / _total); }
+            get { return (int)(_transferred * 100 / _total); }
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         public long IncrementTransferred
         {
-            get { return this._incrementTransferred; }
+            get { return _incrementTransferred; }
         }
 
 
@@ -62,7 +62,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <returns></returns>
         public override string ToString()
         {
-            return String.Concat(
+            return string.Concat(
                 "Transfer Statistics. Percentage completed: ",
                 PercentDone,
                 ", Bytes transferred: ",

@@ -210,11 +210,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers
                         string line;
                         if (!string.IsNullOrEmpty(displayLevel))
                         {
-                            line = $"{DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")}\t{CurrentAwsRequestId}\t{displayLevel}\t{message ?? string.Empty}";
+                            line = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss.fffZ}\t{CurrentAwsRequestId}\t{displayLevel}\t{message ?? string.Empty}";
                         }
                         else
                         {
-                            line = $"{DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")}\t{CurrentAwsRequestId}\t{message ?? string.Empty}";
+                            line = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss.fffZ}\t{CurrentAwsRequestId}\t{message ?? string.Empty}";
                         }
 
                         _innerWriter.WriteLine(line);

@@ -77,8 +77,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
             }            
             finally
             {
-                if (httpRequest != null)
-                    httpRequest.Dispose();
+                httpRequest?.Dispose();
             }
         }
 
@@ -107,7 +106,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <param name="requestContent">Content to be written.</param>
         /// <param name="httpRequest">The HTTP request.</param>
         /// <param name="requestContext">The request context.</param>
-        private void WriteContentToRequestBody(HttpContent requestContent,
+        private static void WriteContentToRequestBody(HttpContent requestContent,
             IHttpRequest<HttpContent> httpRequest,
             IRequestContext requestContext)
         {

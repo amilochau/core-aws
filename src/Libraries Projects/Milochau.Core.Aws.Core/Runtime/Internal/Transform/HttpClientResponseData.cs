@@ -19,12 +19,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         {
             _response = new HttpResponseMessageBody(response);
 
-            this.StatusCode = response.StatusCode;
-            this.ContentLength = response.Content.Headers.ContentLength ?? 0;
+            StatusCode = response.StatusCode;
+            ContentLength = response.Content.Headers.ContentLength ?? 0;
 
             if (response.Content.Headers.ContentType != null)
             {
-                this.ContentType = response.Content.Headers.ContentType.MediaType;
+                ContentType = response.Content.Headers.ContentType.MediaType;
             }
             CopyHeaderValues(response);
         }
@@ -75,7 +75,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             _headerNamesSet = new HashSet<string>(headerNames, StringComparer.OrdinalIgnoreCase);
         }
 
-        private string GetFirstHeaderValue(HttpHeaders headers, string key)
+        private static string GetFirstHeaderValue(HttpHeaders headers, string key)
         {
             if (headers.TryGetValues(key, out IEnumerable<string> headerValues))
                 return headerValues.FirstOrDefault();
@@ -128,8 +128,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
             if (disposing)
             {
-                if (_response != null)
-                    _response.Dispose();
+                _response?.Dispose();
 
                 _disposed = true;
             }

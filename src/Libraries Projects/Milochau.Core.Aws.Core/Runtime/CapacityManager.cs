@@ -162,7 +162,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             _rwlock.EnterUpgradeableReadLock();
             try
             {
-                if (!(_serviceUrlToCapacityMap.TryGetValue(serviceURL, out RetryCapacity? retryCapacity)))
+                if (!_serviceUrlToCapacityMap.TryGetValue(serviceURL, out RetryCapacity? retryCapacity))
                 {
                     _rwlock.EnterWriteLock();
                     try
@@ -198,7 +198,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             {
                 lock (retryCapacity)
                 {
-                    retryCapacity.AvailableCapacity = Math.Min((retryCapacity.AvailableCapacity + capacity), retryCapacity.MaxCapacity);
+                    retryCapacity.AvailableCapacity = Math.Min(retryCapacity.AvailableCapacity + capacity, retryCapacity.MaxCapacity);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         public RetryCapacity(int maxCapacity)
         {
             MaxCapacity = maxCapacity;
-            this.AvailableCapacity = maxCapacity;
+            AvailableCapacity = maxCapacity;
         }
     }
 }

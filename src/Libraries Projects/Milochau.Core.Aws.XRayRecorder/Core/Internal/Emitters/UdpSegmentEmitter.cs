@@ -108,10 +108,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
 
             if (disposing)
             {
-                if (_udpClient != null)
-                {
-                    _udpClient.Dispose();
-                }
+                _udpClient?.Dispose();
 
                 _disposed = true;
             }

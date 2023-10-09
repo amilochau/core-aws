@@ -230,9 +230,11 @@ namespace Milochau.Core.Aws.Lambda
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/lambda-2015-03-31/Invoke">REST API Reference for Invoke Operation</seealso>
         public virtual Task<InvokeResponse> InvokeAsync(InvokeRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions();
-            options.RequestMarshaller = InvokeRequestMarshaller.Instance;
-            options.ResponseUnmarshaller = InvokeResponseUnmarshaller.Instance;
+            var options = new InvokeOptions
+            {
+                RequestMarshaller = InvokeRequestMarshaller.Instance,
+                ResponseUnmarshaller = InvokeResponseUnmarshaller.Instance
+            };
 
             return InvokeAsync<InvokeResponse>(request, options, cancellationToken);
         }

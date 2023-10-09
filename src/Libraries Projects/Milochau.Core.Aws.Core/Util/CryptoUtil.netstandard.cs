@@ -10,10 +10,10 @@ namespace Milochau.Core.Aws.Core.Util
             public byte[] HMACSignBinary(byte[] data, byte[] key)
             {
                 if (key == null || key.Length == 0)
-                    throw new ArgumentNullException("key", "Please specify a Secret Signing Key.");
+                    throw new ArgumentNullException(nameof(key), "Please specify a Secret Signing Key.");
 
                 if (data == null || data.Length == 0)
-                    throw new ArgumentNullException("data", "Please specify data to sign.");
+                    throw new ArgumentNullException(nameof(data), "Please specify data to sign.");
 
                 KeyedHashAlgorithm algorithm = new HMACSHA256();
 

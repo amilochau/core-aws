@@ -368,7 +368,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         private const string clockSkewMessageMinusSeparator = " - ";
         private static readonly TimeSpan clockSkewMaxThreshold = TimeSpan.FromMinutes(5);
 
-        private bool IsClockskew(IExecutionContext executionContext, Exception exception)
+        private static bool IsClockskew(IExecutionContext executionContext, Exception exception)
         {
             var ase = exception as AmazonServiceException;
 
@@ -487,8 +487,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                 Exception? e = ase;
                 do
                 {
-                    var here = e as HttpErrorResponseException;
-                    if (here != null)
+                    if (e is HttpErrorResponseException here)
                         return here.Response;
                     e = e.InnerException;
                 } while (e != null);

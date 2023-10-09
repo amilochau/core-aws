@@ -152,10 +152,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         {
             lock (awsLock)
             {
-                if (Aws == null)
-                {
-                    Aws = new ConcurrentDictionary<string, object?>();
-                }
+                Aws ??= new ConcurrentDictionary<string, object?>();
                 Aws.Add(key, value);
             }
         }
@@ -165,10 +162,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         {
             lock (httpLock)
             {
-                if (Http == null)
-                {
-                    Http = new ConcurrentDictionary<string, object>();
-                }
+                Http ??= new ConcurrentDictionary<string, object>();
                 Http.Add(key, value);
             }
         }
@@ -230,10 +224,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
 
             lock (subsegmentsLock)
             {
-                if (Subsegments == null)
-                {
-                    Subsegments = new List<Subsegment>();
-                }
+                Subsegments ??= new List<Subsegment>();
                 Subsegments.Add(subsegment);
             }
 

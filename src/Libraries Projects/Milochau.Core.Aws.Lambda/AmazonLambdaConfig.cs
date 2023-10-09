@@ -20,8 +20,8 @@ namespace Milochau.Core.Aws.Lambda
         public AmazonLambdaConfig()
             : base()
         {
-            this.AuthenticationServiceName = "lambda";
-            this.EndpointProvider = new AmazonLambdaEndpointProvider();
+            AuthenticationServiceName = "lambda";
+            EndpointProvider = new AmazonLambdaEndpointProvider();
         }
 
         /// <summary>

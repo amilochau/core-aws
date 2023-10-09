@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Body property is set
         internal bool IsSetBody()
         {
-            return this.Body != null;
+            return Body != null;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Subject property is set
         internal bool IsSetSubject()
         {
-            return this.Subject != null;
+            return Subject != null;
         }
     }
 }

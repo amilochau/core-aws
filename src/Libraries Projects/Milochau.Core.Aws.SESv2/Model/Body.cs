@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Html property is set
         internal bool IsSetHtml()
         {
-            return this.Html != null;
+            return Html != null;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Text property is set
         internal bool IsSetText()
         {
-            return this.Text != null;
+            return Text != null;
         }
     }
 }

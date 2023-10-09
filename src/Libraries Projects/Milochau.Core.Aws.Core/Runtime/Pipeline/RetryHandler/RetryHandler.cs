@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// <param name="retryPolicy">Retry Policy</param>
         public RetryHandler(RetryPolicy retryPolicy)
         {
-            this.RetryPolicy = retryPolicy;
+            RetryPolicy = retryPolicy;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         {
             var requestContext = executionContext.RequestContext;
             bool shouldRetry = false;
-            await this.RetryPolicy.ObtainSendTokenAsync(executionContext, null).ConfigureAwait(false);
+            await RetryPolicy.ObtainSendTokenAsync(executionContext, null).ConfigureAwait(false);
 
             do
             {
@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                 {        
                     SetRetryHeaders(requestContext);
                     T result = await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
-                    this.RetryPolicy.NotifySuccess(executionContext);
+                    RetryPolicy.NotifySuccess(executionContext);
                     return result;
                 }
                 catch (Exception e)
@@ -58,7 +58,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
 
                 if (capturedException != null)
                 {
-                    shouldRetry = await this.RetryPolicy.RetryAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
+                    shouldRetry = await RetryPolicy.RetryAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
                     if (!shouldRetry)
                     {
                         capturedException.Throw();
@@ -68,7 +68,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                         requestContext.Retries++;
                     }
 
-                    await this.RetryPolicy.ObtainSendTokenAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
+                    await RetryPolicy.ObtainSendTokenAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
                 }
 
                 PrepareForRetry(requestContext);
@@ -92,8 +92,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                 var seekableStream = originalStream;
 
                 // If the stream is wrapped in a HashStream, reset the HashStream
-                var hashStream = originalStream as HashStream;
-                if (hashStream != null)
+                if (originalStream is HashStream hashStream)
                 {
                     hashStream.Reset();
                     seekableStream = hashStream.GetSeekableBaseStream();

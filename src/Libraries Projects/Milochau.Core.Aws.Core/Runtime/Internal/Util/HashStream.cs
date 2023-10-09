@@ -251,7 +251,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             get
             {
-                return this.ExpectedLength;
+                return ExpectedLength;
             }
         }
 
@@ -291,10 +291,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             CurrentPosition = 0;
             CalculatedHash = null;
-            if (Algorithm != null)
-                Algorithm.Clear();
-            var baseHashStream = BaseStream as HashStream;
-            if (baseHashStream != null)
+            Algorithm?.Clear();
+            if (BaseStream is HashStream baseHashStream)
             {
                 baseHashStream.Reset();
             }
@@ -328,7 +326,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
                 return true;
 
             if (expected == null || actual == null)
-                return (expected == actual);
+                return expected == actual;
 
             if (expected.Length != actual.Length)
                 return false;

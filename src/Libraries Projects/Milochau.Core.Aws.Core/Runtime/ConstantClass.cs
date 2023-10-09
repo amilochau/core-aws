@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     {
         protected ConstantClass(string value)
         {
-            this.Value = value;
+            Value = value;
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         public override int GetHashCode()
         {
-            return this.Value.GetHashCode();
+            return Value.GetHashCode();
         }
 
         public override bool Equals(object? obj)
@@ -41,13 +41,12 @@ namespace Milochau.Core.Aws.Core.Runtime
             }
 
             var objConstantClass = obj as ConstantClass;
-            if (this.Equals(objConstantClass))
+            if (Equals(objConstantClass))
             {
                 return true;
             }
 
-            var objString = obj as string;
-            if (objString != null)
+            if (obj is string objString)
             {
                 return Equals(objString);
             }
@@ -58,17 +57,17 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         public virtual bool Equals(ConstantClass? obj)
         {
-            if ((object)obj == null)
+            if (obj is null)
             {
                 // If obj is null, return false.
                 return false;
             }
-            return StringComparer.OrdinalIgnoreCase.Equals(this.Value, obj.Value);
+            return StringComparer.OrdinalIgnoreCase.Equals(Value, obj.Value);
         }
 
         protected virtual bool Equals(string value)
         {
-            return StringComparer.OrdinalIgnoreCase.Equals(this.Value, value);
+            return StringComparer.OrdinalIgnoreCase.Equals(Value, value);
         }
 
         public static bool operator ==(ConstantClass? a, ConstantClass? b)
@@ -79,7 +78,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                 return true;
             }
 
-            if ((object)a == null)
+            if (a is null)
             {
                 // If either is null, return false.
                 return false;

@@ -20,7 +20,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             if (!stream.CanSeek)
                 throw new InvalidOperationException("Base stream of PartialWrapperStream must be seekable");
 
-            this.initialPosition = stream.Position;
+            initialPosition = stream.Position;
             long remainingData = stream.Length - stream.Position;
             if (partSize == 0 || remainingData < partSize)
             {
@@ -28,10 +28,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             }
             else
             {
-
                 this.partSize = partSize;
-                var encryptionStream = BaseStream as AESEncryptionUploadPartStream;
-                if (encryptionStream != null && (partSize % 16) != 0)
+                if (BaseStream is AESEncryptionUploadPartStream && (partSize % 16) != 0)
                 {
                     this.partSize = partSize - (partSize % EncryptUploadPartStream.InternalEncryptionBlockSize);
                 }
@@ -42,7 +40,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             get
             {
-                long remaining = this.partSize - this.Position;
+                long remaining = partSize - Position;
                 return remaining;
             }
         }
@@ -53,10 +51,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             get
             {
-                long length = base.Length - this.initialPosition;
-                if (length > this.partSize)
+                long length = base.Length - initialPosition;
+                if (length > partSize)
                 {
-                    length = this.partSize;
+                    length = partSize;
                 }
                 return length;
             }
@@ -66,17 +64,17 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             get
             {
-                return base.Position - this.initialPosition;
+                return base.Position - initialPosition;
             }
             set
             {
-                base.Position = this.initialPosition + value;
+                base.Position = initialPosition + value;
             }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int bytesToRead = count < this.RemainingPartSize ? count : (int)this.RemainingPartSize;
+            int bytesToRead = count < RemainingPartSize ? count : (int)RemainingPartSize;
             if (bytesToRead <= 0)
                 return 0;
             return base.Read(buffer, offset, bytesToRead);
@@ -88,28 +86,28 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    position = this.initialPosition + offset;
+                    position = initialPosition + offset;
                     break;
                 case SeekOrigin.Current:
                     position = base.Position + offset;
                     break;
                 case SeekOrigin.End:
-                    position = base.Position + this.partSize + offset;
+                    position = base.Position + partSize + offset;
                     break;
             }
 
-            if (position < this.initialPosition)
+            if (position < initialPosition)
             {
-                position = this.initialPosition;
+                position = initialPosition;
             }
-            else if (position > this.initialPosition + this.partSize)
+            else if (position > initialPosition + partSize)
             {
-                position = this.initialPosition + this.partSize;
+                position = initialPosition + partSize;
             }
 
             base.Position = position;
 
-            return this.Position;
+            return Position;
         }
 
         public override void SetLength(long value)
@@ -156,7 +154,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// </returns>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            int bytesToRead = count < this.RemainingPartSize ? count : (int)this.RemainingPartSize;
+            int bytesToRead = count < RemainingPartSize ? count : (int)RemainingPartSize;
             if (bytesToRead <= 0)
                 return 0;
             return await base.ReadAsync(buffer, offset, bytesToRead, cancellationToken).ConfigureAwait(false);

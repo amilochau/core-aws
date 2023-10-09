@@ -35,12 +35,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         {
             if (IsException)
             {
-                return this.WrappingStream.AllReadBytes.ToArray();
+                return WrappingStream.AllReadBytes.ToArray();
             }
 
             if (MaintainResponseBody)
             {
-                return this.WrappingStream.LoggableReadBytes.ToArray();
+                return WrappingStream.LoggableReadBytes.ToArray();
             }
             else
             {
@@ -55,9 +55,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         internal void ValidateCRC32IfAvailable()
         {
-            if (this.CrcStream != null)
+            if (CrcStream != null)
             {
-                if (this.CrcStream.Crc32 != this.Crc32Result)
+                if (CrcStream.Crc32 != Crc32Result)
                 {
                     throw new IOException("CRC value returned with response does not match the computed CRC value for the returned response body.");
                 }
@@ -66,12 +66,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         protected void SetupCRCStream(IWebResponseData responseData, Stream responseStream, long contentLength)
         {
-            this.CrcStream = null;
+            CrcStream = null;
 
-            if (responseData != null && UInt32.TryParse(responseData.GetHeaderValue("x-amz-crc32"), out uint parsed))
+            if (responseData != null && uint.TryParse(responseData.GetHeaderValue("x-amz-crc32"), out uint parsed))
             {
-                this.Crc32Result = unchecked((int)parsed);
-                this.CrcStream = new CrcCalculatorStream(responseStream, contentLength);
+                Crc32Result = unchecked((int)parsed);
+                CrcStream = new CrcCalculatorStream(responseStream, contentLength);
             }
         }
 
@@ -93,22 +93,22 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// or garbage collected.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
-                    if (this.CrcStream != null)
+                    if (CrcStream != null)
                     {
                         CrcStream.Dispose();
                         CrcStream = null;
                     }
-                    if (this.WrappingStream != null)
+                    if (WrappingStream != null)
                     {
                         WrappingStream.Dispose();
                         WrappingStream = null;
                     }
                 }
-                this.disposed = true;
+                disposed = true;
             }
         }
 
@@ -117,7 +117,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 

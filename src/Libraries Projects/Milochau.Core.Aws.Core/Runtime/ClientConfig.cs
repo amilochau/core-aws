@@ -41,14 +41,14 @@ namespace Milochau.Core.Aws.Core.Runtime
                 if (probeForRegionEndpoint)
                 {
                     RegionEndpoint = FallbackRegionFactory.GetRegionEndpoint();
-                    this.probeForRegionEndpoint = false;
+                    probeForRegionEndpoint = false;
                 }
-                return this.regionEndpoint;
+                return regionEndpoint;
             }
             set
             {
-                this.regionEndpoint = value;
-                this.probeForRegionEndpoint = this.regionEndpoint == null;
+                regionEndpoint = value;
+                probeForRegionEndpoint = regionEndpoint == null;
             }
         }
 
@@ -83,7 +83,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             get
             {
-                if (!this.maxRetries.HasValue)
+                if (!maxRetries.HasValue)
                 {
                     //For standard and adaptive modes first check the environment variables
                     //and shared config for a value. Otherwise default to the new default value.
@@ -93,9 +93,9 @@ namespace Milochau.Core.Aws.Core.Runtime
                     return MaxRetriesDefault;
                 }
 
-                return this.maxRetries.Value;
+                return maxRetries.Value;
             }
-            set { this.maxRetries = value; }
+            set { maxRetries = value; }
         }
 
         #region Constructor 

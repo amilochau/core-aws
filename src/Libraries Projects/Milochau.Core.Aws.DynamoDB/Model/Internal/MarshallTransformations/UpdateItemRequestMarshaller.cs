@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public IRequest Marshall(AmazonWebServiceRequest input)
         {
-            return this.Marshall((UpdateItemRequest)input);
+            return Marshall((UpdateItemRequest)input);
         }
 
         /// <summary>

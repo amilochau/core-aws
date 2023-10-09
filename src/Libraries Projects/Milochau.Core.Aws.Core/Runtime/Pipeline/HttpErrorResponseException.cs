@@ -9,19 +9,19 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 
         public HttpErrorResponseException(IWebResponseData response)
         {
-            this.Response = response;
+            Response = response;
         }
 
         public HttpErrorResponseException(string message, IWebResponseData response) :
             base(message)
         {
-            this.Response = response;
+            Response = response;
         }
 
         public HttpErrorResponseException(string message, Exception innerException, IWebResponseData response) :
             base(message,innerException)
         {
-            this.Response = response;
+            Response = response;
         }
     }
 }

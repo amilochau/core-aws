@@ -27,8 +27,8 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         public long ContentLength
         {
-            get { return this.contentLength; }
-            set { this.contentLength = value; }
+            get { return contentLength; }
+            set { contentLength = value; }
         }
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         public HttpStatusCode HttpStatusCode
         {
-            get { return this.httpStatusCode; }
-            set { this.httpStatusCode = value; }
+            get { return httpStatusCode; }
+            set { httpStatusCode = value; }
         }
     }
 }

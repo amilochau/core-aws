@@ -114,9 +114,11 @@ namespace Milochau.Core.Aws.SESv2
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sesv2-2019-09-27/SendEmail">REST API Reference for SendEmail Operation</seealso>
         public virtual Task<SendEmailResponse> SendEmailAsync(SendEmailRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions();
-            options.RequestMarshaller = SendEmailRequestMarshaller.Instance;
-            options.ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance;
+            var options = new InvokeOptions
+            {
+                RequestMarshaller = SendEmailRequestMarshaller.Instance,
+                ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance
+            };
 
             return InvokeAsync<SendEmailResponse>(request, options, cancellationToken);
         }

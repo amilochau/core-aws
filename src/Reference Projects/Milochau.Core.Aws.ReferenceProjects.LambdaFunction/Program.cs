@@ -141,7 +141,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             ISesDataAccess sesDataAccess,
             CancellationToken cancellationToken)
         {
-            if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out var requestData))
+            if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out _))
             {
                 return proxyResponse;
             }

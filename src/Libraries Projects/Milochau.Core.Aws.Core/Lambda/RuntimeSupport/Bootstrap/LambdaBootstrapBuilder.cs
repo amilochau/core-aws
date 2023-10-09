@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
         private LambdaBootstrapBuilder(HandlerWrapper handlerWrapper)
         {
-            this._handlerWrapper = handlerWrapper;
+            _handlerWrapper = handlerWrapper;
         }
 
         /// <summary>

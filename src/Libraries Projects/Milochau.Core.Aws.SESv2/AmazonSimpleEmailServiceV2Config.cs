@@ -20,8 +20,8 @@ namespace Milochau.Core.Aws.SESv2
         public AmazonSimpleEmailServiceV2Config()
             : base()
         {
-            this.AuthenticationServiceName = "ses";
-            this.EndpointProvider = new AmazonSimpleEmailServiceV2EndpointProvider();
+            AuthenticationServiceName = "ses";
+            EndpointProvider = new AmazonSimpleEmailServiceV2EndpointProvider();
         }
 
         /// <summary>

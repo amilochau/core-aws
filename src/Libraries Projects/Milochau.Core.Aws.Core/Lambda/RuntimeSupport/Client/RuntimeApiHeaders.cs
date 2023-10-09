@@ -29,12 +29,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         public string CognitoIdentityJson { get; private set; }
         public string DeadlineMs { get; private set; }
 
-        private string GetHeaderValueRequired(Dictionary<string, IEnumerable<string>> headers, string header)
+        private static string GetHeaderValueRequired(Dictionary<string, IEnumerable<string>> headers, string header)
         {
             return headers[header].FirstOrDefault();
         }
 
-        private string GetHeaderValueOrNull(Dictionary<string, IEnumerable<string>> headers, string header)
+        private static string GetHeaderValueOrNull(Dictionary<string, IEnumerable<string>> headers, string header)
         {
             if (headers.TryGetValue(header, out var values))
             {

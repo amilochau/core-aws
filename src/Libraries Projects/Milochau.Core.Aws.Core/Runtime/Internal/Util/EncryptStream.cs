@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             if (performedLastBlockTransform)
                 return 0;
 
-            long previousPosition = this.Position;
+            long previousPosition = Position;
             int maxBytesRead = count - (count % internalEncryptionBlockSize);
             int readBytes = base.Read(buffer, offset, maxBytesRead);
 
@@ -103,7 +103,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             if (performedLastBlockTransform)
                 return 0;
 
-            long previousPosition = this.Position;
+            long previousPosition = Position;
             int maxBytesRead = count - (count % internalEncryptionBlockSize);
             int readBytes = await base.ReadAsync(buffer, offset, maxBytesRead, cancellationToken).ConfigureAwait(false);
 
@@ -122,16 +122,16 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 
             long currentPosition = previousPosition;
 
-            while (this.Position - currentPosition >= internalEncryptionBlockSize)
+            while (Position - currentPosition >= internalEncryptionBlockSize)
             {
                 currentPosition += Algorithm.AppendBlock(buffer, offset, internalEncryptionBlockSize, internalBuffer, 0);
                 Buffer.BlockCopy(internalBuffer, 0, buffer, offset, internalEncryptionBlockSize);
                 offset = offset + internalEncryptionBlockSize;
             }
 
-            if ((this.Length - this.Position) < internalEncryptionBlockSize)
+            if ((Length - Position) < internalEncryptionBlockSize)
             {
-                byte[] finalBytes = Algorithm.AppendLastBlock(buffer, offset, (int)(this.Position - currentPosition));
+                byte[] finalBytes = Algorithm.AppendLastBlock(buffer, offset, (int)(Position - currentPosition));
                 finalBytes.CopyTo(buffer, offset);
                 currentPosition += finalBytes.Length;
                 performedLastBlockTransform = true;
@@ -160,11 +160,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             {
                 if (base.Length % internalEncryptionBlockSize == 0)
                 {
-                    return (base.Length + internalEncryptionBlockSize);
+                    return base.Length + internalEncryptionBlockSize;
                 }
                 else
                 {
-                    return (base.Length + internalEncryptionBlockSize - (base.Length % internalEncryptionBlockSize));
+                    return base.Length + internalEncryptionBlockSize - (base.Length % internalEncryptionBlockSize);
                 }
             }
         }
@@ -196,8 +196,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         {
             long position = BaseStream.Seek(offset, origin);
 
-            this.performedLastBlockTransform = false;
-            this.Algorithm.Reset();
+            performedLastBlockTransform = false;
+            Algorithm.Reset();
 
             return position;
         }

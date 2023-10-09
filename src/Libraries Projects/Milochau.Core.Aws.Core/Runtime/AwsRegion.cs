@@ -66,10 +66,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             lock(_lock)
             {
-                if (cachedRegion == null)
-                {
-                    cachedRegion = new EnvironmentVariableAWSRegion();
-                }
+                cachedRegion ??= new EnvironmentVariableAWSRegion();
 
                 return cachedRegion.Region;
             }

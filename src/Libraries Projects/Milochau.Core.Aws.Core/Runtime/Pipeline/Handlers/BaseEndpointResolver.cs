@@ -30,7 +30,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             requestContext.Request.Endpoint = new Uri(endpoint.URL);
         }
 
-        private Endpoint GetEndpoint(IExecutionContext executionContext, EndpointParameters parameters)
+        private static Endpoint GetEndpoint(IExecutionContext executionContext, EndpointParameters parameters)
         {
             var requestContext = executionContext.RequestContext;
             var config = requestContext.ClientConfig;

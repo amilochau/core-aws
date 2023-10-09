@@ -13,17 +13,17 @@ namespace ThirdParty.Ionic.Zlib
         /// indicates the total number of bytes read on the CRC stream.
         /// This is used when writing the ZipDirEntry when compressing files.
         /// </summary>
-        public Int64 TotalBytesRead { get; private set; }
+        public long TotalBytesRead { get; private set; }
 
         /// <summary>
         /// Indicates the current CRC for all blocks slurped in.
         /// </summary>
-        public Int32 Crc32Result
+        public int Crc32Result
         {
             get
             {
                 // return one's complement of the running result
-                return unchecked((Int32)(~_RunningCrc32Result));
+                return unchecked((int)~_RunningCrc32Result);
             }
         }
 
@@ -52,12 +52,12 @@ namespace ThirdParty.Ionic.Zlib
             {
                 // This is the official polynomial used by CRC32 in PKZip.
                 // Often the polynomial is shown reversed as 0x04C11DB7.
-                UInt32 dwPolynomial = 0xEDB88320;
-                UInt32 i, j;
+                uint dwPolynomial = 0xEDB88320;
+                uint i, j;
 
-                crc32Table = new UInt32[256];
+                crc32Table = new uint[256];
 
-                UInt32 dwCrc;
+                uint dwCrc;
                 for (i = 0; i < 256; i++)
                 {
                     dwCrc = i;
@@ -77,8 +77,8 @@ namespace ThirdParty.Ionic.Zlib
             }
         }
 
-        private static readonly UInt32[] crc32Table;
-        private UInt32 _RunningCrc32Result = 0xFFFFFFFF;
+        private static readonly uint[] crc32Table;
+        private uint _RunningCrc32Result = 0xFFFFFFFF;
 
     }
 
@@ -100,14 +100,14 @@ namespace ThirdParty.Ionic.Zlib
     {
         private readonly System.IO.Stream _InnerStream;
         private readonly CRC32 _Crc32;
-        private readonly Int64 _length = 0;
+        private readonly long _length = 0;
 
         /// <summary>
         /// The constructor.
         /// </summary>
         /// <param name="stream">The underlying stream</param>
         /// <param name="length">The length of the stream to slurp</param>
-        public CrcCalculatorStream(System.IO.Stream stream, Int64 length)
+        public CrcCalculatorStream(System.IO.Stream stream, long length)
             : base()
         {
             _InnerStream = stream;
@@ -118,7 +118,7 @@ namespace ThirdParty.Ionic.Zlib
         /// <summary>
         /// Provides the current CRC for all blocks slurped in.
         /// </summary>
-        public Int32 Crc32
+        public int Crc32
         {
             get { return _Crc32.Crc32Result; }
         }
@@ -145,7 +145,7 @@ namespace ThirdParty.Ionic.Zlib
             if (_length != 0)
             {
                 if (_Crc32.TotalBytesRead >= _length) return 0; // EOF
-                Int64 bytesRemaining = _length - _Crc32.TotalBytesRead;
+                long bytesRemaining = _length - _Crc32.TotalBytesRead;
                 if (bytesRemaining < count) bytesToRead = (int)bytesRemaining;
             }
             int n = _InnerStream.Read(buffer, offset, bytesToRead);

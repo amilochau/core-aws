@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public IRequest Marshall(AmazonWebServiceRequest input)
         {
-            return this.Marshall((SendEmailRequest)input);
+            return Marshall((SendEmailRequest)input);
         }
 
         /// <summary>

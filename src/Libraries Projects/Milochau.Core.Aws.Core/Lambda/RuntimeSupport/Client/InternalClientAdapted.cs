@@ -58,58 +58,55 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         public async System.Threading.Tasks.Task<SwaggerResponse<System.IO.Stream>> NextAsync(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
-            using (var request_ = new System.Net.Http.HttpRequestMessage())
+            using var request_ = new System.Net.Http.HttpRequestMessage();
+            request_.Method = new System.Net.Http.HttpMethod("GET");
+            request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            var url_ = BaseUrl.TrimEnd('/') + "/runtime/invocation/next";
+            request_.RequestUri = new System.Uri(url_, System.UriKind.Absolute);
+
+            var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            try
             {
-                request_.Method = new System.Net.Http.HttpMethod("GET");
-                request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+                var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                foreach (var item_ in response_.Content.Headers)
+                    headers_[item_.Key] = item_.Value;
 
-                var url_ = BaseUrl.TrimEnd('/') + "/runtime/invocation/next";
-                request_.RequestUri = new System.Uri(url_, System.UriKind.Absolute);
-
-                var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                try
+                if (response_.StatusCode == HttpStatusCode.OK)
                 {
-                    var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                    foreach (var item_ in response_.Content.Headers)
-                            headers_[item_.Key] = item_.Value;
-
-                    if (response_.StatusCode == HttpStatusCode.OK)
-                    {
-                        var inputBuffer = response_.Content == null ? null : await response_.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                        return new SwaggerResponse<System.IO.Stream>(headers_, new System.IO.MemoryStream(inputBuffer));
-                    }
-                    else if (response_.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var result_ = default(ErrorResponse);
-                        try
-                        {
-                            result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
-                        }
-                        catch (System.Exception exception_)
-                        {
-                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
-                        }
-                        throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
-                    }
-                    else if (response_.StatusCode == HttpStatusCode.InternalServerError)
-                    {
-                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
-                    }
-                    else if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
-                    {
-                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
-                    }
-
-                    return new SwaggerResponse<System.IO.Stream>(headers_, new System.IO.MemoryStream(0));
+                    var inputBuffer = response_.Content == null ? null : await response_.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    return new SwaggerResponse<System.IO.Stream>(headers_, new System.IO.MemoryStream(inputBuffer));
                 }
-                finally
+                else if (response_.StatusCode == HttpStatusCode.Forbidden)
                 {
-                    if (response_ != null)
-                        response_.Dispose();
+                    var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var result_ = default(ErrorResponse);
+                    try
+                    {
+                        result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                    }
+                    catch (System.Exception exception_)
+                    {
+                        throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
+                    }
+                    throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
                 }
+                else if (response_.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
+                }
+                else if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
+                {
+                    var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
+                }
+
+                return new SwaggerResponse<System.IO.Stream>(headers_, new System.IO.MemoryStream(0));
+            }
+            finally
+            {
+                response_?.Dispose();
             }
         }
 
@@ -120,7 +117,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         public async System.Threading.Tasks.Task<SwaggerResponse<StatusResponse>> ResponseAsync(string awsRequestId, System.IO.Stream outputStream, System.Threading.CancellationToken cancellationToken)
         {
             if (awsRequestId == null)
-                throw new System.ArgumentNullException("awsRequestId");
+                throw new System.ArgumentNullException(nameof(awsRequestId));
 
             var client_ = _httpClient;
             var request_ = new System.Net.Http.HttpRequestMessage();
@@ -211,12 +208,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                             throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
                         }
 
-                        return new SwaggerResponse<StatusResponse>(headers_, default(StatusResponse));
+                        return new SwaggerResponse<StatusResponse>(headers_, default);
                     }
                     finally
                     {
-                        if (response_ != null)
-                            response_.Dispose();
+                        response_?.Dispose();
                     }
                 }
                 finally
@@ -247,112 +243,107 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             var client_ = _httpClient;
             try
             {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                using var request_ = new System.Net.Http.HttpRequestMessage();
+                if (lambda_Runtime_Function_Error_Type != null)
+                    request_.Headers.TryAddWithoutValidation("Lambda-Runtime-Function-Error-Type", lambda_Runtime_Function_Error_Type);
+
+                // This is the unmodeled X-Ray header to report back the cause of errors.
+                if (xrayCause != null && System.Text.Encoding.UTF8.GetByteCount(xrayCause) < MAX_HEADER_SIZE_BYTES)
                 {
-                    if (lambda_Runtime_Function_Error_Type != null)
-                        request_.Headers.TryAddWithoutValidation("Lambda-Runtime-Function-Error-Type", lambda_Runtime_Function_Error_Type);
+                    // Headers can not have newlines. The X-Ray JSON writer should not have put any in but do a final check of newlines.
+                    xrayCause = xrayCause.Replace("\r\n", "").Replace("\n", "");
 
-                    // This is the unmodeled X-Ray header to report back the cause of errors.
-                    if (xrayCause != null && System.Text.Encoding.UTF8.GetByteCount(xrayCause) < MAX_HEADER_SIZE_BYTES)
+                    try
                     {
-                        // Headers can not have newlines. The X-Ray JSON writer should not have put any in but do a final check of newlines.
-                        xrayCause = xrayCause.Replace("\r\n", "").Replace("\n", "");
+                        request_.Headers.Add("Lambda-Runtime-Function-XRay-Error-Cause", xrayCause);
+                    }
+                    catch
+                    {
+                        // Don't prevent reporting errors to Lambda if there are any issues adding the X-Ray cause JSON as a header.
+                    }
+                }
 
-                        try
-                        {
-                            request_.Headers.Add("Lambda-Runtime-Function-XRay-Error-Cause", xrayCause);
-                        }
-                        catch
-                        {
-                            // Don't prevent reporting errors to Lambda if there are any issues adding the X-Ray cause JSON as a header.
-                        }
+                using var content_ = new System.Net.Http.StringContent(errorJson);
+                content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(ErrorContentType);
+                request_.Content = content_;
+                request_.Method = new System.Net.Http.HttpMethod("POST");
+                request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                var url_ = urlBuilder_.ToString();
+                request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                    if (response_.Content != null && response_.Content.Headers != null)
+                    {
+                        foreach (var item_ in response_.Content.Headers)
+                            headers_[item_.Key] = item_.Value;
                     }
 
-                    using (var content_ = new System.Net.Http.StringContent(errorJson))
+                    if (response_.StatusCode == HttpStatusCode.Accepted)
                     {
-                        content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(ErrorContentType);
-                        request_.Content = content_;
-                        request_.Method = new System.Net.Http.HttpMethod("POST");
-                        request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                        var url_ = urlBuilder_.ToString();
-                        request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                        var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var result_ = default(StatusResponse);
                         try
                         {
-                            var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                            if (response_.Content != null && response_.Content.Headers != null)
-                            {
-                                foreach (var item_ in response_.Content.Headers)
-                                    headers_[item_.Key] = item_.Value;
-                            }
-
-                            if (response_.StatusCode == HttpStatusCode.Accepted)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                var result_ = default(StatusResponse);
-                                try
-                                {
-                                    result_ = JsonSerializer.Deserialize<StatusResponse>(responseData_, RuntimeApiSerializationContext.Default.StatusResponse);
-                                    return new SwaggerResponse<StatusResponse>(headers_, result_);
-                                }
-                                catch (System.Exception exception_)
-                                {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
-                                }
-                            }
-                            else
-                            if (response_.StatusCode == HttpStatusCode.BadRequest)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                var result_ = default(ErrorResponse);
-                                try
-                                {
-                                    result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
-                                }
-                                catch (System.Exception exception_)
-                                {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
-                                }
-                                throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, result_, null);
-                            }
-                            else
-                            if (response_.StatusCode == HttpStatusCode.Forbidden)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                var result_ = default(ErrorResponse);
-                                try
-                                {
-                                    result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
-                                }
-                                catch (System.Exception exception_)
-                                {
-                                    throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
-                                }
-                                throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
-                            }
-                            else
-                            if (response_.StatusCode == HttpStatusCode.InternalServerError)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
-                            }
-                            else
-                            if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
-                            {
-                                var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
-                            }
-
-                            return new SwaggerResponse<StatusResponse>(headers_, default(StatusResponse));
+                            result_ = JsonSerializer.Deserialize<StatusResponse>(responseData_, RuntimeApiSerializationContext.Default.StatusResponse);
+                            return new SwaggerResponse<StatusResponse>(headers_, result_);
                         }
-                        finally
+                        catch (System.Exception exception_)
                         {
-                            if (response_ != null)
-                                response_.Dispose();
+                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
                         }
                     }
+                    else
+                    if (response_.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var result_ = default(ErrorResponse);
+                        try
+                        {
+                            result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                        }
+                        catch (System.Exception exception_)
+                        {
+                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
+                        }
+                        throw new RuntimeApiClientException<ErrorResponse>("Bad Request", (int)response_.StatusCode, responseData_, result_, null);
+                    }
+                    else
+                    if (response_.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var result_ = default(ErrorResponse);
+                        try
+                        {
+                            result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                        }
+                        catch (System.Exception exception_)
+                        {
+                            throw new RuntimeApiClientException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, exception_);
+                        }
+                        throw new RuntimeApiClientException<ErrorResponse>("Forbidden", (int)response_.StatusCode, responseData_, result_, null);
+                    }
+                    else
+                    if (response_.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response_.StatusCode, responseData_, null);
+                    }
+                    else
+                    if (response_.StatusCode != HttpStatusCode.OK && response_.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, null);
+                    }
+
+                    return new SwaggerResponse<StatusResponse>(headers_, default);
+                }
+                finally
+                {
+                    response_?.Dispose();
                 }
             }
             finally

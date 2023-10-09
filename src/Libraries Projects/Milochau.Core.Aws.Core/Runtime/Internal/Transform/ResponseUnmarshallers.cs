@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         public AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context)
         {
-            var response = this.Unmarshall(context);
+            var response = Unmarshall(context);
             response.ContentLength = context.ResponseData.ContentLength;
             response.HttpStatusCode = context.ResponseData.StatusCode;
             return response;
@@ -60,16 +60,17 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
     {
         public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
         {
-            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
-            if (context == null)
+            if (input is not JsonUnmarshallerContext context)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
             string requestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
             try
             {
-                var response = this.Unmarshall(context);
-                response.ResponseMetadata = new ResponseMetadata();
-                response.ResponseMetadata.RequestId = requestId;
+                var response = Unmarshall(context);
+                response.ResponseMetadata = new ResponseMetadata
+                {
+                    RequestId = requestId
+                };
                 return response;
             }
             catch (Exception e)
@@ -79,11 +80,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
         {
-            JsonUnmarshallerContext? context = input as JsonUnmarshallerContext;
-            if (context == null)
+            if (input is not JsonUnmarshallerContext context)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
-            var responseException = this.UnmarshallException(context, innerException, statusCode);
+            var responseException = UnmarshallException(context, innerException, statusCode);
             responseException.RequestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
             return responseException;
         }

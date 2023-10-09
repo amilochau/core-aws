@@ -82,8 +82,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Strategies
                 return;
             }
 
-            var subsegment = entity as Subsegment;
-            if (subsegment != null)
+            if (entity is Subsegment subsegment)
             {
                 subsegment.TraceId = entity.RootSegment?.TraceId;
                 subsegment.Type = "subsegment";

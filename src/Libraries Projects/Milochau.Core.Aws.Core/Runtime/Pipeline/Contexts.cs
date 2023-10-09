@@ -90,8 +90,8 @@ namespace Amazon.Runtime.Internal
 
         public ExecutionContext(IRequestContext requestContext, IResponseContext responseContext)
         {
-            this.RequestContext = requestContext;
-            this.ResponseContext = responseContext;
+            RequestContext = requestContext;
+            ResponseContext = responseContext;
         }
     }
 }

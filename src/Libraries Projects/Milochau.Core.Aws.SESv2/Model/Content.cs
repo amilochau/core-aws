@@ -21,7 +21,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Charset property is set
         internal bool IsSetCharset()
         {
-            return this.Charset != null;
+            return Charset != null;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.SESv2.Model
         // Check to see if Data property is set
         internal bool IsSetData()
         {
-            return this.Data != null;
+            return Data != null;
         }
     }
 }

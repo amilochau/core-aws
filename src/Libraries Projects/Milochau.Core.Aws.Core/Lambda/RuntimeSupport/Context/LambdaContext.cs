@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             _consoleLogger = consoleLogger;
 
             // set environment variable so that if the function uses the XRay client it will work correctly
-            _lambdaEnvironment.SetXAmznTraceId(_runtimeApiHeaders.TraceId);
+            LambdaEnvironment.SetXAmznTraceId(_runtimeApiHeaders.TraceId);
         }
 
         public string AwsRequestId => _runtimeApiHeaders.AwsRequestId;

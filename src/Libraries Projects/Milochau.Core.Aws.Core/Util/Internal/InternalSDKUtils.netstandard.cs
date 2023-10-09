@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Milochau.Core.Aws.Core.Util.Internal
@@ -10,60 +9,6 @@ namespace Milochau.Core.Aws.Core.Util.Internal
         private const string UnknownPlatform = "unknown_platform";
 
         private static readonly string _userAgentBaseName = "aws-sdk-dotnet-coreclr";
-        private static readonly string SpecialPlatformInformation;
-
-#pragma warning disable CA1810 // Initialize reference type static fields inline
-        static InternalSDKUtils()
-#pragma warning restore CA1810 // Initialize reference type static fields inline
-        {
-            if (GetExecutionEnvironment() == null)
-            {
-                try
-                {
-                    SpecialPlatformInformation = GetXamarinInformation() ?? GetUnityInformation();
-                }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    SpecialPlatformInformation = null;
-                }
-            }
-        }
-
-        private static string GetXamarinInformation()
-        {
-            var xamarinDevice = Type.GetType("Xamarin.Forms.Device, Xamarin.Forms.Core");
-            if (xamarinDevice == null)
-            {
-                return null;
-            }
-
-            var runtime = xamarinDevice.GetProperty("RuntimePlatform")?.GetValue(null)?.ToString() ?? "";
-            var idiom = xamarinDevice.GetProperty("Idiom")?.GetValue(null)?.ToString() ?? "";
-
-            var platform = runtime + idiom;
-
-            if (string.IsNullOrEmpty(platform))
-            {
-                platform = UnknownPlatform;
-            }
-
-            return string.Format(CultureInfo.InvariantCulture, "Xamarin_{0}", "Xamarin");
-        }
-
-        private static string GetUnityInformation()
-        {
-            var unityApplication = Type.GetType("UnityEngine.Application, UnityEngine.CoreModule");
-            if (unityApplication == null)
-            {
-                return null;
-            }
-
-            var platform = unityApplication.GetProperty("platform")?.GetValue(null)?.ToString() ?? UnknownPlatform;
-
-            return string.Format(CultureInfo.InvariantCulture, "Unity_{0}", platform);
-        }
 
         private static string GetValidSubstringOrUnknown(string str, int start, int end)
         {
@@ -87,17 +32,6 @@ namespace Milochau.Core.Aws.Core.Util.Internal
         /// </summary>
         public static string DetermineFramework()
         {
-            if (SpecialPlatformInformation != null)
-            {
-                if(SpecialPlatformInformation.StartsWith("Xamarin"))
-                {
-                    return "Xamarin/0";
-                }
-                if (SpecialPlatformInformation.StartsWith("Unity"))
-                {
-                    return "Unity/0";
-                }
-            }
             try
             {
                 var desc = RuntimeInformation.FrameworkDescription.Trim();
@@ -117,10 +51,6 @@ namespace Milochau.Core.Aws.Core.Util.Internal
         /// </summary>
         public static string DetermineOS()
         {
-            if (SpecialPlatformInformation != null)
-            {
-                return SpecialPlatformInformation;
-            }
             try
             {
                 var desc = RuntimeInformation.OSDescription.Trim();
@@ -141,7 +71,7 @@ namespace Milochau.Core.Aws.Core.Util.Internal
         {
             try
             {
-                var desc = SpecialPlatformInformation ?? RuntimeInformation.OSDescription;
+                var desc = RuntimeInformation.OSDescription;
                 if (!string.IsNullOrWhiteSpace(desc))
                 {
                     return desc.Trim().Replace(' ', '_');

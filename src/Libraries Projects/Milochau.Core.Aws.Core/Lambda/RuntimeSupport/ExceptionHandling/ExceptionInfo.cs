@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
                 // This is used for Xray Exception serialization
                 if (isNestedException || stackTrace?.GetFrames() == null)
                 {
-                    StackFrames = new StackFrameInfo[0];
+                    StackFrames = Array.Empty<StackFrameInfo>();
                 }
                 else
                 {
@@ -53,9 +53,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
                 InnerException = new ExceptionInfo(exception.InnerException, true);
             }
 
-            AggregateException aggregateException = exception as AggregateException;
 
-            if (aggregateException != null && aggregateException.InnerExceptions != null)
+            if (exception is AggregateException aggregateException && aggregateException.InnerExceptions != null)
             {
                 foreach (var innerEx in aggregateException.InnerExceptions)
                 {

@@ -72,7 +72,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         /// <param name="exception"></param>
         /// <param name="responseStream"></param>
         /// <returns></returns>
-        private bool HandleExceptionStream(IRequestContext requestContext, IWebResponseData httpErrorResponse, HttpErrorResponseException exception, System.IO.Stream responseStream)
+        private static bool HandleExceptionStream(IRequestContext requestContext, IWebResponseData httpErrorResponse, HttpErrorResponseException exception, System.IO.Stream responseStream)
         {
             AmazonServiceException errorResponseException;
             // Unmarshall the service error response and throw the corresponding service exception.

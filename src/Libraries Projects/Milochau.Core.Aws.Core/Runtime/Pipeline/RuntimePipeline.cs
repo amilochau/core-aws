@@ -41,11 +41,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         public RuntimePipeline(IList<IPipelineHandler> handlers)
         {
             if (handlers == null || handlers.Count == 0)
-                throw new ArgumentNullException("handlers");
+                throw new ArgumentNullException(nameof(handlers));
 
             foreach (var handler in handlers)
             {
-                this.AddHandler(handler);
+                AddHandler(handler);
             }
         }
 
@@ -77,7 +77,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         public void AddHandler(IPipelineHandler handler)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             ThrowIfDisposed();
 
@@ -103,7 +103,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
             where T : IPipelineHandler
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             ThrowIfDisposed();
 
@@ -132,7 +132,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
             where T : IPipelineHandler
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             ThrowIfDisposed();
 
@@ -217,12 +217,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 
             if (disposing)
             {
-                var handler = this.Handler;
+                var handler = Handler;
                 while (handler != null)
                 {
                     var innerHandler = handler.InnerHandler;
-                    var disposable = handler as IDisposable;
-                    if (disposable != null)
+                    if (handler is IDisposable disposable)
                     {
                         disposable.Dispose();
                     }
@@ -235,7 +234,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 
         private void ThrowIfDisposed()
         {
-            if (this._disposed)
+            if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
         }
 

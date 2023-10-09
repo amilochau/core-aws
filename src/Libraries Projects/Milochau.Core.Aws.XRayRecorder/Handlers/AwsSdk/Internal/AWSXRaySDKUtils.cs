@@ -8,8 +8,8 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
     /// </summary>
     internal class AWSXRaySDKUtils
     {
-        private static readonly String XRayServiceName = "XRay";
-        private static readonly ISet<String> WhitelistedOperations = new HashSet<String> { "GetSamplingRules", "GetSamplingTargets" };
+        private static readonly string XRayServiceName = "XRay";
+        private static readonly ISet<string> WhitelistedOperations = new HashSet<string> { "GetSamplingRules", "GetSamplingTargets" };
 
         // Collection to uniform service names across X-Ray SDKs.
         private static readonly Dictionary<string, string> FormattedServiceNames = new Dictionary<string, string>()
@@ -17,7 +17,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             { "SimpleNotificationService" , "SNS" },
         };
 
-        internal static bool IsBlacklistedOperation(String serviceName, string operation)
+        internal static bool IsBlacklistedOperation(string serviceName, string operation)
         {
             if (string.Equals(serviceName, XRayServiceName) && WhitelistedOperations.Contains(operation))
             {

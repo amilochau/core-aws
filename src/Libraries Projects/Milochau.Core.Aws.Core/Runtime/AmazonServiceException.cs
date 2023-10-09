@@ -31,7 +31,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         public AmazonServiceException(string message, Exception innerException, HttpStatusCode statusCode)
             : base(message, innerException)
         {
-            this.StatusCode = statusCode;
+            StatusCode = statusCode;
         }
 
         public AmazonServiceException(Exception innerException)
@@ -43,10 +43,10 @@ namespace Milochau.Core.Aws.Core.Runtime
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode))
         {
-            this.ErrorCode = errorCode;
-            this.ErrorType = errorType;
-            this.RequestId = requestId;
-            this.StatusCode = statusCode;
+            ErrorCode = errorCode;
+            ErrorType = errorType;
+            RequestId = requestId;
+            StatusCode = statusCode;
         }
 
         public AmazonServiceException(string message, Exception innerException, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
@@ -54,10 +54,10 @@ namespace Milochau.Core.Aws.Core.Runtime
                 BuildGenericErrorMessage(errorCode, statusCode), 
                 innerException)
         {
-            this.ErrorCode = errorCode;
-            this.ErrorType = errorType;
-            this.RequestId = requestId;
-            this.StatusCode = statusCode;
+            ErrorCode = errorCode;
+            ErrorType = errorType;
+            RequestId = requestId;
+            StatusCode = statusCode;
         }
 
         static string BuildGenericErrorMessage(string? errorCode, HttpStatusCode statusCode)

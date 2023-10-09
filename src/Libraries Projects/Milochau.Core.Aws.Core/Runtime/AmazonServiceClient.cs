@@ -62,7 +62,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                 new RequestContext(Signer, Config, options.RequestMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
                 new ResponseContext()
             );
-            return this.RuntimePipeline.InvokeAsync<TResponse>(executionContext);
+            return RuntimePipeline.InvokeAsync<TResponse>(executionContext);
         }
 
         #endregion
@@ -82,8 +82,7 @@ namespace Milochau.Core.Aws.Core.Runtime
 
             if (disposing)
             {
-                if (RuntimePipeline != null)
-                    RuntimePipeline.Dispose();
+                RuntimePipeline?.Dispose();
 
                 _disposed = true;
             }
@@ -110,7 +109,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
                 {
                     httpHandler,
-                    new Unmarshaller(true),
+                    new Unmarshaller(),
                     new ErrorHandler(),
                     new Signer(),
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.

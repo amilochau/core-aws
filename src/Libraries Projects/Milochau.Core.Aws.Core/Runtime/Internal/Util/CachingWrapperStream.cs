@@ -20,12 +20,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// <summary>
         /// All the bytes read by the stream.
         /// </summary>
-        public List<Byte> AllReadBytes { get; private set; } = new List<byte>();
+        public List<byte> AllReadBytes { get; private set; } = new List<byte>();
 
         /// <summary>
         /// All the bytes read by the stream constrained with _cacheLimit
         /// </summary>
-        public List<Byte> LoggableReadBytes { 
+        public List<byte> LoggableReadBytes { 
             get
             {
                 return AllReadBytes.Take(DefaultLogResponsesSizeLimit).ToList();

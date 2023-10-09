@@ -134,11 +134,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             {
                 if (base.Length % InternalEncryptionBlockSize == 0)
                 {
-                    return (base.Length);
+                    return base.Length;
                 }
                 else
                 {
-                    return (base.Length + InternalEncryptionBlockSize - (base.Length % InternalEncryptionBlockSize));
+                    return base.Length + InternalEncryptionBlockSize - (base.Length % InternalEncryptionBlockSize);
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         public override long Seek(long offset, SeekOrigin origin)
         {
             long position = BaseStream.Seek(offset, origin);
-            this.Algorithm.Reset();
+            Algorithm.Reset();
 
             return position;
         }

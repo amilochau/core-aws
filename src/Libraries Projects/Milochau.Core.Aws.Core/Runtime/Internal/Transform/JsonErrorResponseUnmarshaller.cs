@@ -128,8 +128,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// <returns></returns>
         public static JsonErrorResponseUnmarshaller GetInstance()
         {
-            if (instance == null)
-                instance = new JsonErrorResponseUnmarshaller();
+            instance ??= new JsonErrorResponseUnmarshaller();
 
             return instance;
         }

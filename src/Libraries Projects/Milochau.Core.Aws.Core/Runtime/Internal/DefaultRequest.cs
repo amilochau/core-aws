@@ -25,13 +25,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// </summary>
         /// <param name="request">The orignal request that is being wrapped</param>
         /// <param name="serviceName">The service name</param>
-        public DefaultRequest(AmazonWebServiceRequest request, String serviceName)
+        public DefaultRequest(AmazonWebServiceRequest request, string serviceName)
         {
-            if (request == null) throw new ArgumentNullException("request");
-            if (string.IsNullOrEmpty(serviceName)) throw new ArgumentNullException("serviceName");
+            if (string.IsNullOrEmpty(serviceName)) throw new ArgumentNullException(nameof(serviceName));
 
-            this.ServiceName = serviceName;
-            this.OriginalRequest = request;
+            ServiceName = serviceName;
+            OriginalRequest = request ?? throw new ArgumentNullException(nameof(request));
         }
 
         /// <summary>
@@ -46,13 +45,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         {
             get
             {
-                if (this.HttpMethod == "GET")
+                if (HttpMethod == "GET")
                     return true;
-                return this.useQueryString;
+                return useQueryString;
             }
             set
             {
-                this.useQueryString = value;
+                useQueryString = value;
             }
         }
 
@@ -119,14 +118,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// </summary>
         public Stream ContentStream
         {
-            get { return this.contentStream; }
+            get { return contentStream; }
             set
             {
-                this.contentStream = value;
+                contentStream = value;
                 OriginalStreamPosition = -1;
-                if (this.contentStream != null)
+                if (contentStream != null)
                 {
-                    Stream baseStream = HashStream.GetNonWrapperBaseStream(this.contentStream);
+                    Stream baseStream = HashStream.GetNonWrapperBaseStream(contentStream);
                     if (baseStream.CanSeek)
                         OriginalStreamPosition = baseStream.Position;
                 }
@@ -148,22 +147,22 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// </summary>
         public string ComputeContentStreamHash()
         {
-            if (this.contentStream == null)
+            if (contentStream == null)
                 return null;
 
-            if (this.contentStreamHash == null)
+            if (contentStreamHash == null)
             {
-                var seekableStream = WrapperStream.SearchWrappedStream(this.contentStream, s => s.CanSeek);
+                var seekableStream = WrapperStream.SearchWrappedStream(contentStream, s => s.CanSeek);
                 if (seekableStream != null)
                 {
                     var position = seekableStream.Position;
                     byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(seekableStream);
-                    this.contentStreamHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
+                    contentStreamHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
                     seekableStream.Seek(position, SeekOrigin.Begin);
                 }
             }
 
-            return this.contentStreamHash;
+            return contentStreamHash;
         }
 
         /// <summary>
@@ -208,7 +207,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// else false.</returns>
         public bool IsRequestStreamRewindable()
         {
-            var stream = this.ContentStream;
+            var stream = ContentStream;
             // Retries may not be possible with a stream
             if (stream != null)
             {
@@ -228,9 +227,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         public bool MayContainRequestBody()
         {
             return
-                (this.HttpMethod == "POST" ||
-                 this.HttpMethod == "PUT" ||
-                 this.HttpMethod == "PATCH");
+                HttpMethod == "POST" ||
+                 HttpMethod == "PUT" ||
+                 HttpMethod == "PATCH";
         }
 
         /// <summary>
@@ -239,9 +238,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// <returns>Returns true if the request has a body, else false.</returns>
         public bool HasRequestBody()
         {
-            var isPutPost = (this.HttpMethod == "POST" || this.HttpMethod == "PUT" || this.HttpMethod == "PATCH");
+            var isPutPost = HttpMethod == "POST" || HttpMethod == "PUT" || HttpMethod == "PATCH";
             var hasContent = this.HasRequestData();
-            return (isPutPost && hasContent);
+            return isPutPost && hasContent;
         }
     }
 }

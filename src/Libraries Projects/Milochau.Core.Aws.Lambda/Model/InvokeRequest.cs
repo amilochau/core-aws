@@ -153,19 +153,19 @@ namespace Milochau.Core.Aws.Lambda.Model
             get
             {
                 string? content = null;
-                if (this.PayloadStream != null)
+                if (PayloadStream != null)
                 {
-                    content = new StreamReader(this.PayloadStream).ReadToEnd();
-                    this.PayloadStream.Position = 0;
+                    content = new StreamReader(PayloadStream).ReadToEnd();
+                    PayloadStream.Position = 0;
                 }
                 return content;
             }
             set
             {
                 if (value == null)
-                    this.PayloadStream = null;
+                    PayloadStream = null;
                 else
-                    this.PayloadStream = AWSSDKUtils.GenerateMemoryStreamFromString(value);
+                    PayloadStream = AWSSDKUtils.GenerateMemoryStreamFromString(value);
             }
         }
     }

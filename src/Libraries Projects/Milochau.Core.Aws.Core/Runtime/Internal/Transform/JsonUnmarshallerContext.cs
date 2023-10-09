@@ -53,17 +53,17 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         {
             if (isException || maintainResponseBody)
             {
-                this.WrappingStream = new CachingWrapperStream(responseStream);
+                WrappingStream = new CachingWrapperStream(responseStream);
             }
 
             if (isException || maintainResponseBody)
             {
-                responseStream = this.WrappingStream;
+                responseStream = WrappingStream;
             }
 
-            this.WebResponseData = responseData;
-            this.MaintainResponseBody = maintainResponseBody;
-            this.IsException = isException;
+            WebResponseData = responseData;
+            MaintainResponseBody = maintainResponseBody;
+            IsException = isException;
 
             //if the json unmarshaller context is being called internally without there being a http response then the response data would be null
             if(responseData != null)
@@ -83,8 +83,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 }
             }
 
-            if (this.CrcStream != null)
-                streamReader = new StreamReader(this.CrcStream);
+            if (CrcStream != null)
+                streamReader = new StreamReader(CrcStream);
             else
                 streamReader = new StreamReader(responseStream);
         }
@@ -96,7 +96,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// <summary>
         /// The current Json path that is being unmarshalled.
         /// </summary>
-        public override string CurrentPath => this.stack.CurrentPath;
+        public override string CurrentPath => stack.CurrentPath;
 
         #endregion
 
@@ -151,10 +151,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             {
                 get
                 {
-                    if (this.stackString == null)                    
-                        this.stackString = this.stackStringBuilder.ToString();
+                    stackString ??= stackStringBuilder.ToString();
                     
-                    return this.stackString;
+                    return stackString;
                 }
             }                        
 
@@ -172,7 +171,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                         
             internal PathSegment Pop()
             {
-                var segment = this.stack.Pop();
+                var segment = stack.Pop();
                 if (segment.SegmentType == PathSegmentType.Delimiter)
                 {
                     CurrentDepth--;
@@ -185,12 +184,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             
             internal PathSegment Peek()
             {
-                return this.stack.Peek();
+                return stack.Peek();
             }
 
             public int Count
             {
-                get { return this.stack.Count; }
+                get { return stack.Count; }
             }
         }
     }

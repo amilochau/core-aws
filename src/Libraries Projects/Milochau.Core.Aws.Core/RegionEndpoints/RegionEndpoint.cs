@@ -90,10 +90,7 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
         {
             get
             {
-                if (_regionEndpointProvider == null)
-                {
-                    _regionEndpointProvider = new RegionEndpointProviderV3();
-                }
+                _regionEndpointProvider ??= new RegionEndpointProviderV3();
                 return _regionEndpointProvider;
             }
         }
@@ -101,9 +98,9 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
 
         private RegionEndpoint(string systemName, string displayName)
         {
-            this.SystemName = systemName;
-            this.OriginalSystemName = systemName;
-            this.DisplayName = displayName;
+            SystemName = systemName;
+            OriginalSystemName = systemName;
+            DisplayName = displayName;
         }
 
         /// <summary>
@@ -164,8 +161,8 @@ namespace Milochau.Core.Aws.Core.RegionEndpoints
         {
             internal Endpoint(string hostname, string? authregion)
             {
-                this.Hostname = hostname;
-                this.AuthRegion = authregion;
+                Hostname = hostname;
+                AuthRegion = authregion;
             }
 
             /// <summary>

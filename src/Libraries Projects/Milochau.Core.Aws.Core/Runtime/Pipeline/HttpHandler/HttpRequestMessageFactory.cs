@@ -59,8 +59,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         {
             _httpClient = httpClient;
 
-            _request = new HttpRequestMessage();
-            _request.RequestUri = requestUri;
+            _request = new HttpRequestMessage
+            {
+                RequestUri = requestUri
+            };
         }
 
         /// <summary>
@@ -117,7 +119,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         {
             try
             {
-                return this.GetResponseAsync(System.Threading.CancellationToken.None).Result;
+                return GetResponseAsync(System.Threading.CancellationToken.None).Result;
             }
             catch (AggregateException e)
             {
@@ -245,8 +247,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 
             if (disposing)
             {
-                if (_request != null)
-                    _request.Dispose();
+                _request?.Dispose();
 
                 _disposed = true;
             }

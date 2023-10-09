@@ -294,7 +294,7 @@ namespace Milochau.Core.Aws.Core.Util
         internal static bool AreEqual(object[] itemsA, object[] itemsB)
         {
             if (itemsA == null || itemsB == null)
-                return (itemsA == itemsB);
+                return itemsA == itemsB;
 
             if (itemsA.Length != itemsB.Length)
                 return false;
@@ -314,12 +314,12 @@ namespace Milochau.Core.Aws.Core.Util
         internal static bool AreEqual(object a, object b)
         {
             if (a == null || b == null)
-                return (a == b);
+                return a == b;
 
             if (object.ReferenceEquals(a, b))
                 return true;
 
-            return (a.Equals(b));
+            return a.Equals(b);
         }
 
         /// <summary>
@@ -356,11 +356,11 @@ namespace Milochau.Core.Aws.Core.Util
         public static void CopyStream(Stream source, Stream destination, int bufferSize)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if (destination == null)
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException("bufferSize");
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             byte[] array = new byte[bufferSize];
             int count;
@@ -404,7 +404,7 @@ namespace Milochau.Core.Aws.Core.Util
             if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out string? validUrlCharacters))
                 validUrlCharacters = ValidUrlCharacters;
 
-            string unreservedChars = String.Concat(validUrlCharacters, (path ? ValidPathCharacters : ""));
+            string unreservedChars = string.Concat(validUrlCharacters, path ? ValidPathCharacters : "");
 
             foreach (char symbol in System.Text.Encoding.UTF8.GetBytes(data))
             {
@@ -457,7 +457,7 @@ namespace Milochau.Core.Aws.Core.Util
                 }
                 else
                 {
-                    encoded.Append("%").Append(string.Format(CultureInfo.InvariantCulture, "{0:X2}", (int)symbol));
+                    encoded.Append('%').Append(string.Format(CultureInfo.InvariantCulture, "{0:X2}", (int)symbol));
                 }
             }
 
@@ -488,7 +488,7 @@ namespace Milochau.Core.Aws.Core.Util
                 return false;
 
             // check specific characters
-            return (
+            return 
                 c == '\u200E' || // LRM
                 c == '\u200F' || // RLM
                 c == '\u202A' || // LRE
@@ -496,7 +496,7 @@ namespace Milochau.Core.Aws.Core.Util
                 c == '\u202C' || // PDF
                 c == '\u202D' || // LRO
                 c == '\u202E'    // RLO
-            );
+            ;
         }
 
         /// <summary>
