@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime;
+﻿using Milochau.Core.Aws.Core.Runtime;
 
 namespace Milochau.Core.Aws.DynamoDB
 {

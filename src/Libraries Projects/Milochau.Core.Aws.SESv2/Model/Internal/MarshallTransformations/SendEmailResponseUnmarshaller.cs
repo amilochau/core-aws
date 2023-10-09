@@ -1,9 +1,8 @@
+using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System;
-using System.IO;
 using System.Net;
 using System.Text.Json;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
 {

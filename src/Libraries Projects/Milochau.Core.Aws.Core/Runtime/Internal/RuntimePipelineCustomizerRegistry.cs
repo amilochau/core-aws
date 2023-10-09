@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Amazon.Runtime.Internal
+namespace Milochau.Core.Aws.Core.Runtime.Internal
 {
     /// <summary>
     /// A registry of object that will manipulate the runtime pipeline used by service clients.

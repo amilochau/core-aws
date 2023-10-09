@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Runtime;
+using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Lambda.Model;
 
 namespace Milochau.Core.Aws.Lambda

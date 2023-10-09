@@ -1,4 +1,4 @@
-namespace Amazon.Lambda.Core
+namespace Milochau.Core.Aws.Core.Lambda.Core
 {
     /// <summary>
     ///  Information about the client application that invoked the Lambda function.

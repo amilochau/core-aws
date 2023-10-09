@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections;
-using System.Reflection;
-using Amazon.Runtime;
 using Milochau.Core.Aws.XRayRecorder.Core;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Entities;
-using Amazon.Runtime.Internal;
-using System.Threading;
-using Amazon.Runtime.Internal.Transform;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.References;
-using System.Reflection.Metadata;
 using System.Linq;
+using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
 
 namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 {
     /// <summary>
-    /// The handler to register <see cref="Amazon.Runtime.AmazonServiceClient"/> which can intercept downstream requests and responses.
+    /// The handler to register <see cref="AmazonServiceClient"/> which can intercept downstream requests and responses.
     /// Note: This class should not be instantiated or used in anyway. It is used internally within SDK.
     /// </summary>
     public class XRayPipelineHandler : PipelineHandler

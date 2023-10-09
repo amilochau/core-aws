@@ -1,6 +1,6 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Util;
 using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
             };
             request.Headers["X-Amz-Target"] = "DynamoDB_20120810.Query";
             request.Headers["Content-Type"] = "application/x-amz-json-1.0";
-            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2012-08-10";
+            request.Headers[HeaderKeys.XAmzApiVersion] = "2012-08-10";
 
             return request;
         }

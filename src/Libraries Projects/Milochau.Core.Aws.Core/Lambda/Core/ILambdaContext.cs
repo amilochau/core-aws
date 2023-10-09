@@ -1,4 +1,4 @@
-namespace Amazon.Lambda.Core
+namespace Milochau.Core.Aws.Core.Lambda.Core
 {
     /// <summary>
     /// Object that allows you to access useful information available within

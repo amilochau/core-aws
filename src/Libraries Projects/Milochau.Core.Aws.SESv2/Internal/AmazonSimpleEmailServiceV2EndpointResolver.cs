@@ -1,6 +1,6 @@
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Endpoints;
+using Milochau.Core.Aws.Core.Runtime.Endpoints;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 
 namespace Milochau.Core.Aws.SESv2.Internal
 {

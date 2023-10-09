@@ -1,4 +1,4 @@
-namespace Amazon.Lambda.Core
+namespace Milochau.Core.Aws.Core.Lambda.Core
 {
     /// <summary>
     /// Log Level for logging messages

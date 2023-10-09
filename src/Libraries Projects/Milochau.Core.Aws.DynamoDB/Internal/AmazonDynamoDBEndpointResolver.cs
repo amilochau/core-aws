@@ -1,6 +1,6 @@
-﻿using Amazon.Runtime.Endpoints;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime;
+﻿using Milochau.Core.Aws.Core.Runtime.Endpoints;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 
 namespace Milochau.Core.Aws.DynamoDB.Internal
 {

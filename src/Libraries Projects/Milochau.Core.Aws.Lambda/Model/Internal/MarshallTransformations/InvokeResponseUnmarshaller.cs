@@ -1,8 +1,9 @@
+using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Util;
 using System;
 using System.IO;
 using System.Net;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
 {
@@ -21,7 +22,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             InvokeResponse response = new InvokeResponse();
 
             var ms = new MemoryStream();
-            Amazon.Util.AWSSDKUtils.CopyStream(context.Stream, ms);
+            AWSSDKUtils.CopyStream(context.Stream, ms);
             ms.Seek(0, SeekOrigin.Begin);
             response.Payload = ms;
             if (context.ResponseData.IsHeaderPresent("X-Amz-Executed-Version"))

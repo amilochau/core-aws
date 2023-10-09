@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime.Endpoints;
+﻿using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.DynamoDB.Internal
 {

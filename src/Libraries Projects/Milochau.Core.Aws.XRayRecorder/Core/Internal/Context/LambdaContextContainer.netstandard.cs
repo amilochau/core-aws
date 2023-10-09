@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
-using System;
 using System.Threading;
 
 namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Context

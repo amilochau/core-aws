@@ -1,4 +1,4 @@
-﻿namespace Amazon.Util.Internal.PlatformServices
+﻿namespace Milochau.Core.Aws.Core.Util.Internal.PlatformServices
 {
     public class EnvironmentInfo 
     {

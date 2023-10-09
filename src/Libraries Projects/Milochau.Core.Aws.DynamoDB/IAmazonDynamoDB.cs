@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime;
+﻿using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.DynamoDB.Model;
 using System;
 using System.Threading;

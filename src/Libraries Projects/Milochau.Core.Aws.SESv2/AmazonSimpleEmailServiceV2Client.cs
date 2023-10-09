@@ -3,8 +3,11 @@ using System.Threading.Tasks;
 using Milochau.Core.Aws.SESv2.Model;
 using Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations;
 using Milochau.Core.Aws.SESv2.Internal;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 
 namespace Milochau.Core.Aws.SESv2
 {

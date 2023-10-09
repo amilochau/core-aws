@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amazon.Lambda.Core
+namespace Milochau.Core.Aws.Core.Lambda.Core
 {
     /// <summary>
     /// Static class which sends a message to AWS CloudWatch Logs.

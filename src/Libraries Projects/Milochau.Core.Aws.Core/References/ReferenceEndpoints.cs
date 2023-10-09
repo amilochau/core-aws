@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Amazon.Internal
+namespace Milochau.Core.Aws.Core.References
 {
     public class Endpoints
     {

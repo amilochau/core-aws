@@ -1,4 +1,4 @@
-using Amazon.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 
 namespace Milochau.Core.Aws.SESv2.Model
 {

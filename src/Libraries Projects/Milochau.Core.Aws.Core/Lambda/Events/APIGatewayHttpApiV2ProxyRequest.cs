@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-// https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.APIGatewayEvents/APIGatewayHttpApiV2ProxyRequest.cs
 namespace Milochau.Core.Aws.Core.Lambda.Events
 {
     /// <summary>

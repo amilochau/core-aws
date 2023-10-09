@@ -1,5 +1,5 @@
-﻿using Amazon.Runtime;
-using Amazon.Util.Internal;
+﻿using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Util.Internal;
 using Milochau.Core.Aws.DynamoDB.Internal;
 
 namespace Milochau.Core.Aws.DynamoDB

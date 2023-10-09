@@ -1,20 +1,5 @@
-﻿/*  
- * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- * 
- *  http://aws.amazon.com/apache2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
-
-using Amazon.Runtime.Internal.Transform;
-using Amazon.Util;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,7 +7,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Amazon.Runtime
+namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 {
     /// <summary>
     /// A factory which creates HTTP requests which uses System.Net.Http.HttpClient.
@@ -155,7 +140,7 @@ namespace Amazon.Runtime
                 if (!responseMessage.IsSuccessStatusCode)
                 {
                     // For all responses other than HTTP 2xx, return an exception.
-                    throw new Amazon.Runtime.Internal.HttpErrorResponseException(
+                    throw new HttpErrorResponseException(
                         new HttpClientResponseData(responseMessage));
                 }
 

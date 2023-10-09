@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Amazon.Runtime.Internal.Util
+namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 {
     /// <summary>
     /// A wrapper stream which supresses disposal of the underlying stream.

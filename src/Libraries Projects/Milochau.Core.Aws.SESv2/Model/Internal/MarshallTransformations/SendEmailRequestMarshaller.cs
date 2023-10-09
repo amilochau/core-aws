@@ -1,7 +1,7 @@
+using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Util;
 using System.Text.Json;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
 {
@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
                 Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
             };
             request.Headers["Content-Type"] = "application/json";
-            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2019-09-27";
+            request.Headers[HeaderKeys.XAmzApiVersion] = "2019-09-27";
 
             return request;
         }

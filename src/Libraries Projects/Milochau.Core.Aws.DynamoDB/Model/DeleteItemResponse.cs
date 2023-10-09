@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {

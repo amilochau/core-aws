@@ -1,9 +1,8 @@
-﻿using Amazon.Lambda.TestUtilities;
+﻿using Milochau.Core.Aws.Integration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Milochau.Core.Aws.DynamoDB;
-using Milochau.Core.Aws.Integration;
 using Milochau.Core.Aws.Lambda;
 using Milochau.Core.Aws.SESv2;
 using System.Threading;

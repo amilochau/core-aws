@@ -1,8 +1,8 @@
+using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Util;
 using System.Globalization;
 using System.IO;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
 {
@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
                 HttpMethod = "POST"
             };
             request.Headers["Content-Type"] = "application/json";
-            request.Headers[Amazon.Util.HeaderKeys.XAmzApiVersion] = "2015-03-31";
+            request.Headers[HeaderKeys.XAmzApiVersion] = "2015-03-31";
 
             if (publicRequest.FunctionName == null)
                 throw new AmazonLambdaException("Request object does not have required field FunctionName set");
@@ -45,12 +45,12 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             {
                 request.ContentStream.Seek(0, SeekOrigin.Begin);
             }
-            request.Headers[Amazon.Util.HeaderKeys.ContentLengthHeader] =
+            request.Headers[HeaderKeys.ContentLengthHeader] =
                 request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
-            request.Headers[Amazon.Util.HeaderKeys.ContentTypeHeader] = "binary/octet-stream";
+            request.Headers[HeaderKeys.ContentTypeHeader] = "binary/octet-stream";
             if (request.ContentStream != null && request.ContentStream.Length == 0)
             {
-                request.Headers.Remove(Amazon.Util.HeaderKeys.ContentTypeHeader);
+                request.Headers.Remove(HeaderKeys.ContentTypeHeader);
             }
 
             if (publicRequest.ClientContextBase64 != null)

@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Lambda.Core;
+using System;
 using System.Text;
 
-using Amazon.Lambda.Core;
-
-namespace Amazon.Lambda.TestUtilities
+namespace Milochau.Core.Aws.Integration
 {
     /// <summary>
     /// An implementation if ILambdaLogger that stores all the messages in a buffer and writes the messages to the console.

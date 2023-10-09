@@ -1,5 +1,5 @@
+using Milochau.Core.Aws.Core.Runtime;
 using System.IO;
-using Amazon.Runtime;
 
 namespace Milochau.Core.Aws.Lambda.Model
 {

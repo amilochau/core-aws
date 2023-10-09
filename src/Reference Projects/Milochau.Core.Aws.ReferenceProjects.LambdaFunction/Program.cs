@@ -1,6 +1,4 @@
-﻿using Amazon.Lambda.Core;
-using Amazon.Lambda.RuntimeSupport;
-using Milochau.Core.Aws.Core.Lambda.Events;
+﻿using Milochau.Core.Aws.Core.Lambda.Events;
 using Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
@@ -13,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.SESv2;
 using Milochau.Core.Aws.Lambda;
+using Milochau.Core.Aws.Core.Lambda.Core;
+using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {

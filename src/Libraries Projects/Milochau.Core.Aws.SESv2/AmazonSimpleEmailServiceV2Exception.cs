@@ -1,6 +1,6 @@
+using Milochau.Core.Aws.Core.Runtime;
 using System;
 using System.Net;
-using Amazon.Runtime;
 
 namespace Milochau.Core.Aws.SESv2
 {

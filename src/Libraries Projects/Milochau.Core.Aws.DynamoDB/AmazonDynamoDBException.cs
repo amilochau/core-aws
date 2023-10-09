@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime;
-using Milochau.Core.Aws.DynamoDB.Model;
+﻿using Milochau.Core.Aws.Core.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace Milochau.Core.Aws.DynamoDB
@@ -38,7 +36,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <summary>
         /// Construct instance of AmazonDynamoDBException
         /// </summary>
-        public AmazonDynamoDBException(string message, Amazon.Runtime.ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
+        public AmazonDynamoDBException(string message, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
             : base(message, errorType, errorCode, requestId, statusCode)
         {
         }

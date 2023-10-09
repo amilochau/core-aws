@@ -1,5 +1,8 @@
-﻿using Amazon.Runtime;
-using Amazon.Runtime.Internal;
+﻿using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 using Milochau.Core.Aws.DynamoDB.Internal;
 using Milochau.Core.Aws.DynamoDB.Model;
 using Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations;

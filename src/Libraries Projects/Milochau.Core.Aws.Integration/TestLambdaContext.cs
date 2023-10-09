@@ -1,6 +1,6 @@
-﻿using Amazon.Lambda.Core;
+﻿using Milochau.Core.Aws.Core.Lambda.Core;
 
-namespace Amazon.Lambda.TestUtilities
+namespace Milochau.Core.Aws.Integration
 {
     /// <summary>
     /// A test implementation of the ILambdaContext interface used for writing local tests of Lambda Functions.

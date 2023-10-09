@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Amazon.Runtime;
+using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
 
 namespace Milochau.Core.Aws.XRayRecorder.Core.Strategies
