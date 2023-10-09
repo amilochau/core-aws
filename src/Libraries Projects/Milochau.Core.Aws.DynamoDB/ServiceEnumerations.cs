@@ -2,6 +2,24 @@
 
 namespace Milochau.Core.Aws.DynamoDB
 {
+    /// <summary>Service enumerations</summary>
+    /// @todo Use it for all other constant classes
+    public static class ServiceEnumerations
+    {
+        /// <summary>
+        /// Constant INDEXES for ReturnConsumedCapacity
+        /// </summary>
+        public const string ReturnConsumedCapacity_INDEXES = "INDEXES";
+        /// <summary>
+        /// Constant NONE for ReturnConsumedCapacity
+        /// </summary>
+        public const string ReturnConsumedCapacity_NONE = "NONE";
+        /// <summary>
+        /// Constant TOTAL for ReturnConsumedCapacity
+        /// </summary>
+        public const string ReturnConsumedCapacity_TOTAL = "TOTAL";
+    }
+
     /// <summary>
     /// Constants used for properties of type AttributeAction.
     /// </summary>
@@ -29,38 +47,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// newer than the current version of the SDK.
         /// </summary>
         public AttributeAction(string value)
-            : base(value)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Constants used for properties of type ReturnConsumedCapacity.
-    /// </summary>
-    public class ReturnConsumedCapacity : ConstantClass
-    {
-        /// <summary>
-        /// Constant INDEXES for ReturnConsumedCapacity
-        /// </summary>
-        public static readonly ReturnConsumedCapacity INDEXES = new("INDEXES");
-        /// <summary>
-        /// Constant NONE for ReturnConsumedCapacity
-        /// </summary>
-        public static readonly ReturnConsumedCapacity NONE = new("NONE");
-        /// <summary>
-        /// Constant TOTAL for ReturnConsumedCapacity
-        /// </summary>
-        public static readonly ReturnConsumedCapacity TOTAL = new("TOTAL");
-
-        /// <summary>
-        /// This constant constructor does not need to be called if the constant
-        /// you are attempting to use is already defined as a static instance of 
-        /// this class.
-        /// This constructor should be used to construct constants that are not
-        /// defined as statics, for instance if attempting to use a feature that is
-        /// newer than the current version of the SDK.
-        /// </summary>
-        public ReturnConsumedCapacity(string value)
             : base(value)
         {
         }

@@ -147,7 +147,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
             return new Dictionary<string, object?>
             {
                 { "table_name", TableName },
-                { "consistent_read", ConsistentRead },
+                { "consistent_read", ConsistentRead.ToString() },
                 { "projection_expression", ProjectionExpression },
             };
         }
