@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milochau.Core.Aws.XRayRecorder.Models;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 
@@ -38,13 +39,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Gets or sets the unique id for the trace.
-        /// </summary>
-        /// <exception cref="ArgumentException">Trace id is invalid. - value</exception>
-        [JsonPropertyName("trace_id")]
-        public string TraceId { get; set; }
-
-        /// <summary>
         /// Increment the size count.
         /// </summary>
         public void IncrementSize()
@@ -76,6 +70,16 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         public override bool IsEmittable()
         {
             return Reference == 0;
+        }
+
+        /// <summary>
+        /// Marshall the segment into JSON string
+        /// </summary>
+        /// <returns>The JSON string parsed from given segment</returns>
+        public override string? Marshall()
+        {
+            var serializedEntity = JsonSerializer.Serialize(this, AwsJsonSerializerContext.Default.Segment);
+            return ProtocolHeader + ProtocolDelimiter + serializedEntity;
         }
     }
 }

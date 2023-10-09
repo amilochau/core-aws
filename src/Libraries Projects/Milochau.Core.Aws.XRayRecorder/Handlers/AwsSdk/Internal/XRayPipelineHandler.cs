@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.XRayRecorder.Core;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
-using Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Entities;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
-using Milochau.Core.Aws.XRayRecorder.References;
 using System.Linq;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
@@ -121,14 +119,13 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
-            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request!.ServiceName);
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
             subsegment.AddToAws("region", client.RegionEndpoint?.SystemName);
             subsegment.AddToAws("operation", operation);
             if (responseContext.Response == null)
             {
-                if (requestContext.Request.Headers.TryGetValue("x-amzn-RequestId", out string? requestId))
+                if (requestContext.Request!.Headers.TryGetValue("x-amzn-RequestId", out string? requestId))
                 {
                     subsegment.AddToAws("request_id", requestId);
                 }
@@ -156,7 +153,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                     subsegment.AddToAws("id_2", extendedRequestId);
                 }
 
-                AddResponseSpecificInformation(serviceName, operation, responseContext.Response, subsegment);
+                AddResponseSpecificInformation(responseContext.Response, subsegment);
             }
 
             if (responseContext.HttpResponse != null)
@@ -164,13 +161,13 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 AddHttpInformation(responseContext.HttpResponse);
             }
 
-            AddRequestSpecificInformation(serviceName, operation, requestContext.OriginalRequest, subsegment);
+            AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
             _recorder.EndSubsegment();
         }
 
         private void AddHttpInformation(IWebResponseData httpResponse)
         {
-            var responseAttributes = new Dictionary<string, object>();
+            var responseAttributes = new Dictionary<string, long>();
             int statusCode = (int)httpResponse.StatusCode;
             if (statusCode >= 400 && statusCode <= 499)
             {
@@ -194,7 +191,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         private void ProcessException(AmazonServiceException ex, Entity subsegment)
         {
             int statusCode = (int)ex.StatusCode;
-            var responseAttributes = new Dictionary<string, object>();
+            var responseAttributes = new Dictionary<string, long>();
 
             if (statusCode >= 400 && statusCode <= 499)
             {
@@ -215,18 +212,8 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             subsegment.AddToAws("request_id", ex.RequestId);
         }
 
-        private static void AddRequestSpecificInformation(string serviceName, string operation, AmazonWebServiceRequest request, Entity entity)
+        private static void AddRequestSpecificInformation(AmazonWebServiceRequest request, Entity entity)
         {
-            if (serviceName == null)
-            {
-                throw new ArgumentNullException(nameof(serviceName));
-            }
-
-            if (operation == null)
-            {
-                throw new ArgumentNullException(nameof(operation));
-            }
-
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
@@ -235,16 +222,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
-            }
-
-            if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler? serviceHandler))
-            {
-                return;
-            }
-
-            if (!serviceHandler.Operations.TryGetValue(operation, out AWSOperationHandler? operationHandler))
-            {
-                return;
             }
 
             var xrayRequestParameters = request.GetXRayRequestParameters();
@@ -260,18 +237,8 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             }
         }
 
-        private static void AddResponseSpecificInformation(string serviceName, string operation, AmazonWebServiceResponse response, Entity entity)
+        private static void AddResponseSpecificInformation(AmazonWebServiceResponse response, Entity entity)
         {
-            if (!XRayServices.Instance.Services.TryGetValue(serviceName, out AWSServiceHandler? serviceHandler))
-            {
-                return;
-            }
-
-            if (!serviceHandler.Operations.TryGetValue(operation, out AWSOperationHandler? operationHandler))
-            {
-                return;
-            }
-
             var xrayResponseParameters = response.GetXRayResponseParameters();
             foreach (var item in xrayResponseParameters.Where(x => x.Value != null))
             {

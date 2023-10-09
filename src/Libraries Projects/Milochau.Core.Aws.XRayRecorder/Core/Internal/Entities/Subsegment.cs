@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milochau.Core.Aws.XRayRecorder.Models;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
@@ -16,13 +17,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         {
             Parent = parent;
         }
-
-        /// <summary>
-        /// Gets or sets the unique id for the trace.
-        /// </summary>
-        /// <exception cref="ArgumentException">Trace id is invalid. - value</exception>
-        [JsonPropertyName("trace_id")]
-        public string? TraceId { get; set; }
 
         /// <summary>
         /// Gets or sets the namespace of the subsegment
@@ -64,6 +58,16 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Marshall the segment into JSON string
+        /// </summary>
+        /// <returns>The JSON string parsed from given segment</returns>
+        public override string? Marshall()
+        {
+            var serializedEntity = JsonSerializer.Serialize(this, AwsJsonSerializerContext.Default.Subsegment);
+            return ProtocolHeader + ProtocolDelimiter + serializedEntity;
         }
     }
 }
