@@ -12,6 +12,9 @@ lambda_settings = {
         route     = "/"
         anonymous = true
       }]
+      lambda_accesses = [{
+        arn = "arn:aws:lambda:eu-west-3:266302224431:function:emails-dev-fn-async-send-emails"
+      }]
     }
   }
 }

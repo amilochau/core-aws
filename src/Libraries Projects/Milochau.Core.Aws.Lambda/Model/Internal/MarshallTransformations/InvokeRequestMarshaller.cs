@@ -29,16 +29,14 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         {
             IRequest request = new DefaultRequest(publicRequest, "Amazon.Lambda")
             {
-                HttpMethod = "POST"
+                HttpMethod = "POST",
+                ResourcePath = "/2015-03-31/functions/{FunctionName}/invocations",
+                UseQueryString = true,
             };
             request.Headers["Content-Type"] = "application/json";
             request.Headers[HeaderKeys.XAmzApiVersion] = "2015-03-31";
 
-            if (publicRequest.FunctionName == null)
-                throw new AmazonLambdaException("Request object does not have required field FunctionName set");
             request.AddPathResource("{FunctionName}", publicRequest.FunctionName);
-
-            request.ResourcePath = "/2015-03-31/functions/{FunctionName}/invocations";
 
             request.ContentStream = publicRequest.PayloadStream ?? new MemoryStream();
             if (request.ContentStream.CanSeek)
@@ -62,8 +60,6 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             {
                 request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType.Value;
             }
-
-            request.UseQueryString = true;
 
             return request;
         }

@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -175,6 +176,23 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Writes a stream to the request body.
+        /// </summary>
+        /// <param name="requestContent">The destination where the content stream is written.</param>
+        /// <param name="contentStream">The content stream to be written.</param>
+        /// <param name="contentHeaders">HTTP content headers.</param>
+        /// <param name="requestContext">The request context.</param>
+        public void WriteToRequestBody(HttpContent requestContent, Stream contentStream,
+            IDictionary<string, string> contentHeaders, IRequestContext requestContext)
+        {
+            var wrapperStream = new NonDisposingWrapperStream(contentStream);
+            _request.Content = new StreamContent(wrapperStream, ClientConfig.DefaultBufferSize);
+            _request.Content.Headers.ContentLength = contentStream.Length;
+
+            WriteContentHeaders(contentHeaders);
         }
 
         /// <summary>

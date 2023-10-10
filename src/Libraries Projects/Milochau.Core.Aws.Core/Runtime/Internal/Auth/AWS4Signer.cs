@@ -142,7 +142,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             var serviceSigningName = clientConfig.AuthenticationServiceName;
 
             request.DeterminedSigningRegion = DetermineSigningRegion(clientConfig, clientConfig.RegionEndpointServiceName);
-            SetXAmzTrailerHeader(request.Headers, request.TrailingHeaders);
 
             var parametersToCanonicalize = GetParametersToCanonicalize(request);
             var canonicalParameters = CanonicalizeQueryParameters(parametersToCanonicalize);
@@ -206,23 +205,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             headers[HeaderKeys.XAmzDateHeader] = dt.ToUniversalTime().ToString(AWSSDKUtils.ISO8601BasicDateTimeFormat, CultureInfo.InvariantCulture);
 
             return dt;
-        }
-
-        /// <summary>
-        /// Sets the x-amz-trailer header for the given set of trailing headers
-        /// </summary>
-        /// <param name="headers">request's headers</param>
-        /// <param name="trailingHeaders">request's trailing headers</param>
-        public static void SetXAmzTrailerHeader(IDictionary<string, string> headers, IDictionary<string, string> trailingHeaders)
-        {
-            if (trailingHeaders == null || trailingHeaders.Count == 0)
-            {
-                return;
-            }
-
-            // The x-amz-trailer HTTP header MUST be set with the value as comma-separated
-            // string consisting of trailing header names in the order they are written on the HTTP request.
-            headers[HeaderKeys.XAmzTrailerHeader] = string.Join(",", trailingHeaders.Keys.OrderBy(key => key).ToArray());
         }
 
         private static void CleanHeaders(IDictionary<string, string> headers)
@@ -355,24 +337,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             // If unsigned payload, set the appropriate magic string in the header and return it
             if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : false)
             {
-                if (request.TrailingHeaders?.Count > 0)
-                {
-                    // Set X-Amz-Decoded-Content-Length with the true size of the data
-                    request.Headers[HeaderKeys.XAmzDecodedContentLengthHeader] = request.Headers[HeaderKeys.ContentLengthHeader];
-
-                    // Substitute the originally declared content length with the inflated length due to trailing headers
-                    var originalContentLength = long.Parse(request.Headers[HeaderKeys.ContentLengthHeader], CultureInfo.InvariantCulture);
-                    request.Headers[HeaderKeys.ContentLengthHeader]
-                        = TrailingHeadersWrapperStream.CalculateLength(request.TrailingHeaders, originalContentLength).ToString(CultureInfo.InvariantCulture);
-
-                    SetContentEncodingHeader(request);
-
-                    return SetPayloadSignatureHeader(request, UnsignedPayloadWithTrailer);
-                }
-                else // request does not have trailing headers (and is still unsigned payload)
-                {
-                    return SetPayloadSignatureHeader(request, UnsignedPayload);
-                }
+                return SetPayloadSignatureHeader(request, UnsignedPayload);
             }
 
             // if the body hash has been precomputed and already placed in the header, just extract and return it

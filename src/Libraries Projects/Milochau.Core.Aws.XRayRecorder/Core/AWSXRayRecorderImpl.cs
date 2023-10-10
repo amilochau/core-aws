@@ -72,7 +72,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         protected bool Disposed { get; set; }
 
         /// <summary>
-        /// Defines exception serialization stategy to process recorded exceptions. <see cref="Strategies.IExceptionSerializationStrategy"/>
+        /// Defines exception serialization stategy to process recorded exceptions. <see cref="IExceptionSerializationStrategy"/>
         /// </summary>
         public IExceptionSerializationStrategy ExceptionSerializationStrategy { get; set; } = new DefaultExceptionSerializationStrategy();
 

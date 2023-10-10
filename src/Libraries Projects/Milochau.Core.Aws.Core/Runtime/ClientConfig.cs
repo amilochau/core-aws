@@ -14,6 +14,8 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// </summary>
         internal const long UpperLimitCompressionSizeBytes = 10485760;
 
+        public const int DefaultBufferSize = 8192;
+
         private RegionEndpoint? regionEndpoint = null;
         private bool probeForRegionEndpoint = true;
         private int? maxRetries = null;

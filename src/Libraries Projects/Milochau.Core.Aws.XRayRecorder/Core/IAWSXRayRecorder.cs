@@ -22,7 +22,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         ContextMissingStrategy ContextMissingStrategy { get; set; }
 
         /// <summary>
-        /// Defines exception serialization stategy to process recorded exceptions. <see cref="Strategies.IExceptionSerializationStrategy"/>
+        /// Defines exception serialization stategy to process recorded exceptions. <see cref="IExceptionSerializationStrategy"/>
         /// </summary>
         IExceptionSerializationStrategy ExceptionSerializationStrategy { get; set; }
         /// <summary>

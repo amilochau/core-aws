@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -194,11 +195,5 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// </summary>
         /// <returns>Returns true if the request has a body, else false.</returns>
         bool HasRequestBody();
-
-        /// <summary>
-        /// Returns a dictionary of the trailing headers included
-        /// after this request's content.
-        /// </summary>
-        IDictionary<string, string> TrailingHeaders { get; }
     }
 }

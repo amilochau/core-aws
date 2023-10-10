@@ -1,4 +1,5 @@
 using Milochau.Core.Aws.Core.Runtime.Internal;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Milochau.Core.Aws.Lambda.Model
@@ -53,5 +54,14 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         /// </summary>
         public int? StatusCode { get; set; }
+
+        /// <summary>Get response parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayResponseParameters()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "status", StatusCode },
+            };
+        }
     }
 }

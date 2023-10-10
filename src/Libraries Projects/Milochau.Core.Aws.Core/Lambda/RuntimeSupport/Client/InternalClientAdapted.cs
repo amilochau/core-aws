@@ -83,7 +83,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                     var result_ = default(ErrorResponse);
                     try
                     {
-                        result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                        result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                     }
                     catch (System.Exception exception_)
                     {
@@ -157,7 +157,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                             var result_ = default(ErrorResponse);
                             try
                             {
-                                result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                                result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                             }
                             catch (System.Exception exception_)
                             {
@@ -172,7 +172,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                             var result_ = default(ErrorResponse);
                             try
                             {
-                                result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                                result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                             }
                             catch (System.Exception exception_)
                             {
@@ -187,7 +187,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                             var result_ = default(ErrorResponse);
                             try
                             {
-                                result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                                result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                             }
                             catch (System.Exception exception_)
                             {
@@ -288,7 +288,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                         var result_ = default(StatusResponse);
                         try
                         {
-                            result_ = JsonSerializer.Deserialize<StatusResponse>(responseData_, RuntimeApiSerializationContext.Default.StatusResponse);
+                            result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.StatusResponse);
                             return new SwaggerResponse<StatusResponse>(headers_, result_);
                         }
                         catch (System.Exception exception_)
@@ -303,7 +303,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                         var result_ = default(ErrorResponse);
                         try
                         {
-                            result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                            result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                         }
                         catch (System.Exception exception_)
                         {
@@ -318,7 +318,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                         var result_ = default(ErrorResponse);
                         try
                         {
-                            result_ = JsonSerializer.Deserialize<ErrorResponse>(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
+                            result_ = JsonSerializer.Deserialize(responseData_, RuntimeApiSerializationContext.Default.ErrorResponse);
                         }
                         catch (System.Exception exception_)
                         {
