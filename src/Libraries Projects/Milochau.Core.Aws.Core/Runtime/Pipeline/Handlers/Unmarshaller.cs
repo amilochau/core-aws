@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
 {

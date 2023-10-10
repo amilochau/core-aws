@@ -19,7 +19,7 @@
 
         public virtual System.Threading.Tasks.Task<ImmutableCredentials> GetCredentialsAsync()
         {
-            return System.Threading.Tasks.Task.FromResult<ImmutableCredentials>(GetCredentials());
+            return System.Threading.Tasks.Task.FromResult(GetCredentials());
         }
     }
 }

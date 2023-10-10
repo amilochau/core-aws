@@ -5,7 +5,6 @@ using Milochau.Core.Aws.Core.Util;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
-
     internal class InternalException
     {
         [JsonPropertyName("__type")]

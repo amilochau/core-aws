@@ -394,5 +394,14 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public string? UpdateExpression { get; set; }
+
+        /// <summary>Get request parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayRequestParameters()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "table_name", TableName },
+            };
+        }
     }
 }

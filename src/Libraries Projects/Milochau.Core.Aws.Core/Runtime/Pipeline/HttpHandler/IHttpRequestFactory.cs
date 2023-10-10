@@ -1,6 +1,7 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 {
@@ -52,6 +53,15 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// </summary>
         /// <returns>The HTTP response.</returns>
         IWebResponseData GetResponse();
+
+        /// <summary>
+        /// Writes a stream to the request body.
+        /// </summary>
+        /// <param name="requestContent">The destination where the content stream is written.</param>
+        /// <param name="contentStream">The content stream to be written.</param>
+        /// <param name="contentHeaders">HTTP content headers.</param>
+        /// <param name="requestContext">The request context.</param>
+        void WriteToRequestBody(TRequestContent requestContent, Stream contentStream, IDictionary<string, string> contentHeaders, IRequestContext requestContext);
 
         /// <summary>
         /// Writes a byte array to the request body.

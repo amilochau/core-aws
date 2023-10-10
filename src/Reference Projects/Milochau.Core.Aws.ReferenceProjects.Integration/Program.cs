@@ -42,7 +42,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
                 var sesDataAccess = new LambdaFunction.DataAccess.SesDataAccess(new AmazonSimpleEmailServiceV2Client());
                 
                 var proxyResponse = await LambdaFunction.Function.DoAsync(proxyRequest, new TestLambdaContext(), dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
-                return ApiGatewayHelpers.BuildEmptyResult(proxyResponse);
+                return ApiGatewayHelpers.BuildResult(proxyResponse);
             })
             .Produces(204)
             .WithTags("Lambda Function")

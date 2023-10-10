@@ -12,7 +12,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
     /// </summary>
     public class UdpSegmentEmitter : ISegmentEmitter
     {
-        private readonly ISegmentMarshaller _marshaller;
         private readonly UdpClient _udpClient;
         private DaemonConfig _daemonConfig;
         private bool _disposed;
@@ -20,13 +19,8 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpSegmentEmitter"/> class.
         /// </summary>
-        public UdpSegmentEmitter() : this(new JsonSegmentMarshaller())
+        public UdpSegmentEmitter()
         {
-        }
-
-        private UdpSegmentEmitter(ISegmentMarshaller marshaller)
-        {
-            _marshaller = marshaller;
             _udpClient = new UdpClient();
             _daemonConfig = DaemonConfig.GetEndPoint();
         }
@@ -53,9 +47,9 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
 
             try
             {
-                var packet = _marshaller.Marshall(segment);
+                var packet = segment.Marshall()!;
                 var data = Encoding.ASCII.GetBytes(packet);
-                var ip = EndPoint; //Need local var to ensure ip do not updates
+                var ip = EndPoint; //Need local var to ensure ip do not 
                 _udpClient.Send(data, data.Length, ip);
             }
             catch (SocketException)

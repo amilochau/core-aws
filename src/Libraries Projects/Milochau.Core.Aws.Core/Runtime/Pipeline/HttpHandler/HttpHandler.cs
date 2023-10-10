@@ -1,5 +1,7 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.Util.Internal;
 using System;
@@ -110,8 +112,36 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
             IHttpRequest<HttpContent> httpRequest,
             IRequestContext requestContext)
         {
-            byte[] requestData = requestContext.Request.Content;
-            httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
+            IRequest wrappedRequest = requestContext.Request;
+
+            // This code path ends up using a ByteArrayContent for System.Net.HttpClient used by .NET Core.
+            // HttpClient can't seem to handle ByteArrayContent with 0 length so in that case use
+            // the StreamContent code path.
+            if (wrappedRequest.Content != null && wrappedRequest.Content.Length > 0)
+            {
+                byte[] requestData = wrappedRequest.Content;
+                httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
+            }
+            else
+            {
+                System.IO.Stream originalStream;
+                if (wrappedRequest.ContentStream == null)
+                {
+                    originalStream = new System.IO.MemoryStream();
+                    originalStream.Write(wrappedRequest.Content, 0, wrappedRequest.Content.Length);
+                    originalStream.Position = 0;
+                }
+                else
+                {
+                    originalStream = wrappedRequest.ContentStream;
+                }
+
+                httpRequest.WriteToRequestBody(requestContent, originalStream, requestContext.Request.Headers, requestContext);
+            }
+
+
+            //byte[] requestData = requestContext.Request.Content;
+            //httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
         }
 
         /// <summary>

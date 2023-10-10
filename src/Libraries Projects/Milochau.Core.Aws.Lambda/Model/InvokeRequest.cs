@@ -1,4 +1,5 @@
 using Milochau.Core.Aws.Core.Util;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Milochau.Core.Aws.Lambda.Model
@@ -100,7 +101,7 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// to 64 characters in length.
         /// </para>
         /// </summary>
-        public string? FunctionName { get; set; }
+        public required string FunctionName { get; set; }
 
         /// <summary>
         /// Gets and sets the property InvocationType. 
@@ -167,6 +168,15 @@ namespace Milochau.Core.Aws.Lambda.Model
                 else
                     PayloadStream = AWSSDKUtils.GenerateMemoryStreamFromString(value);
             }
+        }
+
+        /// <summary>Get request parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayRequestParameters()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "function_name", FunctionName },
+            };
         }
     }
 }

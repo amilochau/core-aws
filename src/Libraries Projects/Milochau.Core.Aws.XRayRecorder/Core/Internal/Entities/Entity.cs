@@ -18,6 +18,11 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
         private long _referenceCounter;      // Reference count
 
+        /// <summary>Protocol header</summary>
+        protected const string ProtocolHeader = "{\"format\":\"json\",\"version\":1}";
+        /// <summary>Protocol delimiter</summary>
+        protected const char ProtocolDelimiter = '\n';
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
@@ -39,6 +44,13 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// <exception cref="ArgumentException">The id is invalid. - value</exception>
         [JsonPropertyName("id")]
         public string? Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique id for the trace.
+        /// </summary>
+        /// <exception cref="ArgumentException">Trace id is invalid. - value</exception>
+        [JsonPropertyName("trace_id")]
+        public string? TraceId { get; set; }
 
         /// <summary>
         /// Gets or sets the start time of this segment with Unix time in seconds.
@@ -75,7 +87,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// <summary>
         /// Gets a readonly copy of the subsegment list.
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonPropertyName("subsegments")]
         public List<Subsegment>? Subsegments { get; set; }
 
         /// <summary>
@@ -133,7 +145,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// Gets the http attribute
         /// </summary>
         [JsonPropertyName("http")]
-        public IDictionary<string, object>? Http { get; set; }
+        public IDictionary<string, Dictionary<string, long>>? Http { get; set; }
 
         /// <summary>
         /// Gets or sets the sample decision
@@ -158,11 +170,11 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         }
 
         private readonly object httpLock = new object();
-        internal void AddToHttp(string key, object value)
+        internal void AddToHttp(string key, Dictionary<string, long> value)
         {
             lock (httpLock)
             {
-                Http ??= new ConcurrentDictionary<string, object>();
+                Http ??= new ConcurrentDictionary<string, Dictionary<string, long>>();
                 Http.Add(key, value);
             }
         }
@@ -273,5 +285,11 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         {
             return Interlocked.Increment(ref _referenceCounter);
         }
+
+        /// <summary>
+        /// Marshall the segment into JSON string
+        /// </summary>
+        /// <returns>The JSON string parsed from given segment</returns>
+        public abstract string? Marshall();
     }
 }

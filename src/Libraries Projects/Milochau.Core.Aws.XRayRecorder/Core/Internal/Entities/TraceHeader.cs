@@ -125,7 +125,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
             header = new TraceHeader
             {
                 // Trace id doesn't exist in subsegment, so get it from rootsegment
-                RootTraceId = entity.RootSegment?.TraceId,
+                RootTraceId = entity.RootSegment!.TraceId,
                 ParentId = entity.Id,
                 Sampled = entity.Sampled
             };

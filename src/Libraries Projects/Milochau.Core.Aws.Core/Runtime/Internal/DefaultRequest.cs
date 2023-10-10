@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 using Milochau.Core.Aws.Core.Util;
 
@@ -193,12 +194,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// The region in which the service request was signed.
         /// </summary>
         public string DeterminedSigningRegion { get; set; }
-
-        /// <summary>
-        /// Returns a dictionary of the trailing headers included
-        /// after this request's content.
-        /// </summary>
-        public IDictionary<string, string> TrailingHeaders { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Checks if the request stream can be rewinded.

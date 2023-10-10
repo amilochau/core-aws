@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
         /// <returns></returns>
         public static DaemonConfig GetEndPoint(string? daemonAddress = null)
         {
-            if(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
+            if (Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
             {
                 return ParsEndpoint(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress));
             }

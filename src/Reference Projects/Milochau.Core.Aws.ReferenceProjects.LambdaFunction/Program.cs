@@ -146,12 +146,12 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 return proxyResponse;
             }
 
-            // await sesDataAccess.SendEmailAsync(new(), cancellationToken);
-            await dynamoDbDataAccess.GetMessageAsync(cancellationToken);
+            //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
+            //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
+            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
 
-            await Task.CompletedTask;
-
-            return HttpResponse.NoContent();
+            var response = new FunctionResponse();
+            return HttpResponse.Ok(response, ApplicationJsonSerializerContext.Default.FunctionResponse);
         }
     }
 
@@ -161,6 +161,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
     [JsonSerializable(typeof(SNSEvent))]
     [JsonSerializable(typeof(EmailRequest))]
     [JsonSerializable(typeof(EmailRequestContent))]
+    [JsonSerializable(typeof(FunctionResponse))]
     public partial class ApplicationJsonSerializerContext : JsonSerializerContext
     {
     }

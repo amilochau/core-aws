@@ -2,6 +2,7 @@
 using Milochau.Core.Aws.XRayRecorder.Core.Strategies;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Context;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.XRayRecorder.Core
 {
@@ -21,7 +22,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         ContextMissingStrategy ContextMissingStrategy { get; set; }
 
         /// <summary>
-        /// Defines exception serialization stategy to process recorded exceptions. <see cref="Strategies.IExceptionSerializationStrategy"/>
+        /// Defines exception serialization stategy to process recorded exceptions. <see cref="IExceptionSerializationStrategy"/>
         /// </summary>
         IExceptionSerializationStrategy ExceptionSerializationStrategy { get; set; }
         /// <summary>
@@ -68,7 +69,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// </summary>
         /// <param name="key">The key of the http information to add</param>
         /// <param name="value">The value of the http information to add</param>
-        void AddHttpInformation(string key, object value);
+        void AddHttpInformation(string key, Dictionary<string, long> value);
 
         /// <summary>
         /// Mark the current segment as being throttled.

@@ -26,16 +26,16 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task SendEmailAsync(FunctionRequest emailRequest, CancellationToken cancellationToken)
         {
-            _ = await amazonSimpleEmailServiceV2.SendEmailAsync(new Milochau.Core.Aws.SESv2.Model.SendEmailRequest
+            _ = await amazonSimpleEmailServiceV2.SendEmailAsync(new SESv2.Model.SendEmailRequest
             {
                 FromEmailAddress = "noreply@dev.milochau.com",
-                Destination = new Milochau.Core.Aws.SESv2.Model.Destination
+                Destination = new SESv2.Model.Destination
                 {
                     ToAddresses = new List<string> { "aaa@outlook.com" },
                 },
-                Content = new Milochau.Core.Aws.SESv2.Model.EmailContent
+                Content = new SESv2.Model.EmailContent
                 {
-                    Template = new Milochau.Core.Aws.SESv2.Model.Template
+                    Template = new SESv2.Model.Template
                     {
                         TemplateName = "emails-dev-template-contacts-summary",
                         TemplateData = JsonSerializer.Serialize(new EmailRequestContent

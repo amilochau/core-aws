@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Context;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters;
@@ -71,7 +72,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         protected bool Disposed { get; set; }
 
         /// <summary>
-        /// Defines exception serialization stategy to process recorded exceptions. <see cref="Strategies.IExceptionSerializationStrategy"/>
+        /// Defines exception serialization stategy to process recorded exceptions. <see cref="IExceptionSerializationStrategy"/>
         /// </summary>
         public IExceptionSerializationStrategy ExceptionSerializationStrategy { get; set; } = new DefaultExceptionSerializationStrategy();
 
@@ -124,7 +125,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// <exception cref="ArgumentException">Key is null or empty.</exception>
         /// <exception cref="ArgumentNullException">Value is null.</exception>
         /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public void AddHttpInformation(string key, object value)
+        public void AddHttpInformation(string key, Dictionary<string, long> value)
         {
             try
             {

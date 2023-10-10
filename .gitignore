@@ -352,3 +352,6 @@ MigrationBackup/
 # Local tests for bundle size
 src/output-compressed/
 src/output/
+
+# Terraform
+.terraform
