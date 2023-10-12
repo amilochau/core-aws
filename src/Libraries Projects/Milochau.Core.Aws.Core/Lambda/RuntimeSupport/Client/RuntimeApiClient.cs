@@ -1,6 +1,7 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers;
+using Milochau.Core.Aws.Core.References;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -18,13 +19,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         private readonly IConsoleLoggerWriter _consoleLoggerRedirector = new LogLevelLoggerWriter();
 
-        internal LambdaEnvironment LambdaEnvironment { get; set; }
-
         internal RuntimeApiClient(HttpClient httpClient)
         {
-            LambdaEnvironment = new LambdaEnvironment();
             var internalClient = new InternalRuntimeApiClient(httpClient);
-            internalClient.BaseUrl = "http://" + LambdaEnvironment.RuntimeServerHostAndPort + internalClient.BaseUrl;
+            internalClient.BaseUrl = "http://" + EnvironmentVariables.RuntimeServerHostAndPort + internalClient.BaseUrl;
             _internalClient = internalClient;
         }
 
@@ -41,7 +39,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             var headers = new RuntimeApiHeaders(response.Headers);
             _consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
 
-            var lambdaContext = new LambdaContext(headers, LambdaEnvironment, _consoleLoggerRedirector);
+            var lambdaContext = new LambdaContext(headers, _consoleLoggerRedirector);
             return new InvocationRequest
             {
                 InputStream = response.Result,
@@ -79,7 +77,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="awsRequestId">The ID of the function request being responded to.</param>
         /// <param name="outputStream">The content of the response to the function invocation.</param>
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
-        /// <returns></returns>
         public async Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken = default)
         {
             await _internalClient.ResponseAsync(awsRequestId, outputStream, cancellationToken);

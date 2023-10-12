@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 {
     /// <summary>
     /// The interface for an exception handler.
     /// </summary>    
-    public interface IExceptionHandler
+    public interface IExceptionHandler<TException> where TException : Exception
     {
         /// <summary>
         /// Handles an exception for the given execution context.
@@ -18,26 +19,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         /// should be rethrown.
         /// This method can also throw a new exception to replace the original exception.
         /// </returns>
-        System.Threading.Tasks.Task<bool> HandleAsync(IExecutionContext executionContext, Exception exception);
-    }
-
-    /// <summary>
-    /// The interface for an exception handler with a generic parameter for the exception type.
-    /// </summary>
-    /// <typeparam name="T">The exception type.</typeparam>
-    public interface IExceptionHandler<T> : IExceptionHandler where T : Exception
-    {
-        /// <summary>
-        /// Handles an exception for the given execution context.
-        /// </summary>
-        /// <param name="executionContext">The execution context, it contains the
-        /// request and response context.</param>
-        /// <param name="exception">The exception to handle.</param>
-        /// <returns>
-        /// Returns a boolean value which indicates if the original exception
-        /// should be rethrown.
-        /// This method can also throw a new exception to replace the original exception.
-        /// </returns>
-        bool HandleException(IExecutionContext executionContext, T exception);
+        [DoesNotReturn]
+        System.Threading.Tasks.Task HandleAsync(IExecutionContext executionContext, TException exception);
     }
 }

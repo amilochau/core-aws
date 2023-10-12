@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             }
 
             // If both are the same instance, return true.
-            if (System.Object.ReferenceEquals(this, obj))
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
@@ -72,7 +72,7 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         public static bool operator ==(ConstantClass? a, ConstantClass? b)
         {
-            if (System.Object.ReferenceEquals(a, b))
+            if (ReferenceEquals(a, b))
             {
                 // If both are null, or both are the same instance, return true.
                 return true;

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.References;
 using System.Net;
 
 namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
@@ -12,10 +12,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
     /// </summary>
     public class DaemonConfig
     {
-        /// <summary>
-        /// The environment variable for daemon address.
-        /// </summary>
-        public const string EnvironmentVariableDaemonAddress = "AWS_XRAY_DAEMON_ADDRESS";
 
         /// <summary>
         /// Default address for daemon.
@@ -58,19 +54,18 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
         }
 
         /// <summary>
-        /// Parses daemonAddress and sets enpoint. If <see cref="EnvironmentVariableDaemonAddress"/> is set, this call is ignored.
+        /// Parses daemonAddress and sets enpoint.
         /// </summary>
-        /// <param name="daemonAddress"> Dameon address to be parsed and set to <see cref="DaemonConfig"/> instance.</param>
         /// <returns></returns>
-        public static DaemonConfig GetEndPoint(string? daemonAddress = null)
+        public static DaemonConfig GetEndPoint()
         {
-            if (Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
+            if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress, out var daemonAddress))
             {
-                return ParsEndpoint(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress));
+                return ParsEndpoint(daemonAddress);
             }
             else
             {
-                return ParsEndpoint(daemonAddress);
+                return ParsEndpoint(null);
             }
         }
     }

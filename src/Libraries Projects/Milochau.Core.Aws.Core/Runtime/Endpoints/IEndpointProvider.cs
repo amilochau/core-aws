@@ -8,6 +8,6 @@
         /// <summary>
         /// Resolves service endpoint based on EndpointParameters
         /// </summary>
-        Endpoint ResolveEndpoint(EndpointParameters parameters);
+        Endpoint ResolveEndpoint();
     }
 }

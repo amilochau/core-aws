@@ -159,15 +159,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         public abstract bool CanRetry(IExecutionContext executionContext);
 
         /// <summary>
-        /// Return true if the request should be retried for the given exception.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        /// <param name="exception">The exception thrown by the previous request.</param>
-        /// <returns>Return true if the request should be retried.</returns>
-        public abstract bool RetryForException(IExecutionContext executionContext, Exception exception);
-
-        /// <summary>
         /// Checks if the retry limit is reached.
         /// </summary>
         /// <param name="executionContext">The execution context which contains both the
@@ -515,7 +506,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// </summary>
         protected static string GetRetryCapacityKey(IClientConfig config)
         {
-            return $"http:{false}//region:{config.RegionEndpoint?.SystemName}.service:{config.RegionEndpointServiceName}.fips:{false}.ipv6:{false}";
+            return $"http://service:{config.AuthenticationServiceName}";
         }
     }
 }

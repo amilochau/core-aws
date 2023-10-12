@@ -1,40 +1,7 @@
+using Milochau.Core.Aws.Core.References;
+
 namespace Milochau.Core.Aws.Core.Lambda.Core
 {
-    /// <summary>
-    /// Log Level for logging messages
-    /// </summary>
-    public enum LogLevel 
-    {
-        /// <summary>
-        /// Trace level logging
-        /// </summary>
-        Trace = 0,
-        /// <summary>
-        /// Debug level logging
-        /// </summary>
-        Debug = 1,
-
-        /// <summary>
-        /// Information level logging
-        /// </summary>
-        Information = 2,
-
-        /// <summary>
-        /// Warning level logging
-        /// </summary>
-        Warning = 3,
-
-        /// <summary>
-        /// Error level logging
-        /// </summary>
-        Error = 4,
-
-        /// <summary>
-        /// Critical level logging
-        /// </summary>
-        Critical = 5
-    }
-
     /// <summary>
     /// Lambda runtime logger.
     /// </summary>
@@ -67,7 +34,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Core
         /// </summary>
         /// <param name="level"></param>
         /// <param name="message"></param>
-        void Log(string level, string message) => LogLine(message);
+        void Log(LogLevel level, string message) => LogLine(message);
 
         /// <summary>
         /// Log error message
@@ -77,6 +44,6 @@ namespace Milochau.Core.Aws.Core.Lambda.Core
         /// </para>
         /// </summary>
         /// <param name="message"></param>
-        void LogError(string message) => Log(LogLevel.Error.ToString(), message);
+        void LogError(string message) => Log(LogLevel.Error, message);
     }
 }

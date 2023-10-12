@@ -2,7 +2,6 @@
 using System.IO;
 using ThirdParty.Ionic.Zlib;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
-using Milochau.Core.Aws.Core.Util.Internal;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
@@ -27,7 +26,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             get
             {
                 var bytes = GetResponseBodyBytes();
-                return System.Text.UTF8Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                return System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
             }
         }
 
@@ -44,7 +43,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
             else
             {
-                return ArrayEx.Empty<byte>();
+                return Array.Empty<byte>();
             }
         }
 
@@ -74,15 +73,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 CrcStream = new CrcCalculatorStream(responseStream, contentLength);
             }
         }
-
-        #region Abstract members
-
-        /// <summary>
-        /// The current path that is being unmarshalled.
-        /// </summary>
-        public abstract string CurrentPath { get; }
-
-        #endregion
 
         #region Dispose Pattern Implementation
 

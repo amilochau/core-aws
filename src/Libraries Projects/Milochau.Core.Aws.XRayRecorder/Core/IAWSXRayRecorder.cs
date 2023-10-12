@@ -75,14 +75,5 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// Mark the current segment as being throttled.
         /// </summary>
         void MarkThrottle();
-
-        /// <summary>
-        /// Sets the daemon address.
-        /// The daemon address should be in format "IPAddress:Port", i.e. "127.0.0.1:2000".
-        /// If environment variable is set to specific daemon address, the call to this method
-        /// will be ignored.
-        /// </summary>
-        /// <param name="daemonAddress">The daemon address.</param>
-        void SetDaemonAddress(string daemonAddress);
     }
 }

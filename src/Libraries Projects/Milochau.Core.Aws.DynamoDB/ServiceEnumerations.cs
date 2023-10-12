@@ -1,7 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Runtime;
-using System.Text.Json.Serialization;
-
-namespace Milochau.Core.Aws.DynamoDB
+﻿namespace Milochau.Core.Aws.DynamoDB
 {
     // @todo To be improved with .NET 8 - see https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation-modes?pivots=dotnet-8-0#serialize-enum-fields-as-strings
 

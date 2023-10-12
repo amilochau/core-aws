@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 {
@@ -10,10 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
     /// </summary>
     public class ErrorHandler : PipelineHandler
     {
-        /// <summary>
-        /// Default set of exception handlers.
-        /// </summary>
-        public IDictionary<Type, IExceptionHandler> ExceptionHandlers { get; }
+        private readonly IExceptionHandler<HttpErrorResponseException> exceptionHandler;
 
         /// <summary>
         /// Constructor for ErrorHandler.
@@ -21,10 +16,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         /// <param name="logger">an ILogger instance.</param>
         public ErrorHandler()
         {
-            ExceptionHandlers = new Dictionary<Type, IExceptionHandler>
-            {
-                {typeof(HttpErrorResponseException), new HttpErrorResponseExceptionHandler()}
-            };
+            exceptionHandler = new HttpErrorResponseExceptionHandler();
         }
 
         /// <summary>
@@ -38,28 +30,21 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         {
             try
             {
-                return await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
-            }
-            catch (Exception exception)
-            {
-                DisposeReponse(executionContext.ResponseContext);
-                bool rethrowOriginalException = await ProcessExceptionAsync(executionContext, exception).ConfigureAwait(false);
-                if (rethrowOriginalException)
+                try
                 {
+                    return await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
+                }
+                catch (Exception)
+                {
+                    DisposeReponse(executionContext.ResponseContext);
                     throw;
                 }
             }
-
-            // If response if set and an exception is not rethrown, return the response.
-            // E.g. S3 GetLifecycleConfiguration, GetBucket policy and few other operations
-            // return a 404 which is not returned back as an exception but as a empty response with 
-            // error code.
-            if(executionContext.ResponseContext != null && executionContext.ResponseContext.Response != null)
+            catch (HttpErrorResponseException exception)
             {
-                return executionContext.ResponseContext.Response as T;
+                await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
+                throw; // The previous line always throw...
             }
-
-            return null;
         }
 
         /// <summary>
@@ -73,42 +58,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             {
                 responseContext.HttpResponse.ResponseBody.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Processes an exception by invoking a matching exception handler
-        /// for the given exception.
-        /// </summary>
-        /// <param name="executionContext">The execution context, it contains the
-        /// request and response context.</param>
-        /// <param name="exception">The exception to be processed.</param>
-        /// <returns>
-        /// This method returns a boolean value which indicates if the original exception
-        /// should be rethrown.
-        /// This method can also throw a new exception that may be thrown by exception
-        /// processing by a matching exception handler.
-        /// </returns>
-        private async System.Threading.Tasks.Task<bool> ProcessExceptionAsync(IExecutionContext executionContext, Exception exception)
-        {
-            // Find the matching handler which can process the exception
-            // Start by checking if there is a matching handler for the specific exception type,
-            // if not check for handlers for it's base type till we find a match.
-            var exceptionType = exception.GetType();
-            var exceptionTypeInfo = exception.GetType().GetTypeInfo().BaseType;
-            do
-            {
-
-                if (ExceptionHandlers.TryGetValue(exceptionType, out IExceptionHandler? exceptionHandler))
-                {
-                    return await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
-                }
-                exceptionType = exceptionTypeInfo.BaseType;
-                exceptionTypeInfo = exceptionTypeInfo.BaseType.GetTypeInfo().BaseType;
-
-            } while (exceptionType != typeof(Exception));
-
-            // No match found, rethrow the original exception.
-            return true;
         }
     }
 }

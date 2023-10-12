@@ -2,12 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.SESv2.Model;
 using Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations;
-using Milochau.Core.Aws.SESv2.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
 
 namespace Milochau.Core.Aws.SESv2
 {
@@ -47,20 +43,7 @@ namespace Milochau.Core.Aws.SESv2
         ///
         /// </summary>
         public AmazonSimpleEmailServiceV2Client()
-            : base(FallbackCredentialsFactory.GetCredentials(), new AmazonSimpleEmailServiceV2Config()) { }
-
-        #endregion
-
-        #region Overrides
-
-        /// <summary>
-        /// Customizes the runtime pipeline.
-        /// </summary>
-        /// <param name="pipeline">Runtime pipeline for the current client.</param>
-        protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
-        {
-            pipeline.AddHandlerAfter<Marshaller>(new AmazonSimpleEmailServiceV2EndpointResolver());
-        }
+            : base(new AmazonSimpleEmailServiceV2Config()) { }
 
         #endregion
 

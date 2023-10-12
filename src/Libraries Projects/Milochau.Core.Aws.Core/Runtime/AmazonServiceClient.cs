@@ -6,7 +6,6 @@ using System.Linq;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
@@ -21,30 +20,18 @@ namespace Milochau.Core.Aws.Core.Runtime
     {
         private bool _disposed;
         protected RuntimePipeline RuntimePipeline { get; set; }
-        protected internal AWSCredentials Credentials { get; private set; }
-        public IClientConfig Config => _config;
-        private readonly ClientConfig _config;
+        public IClientConfig Config { get; }
 
         #region Constructors
 
-        protected AmazonServiceClient(AWSCredentials credentials, ClientConfig config)
+        protected AmazonServiceClient(ClientConfig config)
         {
-            Credentials = credentials;
-            _config = config;
-            Signer = new AWS4Signer();
-            Initialize();
+            Config = config;
+            Signer = new AWSSigner();
             BuildRuntimePipeline();
         }
 
-        protected AbstractAWSSigner Signer
-        {
-            get;
-            private set;
-        }
-
-        protected virtual void Initialize()
-        {
-        }
+        protected AWSSigner Signer { get; private set; }
 
         #endregion
 
@@ -96,8 +83,6 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #endregion
 
-        protected virtual void CustomizeRuntimePipeline(RuntimePipeline pipeline) { }
-
         private void BuildRuntimePipeline()
         {
             var httpHandler = new HttpHandler();
@@ -115,14 +100,11 @@ namespace Milochau.Core.Aws.Core.Runtime
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
                     // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
                     new ChecksumHandler(),
-                    // CredentialsRetriever must come after RetryHandler because of any credential related changes.
-                    new CredentialsRetriever(Credentials),
                     new RetryHandler(retryPolicy),
+                    new EndpointResolver(),
                     new Marshaller(),
                 }
             );
-
-            CustomizeRuntimePipeline(RuntimePipeline);
 
             // Apply global pipeline customizations
             RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(RuntimePipeline);

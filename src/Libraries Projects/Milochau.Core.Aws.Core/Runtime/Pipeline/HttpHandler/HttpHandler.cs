@@ -1,9 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 using Milochau.Core.Aws.Core.Util;
-using Milochau.Core.Aws.Core.Util.Internal;
 using System;
 using System.Globalization;
 using System.Net.Http;
@@ -170,7 +167,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
                     }
                     else
                     {
-                        request.Content = ArrayEx.Empty<byte>();
+                        request.Content = Array.Empty<byte>();
                     }
                 }
 

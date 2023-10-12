@@ -1,3 +1,4 @@
+using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.SESv2.Internal
@@ -12,9 +13,9 @@ namespace Milochau.Core.Aws.SESv2.Internal
         /// <summary>
         /// Resolve endpoint for SimpleEmailServiceV2EndpointParameters
         /// </summary>
-        public Endpoint ResolveEndpoint(EndpointParameters parameters)
+        public Endpoint ResolveEndpoint()
         {
-            string region = parameters.Region;
+            string region = EnvironmentVariables.RegionName;
             var dnsSuffix = "amazonaws.com";
             return new Endpoint($"https://email.{region}.{dnsSuffix}");
         }

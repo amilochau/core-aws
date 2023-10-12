@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Util.Internal;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -269,10 +268,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             {
                 if (ExpectedLength < 0 || CurrentPosition == ExpectedLength)
                 {
-                    CalculatedHash = Algorithm.AppendLastBlock(ArrayEx.Empty<byte>());
+                    CalculatedHash = Algorithm.AppendLastBlock(Array.Empty<byte>());
                 }
                 else
-                    CalculatedHash = ArrayEx.Empty<byte>();
+                    CalculatedHash = Array.Empty<byte>();
 
                 if (CalculatedHash.Length > 0 && ExpectedHash != null && ExpectedHash.Length > 0)
                 {

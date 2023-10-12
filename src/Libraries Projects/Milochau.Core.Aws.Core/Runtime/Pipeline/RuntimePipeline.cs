@@ -11,28 +11,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
     /// </summary>
     public partial class RuntimePipeline : IDisposable
     {
-        #region Private members
-
         bool _disposed;
-
-        // The top-most handler in the pipeline.
-        IPipelineHandler _handler;
-
-        #endregion
-
-        #region Properties
 
         /// <summary>
         /// The top-most handler in the pipeline.
         /// </summary>
-        public IPipelineHandler Handler
-        {
-            get { return _handler; }
-        }
-
-        #endregion
-
-        #region Constructors
+        public IPipelineHandler Handler { get; private set; }
 
         /// <summary>
         /// Constructor for RuntimePipeline.
@@ -50,10 +34,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
             }
         }
 
-        #endregion
-
-        #region Invoke methods
-
         /// <summary>
         /// Invokes the pipeline asynchronously.
         /// </summary>
@@ -64,12 +44,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         {
             ThrowIfDisposed();
 
-            return _handler.InvokeAsync<T>(executionContext);
+            return Handler.InvokeAsync<T>(executionContext);
         }
-
-        #endregion
-
-        #region Handler methods
 
         /// <summary>
         /// Adds a new handler to the top of the pipeline.
@@ -84,46 +60,16 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 
             var innerMostHandler = GetInnermostHandler(handler);
 
-            if (_handler != null)
+            if (Handler != null)
             {
-                innerMostHandler.InnerHandler = _handler;
-                _handler.OuterHandler = innerMostHandler;    
+                innerMostHandler.InnerHandler = Handler;
             }
             
-            _handler = handler;
+            Handler = handler;
 
             SetHandlerProperties(handler);
         }
-        
-        /// <summary>
-        /// Adds a handler after the first instance of handler of type T.        
-        /// </summary>
-        /// <typeparam name="T">Type of the handler after which the given handler instance is added.</typeparam>
-        /// <param name="handler">The handler to be added to the pipeline.</param>
-        public void AddHandlerAfter<T>(IPipelineHandler handler)
-            where T : IPipelineHandler
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
 
-            ThrowIfDisposed();
-
-            var type = typeof(T);
-            var current = _handler;
-            while (current != null)
-            {
-                if (current.GetType() == type)
-                {
-                    InsertHandler(handler, current);
-                    SetHandlerProperties(handler);
-                    return;
-                }
-                current = current.InnerHandler;
-            }
-            throw new InvalidOperationException(
-                string.Format(CultureInfo.InvariantCulture, "Cannot find a handler of type {0}", type.Name));
-        }
-                        
         /// <summary>
         /// Adds a handler before the first instance of handler of type T.
         /// </summary>
@@ -132,13 +78,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         public void AddHandlerBefore<T>(IPipelineHandler handler)
             where T : IPipelineHandler
         {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
             ThrowIfDisposed();
 
             var type = typeof(T);
-            if (_handler.GetType() == type)
+            if (Handler.GetType() == type)
             {
                 // Add the handler to the top of the pipeline
                 AddHandler(handler);
@@ -146,7 +89,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
                 return;
             }
 
-            var current = _handler;
+            var current = Handler;
             while (current != null)
             {
                 if (current.InnerHandler != null &&
@@ -172,13 +115,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         {
             var next = current.InnerHandler;
             current.InnerHandler = handler;
-            handler.OuterHandler = current;
             
-            if (next!=null)
+            if (next != null)
             {
                 var innerMostHandler = GetInnermostHandler(handler);
                 innerMostHandler.InnerHandler = next;
-                next.OuterHandler = innerMostHandler;
             }
         }
 
@@ -200,8 +141,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         {
             ThrowIfDisposed();
         }
-
-        #endregion
 
         #region Dispose methods
 

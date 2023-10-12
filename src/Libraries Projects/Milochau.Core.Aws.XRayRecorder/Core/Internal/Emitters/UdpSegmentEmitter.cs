@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
@@ -26,15 +25,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
         }
 
         /// <summary>
-        /// Gets the end point to daemon.
-        /// <para>
-        /// Two successive calls may not return the same IP as the backing
-        /// endpoint may be a HostEndpoint that could update.
-        /// </para>
-        /// </summary>
-        public IPEndPoint? EndPoint => _daemonConfig.UDPEndpoint;
-
-        /// <summary>
         /// Send segment to local daemon
         /// </summary>
         /// <param name="segment">The segment to be sent</param>
@@ -49,7 +39,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
             {
                 var packet = segment.Marshall()!;
                 var data = Encoding.ASCII.GetBytes(packet);
-                var ip = EndPoint; //Need local var to ensure ip do not 
+                var ip = _daemonConfig.UDPEndpoint; //Need local var to ensure ip do not 
                 _udpClient.Send(data, data.Length, ip);
             }
             catch (SocketException)
@@ -63,19 +53,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
             }
             catch (InvalidOperationException)
             {
-            }
-        }
-
-        /// <summary>
-        /// Sets the daemon address.
-        /// The daemon address should be in format "IPAddress:Port", i.e. "127.0.0.1:2000"
-        /// </summary>
-        /// <param name="daemonAddress">The daemon address.</param>
-        public void SetDaemonAddress(string daemonAddress)
-        {
-            if (Environment.GetEnvironmentVariable(DaemonConfig.EnvironmentVariableDaemonAddress) == null)
-            {
-                SetEndPointOrDefault(daemonAddress);
             }
         }
 
@@ -106,11 +83,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters
 
                 _disposed = true;
             }
-        }
-
-        private void SetEndPointOrDefault(string daemonAddress)
-        {
-            _daemonConfig = DaemonConfig.GetEndPoint(daemonAddress);
         }
     }
 }

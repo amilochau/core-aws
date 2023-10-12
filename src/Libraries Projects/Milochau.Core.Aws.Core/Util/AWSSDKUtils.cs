@@ -174,14 +174,14 @@ namespace Milochau.Core.Aws.Core.Util
             if (string.IsNullOrEmpty(resourcePath))
                 return Slash;
 
-            IEnumerable<string> encodedSegments = AWSSDKUtils.SplitResourcePathIntoSegments(resourcePath, pathResources);
+            IEnumerable<string> encodedSegments = SplitResourcePathIntoSegments(resourcePath, pathResources);
 
             if (endpoint == null)
                 throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
 
             encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
 
-            return AWSSDKUtils.JoinResourcePathSegments(encodedSegments, false);
+            return JoinResourcePathSegments(encodedSegments, false);
         }
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace Milochau.Core.Aws.Core.Util
             if (a == null || b == null)
                 return a == b;
 
-            if (object.ReferenceEquals(a, b))
+            if (ReferenceEquals(a, b))
                 return true;
 
             return a.Equals(b);

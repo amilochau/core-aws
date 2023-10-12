@@ -84,7 +84,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
                 int bytesToCache = Math.Min(numberOfBytesRead, remainingBytes);
 
                 var readBytes = new byte[bytesToCache];
-                System.Array.Copy(buffer, offset, readBytes, 0, bytesToCache);
+                Array.Copy(buffer, offset, readBytes, 0, bytesToCache);
                 AllReadBytes.AddRange(readBytes);
                 _cachedBytes += bytesToCache;
             }

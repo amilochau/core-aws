@@ -10,6 +10,7 @@ using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
+using Milochau.Core.Aws.Core.References;
 
 namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 {
@@ -121,7 +122,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
-            subsegment.AddToAws("region", client.RegionEndpoint?.SystemName);
+            subsegment.AddToAws("region", EnvironmentVariables.RegionName);
             subsegment.AddToAws("operation", operation);
             if (responseContext.Response == null)
             {

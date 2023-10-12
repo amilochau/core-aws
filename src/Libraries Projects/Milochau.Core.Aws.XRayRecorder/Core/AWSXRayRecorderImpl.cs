@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Context;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters;
@@ -13,11 +14,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
     /// </summary>
     public abstract class AWSXRayRecorderImpl : IAWSXRayRecorder
     {
-        /// <summary>
-        /// The environment variable that setting context missing strategy.
-        /// </summary>
-        public const string EnvironmentVariableContextMissingStrategy = "AWS_XRAY_CONTEXT_MISSING";
-
         /// <summary></summary>
         protected const long MaxSubsegmentSize = 100;
 
@@ -43,7 +39,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
             set
             {
                 cntxtMissingStrategy = value;
-                string? modeFromEnvironmentVariable = Environment.GetEnvironmentVariable(EnvironmentVariableContextMissingStrategy);
+                string? modeFromEnvironmentVariable = EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_XRayContextMissing);
                 if (string.IsNullOrEmpty(modeFromEnvironmentVariable))
                 {
                 }
@@ -188,21 +184,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
             {
                 HandleEntityNotAvailableException(e, "Failed to mark throttle because segment is not available in trace context.");
             }
-        }
-
-        /// <summary>
-        /// Sets the daemon address for <see cref="Emitter"/>.
-        /// A notation of '127.0.0.1:2000' or 'tcp:127.0.0.1:2000 udp:127.0.0.2:2001' or 
-        ///'udp:127.0.0.1:2000 tcp:127.0.0.2:2001'
-        /// are acceptable.The former one means UDP and TCP are running at
-        /// the same address.
-        /// If environment variable is set to specific daemon address, the call to this method
-        /// will be ignored.
-        /// </summary>
-        /// <param name="daemonAddress">The daemon address.</param>
-        public void SetDaemonAddress(string daemonAddress)
-        {
-            Emitter?.SetDaemonAddress(daemonAddress);
         }
 
         /// <summary>

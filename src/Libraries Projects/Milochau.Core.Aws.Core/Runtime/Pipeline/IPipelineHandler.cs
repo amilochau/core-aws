@@ -14,11 +14,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         IPipelineHandler InnerHandler { get; set; }
 
         /// <summary>
-        /// The outer handler which encapsulates the current handler.
-        /// </summary>
-        IPipelineHandler OuterHandler { get; set; }
-
-        /// <summary>
         /// Contains the processing logic for an asynchronous request invocation.
         /// This method should call InnerHandler.InvokeSync to continue processing of the
         /// request by the pipeline, unless it's a terminating handler.

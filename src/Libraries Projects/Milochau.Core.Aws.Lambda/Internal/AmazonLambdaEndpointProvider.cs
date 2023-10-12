@@ -1,3 +1,4 @@
+using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.Lambda.Internal
@@ -12,9 +13,9 @@ namespace Milochau.Core.Aws.Lambda.Internal
         /// <summary>
         /// Resolve endpoint for LambdaEndpointParameters
         /// </summary>
-        public Endpoint ResolveEndpoint(EndpointParameters parameters)
+        public Endpoint ResolveEndpoint()
         {
-            string region = parameters.Region;
+            string region = EnvironmentVariables.RegionName;
             var dnsSuffix = "amazonaws.com";
             return new Endpoint($"https://lambda.{region}.{dnsSuffix}");
         }

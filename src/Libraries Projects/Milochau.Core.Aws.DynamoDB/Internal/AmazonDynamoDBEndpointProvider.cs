@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Endpoints;
+﻿using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.DynamoDB.Internal
 {
@@ -12,9 +13,9 @@ namespace Milochau.Core.Aws.DynamoDB.Internal
         /// <summary>
         /// Resolve endpoint for DynamoDBEndpointParameters
         /// </summary>
-        public Endpoint ResolveEndpoint(EndpointParameters parameters)
+        public Endpoint ResolveEndpoint()
         {
-            string region = parameters.Region;
+            string region = EnvironmentVariables.RegionName;
             var dnsSuffix = "amazonaws.com";
             return new Endpoint($"https://dynamodb.{region}.{dnsSuffix}");
         }

@@ -15,14 +15,12 @@ namespace Milochau.Core.Aws.Core.Runtime
             : base("Error unmarshalling response back from AWS.", innerException)
         {
             RequestId = requestId;
-            LastKnownLocation = lastKnownLocation;
         }
 
         public AmazonUnmarshallingException(string requestId, string lastKnownLocation, string responseBody, Exception innerException)
             : base("Error unmarshalling response back from AWS.", innerException)
         {
             RequestId = requestId;
-            LastKnownLocation = lastKnownLocation;
             ResponseBody = responseBody;
         }
 
@@ -31,33 +29,25 @@ namespace Milochau.Core.Aws.Core.Runtime
             : base("Error unmarshalling response back from AWS. " + message, innerException)
         {
             RequestId = requestId;
-            LastKnownLocation = lastKnownLocation;
             ResponseBody = responseBody;
         }
 
-        public AmazonUnmarshallingException(string requestId, string lastKnownLocation, Exception innerException, HttpStatusCode statusCode)
+        public AmazonUnmarshallingException(string requestId, Exception innerException, HttpStatusCode statusCode)
             : base("Error unmarshalling response back from AWS.", innerException, statusCode)
         {
             RequestId = requestId;
-            LastKnownLocation = lastKnownLocation;
         }
 
-        public AmazonUnmarshallingException(string requestId, string lastKnownLocation, string responseBody, Exception innerException, HttpStatusCode statusCode)
+        public AmazonUnmarshallingException(string requestId, string responseBody, Exception innerException, HttpStatusCode statusCode)
             : base("Error unmarshalling response back from AWS.", innerException, statusCode)
         {
             RequestId = requestId;
-            LastKnownLocation = lastKnownLocation;
             ResponseBody = responseBody;
         }
 
         #endregion
 
         #region Public properties
-
-        /// <summary>
-        /// Last known location in the response that was parsed, if available.
-        /// </summary>
-        public string LastKnownLocation { get; private set; }
 
         /// <summary>
         /// The entire response body that caused this exception, if available.
@@ -76,7 +66,6 @@ namespace Milochau.Core.Aws.Core.Runtime
 
                 AppendFormat(sb, "Request ID: {0}", RequestId);
                 AppendFormat(sb, "Response Body: {0}", ResponseBody);
-                AppendFormat(sb, "Last Parsed Path: {0}", LastKnownLocation);
                 AppendFormat(sb, "HTTP Status Code: {0}", (int)StatusCode + " " + StatusCode.ToString());
 
                 var partialMessage = sb.ToString();

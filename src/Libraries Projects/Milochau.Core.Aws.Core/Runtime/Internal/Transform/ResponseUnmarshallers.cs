@@ -75,7 +75,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
             catch (Exception e)
             {
-                throw new AmazonUnmarshallingException(requestId, context.CurrentPath, e, context.ResponseData.StatusCode);
+                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.StatusCode);
             }
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)

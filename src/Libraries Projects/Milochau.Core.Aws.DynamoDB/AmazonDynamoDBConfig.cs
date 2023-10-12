@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Util.Internal;
 using Milochau.Core.Aws.DynamoDB.Internal;
 
 namespace Milochau.Core.Aws.DynamoDB
@@ -9,11 +8,6 @@ namespace Milochau.Core.Aws.DynamoDB
     /// </summary>
     public partial class AmazonDynamoDBConfig : ClientConfig
     {
-        private static readonly string UserAgentString =
-            InternalSDKUtils.BuildUserAgentString("3.7.202.4");
-
-        private readonly string _userAgent = UserAgentString;
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -24,15 +18,5 @@ namespace Milochau.Core.Aws.DynamoDB
             MaxErrorRetry = 10;
             EndpointProvider = new AmazonDynamoDBEndpointProvider();
         }
-
-        /// <summary>
-        /// The constant used to lookup in the region hash the endpoint.
-        /// </summary>
-        public override string RegionEndpointServiceName => "dynamodb";
-
-        /// <summary>
-        /// Gets the value of UserAgent property.
-        /// </summary>
-        public override string UserAgent => _userAgent;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers;
+using Milochau.Core.Aws.Core.References;
 using System;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
@@ -23,7 +24,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             _consoleLoggerRedirector.FormattedWriteLine(message);
         }
 
-        public void Log(string level, string message)
+        public void Log(LogLevel level, string message)
         {
             _consoleLoggerRedirector.FormattedWriteLine(level, message);
         }

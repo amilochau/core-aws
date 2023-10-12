@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 using Milochau.Core.Aws.Core.Util;
 
@@ -126,7 +125,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
                 OriginalStreamPosition = -1;
                 if (contentStream != null)
                 {
-                    Stream baseStream = HashStream.GetNonWrapperBaseStream(contentStream);
+                    Stream baseStream = WrapperStream.GetNonWrapperBaseStream(contentStream);
                     if (baseStream.CanSeek)
                         OriginalStreamPosition = baseStream.Position;
                 }
@@ -189,11 +188,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// source of data integrity verification.</para>
         /// </summary>
         public bool? DisablePayloadSigning { get; set; }
-
-        /// <summary>
-        /// The region in which the service request was signed.
-        /// </summary>
-        public string DeterminedSigningRegion { get; set; }
 
         /// <summary>
         /// Checks if the request stream can be rewinded.

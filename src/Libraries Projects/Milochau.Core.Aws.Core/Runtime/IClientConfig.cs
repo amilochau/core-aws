@@ -1,4 +1,3 @@
-using Milochau.Core.Aws.Core.RegionEndpoints;
 using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.Core.Runtime
@@ -9,18 +8,6 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public partial interface IClientConfig
     {
-        /// <summary>
-        /// Gets the RegionEndpoint property. The region constant to use that 
-        /// determines the endpoint to use.  If this is not set
-        /// then the client will fallback to the value of ServiceURL.
-        /// </summary>
-        RegionEndpoint? RegionEndpoint { get; }
-
-        /// <summary>
-        /// The constant used to lookup in the region hash the endpoint.
-        /// </summary>
-        string RegionEndpointServiceName { get; }
-
         /// <summary>
         /// Gets and sets of the EndpointProvider property.
         /// This property is used for endpoints resolution.
@@ -35,11 +22,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// name of the service being called.
         /// </summary>
         string? AuthenticationServiceName { get; }
-
-        /// <summary>
-        /// Gets the UserAgent property.
-        /// </summary>
-        string UserAgent { get; }
 
         /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should

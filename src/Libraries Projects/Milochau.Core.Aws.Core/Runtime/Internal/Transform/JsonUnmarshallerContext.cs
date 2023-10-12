@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
@@ -31,7 +29,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         #region Private members
 
         private StreamReader streamReader = null;
-        private readonly JsonPathStack stack = new JsonPathStack();
         private bool disposed = false;
 
         #endregion
@@ -79,7 +76,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 if (parsedContentLengthHeader && responseData.ContentLength.Equals(contentLength) &&
                     string.IsNullOrEmpty(responseData.GetHeaderValue("Content-Encoding")))
                 {
-                    base.SetupCRCStream(responseData, responseStream, contentLength);
+                    SetupCRCStream(responseData, responseStream, contentLength);
                 }
             }
 
@@ -88,15 +85,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             else
                 streamReader = new StreamReader(responseStream);
         }
-
-        #endregion
-
-        #region Overrides
-
-        /// <summary>
-        /// The current Json path that is being unmarshalled.
-        /// </summary>
-        public override string CurrentPath => stack.CurrentPath;
 
         #endregion
 
@@ -125,72 +113,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
 
             base.Dispose(disposing);
-        }
-
-        private enum PathSegmentType
-        {
-            Value,
-            Delimiter
-        }
-
-        private struct PathSegment
-        {
-            internal PathSegmentType SegmentType { get; set; }
-            internal string Value { get; set; }
-        }
-
-        private class JsonPathStack
-        {
-            private readonly Stack<PathSegment> stack = new Stack<PathSegment>();
-            private readonly StringBuilder stackStringBuilder = new StringBuilder(128);
-            private string stackString;
-
-            public int CurrentDepth { get; private set; } = 0;
-
-            public string CurrentPath
-            {
-                get
-                {
-                    stackString ??= stackStringBuilder.ToString();
-                    
-                    return stackString;
-                }
-            }                        
-
-            internal void Push(PathSegment segment)
-            {
-                if (segment.SegmentType == PathSegmentType.Delimiter)
-                {
-                    CurrentDepth++;
-                }
-
-                stackStringBuilder.Append(segment.Value);
-                stackString = null;
-                stack.Push(segment);
-            }
-                        
-            internal PathSegment Pop()
-            {
-                var segment = stack.Pop();
-                if (segment.SegmentType == PathSegmentType.Delimiter)
-                {
-                    CurrentDepth--;
-                }
-
-                stackStringBuilder.Remove(stackStringBuilder.Length - segment.Value.Length, segment.Value.Length);
-                stackString = null;
-                return segment;
-            }
-            
-            internal PathSegment Peek()
-            {
-                return stack.Peek();
-            }
-
-            public int Count
-            {
-                get { return stack.Count; }
-            }
         }
     }
 }

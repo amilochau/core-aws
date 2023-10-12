@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 {
     /// <summary>
     /// An abstract pipeline handler that has implements IPipelineHandler,
-    /// and has the default implmentation. This is the base class for most of
+    /// and has the default implementation. This is the base class for most of
     /// the handler implementations.
     /// </summary>    
     public abstract partial class PipelineHandler : IPipelineHandler
@@ -15,11 +15,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         /// handler completes it's processing.
         /// </summary>
         public IPipelineHandler InnerHandler { get; set; }
-
-        /// <summary>
-        /// The outer handler which encapsulates the current handler.
-        /// </summary>
-        public IPipelineHandler OuterHandler { get; set; }
 
         /// <summary>
         /// Contains the processing logic for an asynchronous request invocation.

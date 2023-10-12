@@ -1,11 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
-using Milochau.Core.Aws.Lambda.Internal;
 using Milochau.Core.Aws.Lambda.Model;
 using Milochau.Core.Aws.Lambda.Model.MarshallTransformations;
 
@@ -133,20 +129,7 @@ namespace Milochau.Core.Aws.Lambda
         ///
         /// </summary>
         public AmazonLambdaClient()
-            : base(FallbackCredentialsFactory.GetCredentials(), new AmazonLambdaConfig()) { }
-
-        #endregion
-
-        #region Overrides
-
-        /// <summary>
-        /// Customizes the runtime pipeline.
-        /// </summary>
-        /// <param name="pipeline">Runtime pipeline for the current client.</param>
-        protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
-        {
-            pipeline.AddHandlerAfter<Marshaller>(new AmazonLambdaEndpointResolver());
-        }
+            : base(new AmazonLambdaConfig()) { }
 
         #endregion
 

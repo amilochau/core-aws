@@ -1,4 +1,3 @@
-using Milochau.Core.Aws.Core.RegionEndpoints;
 using Milochau.Core.Aws.Core.Runtime.Endpoints;
 
 namespace Milochau.Core.Aws.Core.Runtime
@@ -16,51 +15,8 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         public const int DefaultBufferSize = 8192;
 
-        private RegionEndpoint? regionEndpoint = null;
-        private bool probeForRegionEndpoint = true;
         private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
-
-        /// <summary>
-        /// Gets and sets of the UserAgent property.
-        /// </summary>
-        public abstract string UserAgent { get; }
-
-        /// <summary>
-        /// <para>
-        /// Gets and sets the RegionEndpoint property.  The region constant that 
-        /// determines the endpoint to use.
-        /// 
-        /// Setting this property to null will force the SDK to recalculate the
-        /// RegionEndpoint value based on App/WebConfig, environment variables,
-        /// profile, etc.
-        /// </para>
-        /// </summary>
-        public RegionEndpoint? RegionEndpoint
-        {
-            get
-            {
-                if (probeForRegionEndpoint)
-                {
-                    RegionEndpoint = FallbackRegionFactory.GetRegionEndpoint();
-                    probeForRegionEndpoint = false;
-                }
-                return regionEndpoint;
-            }
-            set
-            {
-                regionEndpoint = value;
-                probeForRegionEndpoint = regionEndpoint == null;
-            }
-        }
-
-        /// <summary>
-        /// The constant used to lookup in the region hash the endpoint.
-        /// </summary>
-        public abstract string RegionEndpointServiceName
-        {
-            get;
-        }
 
         /// <summary>
         /// Gets and sets the AuthenticationServiceName property.
@@ -100,20 +56,12 @@ namespace Milochau.Core.Aws.Core.Runtime
             set { maxRetries = value; }
         }
 
-        #region Constructor 
-
-        protected ClientConfig()
-        {
-        }
-
-        #endregion
-
         /// <summary>
         /// Gets and sets of the EndpointProvider property.
         /// This property is used for endpoints resolution.
         /// During service client creation it is set to service's default generated EndpointProvider,
         /// but can be changed to use custom user supplied EndpointProvider.
         /// </summary>
-        public IEndpointProvider? EndpointProvider { get; set; }
+        public IEndpointProvider EndpointProvider { get; protected set; }
     }
 }

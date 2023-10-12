@@ -74,17 +74,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         }
 
         /// <summary>
-        /// Return true if the request should be retried.
-        /// </summary>
-        /// <param name="executionContext">Request context containing the state of the request.</param>
-        /// <param name="exception">The exception thrown by the previous request.</param>
-        /// <returns>Return true if the request should be retried.</returns>
-        public override bool RetryForException(IExecutionContext executionContext, Exception exception)
-        {
-            return RetryForExceptionSync(exception, executionContext);
-        }
-
-        /// <summary>
         /// Virtual method that gets called when a retry request is initiated. If retry throttling is
         /// enabled, the value returned is true if the required capacity is retured, false otherwise. 
         /// If retry throttling is disabled, true is returned.

@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -171,11 +170,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
             get;
             set;
         }
-
-        /// <summary>
-        /// The region in which the service request was signed.
-        /// </summary>
-        string DeterminedSigningRegion { get; set; }
 
         /// <summary>
         /// Checks if the request stream can be rewinded.

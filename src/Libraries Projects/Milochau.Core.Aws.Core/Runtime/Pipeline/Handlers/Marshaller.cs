@@ -1,5 +1,5 @@
-﻿using Milochau.Core.Aws.Core.Util;
-using System;
+﻿using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Util;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
@@ -33,10 +33,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             var requestContext = executionContext.RequestContext;
             requestContext.Request = requestContext.Marshaller.Marshall(requestContext.OriginalRequest);
 
-            var userAgent = $"{requestContext.ClientConfig.UserAgent} ClientAsync";
-
-            requestContext.Request.Headers[HeaderKeys.UserAgentHeader] = userAgent;
-
             var method = requestContext.Request.HttpMethod.ToUpperInvariant();
             if (method != "GET" && method != "DELETE" && method != "HEAD")
             {
@@ -60,10 +56,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         {
             if (!headers.ContainsKey(HeaderKeys.XAmznTraceIdHeader))
             {                
-                var lambdaFunctionName = Environment.GetEnvironmentVariable(EnvironmentVariables.AWS_LAMBDA_FUNCTION_NAME);
-                var amznTraceId = Environment.GetEnvironmentVariable(EnvironmentVariables._X_AMZN_TRACE_ID);
+                var amznTraceId = EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_TraceId);
 
-                if (!string.IsNullOrEmpty(lambdaFunctionName) && !string.IsNullOrEmpty(amznTraceId))
+                if (!string.IsNullOrEmpty(amznTraceId))
                 {
                     headers[HeaderKeys.XAmznTraceIdHeader] = AWSSDKUtils.EncodeTraceIdHeaderValue(amznTraceId);
                 }

@@ -1,9 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
-using Milochau.Core.Aws.DynamoDB.Internal;
 using Milochau.Core.Aws.DynamoDB.Model;
 using Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations;
 using System.Threading;
@@ -23,20 +19,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance.
         /// </summary>
         public AmazonDynamoDBClient()
-            : base(FallbackCredentialsFactory.GetCredentials(), new AmazonDynamoDBConfig()) { }
-
-        #endregion
-
-        #region Overrides
-
-        /// <summary>
-        /// Customizes the runtime pipeline.
-        /// </summary>
-        /// <param name="pipeline">Runtime pipeline for the current client.</param>
-        protected override void CustomizeRuntimePipeline(RuntimePipeline pipeline)
-        {
-            pipeline.AddHandlerAfter<Marshaller>(new AmazonDynamoDBEndpointResolver());
-        }
+            : base(new AmazonDynamoDBConfig()) { }
 
         #endregion
 

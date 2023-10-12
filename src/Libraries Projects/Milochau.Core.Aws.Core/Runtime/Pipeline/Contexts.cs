@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
@@ -13,9 +12,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         AmazonWebServiceRequest OriginalRequest { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
-        AbstractAWSSigner Signer { get; }
+        AWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
-        ImmutableCredentials? ImmutableCredentials { get; set; }
 
         IRequest? Request { get; set; }
         bool IsSigned { get; set; }
@@ -45,7 +43,7 @@ namespace Amazon.Runtime.Internal
 {
     public class RequestContext : IRequestContext
     {
-        public RequestContext(AbstractAWSSigner signer,
+        public RequestContext(AWSSigner signer,
             IClientConfig clientConfig,
             IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
             ResponseUnmarshaller unmarshaller,
@@ -62,7 +60,7 @@ namespace Amazon.Runtime.Internal
 
         public Guid InvocationId { get; } = Guid.NewGuid();
 
-        public AbstractAWSSigner Signer { get; }
+        public AWSSigner Signer { get; }
         public IClientConfig ClientConfig { get; }
         public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         public ResponseUnmarshaller Unmarshaller { get; }
@@ -74,7 +72,6 @@ namespace Amazon.Runtime.Internal
         public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
         public int EndpointDiscoveryRetries { get; set; }
         public bool IsSigned { get; set; }
-        public ImmutableCredentials? ImmutableCredentials { get; set; }
     }
 
     public class ResponseContext : IResponseContext

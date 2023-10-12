@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Utils
             string hexNumber = string.Concat(bytes.Select(x => x.ToString("x2", CultureInfo.InvariantCulture)).ToArray());
             if (digits % 2 != 0)
             {
-                hexNumber += ThreadSafeRandom.Next(16).ToString("x", CultureInfo.InvariantCulture);
+                hexNumber += Next(16).ToString("x", CultureInfo.InvariantCulture);
             }
 
             return hexNumber;

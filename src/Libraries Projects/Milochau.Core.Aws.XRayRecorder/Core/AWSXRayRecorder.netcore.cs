@@ -1,4 +1,5 @@
 ﻿using System;
+using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Emitters;
 using Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities;
@@ -13,7 +14,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
     public class AWSXRayRecorder : AWSXRayRecorderImpl
     {
         static AWSXRayRecorder _instance = AWSXRayRecorderBuilder.Build();
-        private const string LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
 
         private static string? _lambdaVariables;
 
@@ -85,7 +85,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
             else // Facade / Subsegment already present
             {
                 var entity = TraceContext.GetEntity(); // can be Facade segment or Subsegment
-                var environmentRootTraceId = TraceHeader.FromString(GetTraceVariablesFromEnvironment()).RootTraceId;
+                var environmentRootTraceId = TraceHeader.FromString(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_TraceId)).RootTraceId;
 
                 if ((null != environmentRootTraceId) && !environmentRootTraceId.Equals(entity.RootSegment?.TraceId)) // If true, customer has leaked subsegments across invocation
                 {
@@ -104,7 +104,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
         /// </summary>
         internal void AddFacadeSegment()
         {
-            _lambdaVariables = GetTraceVariablesFromEnvironment();
+            _lambdaVariables = EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_TraceId);
 
             if (!TraceHeader.TryParseAll(_lambdaVariables, out TraceHeader traceHeader))
             {
@@ -237,14 +237,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Core
             {
                 HandleEntityNotAvailableException(new EntityNotAvailableException("Failed to cast the entity to Facade segment.", e), "Failed to cast the entity to Facade Segment.");
             }
-        }
-
-        /// <summary>
-        /// Returns value set for environment variable "_X_AMZN_TRACE_ID"
-        /// </summary>
-        private static string? GetTraceVariablesFromEnvironment()
-        {
-            return Environment.GetEnvironmentVariable(LambdaTraceHeaderKey);
         }
     }
 }

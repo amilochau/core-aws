@@ -1,4 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Credentials;
+﻿using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Core.Util;
 using System.Threading.Tasks;
 
@@ -19,15 +19,15 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         /// <returns>A task that represents the asynchronous operation.</returns>
         public override async Task<T> InvokeAsync<T>(IExecutionContext executionContext)
         {
-            await PreInvokeAsync(executionContext).ConfigureAwait(false);
+            PreInvoke(executionContext);
             return await base.InvokeAsync<T>(executionContext).ConfigureAwait(false);
         }
 
-        protected static async Task PreInvokeAsync(IExecutionContext executionContext)
+        protected static void PreInvoke(IExecutionContext executionContext)
         {
             if (ShouldSign(executionContext.RequestContext))
             {
-                await SignRequestAsync(executionContext.RequestContext).ConfigureAwait(false);
+                SignRequest(executionContext.RequestContext);
                 executionContext.RequestContext.IsSigned = true;
             }
         }
@@ -46,25 +46,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         /// Signs the request.
         /// </summary>
         /// <param name="requestContext">The request context.</param>
-        private static async Task SignRequestAsync(IRequestContext requestContext)
+        private static void SignRequest(IRequestContext requestContext)
         {
-            ImmutableCredentials immutableCredentials = requestContext.ImmutableCredentials;
-
-            // credentials would be null in the case of anonymous users getting public resources from S3
-            if (immutableCredentials == null)
-                return;
-
-            if (immutableCredentials?.UseToken == true)
+            if (EnvironmentVariables.UseToken)
             {
-                requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = immutableCredentials.Token;
+                requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = EnvironmentVariables.Token;
             }
 
-            await requestContext.Signer
-                .SignAsync(
-                    requestContext.Request, 
-                    requestContext.ClientConfig, 
-                    immutableCredentials)
-                .ConfigureAwait(false);
+            requestContext.Signer.Sign(requestContext.Request, requestContext.ClientConfig);
         }
     }
 }
