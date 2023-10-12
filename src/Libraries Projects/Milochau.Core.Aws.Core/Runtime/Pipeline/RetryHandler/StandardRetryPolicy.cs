@@ -9,6 +9,32 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
     /// </summary>
     public partial class StandardRetryPolicy : RetryPolicy
     {
+        private static readonly Random _randomJitter = new Random();
+
+        //The status code returned from a service request when an invalid endpoint is used.
+        private const int INVALID_ENDPOINT_EXCEPTION_STATUSCODE = 421;
+
+        protected static CapacityManager CapacityManagerInstance { get; set; } = new CapacityManager(throttleRetryCount: 100, throttleRetryCost: 5, throttleCost: 1, timeoutRetryCost: 10);
+
+        /// <summary>
+        /// The maximum value of exponential backoff in milliseconds, which will be used to wait
+        /// before retrying a request. The default is 20000 milliseconds.
+        /// </summary>
+        public const int MaxBackoffInMilliseconds = 20000;
+
+        /// <summary>
+        /// Constructor for StandardRetryPolicy.
+        /// </summary>
+        /// <param name="config">The Client config object. This is used to 
+        /// retrieve the maximum number of retries  before throwing
+        /// back a exception(This does not count the initial request) and
+        /// the service URL for the request.</param>
+        public StandardRetryPolicy(IClientConfig config)
+        {
+            MaxRetries = config.MaxErrorRetry;
+            RetryCapacity = CapacityManagerInstance.GetRetryCapacity(GetRetryCapacityKey(config));
+        }
+
         /// <summary>
         /// Return true if the request should be retried.
         /// </summary>
@@ -27,40 +53,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// requests and response context.</param>
         public override Task WaitBeforeRetryAsync(IExecutionContext executionContext)
         {
-            var delay = CalculateRetryDelay(executionContext.RequestContext.Retries, MaxBackoffInMilliseconds);
+            var delay = CalculateRetryDelay(executionContext.RequestContext.Retries);
             return Task.Delay(delay, executionContext.RequestContext.CancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// The default implementation of the standard retry policy.
-    /// </summary>
-    public partial class StandardRetryPolicy : RetryPolicy
-    {
-        private static readonly Random _randomJitter = new Random();
-                
-        //The status code returned from a service request when an invalid endpoint is used.
-        private const int INVALID_ENDPOINT_EXCEPTION_STATUSCODE = 421;        
-        
-        protected static CapacityManager CapacityManagerInstance { get; set; } = new CapacityManager(throttleRetryCount: 100, throttleRetryCost: 5, throttleCost: 1, timeoutRetryCost: 10);
-
-        /// <summary>
-        /// The maximum value of exponential backoff in milliseconds, which will be used to wait
-        /// before retrying a request. The default is 20000 milliseconds.
-        /// </summary>
-        public int MaxBackoffInMilliseconds { get; set; } = 20000;
-
-        /// <summary>
-        /// Constructor for StandardRetryPolicy.
-        /// </summary>
-        /// <param name="config">The Client config object. This is used to 
-        /// retrieve the maximum number of retries  before throwing
-        /// back a exception(This does not count the initial request) and
-        /// the service URL for the request.</param>
-        public StandardRetryPolicy(IClientConfig config)
-        {
-            MaxRetries = config.MaxErrorRetry;
-            RetryCapacity = CapacityManagerInstance.GetRetryCapacity(GetRetryCapacityKey(config));
         }
 
         /// <summary>
@@ -180,13 +174,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
             return executionContext.RequestContext.Retries >= MaxRetries;
         }
 
-        protected static int CalculateRetryDelay(int retries, int maxBackoffInMilliseconds)
+        protected static int CalculateRetryDelay(int retries)
         {
             double jitter;
             lock (_randomJitter) {        
                 jitter = _randomJitter.NextDouble();
             }
-            return Convert.ToInt32(Math.Min(jitter * Math.Pow(2, retries - 1) * 1000.0, maxBackoffInMilliseconds));
+            return Convert.ToInt32(Math.Min(jitter * Math.Pow(2, retries - 1) * 1000.0, MaxBackoffInMilliseconds));
         }
     }
 }

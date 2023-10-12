@@ -69,14 +69,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// <param name="executionContext">The execution context which contains both the
         /// requests and response context.</param>
         public abstract Task WaitBeforeRetryAsync(IExecutionContext executionContext);
-    }
 
-    /// <summary>
-    /// A retry policy specifies all aspects of retry behavior. This includes conditions when the request should be retried,
-    /// checks of retry limit, preparing the request before retry and introducing delay (backoff) before retries.
-    /// </summary>
-    public abstract partial class RetryPolicy
-    {
         /// <summary>
         /// Maximum number of retries to be performed.
         /// This does not count the initial request.

@@ -87,9 +87,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             var httpHandler = new HttpHandler();
 
-            //Determine which retry policy to use based on the retry mode
-            RetryPolicy retryPolicy = new StandardRetryPolicy(Config);
-
             // Build default runtime pipeline.
             RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
                 {
@@ -100,7 +97,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                     // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
                     // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
                     new ChecksumHandler(),
-                    new RetryHandler(retryPolicy),
+                    new RetryHandler(Config),
                     new EndpointResolver(),
                     new Marshaller(),
                 }

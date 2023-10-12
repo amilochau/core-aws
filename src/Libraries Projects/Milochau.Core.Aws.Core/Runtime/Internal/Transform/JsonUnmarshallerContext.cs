@@ -51,10 +51,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             if (isException || maintainResponseBody)
             {
                 WrappingStream = new CachingWrapperStream(responseStream);
-            }
-
-            if (isException || maintainResponseBody)
-            {
                 responseStream = WrappingStream;
             }
 

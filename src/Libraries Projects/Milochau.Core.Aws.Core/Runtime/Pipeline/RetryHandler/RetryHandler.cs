@@ -15,15 +15,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// The retry policy which specifies when 
         /// a retry should be performed.
         /// </summary>
-        public RetryPolicy RetryPolicy { get; private set; }
+        public RetryPolicy RetryPolicy { get; }
         
         /// <summary>
         /// Constructor which takes in a retry policy.
         /// </summary>
-        /// <param name="retryPolicy">Retry Policy</param>
-        public RetryHandler(RetryPolicy retryPolicy)
+        public RetryHandler(IClientConfig config)
         {
-            RetryPolicy = retryPolicy;
+            RetryPolicy = new StandardRetryPolicy(config); ;
         }
 
         /// <summary>
