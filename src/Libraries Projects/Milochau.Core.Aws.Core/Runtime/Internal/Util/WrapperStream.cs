@@ -33,9 +33,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             Stream? baseStream = this;
             do
             {
-                if (baseStream is PartialWrapperStream partialStream)
-                    return partialStream;
-
                 baseStream = (baseStream as WrapperStream)?.BaseStream;
             } while (baseStream is WrapperStream);
             return baseStream;
@@ -337,14 +334,5 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         }
 
 #endregion
-
-        internal virtual bool HasLength
-        {
-            get
-            {
-                return true;
-            }
-        }
     }
-
 }

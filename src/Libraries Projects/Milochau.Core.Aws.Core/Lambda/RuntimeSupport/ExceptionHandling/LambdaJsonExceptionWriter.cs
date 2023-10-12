@@ -16,8 +16,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         private const string STACK_TRACE = "stackTrace";
         private const string INNER_EXCEPTION = "cause";
         private const string INNER_EXCEPTIONS = "causes";
-        private const string TRUNCATED_MESSAGE =
-            "{\"" + ERROR_MESSAGE + "\": \"Exception exceeded maximum payload size of 256KB.\"}";
+        private const string TRUNCATED_MESSAGE = "{\"" + ERROR_MESSAGE + "\": \"Exception exceeded maximum payload size of 256KB.\"}";
 
         /// <summary>
         /// Write the formatted JSON response for this exception, and all inner exceptions.

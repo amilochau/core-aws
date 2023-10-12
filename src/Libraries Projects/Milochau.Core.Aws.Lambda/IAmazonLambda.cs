@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Lambda.Model;
 
 namespace Milochau.Core.Aws.Lambda
@@ -108,7 +107,7 @@ namespace Milochau.Core.Aws.Lambda
     /// Web Services Certificate Manager FAQs.</a> 
     /// </para>
     /// </summary>
-    public partial interface IAmazonLambda : IAmazonService, IDisposable
+    public partial interface IAmazonLambda : IDisposable
     {
         /// <summary>
         /// Invokes a Lambda function. You can invoke a function synchronously (and wait for the

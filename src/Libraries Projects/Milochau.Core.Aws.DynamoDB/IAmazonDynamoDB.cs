@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.DynamoDB.Model;
+﻿using Milochau.Core.Aws.DynamoDB.Model;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace Milochau.Core.Aws.DynamoDB
     /// Region, providing built-in high availability and data durability.
     /// </para>
     /// </summary>
-    public partial interface IAmazonDynamoDB : IAmazonService, IDisposable
+    public partial interface IAmazonDynamoDB : IDisposable
     {
         /// <summary>
         /// The <code>BatchWriteItem</code> operation puts or deletes multiple items in one or

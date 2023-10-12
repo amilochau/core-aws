@@ -82,9 +82,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             
             var serviceSigningName = clientConfig.AuthenticationServiceName;
 
-            var parametersToCanonicalize = GetParametersToCanonicalize(request);
-            var canonicalParameters = CanonicalizeQueryParameters(parametersToCanonicalize);
-
             var bodyHash = SetRequestBodyHash(request);
             var sortedHeaders = SortAndPruneHeaders(request.Headers);
 
@@ -92,7 +89,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                                                        request.ResourcePath,
                                                        request.HttpMethod,
                                                        sortedHeaders,
-                                                       canonicalParameters,
                                                        bodyHash,
                                                        request.PathResources);
 
@@ -349,7 +345,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="resourcePath">the path of the resource being operated on</param>
         /// <param name="httpMethod">The http method used for the request</param>
         /// <param name="sortedHeaders">The full request headers, sorted into canonical order</param>
-        /// <param name="canonicalQueryString">The query parameters for the request</param>
         /// <param name="precomputedBodyHash">
         /// <param name="pathResources">The path resource values lookup to use to replace the keys within resourcePath</param>
         /// The hash of the binary request body if present. If not supplied, the routine
@@ -360,7 +355,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                                                     string resourcePath,
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
-                                                    string canonicalQueryString,
                                                     string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
@@ -368,7 +362,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                 resourcePath,
                 httpMethod,
                 sortedHeaders,
-                canonicalQueryString,
                 precomputedBodyHash,
                 pathResources);
         }
@@ -377,14 +370,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                                                     string resourcePath,
                                                     string httpMethod,
                                                     IDictionary<string, string> sortedHeaders,
-                                                    string canonicalQueryString,
                                                     string? precomputedBodyHash,
                                                     IDictionary<string, string> pathResources)
         {
             var canonicalRequest = new StringBuilder();
             canonicalRequest.AppendFormat("{0}\n", httpMethod);
             canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(endpoint, resourcePath, pathResources));
-            canonicalRequest.AppendFormat("{0}\n", canonicalQueryString);
+            canonicalRequest.AppendFormat("{0}\n", "");
 
             canonicalRequest.AppendFormat("{0}\n", CanonicalizeHeaders(sortedHeaders));
             canonicalRequest.AppendFormat("{0}\n", CanonicalizeHeaderNames(sortedHeaders));
@@ -465,78 +457,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             }
             
             return builder.ToString();
-        }
-
-        /// <summary>
-        /// Collects the subresource and query string parameters into one collection
-        /// ready for canonicalization
-        /// </summary>
-        /// <param name="request">The in-flight request being signed</param>
-        /// <returns>The fused set of parameters</returns>
-        protected static List<KeyValuePair<string, string>> GetParametersToCanonicalize(IRequest request)
-        {
-            var parametersToCanonicalize = new List<KeyValuePair<string, string>>();
-
-            if (request.SubResources != null && request.SubResources.Count > 0)
-            {
-                foreach (var subResource in request.SubResources)
-                {
-                    parametersToCanonicalize.Add(new KeyValuePair<string,string>(subResource.Key, subResource.Value));
-                }
-            }
-
-            return parametersToCanonicalize;
-        }
-
-        protected static string CanonicalizeQueryParameters(IEnumerable<KeyValuePair<string, string>> parameters)
-        {
-            return CanonicalizeQueryParameters(parameters, true);
-        }
-        /// <summary>
-        /// Computes and returns the canonicalized query string, if query parameters have been supplied.
-        /// Parameters with no value will be canonicalized as 'param='. The expectation is that parameters
-        /// have not already been url encoded prior to canonicalization.
-        /// </summary>
-        /// <param name="parameters">The set of parameters to be encoded in the query string</param>
-        /// <param name="uriEncodeParameters">
-        /// Parameters must be uri encoded into the canonical request and by default the signer expects
-        /// that the supplied collection contains non-encoded data. Set this to false if the encoding was
-        /// done prior to signer entry.
-        /// </param>
-        /// <returns>The uri encoded query string parameters in canonical ordering</returns>
-        protected static string CanonicalizeQueryParameters(
-            IEnumerable<KeyValuePair<string, string>> parameters,
-            bool uriEncodeParameters)
-        {
-            if (parameters == null)
-                return string.Empty;
-
-            var sortedParameters = parameters.OrderBy(kvp => kvp.Key, StringComparer.Ordinal).ToList();
-            var canonicalQueryString = new StringBuilder();
-            foreach (var param in sortedParameters)
-            {
-                var key = param.Key;
-                var value = param.Value;
-
-                if (canonicalQueryString.Length > 0)
-                    canonicalQueryString.Append('&');
-                if (uriEncodeParameters)
-                {
-                    if (string.IsNullOrEmpty(value))
-                        canonicalQueryString.AppendFormat("{0}=", AWSSDKUtils.UrlEncode(key, false));
-                    else
-                        canonicalQueryString.AppendFormat("{0}={1}", AWSSDKUtils.UrlEncode(key, false), AWSSDKUtils.UrlEncode(value, false));
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(value))
-                        canonicalQueryString.AppendFormat("{0}=", key);
-                    else
-                        canonicalQueryString.AppendFormat("{0}={1}", key, value);
-                }
-            }
-
-            return canonicalQueryString.ToString();
         }
 
         #endregion

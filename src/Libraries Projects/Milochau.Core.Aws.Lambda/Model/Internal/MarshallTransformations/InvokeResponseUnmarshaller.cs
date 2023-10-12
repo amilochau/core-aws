@@ -40,10 +40,6 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <param name="innerException"></param>
-        /// <param name="statusCode"></param>
-        /// <returns></returns>
         public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
         {
             var errorResponse = JsonErrorResponseUnmarshaller.GetInstance().Unmarshall(context);

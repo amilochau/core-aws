@@ -27,6 +27,14 @@ namespace Milochau.Core.Aws.Core.References
         public static void SetEnvironmentVariable(string key, string value)
         {
             Environment.SetEnvironmentVariable(key, value);
+            if (Variables.Contains(key))
+            {
+                Variables[key] = value;
+            }
+            else
+            {
+                Variables.Add(key, value);
+            }
         }
 
         public static bool TryGetEnvironmentVariable(string key, [NotNullWhen(true)] out string? value)
@@ -36,8 +44,11 @@ namespace Milochau.Core.Aws.Core.References
                 value = null;
                 return false;
             }
-            value = Variables[key].ToString();
-            return true;
+            else
+            {
+                value = Variables[key].ToString();
+                return true;
+            }
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// <summary>
     /// This class is responsible for keeping track of Retry capacity across different ServiceURLs.
     /// </summary>
-    public class CapacityManager: IDisposable
+    public class CapacityManager
     {
         /// <summary>
         /// CapacityType determines the type of capacity to obtain or use.
@@ -26,25 +26,6 @@ namespace Milochau.Core.Aws.Core.Runtime
             /// The timeout capacity type uses the timeout capacity amount.
             /// </summary>
             Timeout
-        }
-
-
-        //Dispose Method
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _disposed = true;
-            }
         }
 
         public CapacityManager(int throttleRetryCount, int throttleRetryCost, int throttleCost, int timeoutRetryCost)
@@ -116,8 +97,6 @@ namespace Milochau.Core.Aws.Core.Runtime
             }
             return retryCapacity;
         }
-
-        private bool _disposed;
 
         //Dictionary that keeps track of the available capacity by ServiceURLs
         private static readonly Dictionary<string, RetryCapacity> _serviceUrlToCapacityMap = new Dictionary<string, RetryCapacity>();

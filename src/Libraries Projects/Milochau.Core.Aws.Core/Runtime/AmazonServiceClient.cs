@@ -137,18 +137,6 @@ namespace Milochau.Core.Aws.Core.Runtime
                 if (resourcePath.StartsWith("/", StringComparison.Ordinal))
                     resourcePath = resourcePath.Substring(1);
 
-                // Microsoft added support for unicode bidi control characters to the Uri class in .NET 4.7.2
-                // https://github.com/microsoft/dotnet/blob/master/Documentation/compatibility/uri-unicode-bidirectional-characters.md
-                // However, we only want to support it on .NET Core 3.1 and higher due to not having to deal with .NET Standard support matrix.
-                if (AWSSDKUtils.HasBidiControlCharacters(resourcePath) ||
-                    (internalRequest.PathResources?.Any(v => AWSSDKUtils.HasBidiControlCharacters(v.Value)) == true))
-                {
-                    resourcePath = string.Join("/", AWSSDKUtils.SplitResourcePathIntoSegments(resourcePath, internalRequest.PathResources).ToArray());
-                    throw new AmazonClientException(string.Format(CultureInfo.InvariantCulture,
-                        "Target resource path [{0}] has bidirectional characters, which are not supported" +
-                        "by System.Uri and thus cannot be handled by the .NET SDK.", resourcePath));
-                }
-
                 resourcePath = AWSSDKUtils.ResolveResourcePath(resourcePath, internalRequest.PathResources, skipEncodingValidPathChars);
             }
 
@@ -157,19 +145,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             // should use SubResources instead of appending them to the resource path with 
             // query string delimiters during request marshalling.
 
-            var delim = "?";
             var sb = new StringBuilder();
-
-            if (internalRequest.SubResources?.Count > 0)
-            {
-                foreach (var subResource in internalRequest.SubResources)
-                {
-                    sb.AppendFormat("{0}{1}", delim, subResource.Key);
-                    if (subResource.Value != null)
-                        sb.AppendFormat("={0}", subResource.Value);
-                    delim = "&";
-                }
-            }
 
             var parameterizedPath = string.Concat(resourcePath, sb);
 

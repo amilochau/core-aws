@@ -33,17 +33,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         }
 
         /// <summary>
-        /// Returns the subresources that should be appended to the resource path.
-        /// This is used primarily for Amazon S3, where object keys can contain '?'
-        /// characters, making string-splitting of a resource path potentially 
-        /// hazardous.
-        /// </summary>
-        IDictionary<string, string> SubResources
-        {
-            get;
-        }
-
-        /// <summary>
         /// Gets and sets the type of http request to make, whether it should be POST,GET or DELETE
         /// </summary>
         string HttpMethod

@@ -58,7 +58,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
 
             if (publicRequest.InvocationType != null)
             {
-                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType.Value;
+                request.Headers["X-Amz-Invocation-Type"] = publicRequest.InvocationType.ToString();
             }
 
             return request;

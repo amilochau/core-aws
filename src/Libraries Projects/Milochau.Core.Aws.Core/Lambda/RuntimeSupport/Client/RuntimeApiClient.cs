@@ -21,9 +21,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         internal RuntimeApiClient(HttpClient httpClient)
         {
-            var internalClient = new InternalRuntimeApiClient(httpClient);
-            internalClient.BaseUrl = "http://" + EnvironmentVariables.RuntimeServerHostAndPort + internalClient.BaseUrl;
-            _internalClient = internalClient;
+            _internalClient = new InternalRuntimeApiClient(httpClient);
         }
 
         /// <summary>

@@ -67,14 +67,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Returns the subresources that should be appended to the resource path.
-        /// This is used primarily for Amazon S3, where object keys can contain '?'
-        /// characters, making string-splitting of a resource path potentially 
-        /// hazardous.
-        /// </summary>
-        public IDictionary<string, string> SubResources { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
         /// Gets and Sets the endpoint for this request.
         /// </summary>
         public Uri Endpoint { get; set; }

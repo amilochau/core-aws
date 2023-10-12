@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.SESv2.Model;
 
 namespace Milochau.Core.Aws.SESv2
@@ -22,7 +21,7 @@ namespace Milochau.Core.Aws.SESv2
     /// programmatically.
     /// </para>
     /// </summary>
-    public partial interface IAmazonSimpleEmailServiceV2 : IAmazonService, IDisposable
+    public partial interface IAmazonSimpleEmailServiceV2 : IDisposable
     {
         /// <summary>
         /// Sends an email message. You can use the Amazon SES API v2 to send the following types

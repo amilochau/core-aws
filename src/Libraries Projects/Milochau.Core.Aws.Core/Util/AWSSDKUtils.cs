@@ -112,14 +112,6 @@ namespace Milochau.Core.Aws.Core.Util
 
 #region Internal Methods
 
-        /**
-         * Convert request parameters to Url encoded query string
-         */
-        internal static string GetParametersAsString(IRequest request)
-        {
-            return string.Empty;
-        }
-
         /// <summary>
         /// Returns the request parameters in the form of a query string.
         /// </summary>
@@ -131,18 +123,7 @@ namespace Milochau.Core.Aws.Core.Util
             if (request.Content != null)
                 return request.Content;
 
-            string content;
-
-            if(usesQueryString.HasValue && usesQueryString.Value)
-            {
-                content = string.Empty;
-            }
-            else
-            {
-                content = GetParametersAsString(request);
-            }
-
-            return Encoding.UTF8.GetBytes(content);
+            return Array.Empty<byte>();
         }
 
         /// <summary>
@@ -150,7 +131,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// </summary>
         /// <param name="endpoint">Endpoint URL for the request.</param>
         /// <param name="resourcePath">Resource path for the request.</param>
-        /// <param name="encode">If true will URL-encode path segments including "/". "S3" is currently the only service that does not expect pre URL-encoded segments.</param>
         /// <param name="pathResources">Dictionary of key/value parameters containing the values for the ResourcePath key replacements.</param>
         /// <remarks>If resourcePath begins or ends with slash, the resulting canonicalized path will follow suit.</remarks>
         /// <returns>Canonicalized resource path for the endpoint.</returns>
@@ -263,16 +243,6 @@ namespace Milochau.Core.Aws.Core.Util
             return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
         }
 
-        public static double ConvertToUnixEpochSecondsDouble(DateTime dateTime)
-        {
-            return Math.Round(GetTimeSpanInTicks(dateTime).TotalMilliseconds, 0) / 1000.0;
-        }
-
-        public static TimeSpan GetTimeSpanInTicks(DateTime dateTime)
-        {
-            return new TimeSpan(dateTime.ToUniversalTime().Ticks - EPOCH_START.Ticks);
-        }
-
         /// <summary>
         /// Helper function to format a byte array into string
         /// </summary>
@@ -289,37 +259,6 @@ namespace Milochau.Core.Aws.Core.Util
             }
 
             return sb.ToString();
-        }
-
-        internal static bool AreEqual(object[] itemsA, object[] itemsB)
-        {
-            if (itemsA == null || itemsB == null)
-                return itemsA == itemsB;
-
-            if (itemsA.Length != itemsB.Length)
-                return false;
-
-            var length = itemsA.Length;
-            for (int i = 0; i < length; i++)
-            {
-                var a = itemsA[i];
-                var b = itemsB[i];
-                if (!AreEqual(a, b))
-                    return false;
-            }
-
-            return true;
-        }
-
-        internal static bool AreEqual(object a, object b)
-        {
-            if (a == null || b == null)
-                return a == b;
-
-            if (ReferenceEquals(a, b))
-                return true;
-
-            return a.Equals(b);
         }
 
         /// <summary>
@@ -462,41 +401,6 @@ namespace Milochau.Core.Aws.Core.Util
             }
 
             return encoded.ToString();
-        }
-
-        /// <summary>
-        /// Returns true if the string has any bidirectional control characters.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static bool HasBidiControlCharacters(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                return false;
-
-            foreach (var c in input)
-            {
-                if (IsBidiControlChar(c))
-                    return true;
-            }
-            return false;
-        }
-        private static bool IsBidiControlChar(char c)
-        {
-            // check general range
-            if (c < '\u200E' || c > '\u202E')
-                return false;
-
-            // check specific characters
-            return 
-                c == '\u200E' || // LRM
-                c == '\u200F' || // RLM
-                c == '\u202A' || // LRE
-                c == '\u202B' || // RLE
-                c == '\u202C' || // PDF
-                c == '\u202D' || // LRO
-                c == '\u202E'    // RLO
-            ;
         }
 
         /// <summary>

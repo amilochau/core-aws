@@ -7,27 +7,15 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     {
         internal const string HeaderAwsRequestId = "Lambda-Runtime-Aws-Request-Id";
         internal const string HeaderTraceId = "Lambda-Runtime-Trace-Id";
-        internal const string HeaderClientContext = "Lambda-Runtime-Client-Context";
-        internal const string HeaderCognitoIdentity = "Lambda-Runtime-Cognito-Identity";
-        internal const string HeaderDeadlineMs = "Lambda-Runtime-Deadline-Ms";
-        internal const string HeaderInvokedFunctionArn = "Lambda-Runtime-Invoked-Function-Arn";
 
         public RuntimeApiHeaders(Dictionary<string, IEnumerable<string>> headers)
         {
-            DeadlineMs = GetHeaderValueOrNull(headers, HeaderDeadlineMs);
             AwsRequestId = GetHeaderValueRequired(headers, HeaderAwsRequestId);
-            ClientContextJson = GetHeaderValueOrNull(headers, HeaderClientContext);
-            CognitoIdentityJson = GetHeaderValueOrNull(headers, HeaderCognitoIdentity);
-            InvokedFunctionArn = GetHeaderValueOrNull(headers, HeaderInvokedFunctionArn);
             TraceId = GetHeaderValueOrNull(headers, HeaderTraceId);
         }
 
         public string AwsRequestId { get; private set; }
-        public string InvokedFunctionArn { get; private set; }
         public string TraceId { get; private set; }
-        public string ClientContextJson { get; private set; }
-        public string CognitoIdentityJson { get; private set; }
-        public string DeadlineMs { get; private set; }
 
         private static string GetHeaderValueRequired(Dictionary<string, IEnumerable<string>> headers, string header)
         {
