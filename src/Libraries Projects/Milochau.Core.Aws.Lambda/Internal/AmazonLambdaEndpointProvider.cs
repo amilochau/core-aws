@@ -16,8 +16,7 @@ namespace Milochau.Core.Aws.Lambda.Internal
         public Endpoint ResolveEndpoint()
         {
             string region = EnvironmentVariables.RegionName;
-            var dnsSuffix = "amazonaws.com";
-            return new Endpoint($"https://lambda.{region}.{dnsSuffix}");
+            return new Endpoint($"https://lambda.{region}.amazonaws.com");
         }
     }
 }

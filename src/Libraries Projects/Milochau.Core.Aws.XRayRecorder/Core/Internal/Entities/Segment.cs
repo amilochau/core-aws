@@ -78,7 +78,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Core.Internal.Entities
         /// <returns>The JSON string parsed from given segment</returns>
         public override string? Marshall()
         {
-            var serializedEntity = JsonSerializer.Serialize(this, AwsJsonSerializerContext.Default.Segment);
+            var serializedEntity = JsonSerializer.Serialize(this, XRayJsonSerializerContext.Default.Segment);
             return ProtocolHeader + ProtocolDelimiter + serializedEntity;
         }
     }

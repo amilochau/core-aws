@@ -24,13 +24,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// requests and response context.</param>
         /// <param name="exception">The exception throw after issuing the request.</param>
         /// <returns>Returns true if the request should be retried, else false. The exception is retried if it matches with clockskew error codes.</returns>
-        public async Task<bool> RetryAsync(IExecutionContext executionContext, Exception exception)
+        public bool Retry(IExecutionContext executionContext, Exception exception)
         {
             bool canRetry = !RetryLimitReached(executionContext) && CanRetry(executionContext);
             if (canRetry)
             {
                 var isClockSkewError = IsClockskew(executionContext, exception);
-                if (isClockSkewError || await RetryForExceptionAsync(executionContext, exception).ConfigureAwait(false))
+                if (isClockSkewError || RetryForException(executionContext, exception))
                 {
                     if (!canRetry)
                     {
@@ -43,25 +43,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         }
 
         /// <summary>
-        /// This method uses a token bucket to enforce the maximum sending rate.
-        /// </summary>
-        /// <param name="executionContext">The execution context which contains both the
-        /// requests and response context.</param>
-        /// <param name="exception">If the prior request failed, this exception is expected to be 
-        /// the exception that occurred during the prior request failure.</param>
-        public virtual Task ObtainSendTokenAsync(IExecutionContext executionContext, Exception? exception)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Return true if the request should be retried for the given exception.
         /// </summary>
         /// <param name="executionContext">The execution context which contains both the
         /// requests and response context.</param>
         /// <param name="exception">The exception thrown by the previous request.</param>
         /// <returns>Return true if the request should be retried.</returns>
-        public abstract Task<bool> RetryForExceptionAsync(IExecutionContext executionContext, Exception exception);
+        public abstract bool RetryForException(IExecutionContext executionContext, Exception exception);
 
         /// <summary>
         /// Waits before retrying a request.

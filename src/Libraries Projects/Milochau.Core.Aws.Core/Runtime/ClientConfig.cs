@@ -8,14 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public abstract partial class ClientConfig : IClientConfig
     {
-        /// <summary>
-        /// Represents upper limit value for <see cref="RequestMinCompressionSizeBytes"/>
-        /// </summary>
-        internal const long UpperLimitCompressionSizeBytes = 10485760;
-
         public const int DefaultBufferSize = 8192;
-
-        private int? maxRetries = null;
         private const int MaxRetriesDefault = 2;
 
         /// <summary>
@@ -23,7 +16,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// Used in AWS4 request signing, this is the short-form
         /// name of the service being called.
         /// </summary>
-        public string? AuthenticationServiceName { get; set; } = null;
+        public string AuthenticationServiceName { get; protected set; }
 
         /// <summary>
         /// Returns the flag indicating how many retry HTTP requests an SDK should
@@ -37,24 +30,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// the value returned from this property will be one less than the value entered
         /// because this flag is the number of retry requests, not total requests.
         /// </summary>
-        public int MaxErrorRetry
-        {
-            get
-            {
-                if (!maxRetries.HasValue)
-                {
-                    //For standard and adaptive modes first check the environment variables
-                    //and shared config for a value. Otherwise default to the new default value.
-                    //In the shared config or environment variable MaxAttempts is the total number 
-                    //of attempts. This will include the initial call and must be deducted from
-                    //from the number of actual retries.
-                    return MaxRetriesDefault;
-                }
-
-                return maxRetries.Value;
-            }
-            set { maxRetries = value; }
-        }
+        public int MaxErrorRetry { get; protected set; } = MaxRetriesDefault;
 
         /// <summary>
         /// Gets and sets of the EndpointProvider property.

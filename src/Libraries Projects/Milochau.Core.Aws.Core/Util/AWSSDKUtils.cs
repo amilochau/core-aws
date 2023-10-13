@@ -118,7 +118,7 @@ namespace Milochau.Core.Aws.Core.Util
         /// <param name="request">The request instance</param>
         /// <param name="usesQueryString">Optional parameter: if true, we will return an empty string</param>
         /// <returns>Request parameters in query string byte array format</returns>
-        public static byte[] GetRequestPayloadBytes(IRequest request, bool? usesQueryString = null)
+        public static byte[] GetRequestPayloadBytes(IRequest request)
         {
             if (request.Content != null)
                 return request.Content;
@@ -233,14 +233,14 @@ namespace Milochau.Core.Aws.Core.Util
         /// <param name="pathResources">The key/value lookup for the patterned resourcePath</param>
         /// <param name="skipEncodingValidPathChars">If true valid path characters {/+:} are not encoded</param>
         /// <returns>A segmented encoded URL</returns>
-        public static string ResolveResourcePath(string resourcePath, IDictionary<string, string> pathResources, bool skipEncodingValidPathChars)
+        public static string ResolveResourcePath(string resourcePath, IDictionary<string, string> pathResources)
         {
             if (string.IsNullOrEmpty(resourcePath))
             {
                 return resourcePath;
             }
 
-            return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
+            return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), true);
         }
 
         /// <summary>

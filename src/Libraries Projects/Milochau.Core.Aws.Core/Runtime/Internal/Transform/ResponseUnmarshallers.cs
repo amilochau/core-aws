@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
     /// </summary>
     public abstract class ResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, UnmarshallerContext>
     {
-        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, bool isException, IRequestContext requestContext)
+        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, bool isException)
         {
             if (response == null)
             {

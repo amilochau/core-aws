@@ -45,8 +45,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             var errorContext = unmarshaller.CreateContext(httpErrorResponse,
                 readEntireResponse,
                 responseStream,
-                true,
-                requestContext);
+                true);
 
             try
             {

@@ -37,7 +37,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         {
             var requestContext = executionContext.RequestContext;
             bool shouldRetry = false;
-            await RetryPolicy.ObtainSendTokenAsync(executionContext, null).ConfigureAwait(false);
 
             do
             {
@@ -57,7 +56,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
 
                 if (capturedException != null)
                 {
-                    shouldRetry = await RetryPolicy.RetryAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
+                    shouldRetry = RetryPolicy.Retry(executionContext, capturedException.SourceException);
                     if (!shouldRetry)
                     {
                         capturedException.Throw();
@@ -66,8 +65,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
                     {
                         requestContext.Retries++;
                     }
-
-                    await RetryPolicy.ObtainSendTokenAsync(executionContext, capturedException.SourceException).ConfigureAwait(false);
                 }
 
                 PrepareForRetry(requestContext);
@@ -101,13 +98,18 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         }
         
         private void SetRetryHeaders(IRequestContext requestContext)
-        {    
+        {
             var request = requestContext.Request;
+            var httpRequestMessage = requestContext.HttpRequestMessage;
 
             //The invocation id will be the same for all retry requests for the initial operation invocation.
             if (!request.Headers.ContainsKey(HeaderKeys.AmzSdkInvocationId))
             {        
                 request.Headers.Add(HeaderKeys.AmzSdkInvocationId, requestContext.InvocationId.ToString());
+            }
+            if (!httpRequestMessage.Headers.Contains(HeaderKeys.AmzSdkInvocationId))
+            {
+                httpRequestMessage.Headers.Add(HeaderKeys.AmzSdkInvocationId, requestContext.InvocationId.ToString());
             }
 
             //Update the amz-sdk-request header with the current retry index.
@@ -121,6 +123,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
             {
                 request.Headers.Add(HeaderKeys.AmzSdkRequest, requestPairs);
             }
+            if (httpRequestMessage.Headers.Contains(HeaderKeys.AmzSdkRequest))
+            {
+                httpRequestMessage.Headers.Remove(HeaderKeys.AmzSdkRequest);
+            }
+            httpRequestMessage.Headers.Add(HeaderKeys.AmzSdkRequest, requestPairs);
         }
     }
 }

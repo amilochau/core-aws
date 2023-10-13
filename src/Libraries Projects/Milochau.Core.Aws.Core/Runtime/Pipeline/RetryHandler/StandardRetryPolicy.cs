@@ -41,9 +41,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler
         /// <param name="executionContext">Request context containing the state of the request.</param>
         /// <param name="exception">The exception thrown by the previous request.</param>
         /// <returns>Return true if the request should be retried.</returns>
-        public override Task<bool> RetryForExceptionAsync(IExecutionContext executionContext, Exception exception)
+        public override bool RetryForException(IExecutionContext executionContext, Exception exception)
         {
-            return Task.FromResult(RetryForExceptionSync(exception, executionContext));
+            return RetryForExceptionSync(exception, executionContext);
         }
 
         /// <summary>

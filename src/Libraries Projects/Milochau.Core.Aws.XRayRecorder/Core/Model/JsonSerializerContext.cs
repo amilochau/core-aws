@@ -7,7 +7,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Models
     [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(Segment))]
     [JsonSerializable(typeof(Subsegment))]
-    internal partial class AwsJsonSerializerContext : JsonSerializerContext
+    internal partial class XRayJsonSerializerContext : JsonSerializerContext
     {
     }
 }

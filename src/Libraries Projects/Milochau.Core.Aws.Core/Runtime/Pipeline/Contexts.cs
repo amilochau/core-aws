@@ -4,6 +4,7 @@ using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using System;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 {
@@ -11,11 +12,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
     {
         AmazonWebServiceRequest OriginalRequest { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
+        IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? HttpRequestMessageMarshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
         AWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
 
         IRequest? Request { get; set; }
+        HttpRequestMessage? HttpRequestMessage { get; set; }
+
         bool IsSigned { get; set; }
         int Retries { get; set; }
         CapacityManager.CapacityType LastCapacityType { get; set; }
@@ -46,6 +50,7 @@ namespace Amazon.Runtime.Internal
         public RequestContext(AWSSigner signer,
             IClientConfig clientConfig,
             IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
+            IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? httpRequestMessageMarshaller,
             ResponseUnmarshaller unmarshaller,
             AmazonWebServiceRequest originalRequest,
             System.Threading.CancellationToken cancellationToken)
@@ -53,6 +58,7 @@ namespace Amazon.Runtime.Internal
             Signer = signer;
             ClientConfig = clientConfig;
             Marshaller = marshaller;
+            HttpRequestMessageMarshaller = httpRequestMessageMarshaller;
             Unmarshaller = unmarshaller;
             OriginalRequest = originalRequest;
             CancellationToken = cancellationToken;
@@ -63,11 +69,14 @@ namespace Amazon.Runtime.Internal
         public AWSSigner Signer { get; }
         public IClientConfig ClientConfig { get; }
         public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
+        public IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? HttpRequestMessageMarshaller { get; }
         public ResponseUnmarshaller Unmarshaller { get; }
         public AmazonWebServiceRequest OriginalRequest { get; }
         public System.Threading.CancellationToken CancellationToken { get; }
 
         public IRequest? Request { get; set; }
+        public HttpRequestMessage? HttpRequestMessage { get; set; }
+
         public int Retries { get; set; }
         public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
         public int EndpointDiscoveryRetries { get; set; }

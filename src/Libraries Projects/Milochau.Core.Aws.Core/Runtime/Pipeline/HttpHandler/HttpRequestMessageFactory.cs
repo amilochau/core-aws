@@ -15,7 +15,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
     /// </summary>
     public class HttpRequestMessageFactory : IHttpRequestFactory<HttpContent>
     {
-        static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient
+        {
+
+        };
 
         /// <summary>
         /// Creates an HTTP request for the given URI.
@@ -24,7 +27,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <returns>An HTTP request.</returns>
         public IHttpRequest<HttpContent> CreateHttpRequest(Uri requestUri)
         {
-            return new HttpWebRequestMessage(_httpClient, requestUri);
+            return new HttpWebRequestMessage(httpClient, requestUri);
         }
     }
 
@@ -40,11 +43,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         {
             HeaderKeys.ContentLengthHeader,
             HeaderKeys.ContentTypeHeader,
-            HeaderKeys.ContentRangeHeader,
-            HeaderKeys.ContentMD5Header,
-            HeaderKeys.ContentEncodingHeader,
-            HeaderKeys.ContentDispositionHeader,
-            HeaderKeys.Expires
         };
 
         private bool _disposed;
@@ -75,6 +73,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
             set { _request.Method = new HttpMethod(value); }
         }
 
+        /// <summary>The HTTP request message</summary>
+        public HttpRequestMessage? HttpRequestMessage { get; set; }
+
         /// <summary>
         /// Configures a request as per the request context.
         /// </summary>
@@ -85,6 +86,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
             if (requestContext != null && requestContext.OriginalRequest != null)
             {
                 _request.Headers.ExpectContinue = false;
+                requestContext.HttpRequestMessage.Headers.ExpectContinue = false;
             }
         }
 
@@ -104,74 +106,49 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         }
 
         /// <summary>
-        /// Gets a handle to the request content.
-        /// </summary>
-        /// <returns>The request content.</returns>
-        public HttpContent? GetRequestContent()
-        {
-            return _request.Content;
-        }
-
-        /// <summary>
-        /// Returns the HTTP response.
-        /// </summary>
-        /// <returns>The HTTP response.</returns>
-        public IWebResponseData GetResponse()
-        {
-            try
-            {
-                return GetResponseAsync(System.Threading.CancellationToken.None).Result;
-            }
-            catch (AggregateException e)
-            {
-                throw e.InnerException!;
-            }
-        }
-
-        /// <summary>
         /// Returns the HTTP response.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
-        /// <returns></returns>
         public async System.Threading.Tasks.Task<IWebResponseData> GetResponseAsync(System.Threading.CancellationToken cancellationToken)
         {
             try
             {
-                var responseMessage = await _httpClient.SendAsync(_request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                    .ConfigureAwait(continueOnCapturedContext: false);
+                HttpResponseMessage responseMessage;
+                if (HttpRequestMessage == null)
+                {
+                    // @todo Compatibility mode - to be removed asap
+                    responseMessage = await _httpClient.SendAsync(_request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                }
+                else
+                {
+                    responseMessage = await _httpClient.SendAsync(HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                }
 
                 if (!responseMessage.IsSuccessStatusCode)
                 {
                     // For all responses other than HTTP 2xx, return an exception.
-                    throw new HttpErrorResponseException(
-                        new HttpClientResponseData(responseMessage));
+                    throw new HttpErrorResponseException(new HttpClientResponseData(responseMessage));
                 }
 
                 return new HttpClientResponseData(responseMessage);
             }
             catch (HttpRequestException httpException)
             {
-                if (httpException.InnerException != null)
+                if (httpException.InnerException != null && httpException.InnerException is IOException)
                 {
-                    if (httpException.InnerException is IOException)
-                    {
-                        throw httpException.InnerException;
-                    }
+                    throw httpException.InnerException;
                 }
 
                 throw;
             }
             catch (OperationCanceledException canceledException)
             {
-                if (!cancellationToken.IsCancellationRequested)
+                if (!cancellationToken.IsCancellationRequested && canceledException.InnerException != null)
                 {
                     //OperationCanceledException thrown by HttpClient not the CancellationToken supplied by the user.
                     //This exception can wrap at least IOExceptions, ObjectDisposedExceptions and should be retried.
                     //Throw the underlying exception if it exists.
-                    if(canceledException.InnerException != null)
-                    {
-                        throw canceledException.InnerException;
-                    }
+                    throw canceledException.InnerException;
                 }
 
                 throw;
@@ -185,14 +162,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <param name="contentStream">The content stream to be written.</param>
         /// <param name="contentHeaders">HTTP content headers.</param>
         /// <param name="requestContext">The request context.</param>
-        public void WriteToRequestBody(HttpContent requestContent, Stream contentStream,
-            IDictionary<string, string> contentHeaders, IRequestContext requestContext)
+        public void WriteToRequestBody(HttpContent requestContent, Stream contentStream, IDictionary<string, string> contentHeaders, IRequestContext requestContext)
         {
             var wrapperStream = new NonDisposingWrapperStream(contentStream);
             _request.Content = new StreamContent(wrapperStream, ClientConfig.DefaultBufferSize);
             _request.Content.Headers.ContentLength = contentStream.Length;
-
-            WriteContentHeaders(contentHeaders);
+            _request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentHeaders[HeaderKeys.ContentTypeHeader]);
         }
 
         /// <summary>
@@ -201,49 +176,22 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <param name="requestContent">The destination where the content stream is written.</param>
         /// <param name="content">The content stream to be written.</param>
         /// <param name="contentHeaders">HTTP content headers.</param>
-        public void WriteToRequestBody(HttpContent requestContent,
-            byte[] content, IDictionary<string, string> contentHeaders)
+        public void WriteToRequestBody(HttpContent requestContent, byte[] content, IDictionary<string, string> contentHeaders)
         {
             _request.Content = new ByteArrayContent(content);
             _request.Content.Headers.ContentLength = content.Length;
-            WriteContentHeaders(contentHeaders);
+            _request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentHeaders[HeaderKeys.ContentTypeHeader]);
         }
 
         /// <summary>
         /// Gets a handle to the request content.
         /// </summary>
         /// <returns></returns>
-        public System.Threading.Tasks.Task<HttpContent?> GetRequestContentAsync()
+        public HttpContent? GetRequestContent()
         {
-            return System.Threading.Tasks.Task.FromResult(_request.Content);
+            return _request.Content;
         }
 
-
-        private void WriteContentHeaders(IDictionary<string, string> contentHeaders)
-        {
-            _request.Content.Headers.ContentType =
-                MediaTypeHeaderValue.Parse(contentHeaders[HeaderKeys.ContentTypeHeader]);
-
-            if (contentHeaders.TryGetValue(HeaderKeys.ContentRangeHeader, out var contentRangeHeader))
-                _request.Content.Headers.TryAddWithoutValidation(HeaderKeys.ContentRangeHeader,
-                    contentRangeHeader);
-
-            if (contentHeaders.TryGetValue(HeaderKeys.ContentMD5Header, out var contentMd5Header))
-                _request.Content.Headers.TryAddWithoutValidation(HeaderKeys.ContentMD5Header,
-                    contentMd5Header);
-
-            if (contentHeaders.TryGetValue(HeaderKeys.ContentEncodingHeader, out var contentEncodingHeader))
-                _request.Content.Headers.TryAddWithoutValidation(HeaderKeys.ContentEncodingHeader,
-                    contentEncodingHeader);
-
-            if (contentHeaders.TryGetValue(HeaderKeys.ContentDispositionHeader, out var contentDispositionHeader))
-                _request.Content.Headers.TryAddWithoutValidation(HeaderKeys.ContentDispositionHeader,
-                    contentDispositionHeader);
-
-            if (contentHeaders.TryGetValue(HeaderKeys.Expires, out var expiresHeaderValue) &&
-                DateTime.TryParse(expiresHeaderValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out var expires))
-                _request.Content.Headers.Expires = expires;
-        }
 
         /// <summary>
         /// Disposes the HttpWebRequestMessage.

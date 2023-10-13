@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal
     [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(SendEmailRequest))]
     [JsonSerializable(typeof(SendEmailResponse))]
-    internal partial class AwsJsonSerializerContext : JsonSerializerContext
+    internal partial class SendEmailJsonSerializerContext : JsonSerializerContext
     {
     }
 }

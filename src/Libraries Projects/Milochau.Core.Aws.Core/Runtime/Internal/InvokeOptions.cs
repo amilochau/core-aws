@@ -9,55 +9,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
     /// Callers shouldn't ever interact directly with objects of this class.
     /// </para>
     /// </summary>
-    public abstract class InvokeOptionsBase
+    public class InvokeOptions
     {
-        private IMarshaller<IRequest, AmazonWebServiceRequest> _requestMarshaller;
-        private ResponseUnmarshaller _responseUnmarshaller;
-        
-        protected InvokeOptionsBase()
-        {
-        }
+        public virtual IMarshaller<IRequest, AmazonWebServiceRequest> RequestMarshaller { get; set; }
 
-        #region Standard Marshaller/Unmarshaller
+        public virtual IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; set; }
 
-        public virtual IMarshaller<IRequest, AmazonWebServiceRequest> RequestMarshaller
-        {
-            get
-            {
-                return _requestMarshaller;
-            }
-            set
-            {
-                _requestMarshaller = value;
-            }
-        }
-
-        public virtual ResponseUnmarshaller ResponseUnmarshaller
-        {
-            get
-            {
-                return _responseUnmarshaller;
-            }
-            set
-            {
-                _responseUnmarshaller = value;
-            }
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Class containing the members used to invoke service calls
-    /// <para>
-    /// This class is only intended for internal use inside the AWS client libraries.
-    /// Callers shouldn't ever interact directly with objects of this class.
-    /// </para>
-    /// </summary>
-    public class InvokeOptions : InvokeOptionsBase
-    {
-        public InvokeOptions() : base()
-        {
-        }
+        public virtual ResponseUnmarshaller ResponseUnmarshaller { get; set; }
     }
 }

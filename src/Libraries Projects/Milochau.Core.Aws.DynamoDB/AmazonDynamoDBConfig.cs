@@ -12,7 +12,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// Default constructor
         /// </summary>
         public AmazonDynamoDBConfig()
-            : base()
         {
             AuthenticationServiceName = "dynamodb";
             MaxErrorRetry = 10;

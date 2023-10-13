@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public IRequest Marshall(UpdateItemRequest publicRequest)
         {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, AwsJsonSerializerContext.Default.UpdateItemRequest);
+            var serializedRequest = JsonSerializer.Serialize(publicRequest, UpdateItemJsonSerializerContext.Default.UpdateItemRequest);
 
             IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2")
             {

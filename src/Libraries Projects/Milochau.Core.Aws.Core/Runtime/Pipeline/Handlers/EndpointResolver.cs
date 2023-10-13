@@ -18,11 +18,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
 
         protected void PreInvoke(IExecutionContext executionContext)
         {
-            ProcessRequestHandlers(executionContext);
-        }
-
-        public void ProcessRequestHandlers(IExecutionContext executionContext)
-        {
             var requestContext = executionContext.RequestContext;
 
             var endpoint = GetEndpoint(executionContext);

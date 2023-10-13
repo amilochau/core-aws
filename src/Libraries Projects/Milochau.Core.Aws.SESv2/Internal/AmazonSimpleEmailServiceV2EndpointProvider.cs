@@ -16,8 +16,7 @@ namespace Milochau.Core.Aws.SESv2.Internal
         public Endpoint ResolveEndpoint()
         {
             string region = EnvironmentVariables.RegionName;
-            var dnsSuffix = "amazonaws.com";
-            return new Endpoint($"https://email.{region}.{dnsSuffix}");
+            return new Endpoint($"https://email.{region}.amazonaws.com");
         }
     }
 }

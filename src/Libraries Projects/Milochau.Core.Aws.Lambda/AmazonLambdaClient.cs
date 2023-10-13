@@ -216,6 +216,7 @@ namespace Milochau.Core.Aws.Lambda
             var options = new InvokeOptions
             {
                 RequestMarshaller = InvokeRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = InvokeRequestMarshaller.Instance,
                 ResponseUnmarshaller = InvokeResponseUnmarshaller.Instance
             };
 

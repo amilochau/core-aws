@@ -16,8 +16,7 @@ namespace Milochau.Core.Aws.DynamoDB.Internal
         public Endpoint ResolveEndpoint()
         {
             string region = EnvironmentVariables.RegionName;
-            var dnsSuffix = "amazonaws.com";
-            return new Endpoint($"https://dynamodb.{region}.{dnsSuffix}");
+            return new Endpoint($"https://dynamodb.{region}.amazonaws.com");
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public IRequest Marshall(SendEmailRequest publicRequest)
         {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, AwsJsonSerializerContext.Default.SendEmailRequest);
+            var serializedRequest = JsonSerializer.Serialize(publicRequest, SendEmailJsonSerializerContext.Default.SendEmailRequest);
 
             IRequest request = new DefaultRequest(publicRequest, "Amazon.SimpleEmailV2")
             {

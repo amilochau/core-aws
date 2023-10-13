@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 {
@@ -30,6 +31,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// </summary>
         string Method { get; set; }
 
+        /// <summary>The HTTP request message</summary>
+        HttpRequestMessage? HttpRequestMessage { get; set; }
+
         /// <summary>
         /// Configures a request as per the request context.
         /// </summary>
@@ -41,18 +45,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// </summary>
         /// <param name="headers">A dictionary of header names and values.</param>
         void SetRequestHeaders(IDictionary<string, string> headers);
-
-        /// <summary>
-        /// Gets a handle to the request content.
-        /// </summary>
-        /// <returns>The request content.</returns>
-        TRequestContent? GetRequestContent();
-
-        /// <summary>
-        /// Returns the HTTP response.
-        /// </summary>
-        /// <returns>The HTTP response.</returns>
-        IWebResponseData GetResponse();
 
         /// <summary>
         /// Writes a stream to the request body.
@@ -74,15 +66,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <summary>
         /// Gets a handle to the request content.
         /// </summary>
-        /// <returns></returns>
-
-        System.Threading.Tasks.Task<TRequestContent?> GetRequestContentAsync();
+        TRequestContent? GetRequestContent();
 
         /// <summary>
         /// Returns the HTTP response.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
-        /// <returns></returns>
         System.Threading.Tasks.Task<IWebResponseData> GetResponseAsync(System.Threading.CancellationToken cancellationToken);
     }
 }

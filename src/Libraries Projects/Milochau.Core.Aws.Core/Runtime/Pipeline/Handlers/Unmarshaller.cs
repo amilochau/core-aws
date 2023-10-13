@@ -40,8 +40,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
                 var context = unmarshaller.CreateContext(responseContext.HttpResponse,
                     false,
                     responseStream,
-                    false,
-                    requestContext);
+                    false);
 
                 var response = UnmarshallResponse(context, requestContext);
                 responseContext.Response = response;

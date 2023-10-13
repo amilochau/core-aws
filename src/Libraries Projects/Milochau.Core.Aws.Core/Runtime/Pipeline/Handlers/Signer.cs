@@ -25,21 +25,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
 
         protected static void PreInvoke(IExecutionContext executionContext)
         {
-            if (ShouldSign(executionContext.RequestContext))
+            if (!executionContext.RequestContext.IsSigned)
             {
                 SignRequest(executionContext.RequestContext);
                 executionContext.RequestContext.IsSigned = true;
             }
-        }
-
-        /// <summary>
-        /// Determines if the request should be signed.
-        /// </summary>
-        /// <param name="requestContext">The request context.</param>
-        /// <returns>A boolean value that indicated if the request should be signed.</returns>
-        private static bool ShouldSign(IRequestContext requestContext)
-        {
-            return !requestContext.IsSigned;
         }
 
         /// <summary>
@@ -51,9 +41,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             if (EnvironmentVariables.UseToken)
             {
                 requestContext.Request.Headers[HeaderKeys.XAmzSecurityTokenHeader] = EnvironmentVariables.Token;
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, EnvironmentVariables.Token);
             }
 
-            requestContext.Signer.Sign(requestContext.Request, requestContext.ClientConfig);
+            requestContext.Signer.Sign(requestContext);
         }
     }
 }

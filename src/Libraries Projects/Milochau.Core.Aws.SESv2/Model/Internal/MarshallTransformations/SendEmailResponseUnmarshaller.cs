@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.SendEmailResponse)!; // @todo null?
+            return JsonSerializer.Deserialize(context.Stream, SendEmailJsonSerializerContext.Default.SendEmailResponse)!; // @todo null?
         }
 
         /// <summary>

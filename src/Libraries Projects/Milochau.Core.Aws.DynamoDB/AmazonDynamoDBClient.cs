@@ -234,6 +234,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = GetItemRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = GetItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = GetItemResponseUnmarshaller.Instance,
             };
 

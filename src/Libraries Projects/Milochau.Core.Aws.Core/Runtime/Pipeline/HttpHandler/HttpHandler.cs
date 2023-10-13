@@ -40,7 +40,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
                 IRequest wrappedRequest = executionContext.RequestContext.Request;
                 httpRequest = CreateWebRequest(executionContext.RequestContext);
                 httpRequest.SetRequestHeaders(wrappedRequest.Headers);
-                
+                httpRequest.HttpRequestMessage = executionContext.RequestContext.HttpRequestMessage;
+
                 // Send request body if present.
                 if (wrappedRequest.HasRequestBody())
                 {
@@ -51,7 +52,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
                         // does not accept a cancellation token. A workaround is used. This isn't necessary in .NET Standard
                         // where the stream is a property of the request.
 
-                        var requestContent = await httpRequest.GetRequestContentAsync().ConfigureAwait(false);
+                        var requestContent = httpRequest.GetRequestContent();
                         WriteContentToRequestBody(requestContent, httpRequest, executionContext.RequestContext);
                     }
                     catch(Exception e)
@@ -67,8 +68,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
                     }
                 }
                 
-                var response = await httpRequest.GetResponseAsync(executionContext.RequestContext.CancellationToken).
-                    ConfigureAwait(false);
+                var response = await httpRequest.GetResponseAsync(executionContext.RequestContext.CancellationToken).ConfigureAwait(false);
                 executionContext.ResponseContext.HttpResponse = response;
 
                 // The response is not unmarshalled yet.
@@ -105,9 +105,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// <param name="requestContent">Content to be written.</param>
         /// <param name="httpRequest">The HTTP request.</param>
         /// <param name="requestContext">The request context.</param>
-        private static void WriteContentToRequestBody(HttpContent requestContent,
-            IHttpRequest<HttpContent> httpRequest,
-            IRequestContext requestContext)
+        private static void WriteContentToRequestBody(HttpContent requestContent, IHttpRequest<HttpContent> httpRequest, IRequestContext requestContext)
         {
             IRequest wrappedRequest = requestContext.Request;
 
@@ -135,10 +133,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 
                 httpRequest.WriteToRequestBody(requestContent, originalStream, requestContext.Request.Headers, requestContext);
             }
-
-
-            //byte[] requestData = requestContext.Request.Content;
-            //httpRequest.WriteToRequestBody(requestContent, requestData, requestContext.Request.Headers);
         }
 
         /// <summary>
@@ -173,13 +167,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 
                 if (content != null)
                 {
-                    request.Headers[HeaderKeys.ContentLengthHeader] =
-                        content.Length.ToString(CultureInfo.InvariantCulture);
+                    request.Headers[HeaderKeys.ContentLengthHeader] = content.Length.ToString(CultureInfo.InvariantCulture);
                 }
                 else if (request.ContentStream != null && request.ContentStream.CanSeek && !request.Headers.ContainsKey(HeaderKeys.ContentLengthHeader))
                 {
-                    request.Headers[HeaderKeys.ContentLengthHeader] =
-                        request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
+                    request.Headers[HeaderKeys.ContentLengthHeader] = request.ContentStream.Length.ToString(CultureInfo.InvariantCulture);
                 }
             }
 

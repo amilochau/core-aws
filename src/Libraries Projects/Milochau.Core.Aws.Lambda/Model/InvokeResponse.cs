@@ -9,16 +9,6 @@ namespace Milochau.Core.Aws.Lambda.Model
     /// </summary>
     public partial class InvokeResponse : AmazonWebServiceResponse
     {
-
-        /// <summary>
-        /// Gets and sets the property ExecutedVersion. 
-        /// <para>
-        /// The version of the function that executed. When you invoke a function with an alias,
-        /// this indicates which version the alias resolved to.
-        /// </para>
-        /// </summary>
-        public string? ExecutedVersion { get; set; }
-
         /// <summary>
         /// Gets and sets the property FunctionError. 
         /// <para>

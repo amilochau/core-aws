@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
-using System.Linq;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
@@ -39,14 +37,14 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         protected System.Threading.Tasks.Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
-            InvokeOptionsBase options,
+            InvokeOptions options,
             System.Threading.CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
             ThrowIfDisposed();
 
             var executionContext = new ExecutionContext(
-                new RequestContext(Signer, Config, options.RequestMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
+                new RequestContext(Signer, Config, options.RequestMarshaller, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
                 new ResponseContext()
             );
             return RuntimePipeline.InvokeAsync<TResponse>(executionContext);
@@ -85,18 +83,13 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         private void BuildRuntimePipeline()
         {
-            var httpHandler = new HttpHandler();
-
             // Build default runtime pipeline.
             RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
                 {
-                    httpHandler,
+                    new HttpHandler(),
                     new Unmarshaller(),
                     new ErrorHandler(),
                     new Signer(),
-                    // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
-                    // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
-                    new ChecksumHandler(),
                     new RetryHandler(Config),
                     new EndpointResolver(),
                     new Marshaller(),
@@ -110,20 +103,9 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// Assembles the Uri for a given SDK request
         /// </summary>
-        /// <param name="iRequest">Request to compute Uri for</param>
-        /// <returns>Uri for the given SDK request</returns>
-        public static Uri ComposeUrl(IRequest iRequest)
-        {
-            return ComposeUrl(iRequest, true);
-        }
-
-        /// <summary>
-        /// Assembles the Uri for a given SDK request
-        /// </summary>
         /// <param name="internalRequest">Request to compute Uri for</param>
-        /// <param name="skipEncodingValidPathChars">If true the accepted path characters {/+:} are not encoded.</param>
         /// <returns>Uri for the given SDK request</returns>
-        public static Uri ComposeUrl(IRequest internalRequest, bool skipEncodingValidPathChars)
+        public static Uri ComposeUrl(IRequest internalRequest)
         {
             Uri url = internalRequest.Endpoint;
             var resourcePath = internalRequest.ResourcePath;
@@ -134,7 +116,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                 if (resourcePath.StartsWith("/", StringComparison.Ordinal))
                     resourcePath = resourcePath.Substring(1);
 
-                resourcePath = AWSSDKUtils.ResolveResourcePath(resourcePath, internalRequest.PathResources, skipEncodingValidPathChars);
+                resourcePath = AWSSDKUtils.ResolveResourcePath(resourcePath, internalRequest.PathResources);
             }
 
             // Construct any sub resource/query parameter additions to append to the

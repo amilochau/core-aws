@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.PutItemResponse)!; // @todo null?
+            return JsonSerializer.Deserialize(context.Stream, PutItemJsonSerializerContext.Default.PutItemResponse)!; // @todo null?
         }
 
         /// <summary>
