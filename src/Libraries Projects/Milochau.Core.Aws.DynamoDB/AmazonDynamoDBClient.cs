@@ -1,5 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.DynamoDB.Model;
 using Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations;
 using System.Threading;
@@ -157,6 +158,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = BatchWriteItemRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = BatchWriteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = BatchWriteItemResponseUnmarshaller.Instance,
             };
 
@@ -200,6 +202,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = DeleteItemRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = DeleteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = DeleteItemResponseUnmarshaller.Instance,
             };
 
@@ -294,6 +297,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = PutItemRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = PutItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = PutItemResponseUnmarshaller.Instance,
             };
 
@@ -383,6 +387,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = QueryRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = QueryRequestMarshaller.Instance,
                 ResponseUnmarshaller = QueryResponseUnmarshaller.Instance,
             };
 
@@ -417,6 +422,7 @@ namespace Milochau.Core.Aws.DynamoDB
             var options = new InvokeOptions
             {
                 RequestMarshaller = UpdateItemRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = UpdateItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
             };
 

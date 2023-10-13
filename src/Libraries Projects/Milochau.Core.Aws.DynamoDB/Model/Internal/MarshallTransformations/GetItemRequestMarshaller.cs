@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// GetItem Request Marshaller
-    /// </summary>       
+    /// </summary>
     public class GetItemRequestMarshaller : IMarshaller<IRequest, GetItemRequest>, IMarshaller<IRequest, AmazonWebServiceRequest>, IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
     {
         /// <summary>
@@ -59,33 +59,17 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"https://dynamodb.{EnvironmentVariables.RegionName}.amazonaws.com/"),
-                Content = new StringContent(serializedRequest, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/x-amz-json-1.0")), // XXX Not added !!!!!
+                Content = new StringContent(serializedRequest, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/x-amz-json-1.0")),
             };
             httpRequestMessage.Headers.Add("X-Amz-Target", "DynamoDB_20120810.GetItem");
             httpRequestMessage.Headers.Add(HeaderKeys.XAmzApiVersion, "2012-08-10");
-
-            /*
-             * ✔️ ✔️ X-Amz-Target
-             * ✔️ ✔️ x-amz-api-version
-             * ✔️ ✔️ amz-trace-id               (Marshaller.PreInvoke)              => Not in local debug
-             * ✔️ ✔️ amz-sdk-invocation-id      (RetryHandler.SetRetryHeaders)
-             * ✔️ ✔️ amz-sdk-request            (RetryHandler.SetRetryHeaders)
-             * ✔️ ✔️ x-amz-security-token       (Signer.SignRequest)                => Not in local debug
-             * ✔️ ✔️ Host                       (AWSSigner.InitializeHeaders)
-             * ✔️ ✔️ X-Amz-Date                 (AWSSigner.InitializeHeaders)
-             * ✔️ ✔️ X-Amz-Content-SHA256       (AWSSigner.SetRequestBodyHash)
-             * ✔️ ✔️ Authorization              (AWSSigner.Sign)                                                                                          TryAddWithoutValidation
-             *     traceparent
-             *     
-             * ✔️ ✔️ Content-Length              (HttpHandler.CreateWebRequest)                                   XXX Not added !!!!!                     TryAddWithoutValidation
-             */
 
             return httpRequestMessage;
         }
 
         /// <summary>
         /// Gets the singleton.
-        /// </summary>  
+        /// </summary>
         public static GetItemRequestMarshaller Instance { get; } = new GetItemRequestMarshaller();
     }
 }

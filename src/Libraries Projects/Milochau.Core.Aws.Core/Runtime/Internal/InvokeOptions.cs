@@ -11,10 +11,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
     /// </summary>
     public class InvokeOptions
     {
-        public virtual IMarshaller<IRequest, AmazonWebServiceRequest> RequestMarshaller { get; set; }
+        public IMarshaller<IRequest, AmazonWebServiceRequest> RequestMarshaller { get; set; }
 
-        public virtual IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; set; }
+        public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; set; }
 
-        public virtual ResponseUnmarshaller ResponseUnmarshaller { get; set; }
+        public ResponseUnmarshaller ResponseUnmarshaller { get; set; }
     }
 }

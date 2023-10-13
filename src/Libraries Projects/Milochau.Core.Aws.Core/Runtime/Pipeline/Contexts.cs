@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
     {
         AmazonWebServiceRequest OriginalRequest { get; }
         IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
-        IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? HttpRequestMessageMarshaller { get; }
+        IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
         AWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
@@ -50,7 +50,7 @@ namespace Amazon.Runtime.Internal
         public RequestContext(AWSSigner signer,
             IClientConfig clientConfig,
             IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
-            IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? httpRequestMessageMarshaller,
+            IHttpRequestMessageMarshaller<AmazonWebServiceRequest> httpRequestMessageMarshaller,
             ResponseUnmarshaller unmarshaller,
             AmazonWebServiceRequest originalRequest,
             System.Threading.CancellationToken cancellationToken)
@@ -69,7 +69,7 @@ namespace Amazon.Runtime.Internal
         public AWSSigner Signer { get; }
         public IClientConfig ClientConfig { get; }
         public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
-        public IHttpRequestMessageMarshaller<AmazonWebServiceRequest>? HttpRequestMessageMarshaller { get; }
+        public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         public ResponseUnmarshaller Unmarshaller { get; }
         public AmazonWebServiceRequest OriginalRequest { get; }
         public System.Threading.CancellationToken CancellationToken { get; }

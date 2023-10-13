@@ -100,6 +100,7 @@ namespace Milochau.Core.Aws.SESv2
             var options = new InvokeOptions
             {
                 RequestMarshaller = SendEmailRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = SendEmailRequestMarshaller.Instance,
                 ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance
             };
 
