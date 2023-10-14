@@ -30,13 +30,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
         protected static void PreInvoke(IExecutionContext executionContext)
         {
             var requestContext = executionContext.RequestContext;
-            requestContext.Request = requestContext.Marshaller.Marshall(requestContext.OriginalRequest);
             requestContext.HttpRequestMessage = requestContext.HttpRequestMessageMarshaller.CreateHttpRequestMessage(requestContext.OriginalRequest);
 
             if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_TraceId, out string? amznTraceId))
             {
-                requestContext.Request.Headers[HeaderKeys.XAmznTraceIdHeader] = AWSSDKUtils.EncodeTraceIdHeaderValue(amznTraceId);
-                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmznTraceIdHeader, amznTraceId);
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmznTraceIdHeader, AWSSDKUtils.EncodeTraceIdHeaderValue(amznTraceId));
             }
         }
     }

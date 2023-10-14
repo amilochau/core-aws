@@ -13,39 +13,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
     /// <summary>
     /// DeleteItem Request Marshaller
     /// </summary>       
-    public class DeleteItemRequestMarshaller : IMarshaller<IRequest, DeleteItemRequest>, IMarshaller<IRequest, AmazonWebServiceRequest>, IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public class DeleteItemRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
     {
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        /// <returns></returns>
-        /// @todo remove this method?
-        public IRequest Marshall(AmazonWebServiceRequest input)
-        {
-            return Marshall((DeleteItemRequest)input);
-        }
-
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        /// <returns></returns>
-        public IRequest Marshall(DeleteItemRequest publicRequest)
-        {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, DeleteItemJsonSerializerContext.Default.DeleteItemRequest);
-
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2")
-            {
-                HttpMethod = "POST",
-                ResourcePath = "/",
-                Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
-            };
-            request.Headers["X-Amz-Target"] = "DynamoDB_20120810.DeleteItem";
-            request.Headers["Content-Type"] = "application/x-amz-json-1.0";
-            request.Headers[HeaderKeys.XAmzApiVersion] = "2012-08-10";
-           
-            return request;
-        }
-
         /// <summary>Creates an HTTP request message to call the service</summary>
         public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
         {

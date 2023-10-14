@@ -1,12 +1,11 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Runtime.Internal.Util;
+﻿using Microsoft.Extensions.Http;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
+using Polly;
+using Polly.Extensions.Http;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 {
@@ -15,19 +14,26 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
     /// </summary>
     public class HttpRequestMessageFactory : IHttpRequestFactory<HttpContent>
     {
-        private static readonly HttpClient httpClient = new HttpClient
+        private static readonly IAsyncPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(Math.Min(Math.Pow(2, retryAttempt), 20))); // Max 20 seconds
+        private static readonly SocketsHttpHandler socketHandler = new SocketsHttpHandler
         {
-
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15), // Recreate every 15 minutes
         };
+        private static PolicyHttpMessageHandler pollyHandler = new PolicyHttpMessageHandler(retryPolicy)
+        {
+            InnerHandler = socketHandler,
+        };
+        private static readonly HttpClient httpClient = new HttpClient(pollyHandler);
 
         /// <summary>
         /// Creates an HTTP request for the given URI.
         /// </summary>
-        /// <param name="requestUri">The request URI.</param>
         /// <returns>An HTTP request.</returns>
-        public IHttpRequest<HttpContent> CreateHttpRequest(Uri requestUri)
+        public IHttpRequest<HttpContent> CreateHttpRequest()
         {
-            return new HttpWebRequestMessage(httpClient, requestUri);
+            return new HttpWebRequestMessage(httpClient);
         }
     }
 
@@ -36,45 +42,20 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
     /// </summary>
     public class HttpWebRequestMessage : IHttpRequest<HttpContent>
     {
-        /// <summary>
-        /// Set of content header names.
-        /// </summary>
-        private static readonly HashSet<string> ContentHeaderNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            HeaderKeys.ContentLengthHeader,
-            HeaderKeys.ContentTypeHeader,
-        };
-
         private bool _disposed;
-        private readonly HttpRequestMessage _request;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient httpClient;
 
         /// <summary>
         /// The constructor for HttpWebRequestMessage.
         /// </summary>
         /// <param name="httpClient">The HttpClient used to make the request.</param>
-        /// <param name="requestUri">The request URI.</param>
-        public HttpWebRequestMessage(HttpClient httpClient, Uri requestUri)
+        public HttpWebRequestMessage(HttpClient httpClient)
         {
-            _httpClient = httpClient;
-
-            _request = new HttpRequestMessage
-            {
-                RequestUri = requestUri
-            };
-        }
-
-        /// <summary>
-        /// The HTTP method or verb.
-        /// </summary>
-        public string Method
-        {
-            get { return _request.Method.Method; }
-            set { _request.Method = new HttpMethod(value); }
+            this.httpClient = httpClient;
         }
 
         /// <summary>The HTTP request message</summary>
-        public HttpRequestMessage? HttpRequestMessage { get; set; }
+        public HttpRequestMessage HttpRequestMessage { get; set; }
 
         /// <summary>
         /// Configures a request as per the request context.
@@ -85,23 +66,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
             // Configure the Expect 100-continue header
             if (requestContext != null && requestContext.OriginalRequest != null)
             {
-                _request.Headers.ExpectContinue = false;
                 requestContext.HttpRequestMessage.Headers.ExpectContinue = false;
             }
-        }
 
-        /// <summary>
-        /// Sets the headers on the request.
-        /// </summary>
-        /// <param name="headers">A dictionary of header names and values.</param>
-        public void SetRequestHeaders(IDictionary<string, string> headers)
-        {
-            foreach (var kvp in headers)
+            if (!requestContext.HttpRequestMessage.Headers.Contains(HeaderKeys.AmzSdkInvocationId))
             {
-                if (ContentHeaderNames.Contains(kvp.Key))
-                    continue;
-
-                _request.Headers.TryAddWithoutValidation(kvp.Key, kvp.Value);
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.AmzSdkInvocationId, requestContext.InvocationId.ToString());
             }
         }
 
@@ -113,16 +83,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         {
             try
             {
-                HttpResponseMessage responseMessage;
-                if (HttpRequestMessage == null)
-                {
-                    // @todo Compatibility mode - to be removed asap
-                    responseMessage = await _httpClient.SendAsync(_request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
-                }
-                else
-                {
-                    responseMessage = await _httpClient.SendAsync(HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
-                }
+                HttpResponseMessage responseMessage = await httpClient.SendAsync(HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
 
                 if (!responseMessage.IsSuccessStatusCode)
                 {
@@ -156,44 +117,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         }
 
         /// <summary>
-        /// Writes a stream to the request body.
-        /// </summary>
-        /// <param name="requestContent">The destination where the content stream is written.</param>
-        /// <param name="contentStream">The content stream to be written.</param>
-        /// <param name="contentHeaders">HTTP content headers.</param>
-        /// <param name="requestContext">The request context.</param>
-        public void WriteToRequestBody(HttpContent requestContent, Stream contentStream, IDictionary<string, string> contentHeaders, IRequestContext requestContext)
-        {
-            var wrapperStream = new NonDisposingWrapperStream(contentStream);
-            _request.Content = new StreamContent(wrapperStream, ClientConfig.DefaultBufferSize);
-            _request.Content.Headers.ContentLength = contentStream.Length;
-            _request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentHeaders[HeaderKeys.ContentTypeHeader]);
-        }
-
-        /// <summary>
-        /// Writes a byte array to the request body.
-        /// </summary>
-        /// <param name="requestContent">The destination where the content stream is written.</param>
-        /// <param name="content">The content stream to be written.</param>
-        /// <param name="contentHeaders">HTTP content headers.</param>
-        public void WriteToRequestBody(HttpContent requestContent, byte[] content, IDictionary<string, string> contentHeaders)
-        {
-            _request.Content = new ByteArrayContent(content);
-            _request.Content.Headers.ContentLength = content.Length;
-            _request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentHeaders[HeaderKeys.ContentTypeHeader]);
-        }
-
-        /// <summary>
-        /// Gets a handle to the request content.
-        /// </summary>
-        /// <returns></returns>
-        public HttpContent? GetRequestContent()
-        {
-            return _request.Content;
-        }
-
-
-        /// <summary>
         /// Disposes the HttpWebRequestMessage.
         /// </summary>
         public void Dispose()
@@ -213,7 +136,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
 
             if (disposing)
             {
-                _request?.Dispose();
+                HttpRequestMessage.Dispose();
 
                 _disposed = true;
             }

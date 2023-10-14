@@ -54,9 +54,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         private static void DisposeReponse(IResponseContext responseContext)
         {
             if (responseContext.HttpResponse != null &&
-                responseContext.HttpResponse.ResponseBody != null)
+                responseContext.HttpResponse.HttpResponseMessage != null)
             {
-                responseContext.HttpResponse.ResponseBody.Dispose();
+                responseContext.HttpResponse.HttpResponseMessage.Dispose();
             }
         }
     }

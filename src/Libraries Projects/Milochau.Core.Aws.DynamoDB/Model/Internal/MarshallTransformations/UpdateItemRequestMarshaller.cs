@@ -13,36 +13,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
     /// <summary>
     /// UpdateItem Request Marshaller
     /// </summary>
-    public class UpdateItemRequestMarshaller : IMarshaller<IRequest, UpdateItemRequest>, IMarshaller<IRequest, AmazonWebServiceRequest>, IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public class UpdateItemRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
     {
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>
-        public IRequest Marshall(AmazonWebServiceRequest input)
-        {
-            return Marshall((UpdateItemRequest)input);
-        }
-
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>
-        public IRequest Marshall(UpdateItemRequest publicRequest)
-        {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, UpdateItemJsonSerializerContext.Default.UpdateItemRequest);
-
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2")
-            {
-                HttpMethod = "POST",
-                ResourcePath = "/",
-                Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
-            };
-            request.Headers["X-Amz-Target"] = "DynamoDB_20120810.UpdateItem";
-            request.Headers["Content-Type"] = "application/x-amz-json-1.0";
-            request.Headers[HeaderKeys.XAmzApiVersion] = "2012-08-10";
-
-            return request;
-        }
-
         /// <summary>Creates an HTTP request message to call the service</summary>
         public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
         {

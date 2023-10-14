@@ -25,9 +25,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             var requestContext = executionContext.RequestContext;
             var httpErrorResponse = exception.Response;
 
-            using (httpErrorResponse.ResponseBody)
+            using (httpErrorResponse.HttpResponseMessage)
             {
-                var responseStream = await httpErrorResponse.ResponseBody.OpenResponseAsync().ConfigureAwait(false);
+                var responseStream = await httpErrorResponse.HttpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 HandleExceptionStream(requestContext, httpErrorResponse, exception, responseStream);
             }
         }
@@ -49,8 +49,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 
             try
             {
-                errorResponseException = unmarshaller.UnmarshallException(errorContext,
-                    exception, httpErrorResponse.StatusCode);
+                errorResponseException = unmarshaller.UnmarshallException(errorContext, exception, httpErrorResponse.HttpResponseMessage.StatusCode);
             }
             catch (Exception e) when (e is AmazonServiceException || e is AmazonClientException)
             {
@@ -62,7 +61,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
                 // Else, there was an issue with the response body, throw AmazonUnmarshallingException
                 var requestId = httpErrorResponse.GetHeaderValue(HeaderKeys.RequestIdHeader);
                 var body = errorContext.ResponseBody;
-                throw new AmazonUnmarshallingException(requestId, responseBody: body, innerException: e, statusCode: httpErrorResponse.StatusCode);
+                throw new AmazonUnmarshallingException(requestId, responseBody: body, innerException: e, statusCode: httpErrorResponse.HttpResponseMessage.StatusCode);
             }
 
             throw errorResponseException;

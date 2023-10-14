@@ -30,7 +30,7 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
                 response.FunctionError = context.ResponseData.GetHeaderValue("X-Amz-Function-Error");
             if (context.ResponseData.IsHeaderPresent("X-Amz-Log-Result"))
                 response.LogResult = context.ResponseData.GetHeaderValue("X-Amz-Log-Result");
-            response.StatusCode = (int)context.ResponseData.StatusCode;
+            response.StatusCode = (int)context.ResponseData.HttpResponseMessage.StatusCode;
 
             return response;
         }

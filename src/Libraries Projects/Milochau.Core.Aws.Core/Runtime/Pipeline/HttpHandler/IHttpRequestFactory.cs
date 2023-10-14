@@ -1,7 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
@@ -17,7 +15,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
         /// </summary>
         /// <param name="requestUri">The request URI.</param>
         /// <returns>An HTTP request.</returns>
-        IHttpRequest<TRequestContent> CreateHttpRequest(Uri requestUri);
+        IHttpRequest<TRequestContent> CreateHttpRequest();
     }
 
     /// <summary>
@@ -26,47 +24,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler
     /// <typeparam name="TRequestContent">The type used by the underlying HTTP API to represent the HTTP request content.</typeparam>
     public interface IHttpRequest<TRequestContent> : IDisposable
     {
-        /// <summary>
-        /// The HTTP method or verb.
-        /// </summary>
-        string Method { get; set; }
-
         /// <summary>The HTTP request message</summary>
-        HttpRequestMessage? HttpRequestMessage { get; set; }
+        HttpRequestMessage HttpRequestMessage { get; set; }
 
         /// <summary>
         /// Configures a request as per the request context.
         /// </summary>
         /// <param name="requestContext">The request context.</param>
         void ConfigureRequest(IRequestContext requestContext);
-
-        /// <summary>
-        /// Sets the headers on the request.
-        /// </summary>
-        /// <param name="headers">A dictionary of header names and values.</param>
-        void SetRequestHeaders(IDictionary<string, string> headers);
-
-        /// <summary>
-        /// Writes a stream to the request body.
-        /// </summary>
-        /// <param name="requestContent">The destination where the content stream is written.</param>
-        /// <param name="contentStream">The content stream to be written.</param>
-        /// <param name="contentHeaders">HTTP content headers.</param>
-        /// <param name="requestContext">The request context.</param>
-        void WriteToRequestBody(TRequestContent requestContent, Stream contentStream, IDictionary<string, string> contentHeaders, IRequestContext requestContext);
-
-        /// <summary>
-        /// Writes a byte array to the request body.
-        /// </summary>
-        /// <param name="requestContent">The destination where the content stream is written.</param>
-        /// <param name="content">The content stream to be written.</param>
-        /// <param name="contentHeaders">HTTP content headers.</param>
-        void WriteToRequestBody(TRequestContent requestContent, byte[] content, IDictionary<string,string> contentHeaders);
-
-        /// <summary>
-        /// Gets a handle to the request content.
-        /// </summary>
-        TRequestContent? GetRequestContent();
 
         /// <summary>
         /// Returns the HTTP response.

@@ -13,35 +13,8 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
     /// <summary>
     /// SendEmail Request Marshaller
     /// </summary>       
-    public class SendEmailRequestMarshaller : IMarshaller<IRequest, SendEmailRequest> , IMarshaller<IRequest,AmazonWebServiceRequest>, IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public class SendEmailRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
     {
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        public IRequest Marshall(AmazonWebServiceRequest input)
-        {
-            return Marshall((SendEmailRequest)input);
-        }
-
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        public IRequest Marshall(SendEmailRequest publicRequest)
-        {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, SendEmailJsonSerializerContext.Default.SendEmailRequest);
-
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.SimpleEmailV2")
-            {
-                HttpMethod = "POST",
-                ResourcePath = "/v2/email/outbound-emails",
-                Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
-            };
-            request.Headers["Content-Type"] = "application/json";
-            request.Headers[HeaderKeys.XAmzApiVersion] = "2019-09-27";
-
-            return request;
-        }
-
         /// <summary>Creates an HTTP request message to call the service</summary>
         public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
         {

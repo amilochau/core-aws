@@ -16,11 +16,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         public ResponseMetadata ResponseMetadata { get; set; }
 
         /// <summary>
-        /// Returns the content length of the HTTP response.
-        /// </summary>
-        public long ContentLength { get; set; }
-
-        /// <summary>
         /// Returns the status code of the HTTP response.
         /// </summary>
         public HttpStatusCode HttpStatusCode { get; set; }

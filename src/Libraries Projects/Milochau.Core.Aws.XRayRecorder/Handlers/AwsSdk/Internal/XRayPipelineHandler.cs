@@ -9,8 +9,8 @@ using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
 using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 
 namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 {
@@ -67,7 +67,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         /// </summary>
         private void ProcessBeginRequest(IExecutionContext executionContext)
         {
-            var request = executionContext.RequestContext.Request!;
             Entity? entity = null;
             try
             {
@@ -78,7 +77,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 _recorder.TraceContext.HandleEntityMissing(_recorder, e, "Cannot get entity while processing AWS SDK request");
             }
 
-            var serviceName = RemoveAmazonPrefixFromServiceName(request.ServiceName);
+            var serviceName = RemoveAmazonPrefixFromServiceName(executionContext.RequestContext.ClientConfig.MonitoringServiceName);
             _recorder.BeginSubsegment(AWSXRaySDKUtils.FormatServiceName(serviceName));
             _recorder.SetNamespace("aws");
 
@@ -86,7 +85,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 
             if (TraceHeader.TryParse(entity!, out TraceHeader? traceHeader))
             {
-                request.Headers[TraceHeader.HeaderKey] = traceHeader.ToString();
+                executionContext.RequestContext.HttpRequestMessage!.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
             }
         }
 
@@ -114,33 +113,27 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
-            var client = executionContext.RequestContext.ClientConfig;
-            if (client == null)
-            {
-                return;
-            }
-
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
             subsegment.AddToAws("region", EnvironmentVariables.RegionName);
             subsegment.AddToAws("operation", operation);
             if (responseContext.Response == null)
             {
-                if (requestContext.Request!.Headers.TryGetValue("x-amzn-RequestId", out string? requestId))
+                if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amzn-RequestId", out var requestIds))
                 {
-                    subsegment.AddToAws("request_id", requestId);
+                    subsegment.AddToAws("request_id", requestIds.First());
                 }
                 // s3 doesn't follow request header id convention
                 else
                 {
-                    if (requestContext.Request.Headers.TryGetValue("x-amz-request-id", out requestId))
+                    if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amz-request-id", out requestIds))
                     {
-                        subsegment.AddToAws("request_id", requestId);
+                        subsegment.AddToAws("request_id", requestIds.First());
                     }
 
-                    if (requestContext.Request.Headers.TryGetValue("x-amz-id-2", out requestId))
+                    if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amz-id-2", out requestIds))
                     {
-                        subsegment.AddToAws("id_2", requestId);
+                        subsegment.AddToAws("id_2", requestIds.First());
                     }
                 }
             }
@@ -169,7 +162,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         private void AddHttpInformation(IWebResponseData httpResponse)
         {
             var responseAttributes = new Dictionary<string, long>();
-            int statusCode = (int)httpResponse.StatusCode;
+            int statusCode = (int)httpResponse.HttpResponseMessage.StatusCode;
             if (statusCode >= 400 && statusCode <= 499)
             {
                 _recorder.MarkError();
@@ -185,7 +178,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             }
 
             responseAttributes["status"] = statusCode;
-            responseAttributes["content_length"] = httpResponse.ContentLength;
+            responseAttributes["content_length"] = httpResponse.HttpResponseMessage.Content.Headers.ContentLength ?? 0;
             _recorder.AddHttpInformation("response", responseAttributes);
         }
 
@@ -272,7 +265,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         private static bool ExcludeServiceOperation(IExecutionContext executionContext)
         {
             var requestContext = executionContext.RequestContext;
-            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.Request!.ServiceName);
+            var serviceName = RemoveAmazonPrefixFromServiceName(executionContext.RequestContext.ClientConfig.MonitoringServiceName);
             var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
 
             return AWSXRaySDKUtils.IsBlacklistedOperation(serviceName,operation);
@@ -325,7 +318,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
         /// <summary>Customize</summary>
         public void Customize(RuntimePipeline pipeline)
         {
-            pipeline.AddHandlerBefore<RetryHandler>(new XRayPipelineHandler());
+            pipeline.AddHandlerBefore<Signer>(new XRayPipelineHandler());
         }
     }
 }

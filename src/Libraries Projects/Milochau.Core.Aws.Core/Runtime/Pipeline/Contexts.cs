@@ -11,19 +11,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
     public interface IRequestContext
     {
         AmazonWebServiceRequest OriginalRequest { get; }
-        IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         ResponseUnmarshaller Unmarshaller { get; }
         AWSSigner Signer { get; }
         IClientConfig ClientConfig { get; }
 
-        IRequest? Request { get; set; }
         HttpRequestMessage? HttpRequestMessage { get; set; }
 
         bool IsSigned { get; set; }
-        int Retries { get; set; }
-        CapacityManager.CapacityType LastCapacityType { get; set; }
-        int EndpointDiscoveryRetries { get; set; }
 
         System.Threading.CancellationToken CancellationToken { get; }
 
@@ -49,7 +44,6 @@ namespace Amazon.Runtime.Internal
     {
         public RequestContext(AWSSigner signer,
             IClientConfig clientConfig,
-            IMarshaller<IRequest, AmazonWebServiceRequest> marshaller,
             IHttpRequestMessageMarshaller<AmazonWebServiceRequest> httpRequestMessageMarshaller,
             ResponseUnmarshaller unmarshaller,
             AmazonWebServiceRequest originalRequest,
@@ -57,7 +51,6 @@ namespace Amazon.Runtime.Internal
         {
             Signer = signer;
             ClientConfig = clientConfig;
-            Marshaller = marshaller;
             HttpRequestMessageMarshaller = httpRequestMessageMarshaller;
             Unmarshaller = unmarshaller;
             OriginalRequest = originalRequest;
@@ -68,18 +61,13 @@ namespace Amazon.Runtime.Internal
 
         public AWSSigner Signer { get; }
         public IClientConfig ClientConfig { get; }
-        public IMarshaller<IRequest, AmazonWebServiceRequest> Marshaller { get; }
         public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         public ResponseUnmarshaller Unmarshaller { get; }
         public AmazonWebServiceRequest OriginalRequest { get; }
         public System.Threading.CancellationToken CancellationToken { get; }
 
-        public IRequest? Request { get; set; }
         public HttpRequestMessage? HttpRequestMessage { get; set; }
 
-        public int Retries { get; set; }
-        public CapacityManager.CapacityType LastCapacityType { get; set; } = CapacityManager.CapacityType.Increment;
-        public int EndpointDiscoveryRetries { get; set; }
         public bool IsSigned { get; set; }
     }
 

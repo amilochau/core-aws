@@ -2,7 +2,6 @@
 using System.Net;
 using System.IO;
 using Milochau.Core.Aws.Core.Util;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
@@ -33,8 +32,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         public AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context)
         {
             var response = Unmarshall(context);
-            response.ContentLength = context.ResponseData.ContentLength;
-            response.HttpStatusCode = context.ResponseData.StatusCode;
+            response.HttpStatusCode = context.ResponseData.HttpResponseMessage.StatusCode;
             return response;
         }
 
@@ -75,7 +73,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
             catch (Exception e)
             {
-                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.StatusCode);
+                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.HttpResponseMessage.StatusCode);
             }
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
@@ -99,7 +97,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         protected override bool ShouldReadEntireResponse(IWebResponseData response, bool readEntireResponse)
         {
-            return readEntireResponse && response.ContentType != "application/octet-stream";
+            return readEntireResponse && response.HttpResponseMessage.Content.Headers.ContentType.MediaType != "application/octet-stream";
         }
     }
 }

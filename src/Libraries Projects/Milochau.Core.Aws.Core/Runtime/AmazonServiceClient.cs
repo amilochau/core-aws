@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 
 namespace Milochau.Core.Aws.Core.Runtime
@@ -44,7 +41,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             ThrowIfDisposed();
 
             var executionContext = new ExecutionContext(
-                new RequestContext(Signer, Config, options.RequestMarshaller, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
+                new RequestContext(Signer, Config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
                 new ResponseContext()
             );
             return RuntimePipeline.InvokeAsync<TResponse>(executionContext);
@@ -90,49 +87,12 @@ namespace Milochau.Core.Aws.Core.Runtime
                     new Unmarshaller(),
                     new ErrorHandler(),
                     new Signer(),
-                    new RetryHandler(Config),
-                    new EndpointResolver(),
                     new Marshaller(),
                 }
             );
 
             // Apply global pipeline customizations
             RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(RuntimePipeline);
-        }
-
-        /// <summary>
-        /// Assembles the Uri for a given SDK request
-        /// </summary>
-        /// <param name="internalRequest">Request to compute Uri for</param>
-        /// <returns>Uri for the given SDK request</returns>
-        public static Uri ComposeUrl(IRequest internalRequest)
-        {
-            Uri url = internalRequest.Endpoint;
-            var resourcePath = internalRequest.ResourcePath;
-            if (resourcePath == null)
-                resourcePath = string.Empty;
-            else
-            {
-                if (resourcePath.StartsWith("/", StringComparison.Ordinal))
-                    resourcePath = resourcePath.Substring(1);
-
-                resourcePath = AWSSDKUtils.ResolveResourcePath(resourcePath, internalRequest.PathResources);
-            }
-
-            // Construct any sub resource/query parameter additions to append to the
-            // resource path. Services like S3 which allow '?' and/or '&' in resource paths 
-            // should use SubResources instead of appending them to the resource path with 
-            // query string delimiters during request marshalling.
-
-            var sb = new StringBuilder();
-
-            var parameterizedPath = string.Concat(resourcePath, sb);
-
-            var hasSlash = url.AbsoluteUri.EndsWith("/", StringComparison.Ordinal) || parameterizedPath.StartsWith("/", StringComparison.Ordinal);
-            var uri = hasSlash
-                ? new Uri(url.AbsoluteUri + parameterizedPath)
-                : new Uri(url.AbsoluteUri + "/" + parameterizedPath);
-            return uri;
         }
     }
 }
