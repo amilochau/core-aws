@@ -4,6 +4,7 @@ using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
@@ -26,11 +27,11 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             AWSSDKUtils.CopyStream(context.Stream, ms);
             ms.Seek(0, SeekOrigin.Begin);
             response.Payload = ms;
-            if (context.ResponseData.IsHeaderPresent("X-Amz-Function-Error"))
-                response.FunctionError = context.ResponseData.GetHeaderValue("X-Amz-Function-Error");
-            if (context.ResponseData.IsHeaderPresent("X-Amz-Log-Result"))
-                response.LogResult = context.ResponseData.GetHeaderValue("X-Amz-Log-Result");
-            response.StatusCode = (int)context.ResponseData.HttpResponseMessage.StatusCode;
+            if (context.ResponseData.Headers.Contains("X-Amz-Function-Error"))
+                response.FunctionError = context.ResponseData.Headers.GetValues("X-Amz-Function-Error").FirstOrDefault();
+            if (context.ResponseData.Headers.Contains("X-Amz-Log-Result"))
+                response.LogResult = context.ResponseData.Headers.GetValues("X-Amz-Log-Result").FirstOrDefault();
+            response.StatusCode = (int)context.ResponseData.StatusCode;
 
             return response;
         }

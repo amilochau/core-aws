@@ -1,6 +1,7 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Util;
+﻿using Milochau.Core.Aws.Core.Util;
 using System;
+using System.Linq;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 {
@@ -25,9 +26,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             var requestContext = executionContext.RequestContext;
             var httpErrorResponse = exception.Response;
 
-            using (httpErrorResponse.HttpResponseMessage)
+            using (httpErrorResponse)
             {
-                var responseStream = await httpErrorResponse.HttpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                var responseStream = await httpErrorResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 HandleExceptionStream(requestContext, httpErrorResponse, exception, responseStream);
             }
         }
@@ -35,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         /// <summary>
         /// Shared logic for the HandleException and HandleExceptionAsync
         /// </summary>
-        private static void HandleExceptionStream(IRequestContext requestContext, IWebResponseData httpErrorResponse, HttpErrorResponseException exception, System.IO.Stream responseStream)
+        private static void HandleExceptionStream(IRequestContext requestContext, HttpResponseMessage httpErrorResponse, HttpErrorResponseException exception, System.IO.Stream responseStream)
         {
             AmazonServiceException errorResponseException;
             // Unmarshall the service error response and throw the corresponding service exception.
@@ -49,7 +50,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 
             try
             {
-                errorResponseException = unmarshaller.UnmarshallException(errorContext, exception, httpErrorResponse.HttpResponseMessage.StatusCode);
+                errorResponseException = unmarshaller.UnmarshallException(errorContext, exception, httpErrorResponse.StatusCode);
             }
             catch (Exception e) when (e is AmazonServiceException || e is AmazonClientException)
             {
@@ -59,9 +60,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             catch (Exception e)
             {
                 // Else, there was an issue with the response body, throw AmazonUnmarshallingException
-                var requestId = httpErrorResponse.GetHeaderValue(HeaderKeys.RequestIdHeader);
+                var requestId = httpErrorResponse.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
                 var body = errorContext.ResponseBody;
-                throw new AmazonUnmarshallingException(requestId, responseBody: body, innerException: e, statusCode: httpErrorResponse.HttpResponseMessage.StatusCode);
+                throw new AmazonUnmarshallingException(requestId, responseBody: body, innerException: e, statusCode: httpErrorResponse.StatusCode);
             }
 
             throw errorResponseException;

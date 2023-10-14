@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Milochau.Core.Aws.Core.Util;
@@ -43,9 +44,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             // If an error code was not found, check for the x-amzn-ErrorType header. 
             // This header is returned by rest-json services.
             if (string.IsNullOrEmpty(internalException.Type) &&
-                context.ResponseData.IsHeaderPresent(HeaderKeys.XAmzErrorType))
+                context.ResponseData.Headers.Contains(HeaderKeys.XAmzErrorType))
             {
-                var errorType = context.ResponseData.GetHeaderValue(HeaderKeys.XAmzErrorType);
+                var errorType = context.ResponseData.Headers.GetValues(HeaderKeys.XAmzErrorType).FirstOrDefault();
                 if (!string.IsNullOrEmpty(errorType))
                 {
                     // The error type can contain additional information, with ":" as a delimiter
@@ -61,9 +62,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
             // Check for the x-amzn-error-message header. This header is returned by rest-json services.
             // If the header is present it is preferred over any value provided in the response body.
-            if (context.ResponseData.IsHeaderPresent(HeaderKeys.XAmznErrorMessage))
+            if (context.ResponseData.Headers.Contains(HeaderKeys.XAmznErrorMessage))
             {
-                var errorMessage = context.ResponseData.GetHeaderValue(HeaderKeys.XAmznErrorMessage);
+                var errorMessage = context.ResponseData.Headers.GetValues(HeaderKeys.XAmznErrorMessage).FirstOrDefault();
                 if (!string.IsNullOrEmpty(errorMessage))
                     internalException.Message = errorMessage;
             }
@@ -99,9 +100,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
             // Check for the x-amzn-RequestId header. This header is returned by rest-json services.
             // If the header is present it is preferred over any value provided in the response body.
-            if (context.ResponseData.IsHeaderPresent(HeaderKeys.RequestIdHeader))
+            if (context.ResponseData.Headers.Contains(HeaderKeys.RequestIdHeader))
             {
-                requestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
+                requestId = context.ResponseData.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
             }
 
             return new ErrorResponse

@@ -25,9 +25,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         /// <param name="logger">The logger used to log messages.</param>
         public RuntimePipeline(IList<IPipelineHandler> handlers)
         {
-            if (handlers == null || handlers.Count == 0)
-                throw new ArgumentNullException(nameof(handlers));
-
             foreach (var handler in handlers)
             {
                 AddHandler(handler);
@@ -66,8 +63,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
             }
             
             Handler = handler;
-
-            SetHandlerProperties(handler);
         }
 
         /// <summary>
@@ -85,7 +80,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
             {
                 // Add the handler to the top of the pipeline
                 AddHandler(handler);
-                SetHandlerProperties(handler);
                 return;
             }
 
@@ -96,7 +90,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
                     current.InnerHandler.GetType() == type)
                 {
                     InsertHandler(handler, current);
-                    SetHandlerProperties(handler);
                     return;
                 }
                 current = current.InnerHandler;
@@ -135,11 +128,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
                 current = current.InnerHandler;
             }
             return current;
-        }
-
-        private void SetHandlerProperties(IPipelineHandler handler)
-        {
-            ThrowIfDisposed();
         }
 
         #region Dispose methods

@@ -9,11 +9,5 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         {
             return new Dictionary<string, object?>();
         }
-
-        /// <summary>Get request descriptors for XRay</summary>
-        public virtual Dictionary<string, object?> GetXRayRequestDescriptors()
-        {
-            return new Dictionary<string, object?>();
-        }
     }
 }

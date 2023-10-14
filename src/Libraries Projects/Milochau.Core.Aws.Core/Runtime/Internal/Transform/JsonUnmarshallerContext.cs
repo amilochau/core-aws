@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Net.Http;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
@@ -45,7 +47,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         public JsonUnmarshallerContext(
             Stream responseStream,
             bool maintainResponseBody,
-            IWebResponseData responseData,
+            HttpResponseMessage responseData,
             bool isException = false)
         {
             if (isException || maintainResponseBody)
@@ -54,7 +56,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 responseStream = WrappingStream;
             }
 
-            WebResponseData = responseData;
+            ResponseData = responseData;
             MaintainResponseBody = maintainResponseBody;
             IsException = isException;
 
@@ -62,17 +64,17 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             if(responseData != null)
             {
 
-                bool parsedContentLengthHeader = long.TryParse(responseData.GetHeaderValue("Content-Length"), out long contentLength);
+                var contentLength = responseData.Content.Headers.ContentLength;
 
                 // Temporary work around checking Content-Encoding for an issue with NetStandard on Linux returning Content-Length for a gzipped response.
                 // Causing the SDK to attempt a CRC check over the gzipped response data with a CRC value for the uncompressed value. 
                 // The Content-Encoding check can be removed with the following github issue is shipped.
                 // https://github.com/dotnet/corefx/issues/6796
 
-                if (parsedContentLengthHeader && responseData.HttpResponseMessage.Content.Headers.ContentLength.Equals(contentLength) &&
-                    string.IsNullOrEmpty(responseData.GetHeaderValue("Content-Encoding")))
+                if (contentLength.HasValue && responseData.Content.Headers.ContentLength.Equals(contentLength) &&
+                    string.IsNullOrEmpty(responseData.Content.Headers.ContentEncoding.FirstOrDefault()))
                 {
-                    SetupCRCStream(responseData, responseStream, contentLength);
+                    SetupCRCStream(responseData, responseStream, contentLength.Value);
                 }
             }
 

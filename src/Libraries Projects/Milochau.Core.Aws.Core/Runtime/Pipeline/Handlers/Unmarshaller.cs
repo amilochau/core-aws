@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             var unmarshaller = requestContext.Unmarshaller;
             try
             {
-                var responseStream = await responseContext.HttpResponse.HttpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                var responseStream = await responseContext.HttpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 var context = unmarshaller.CreateContext(responseContext.HttpResponse,
                     false,
                     responseStream,
@@ -47,7 +47,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers
             }
             finally
             {
-                responseContext.HttpResponse.HttpResponseMessage.Dispose();
+                responseContext.HttpResponse.Dispose();
             }
         }
 

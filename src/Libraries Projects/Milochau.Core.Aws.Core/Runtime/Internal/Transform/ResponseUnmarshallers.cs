@@ -2,6 +2,8 @@
 using System.Net;
 using System.IO;
 using Milochau.Core.Aws.Core.Util;
+using System.Linq;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
@@ -10,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
     /// </summary>
     public abstract class ResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, UnmarshallerContext>
     {
-        public virtual UnmarshallerContext CreateContext(IWebResponseData response, bool readEntireResponse, Stream stream, bool isException)
+        public virtual UnmarshallerContext CreateContext(HttpResponseMessage response, bool readEntireResponse, Stream stream, bool isException)
         {
             if (response == null)
             {
@@ -32,7 +34,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         public AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context)
         {
             var response = Unmarshall(context);
-            response.HttpStatusCode = context.ResponseData.HttpResponseMessage.StatusCode;
+            response.HttpStatusCode = context.ResponseData.StatusCode;
             return response;
         }
 
@@ -43,9 +45,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 #endregion
 
         protected abstract UnmarshallerContext ConstructUnmarshallerContext(
-           Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException); 
+           Stream responseStream, bool maintainResponseBody, HttpResponseMessage response, bool isException); 
         
-        protected virtual bool ShouldReadEntireResponse(IWebResponseData response, bool readEntireResponse)
+        protected virtual bool ShouldReadEntireResponse(HttpResponseMessage response, bool readEntireResponse)
         {
             return readEntireResponse;
         }
@@ -61,7 +63,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             if (input is not JsonUnmarshallerContext context)
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
-            string requestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
+            string requestId = context.ResponseData.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
             try
             {
                 var response = Unmarshall(context);
@@ -73,7 +75,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
             catch (Exception e)
             {
-                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.HttpResponseMessage.StatusCode);
+                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.StatusCode);
             }
         }
         public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
@@ -82,7 +84,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 throw new InvalidOperationException("Unsupported UnmarshallerContext");
 
             var responseException = UnmarshallException(context, innerException, statusCode);
-            responseException.RequestId = context.ResponseData.GetHeaderValue(HeaderKeys.RequestIdHeader);
+            responseException.RequestId = context.ResponseData.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
             return responseException;
         }
 
@@ -90,14 +92,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         public abstract AmazonServiceException UnmarshallException(JsonUnmarshallerContext input, Exception innerException, HttpStatusCode statusCode);
 
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, IWebResponseData response, bool isException)
+        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, HttpResponseMessage response, bool isException)
         {
             return new JsonUnmarshallerContext(responseStream, maintainResponseBody, response, isException);
         }
 
-        protected override bool ShouldReadEntireResponse(IWebResponseData response, bool readEntireResponse)
+        protected override bool ShouldReadEntireResponse(HttpResponseMessage response, bool readEntireResponse)
         {
-            return readEntireResponse && response.HttpResponseMessage.Content.Headers.ContentType.MediaType != "application/octet-stream";
+            return readEntireResponse && response.Content.Headers.ContentType.MediaType != "application/octet-stream";
         }
     }
 }

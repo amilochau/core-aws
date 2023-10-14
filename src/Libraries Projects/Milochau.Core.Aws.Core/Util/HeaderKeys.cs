@@ -7,8 +7,6 @@
         public const string AuthorizationHeader = "Authorization";
         public const string HostHeader = "host";
         public const string UserAgentHeader = "User-Agent";
-        public const string DateHeader = "Date";
-        public const string RangeHeader = "Range";
         public const string TransferEncodingHeader = "transfer-encoding";
 
         public const string RequestIdHeader = "x-amzn-RequestId";
@@ -18,10 +16,8 @@
         public const string XAmzErrorType = "x-amzn-ErrorType";
         public const string XAmznErrorMessage = "x-amzn-error-message";
         public const string XAmzContentSha256Header = "X-Amz-Content-SHA256";
-        public const string XAmzDecodedContentLengthHeader = "X-Amz-Decoded-Content-Length";
         public const string XAmzSecurityTokenHeader = "x-amz-security-token";
         public const string XAmzApiVersion = "x-amz-api-version";
-        public const string XAmzTrailerHeader = "X-Amz-Trailer";
 
         public const string XAmzUserAgentHeader = "x-amz-user-agent";
         public const string XAmznTraceIdHeader = "x-amzn-trace-id";

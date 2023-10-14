@@ -7,10 +7,10 @@ using Milochau.Core.Aws.XRayRecorder.Core.Exceptions;
 using System.Linq;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 {
@@ -159,10 +159,10 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             _recorder.EndSubsegment();
         }
 
-        private void AddHttpInformation(IWebResponseData httpResponse)
+        private void AddHttpInformation(HttpResponseMessage httpResponse)
         {
             var responseAttributes = new Dictionary<string, long>();
-            int statusCode = (int)httpResponse.HttpResponseMessage.StatusCode;
+            int statusCode = (int)httpResponse.StatusCode;
             if (statusCode >= 400 && statusCode <= 499)
             {
                 _recorder.MarkError();
@@ -178,7 +178,7 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
             }
 
             responseAttributes["status"] = statusCode;
-            responseAttributes["content_length"] = httpResponse.HttpResponseMessage.Content.Headers.ContentLength ?? 0;
+            responseAttributes["content_length"] = httpResponse.Content.Headers.ContentLength ?? 0;
             _recorder.AddHttpInformation("response", responseAttributes);
         }
 
@@ -220,12 +220,6 @@ namespace Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk.Internal
 
             var xrayRequestParameters = request.GetXRayRequestParameters();
             foreach (var item in xrayRequestParameters.Where(x => x.Value != null))
-            {
-                entity.AddToAws(item.Key, item.Value);
-            }
-
-            var xrayRequestDescriptors = request.GetXRayRequestDescriptors();
-            foreach (var item in xrayRequestDescriptors.Where(x => x.Value != null))
             {
                 entity.AddToAws(item.Key, item.Value);
             }

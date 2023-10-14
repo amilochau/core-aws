@@ -1,24 +1,24 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using System;
+﻿using System;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 {
     public class HttpErrorResponseException : Exception
     {
-        public IWebResponseData Response { get; private set; }
+        public HttpResponseMessage Response { get; private set; }
 
-        public HttpErrorResponseException(IWebResponseData response)
+        public HttpErrorResponseException(HttpResponseMessage response)
         {
             Response = response;
         }
 
-        public HttpErrorResponseException(string message, IWebResponseData response) :
+        public HttpErrorResponseException(string message, HttpResponseMessage response) :
             base(message)
         {
             Response = response;
         }
 
-        public HttpErrorResponseException(string message, Exception innerException, IWebResponseData response) :
+        public HttpErrorResponseException(string message, Exception innerException, HttpResponseMessage response) :
             base(message,innerException)
         {
             Response = response;

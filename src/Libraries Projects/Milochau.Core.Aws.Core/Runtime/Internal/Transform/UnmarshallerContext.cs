@@ -2,6 +2,8 @@
 using System.IO;
 using ThirdParty.Ionic.Zlib;
 using Milochau.Core.Aws.Core.Runtime.Internal.Util;
+using System.Linq;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
@@ -17,7 +19,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         protected bool IsException { get; set; }
         protected CrcCalculatorStream CrcStream { get; set; }
         protected int Crc32Result { get; set; }
-        protected IWebResponseData WebResponseData { get; set; }
 
         protected CachingWrapperStream WrappingStream { get; set; }
 
@@ -47,10 +48,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
         }
 
-        public IWebResponseData ResponseData
-        {
-            get { return WebResponseData; }
-        }
+        public HttpResponseMessage ResponseData { get; protected set; }
 
         internal void ValidateCRC32IfAvailable()
         {
@@ -63,11 +61,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
         }
 
-        protected void SetupCRCStream(IWebResponseData responseData, Stream responseStream, long contentLength)
+        protected void SetupCRCStream(HttpResponseMessage responseData, Stream responseStream, long contentLength)
         {
             CrcStream = null;
 
-            if (responseData != null && uint.TryParse(responseData.GetHeaderValue("x-amz-crc32"), out uint parsed))
+            if (responseData != null && uint.TryParse(responseData.Headers.GetValues("x-amz-crc32").FirstOrDefault(), out uint parsed))
             {
                 Crc32Result = unchecked((int)parsed);
                 CrcStream = new CrcCalculatorStream(responseStream, contentLength);
