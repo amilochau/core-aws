@@ -133,18 +133,6 @@ namespace Milochau.Core.Aws.Lambda
 
         #endregion
 
-        #region Dispose
-
-        /// <summary>
-        /// Disposes the service client.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
         /// <summary>
         /// Invokes a Lambda function. You can invoke a function synchronously (and wait for the
         /// response), or asynchronously. To invoke a function asynchronously, set <code>InvocationType</code>

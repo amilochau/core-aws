@@ -8,7 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
     /// <summary>
     /// The exception handler for HttpErrorResponseException exception.
     /// </summary>
-    public class HttpErrorResponseExceptionHandler : IExceptionHandler<HttpErrorResponseException>
+    public class HttpErrorResponseExceptionHandler
     {
         /// <summary>
         /// Handles an exception for the given execution context.
@@ -41,10 +41,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             AmazonServiceException errorResponseException;
             // Unmarshall the service error response and throw the corresponding service exception.
             var unmarshaller = requestContext.Unmarshaller;
-            var readEntireResponse = true;
 
             var errorContext = unmarshaller.CreateContext(httpErrorResponse,
-                readEntireResponse,
+                true,
                 responseStream,
                 true);
 
@@ -52,9 +51,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
             {
                 errorResponseException = unmarshaller.UnmarshallException(errorContext, exception, httpErrorResponse.StatusCode);
             }
-            catch (Exception e) when (e is AmazonServiceException || e is AmazonClientException)
+            catch (AmazonServiceException)
             {
-                // Rethrow Amazon service or client exceptions 
+                // Rethrow Amazon service exceptions
                 throw;
             }
             catch (Exception e)

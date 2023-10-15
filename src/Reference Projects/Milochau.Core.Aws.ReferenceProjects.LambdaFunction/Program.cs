@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Events;
-using Milochau.Core.Aws.XRayRecorder.Handlers.AwsSdk;
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
@@ -21,8 +20,6 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         public static readonly int handlerChoice = 0;
         private static async Task Main()
         {
-            AWSSDKHandler.RegisterXRayForAllServices();
-
             switch (handlerChoice)
             {
                 case 0:
@@ -50,9 +47,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 var utf8Json = (requestStream as MemoryStream)!.ToArray();
                 var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
 
-                using var dynamoDBClient = new AmazonDynamoDBClient();
+                var dynamoDBClient = new AmazonDynamoDBClient();
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-                using var lambdaClient = new AmazonLambdaClient();
+                var lambdaClient = new AmazonLambdaClient();
                 var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
                 var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
                 var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
@@ -82,9 +79,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             // Note: the following line should not deserialize as APIGatewayHttpApiV2ProxyRequest - but here we do that to help tests
             var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
 
-            using var dynamoDBClient = new AmazonDynamoDBClient();
+            var dynamoDBClient = new AmazonDynamoDBClient();
             var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-            using var lambdaClient = new AmazonLambdaClient();
+            var lambdaClient = new AmazonLambdaClient();
             var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
             var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
             var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
@@ -98,9 +95,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             {
                 var cancellationToken = CancellationToken.None;
 
-                using var dynamoDBClient = new AmazonDynamoDBClient();
+                var dynamoDBClient = new AmazonDynamoDBClient();
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-                using var lambdaClient = new AmazonLambdaClient();
+                var lambdaClient = new AmazonLambdaClient();
                 var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
                 var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
                 var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
@@ -121,9 +118,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             var utf8Json = (requestStream as MemoryStream)!.ToArray();
             var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.SNSEvent)!;
 
-            using var dynamoDBClient = new AmazonDynamoDBClient();
+            var dynamoDBClient = new AmazonDynamoDBClient();
             var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-            using var lambdaClient = new AmazonLambdaClient();
+            var lambdaClient = new AmazonLambdaClient();
             var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
             var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
             var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);

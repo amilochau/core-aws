@@ -43,8 +43,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
             // If an error code was not found, check for the x-amzn-ErrorType header. 
             // This header is returned by rest-json services.
-            if (string.IsNullOrEmpty(internalException.Type) &&
-                context.ResponseData.Headers.Contains(HeaderKeys.XAmzErrorType))
+            if (string.IsNullOrEmpty(internalException.Type) && context.ResponseData.Headers.Contains(HeaderKeys.XAmzErrorType))
             {
                 var errorType = context.ResponseData.Headers.GetValues(HeaderKeys.XAmzErrorType).FirstOrDefault();
                 if (!string.IsNullOrEmpty(errorType))
@@ -91,10 +90,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 }
                 else
                 {
+                    internalException.Message = "The service returned an error with Error Code " + internalException.Type;
                     if (string.IsNullOrEmpty(context.ResponseBody))
-                        internalException.Message = "The service returned an error with Error Code " + internalException.Type + ".";
+                        internalException.Message += ".";
                     else
-                        internalException.Message = "The service returned an error with Error Code " + internalException.Type + " and HTTP Body: " + context.ResponseBody;
+                        internalException.Message = " and HTTP Body: " + context.ResponseBody;
                 }
             }
 
@@ -120,17 +120,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             internalException = JsonSerializer.Deserialize(context.Stream, InternalExceptionJsonSerializerContext.Default.InternalException);
         }
 
-        private static JsonErrorResponseUnmarshaller? instance;
-
         /// <summary>
         /// Return an instance of JsonErrorResponseUnmarshaller.
         /// </summary>
-        /// <returns></returns>
-        public static JsonErrorResponseUnmarshaller GetInstance()
-        {
-            instance ??= new JsonErrorResponseUnmarshaller();
-
-            return instance;
-        }
+        public static JsonErrorResponseUnmarshaller Instance { get; } = new JsonErrorResponseUnmarshaller();
     }
 }
