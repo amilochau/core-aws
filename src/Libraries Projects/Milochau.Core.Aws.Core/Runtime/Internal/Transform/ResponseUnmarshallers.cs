@@ -1,105 +1,22 @@
 ﻿using System;
 using System.Net;
-using System.IO;
-using Milochau.Core.Aws.Core.Util;
-using System.Linq;
-using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
     /// <summary>
-    /// Abstract class for unmarshalling service responses.
+    /// Class for unmarshalling JSON service responses.
     /// </summary>
-    public abstract class ResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, UnmarshallerContext>
+    public abstract class JsonResponseUnmarshaller : IResponseUnmarshaller<AmazonWebServiceResponse, JsonUnmarshallerContext>
     {
-        public virtual UnmarshallerContext CreateContext(HttpResponseMessage response, bool readEntireResponse, Stream stream, bool isException)
-        {
-            if (response == null)
-            {
-                throw new AmazonServiceException("The Web Response for a successful request is null!");
-            }
-
-            return ConstructUnmarshallerContext(stream,
-                ShouldReadEntireResponse(response, readEntireResponse),
-                response,
-                isException);
-        }
-
-        #region IResponseUnmarshaller<AmazonWebServiceResponse,UnmarshallerContext> Members
-
-        public abstract AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode);
-
-#endregion
-
-        public AmazonWebServiceResponse UnmarshallResponse(UnmarshallerContext context)
+        public AmazonWebServiceResponse UnmarshallResponse(JsonUnmarshallerContext context)
         {
             var response = Unmarshall(context);
             response.HttpStatusCode = context.ResponseData.StatusCode;
             return response;
         }
 
-#region IUnmarshaller<AmazonWebServiceResponse,UnmarshallerContext> Members
+        public abstract AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context);
 
-        public abstract AmazonWebServiceResponse Unmarshall(UnmarshallerContext input);
-
-#endregion
-
-        protected abstract UnmarshallerContext ConstructUnmarshallerContext(
-           Stream responseStream, bool maintainResponseBody, HttpResponseMessage response, bool isException); 
-        
-        protected virtual bool ShouldReadEntireResponse(HttpResponseMessage response, bool readEntireResponse)
-        {
-            return readEntireResponse;
-        }
-    }
-
-    /// <summary>
-    /// Class for unmarshalling JSON service responses.
-    /// </summary>
-    public abstract class JsonResponseUnmarshaller : ResponseUnmarshaller
-    {
-        public override AmazonWebServiceResponse Unmarshall(UnmarshallerContext input)
-        {
-            if (input is not JsonUnmarshallerContext context)
-                throw new InvalidOperationException("Unsupported UnmarshallerContext");
-
-            string requestId = context.ResponseData.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
-            try
-            {
-                var response = Unmarshall(context);
-                response.ResponseMetadata = new ResponseMetadata
-                {
-                    RequestId = requestId
-                };
-                return response;
-            }
-            catch (Exception e)
-            {
-                throw new AmazonUnmarshallingException(requestId, e, context.ResponseData.StatusCode);
-            }
-        }
-        public override AmazonServiceException UnmarshallException(UnmarshallerContext input, Exception innerException, HttpStatusCode statusCode)
-        {
-            if (input is not JsonUnmarshallerContext context)
-                throw new InvalidOperationException("Unsupported UnmarshallerContext");
-
-            var responseException = UnmarshallException(context, innerException, statusCode);
-            responseException.RequestId = context.ResponseData.Headers.GetValues(HeaderKeys.RequestIdHeader).FirstOrDefault();
-            return responseException;
-        }
-
-        public abstract AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext input);
-
-        public abstract AmazonServiceException UnmarshallException(JsonUnmarshallerContext input, Exception innerException, HttpStatusCode statusCode);
-
-        protected override UnmarshallerContext ConstructUnmarshallerContext(Stream responseStream, bool maintainResponseBody, HttpResponseMessage response, bool isException)
-        {
-            return new JsonUnmarshallerContext(responseStream, maintainResponseBody, response, isException);
-        }
-
-        protected override bool ShouldReadEntireResponse(HttpResponseMessage response, bool readEntireResponse)
-        {
-            return readEntireResponse && response.Content.Headers.ContentType.MediaType != "application/octet-stream";
-        }
+        public abstract AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode);
     }
 }

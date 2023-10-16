@@ -18,15 +18,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
     /// </summary>
     public class XRayPipelineHandler
     {
-        private readonly AWSXRayRecorder _recorder;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XRayPipelineHandler" /> class.
-        /// </summary>
-        public XRayPipelineHandler()
-        {
-            _recorder = AWSXRayRecorder.Instance;
-        }
+        private static readonly AWSXRayRecorder recorder = AWSXRayRecorder.Instance;
 
         /// <summary>
         /// Removes amazon prefix from service name. There are two type of service name.
@@ -63,51 +55,48 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
         /// <summary>
         /// Processes Begin request by starting subsegment.
         /// </summary>
-        public void ProcessBeginRequest(IExecutionContext executionContext)
+        public static void ProcessBeginRequest(IRequestContext requestContext)
         {
             Entity? entity = null;
             try
             {
-                entity = _recorder.GetEntity();
+                entity = recorder.GetEntity();
             }
             catch (EntityNotAvailableException e)
             {
-                _recorder.TraceContext.HandleEntityMissing(_recorder, e, "Cannot get entity while processing AWS SDK request");
+                recorder.TraceContext.HandleEntityMissing(recorder, e, "Cannot get entity while processing AWS SDK request");
             }
 
-            var serviceName = RemoveAmazonPrefixFromServiceName(executionContext.RequestContext.ClientConfig.MonitoringServiceName);
-            _recorder.BeginSubsegment(AWSXRaySDKUtils.FormatServiceName(serviceName));
-            _recorder.SetNamespace("aws");
+            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.ClientConfig.MonitoringServiceName);
+            recorder.BeginSubsegment(AWSXRaySDKUtils.FormatServiceName(serviceName));
+            recorder.SetNamespace("aws");
 
-            entity = entity == null ? null : _recorder.GetEntity();
+            entity = entity == null ? null : recorder.GetEntity();
 
             if (TraceHeader.TryParse(entity!, out TraceHeader? traceHeader))
             {
-                executionContext.RequestContext.HttpRequestMessage!.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
+                requestContext.HttpRequestMessage!.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
             }
         }
 
         /// <summary>
         /// Processes End request by ending subsegment.
         /// </summary>
-        public void ProcessEndRequest(IExecutionContext executionContext)
+        public static void ProcessEndRequest(IRequestContext requestContext, IResponseContext? responseContext)
         {
-            Entity subsegment;
-            try
+            if (responseContext == null)
             {
-                subsegment = _recorder.GetEntity();
-            }
-            catch(EntityNotAvailableException e)
-            {
-                _recorder.TraceContext.HandleEntityMissing(_recorder,e,"Cannot get entity from the trace context while processing response of AWS SDK request.");
                 return;
             }
 
-            var responseContext = executionContext.ResponseContext;
-            var requestContext = executionContext.RequestContext;
-
-            if (responseContext == null)
+            Entity subsegment;
+            try
             {
+                subsegment = recorder.GetEntity();
+            }
+            catch(EntityNotAvailableException e)
+            {
+                recorder.TraceContext.HandleEntityMissing(recorder,e,"Cannot get entity from the trace context while processing response of AWS SDK request.");
                 return;
             }
 
@@ -135,7 +124,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
                     }
                 }
             }
-            else
+            else if (responseContext.Response.ResponseMetadata != null)
             {
                 subsegment.AddToAws("request_id", responseContext.Response.ResponseMetadata.RequestId);
 
@@ -148,58 +137,54 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
                 AddResponseSpecificInformation(responseContext.Response, subsegment);
             }
 
-            if (responseContext.HttpResponse != null)
-            {
-                AddHttpInformation(responseContext.HttpResponse);
-            }
-
+            AddHttpInformation(responseContext.HttpResponse);
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
-            _recorder.EndSubsegment();
+            recorder.EndSubsegment();
         }
 
-        private void AddHttpInformation(HttpResponseMessage httpResponse)
+        private static void AddHttpInformation(HttpResponseMessage httpResponse)
         {
             var responseAttributes = new Dictionary<string, long>();
             int statusCode = (int)httpResponse.StatusCode;
             if (statusCode >= 400 && statusCode <= 499)
             {
-                _recorder.MarkError();
+                recorder.MarkError();
 
                 if (statusCode == 429)
                 {
-                    _recorder.MarkThrottle();
+                    recorder.MarkThrottle();
                 }
             }
             else if (statusCode >= 500 && statusCode <= 599)
             {
-                _recorder.MarkFault();
+                recorder.MarkFault();
             }
 
             responseAttributes["status"] = statusCode;
             responseAttributes["content_length"] = httpResponse.Content.Headers.ContentLength ?? 0;
-            _recorder.AddHttpInformation("response", responseAttributes);
+            recorder.AddHttpInformation("response", responseAttributes);
         }
 
-        private void ProcessException(AmazonServiceException ex, Entity subsegment)
+        private static void ProcessException(AmazonServiceException ex, Entity subsegment)
         {
             int statusCode = (int)ex.StatusCode;
             var responseAttributes = new Dictionary<string, long>();
 
             if (statusCode >= 400 && statusCode <= 499)
             {
-                _recorder.MarkError();
+                recorder.MarkError();
                 if (statusCode == 429)
                 {
-                    _recorder.MarkThrottle();
+                    recorder.MarkThrottle();
                 }
             }
             else if (statusCode >= 500 && statusCode <= 599)
             {
-                _recorder.MarkFault();
+                recorder.MarkFault();
             }
 
             responseAttributes["status"] = statusCode;
-            _recorder.AddHttpInformation("response", responseAttributes);
+            recorder.AddHttpInformation("response", responseAttributes);
 
             subsegment.AddToAws("request_id", ex.RequestId);
         }
@@ -232,16 +217,16 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             }
         }
 
-        public void PopulateException(Exception e)
+        public static void PopulateException(Exception e)
         {
             Entity subsegment;
             try
             {
-                subsegment = _recorder.GetEntity();
+                subsegment = recorder.GetEntity();
             }
             catch (EntityNotAvailableException ex)
             {
-                _recorder.TraceContext.HandleEntityMissing(_recorder, ex, "Cannot get entity from trace context while processing exception for AWS SDK request.");
+                recorder.TraceContext.HandleEntityMissing(recorder, ex, "Cannot get entity from trace context while processing exception for AWS SDK request.");
                 return;
             }
 

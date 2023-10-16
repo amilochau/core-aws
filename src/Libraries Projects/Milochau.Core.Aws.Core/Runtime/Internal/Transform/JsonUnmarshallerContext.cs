@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             Stream responseStream,
             bool maintainResponseBody,
             HttpResponseMessage responseData,
-            bool isException = false)
+            bool isException)
         {
             if (isException || maintainResponseBody)
             {
@@ -60,22 +60,17 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             MaintainResponseBody = maintainResponseBody;
             IsException = isException;
 
-            //if the json unmarshaller context is being called internally without there being a http response then the response data would be null
-            if(responseData != null)
+            var contentLength = responseData.Content.Headers.ContentLength;
+
+            // Temporary work around checking Content-Encoding for an issue with NetStandard on Linux returning Content-Length for a gzipped response.
+            // Causing the SDK to attempt a CRC check over the gzipped response data with a CRC value for the uncompressed value. 
+            // The Content-Encoding check can be removed with the following github issue is shipped.
+            // https://github.com/dotnet/corefx/issues/6796
+
+            if (contentLength.HasValue && responseData.Content.Headers.ContentLength.Equals(contentLength) &&
+                string.IsNullOrEmpty(responseData.Content.Headers.ContentEncoding.FirstOrDefault()))
             {
-
-                var contentLength = responseData.Content.Headers.ContentLength;
-
-                // Temporary work around checking Content-Encoding for an issue with NetStandard on Linux returning Content-Length for a gzipped response.
-                // Causing the SDK to attempt a CRC check over the gzipped response data with a CRC value for the uncompressed value. 
-                // The Content-Encoding check can be removed with the following github issue is shipped.
-                // https://github.com/dotnet/corefx/issues/6796
-
-                if (contentLength.HasValue && responseData.Content.Headers.ContentLength.Equals(contentLength) &&
-                    string.IsNullOrEmpty(responseData.Content.Headers.ContentEncoding.FirstOrDefault()))
-                {
-                    SetupCRCStream(responseData, responseStream, contentLength.Value);
-                }
+                SetupCRCStream(responseData, responseStream, contentLength.Value);
             }
 
             if (CrcStream != null)

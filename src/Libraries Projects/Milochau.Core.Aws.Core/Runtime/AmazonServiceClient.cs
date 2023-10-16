@@ -13,6 +13,7 @@ using Polly;
 using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.References;
 using System.Threading.Tasks;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
@@ -25,21 +26,19 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(15), // Recreate every 15 minutes
         };
-        private static PolicyHttpMessageHandler pollyHandler = new PolicyHttpMessageHandler(retryPolicy)
+        private static readonly PolicyHttpMessageHandler pollyHandler = new PolicyHttpMessageHandler(retryPolicy)
         {
             InnerHandler = socketHandler,
         };
-        private static HttpClient httpClient { get; } = new HttpClient(pollyHandler);
+        private static readonly HttpClient httpClient = new HttpClient(pollyHandler);
 
-        public IClientConfig Config { get; }
+        private readonly IClientConfig config;
+        private readonly AWSSigner signer = new AWSSigner();
 
         protected AmazonServiceClient(ClientConfig config)
         {
-            Config = config;
-            Signer = new AWSSigner();
+            this.config = config;
         }
-
-        protected AWSSigner Signer { get; private set; }
 
         protected async Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
@@ -47,52 +46,46 @@ namespace Milochau.Core.Aws.Core.Runtime
             System.Threading.CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
-            var executionContext = new ExecutionContext(
-                new RequestContext(Signer, Config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
-                new ResponseContext()
-            );
+            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken);
+            IResponseContext? responseContext = null;
 
             // 0. Marshall request
-            MarshallRequest(executionContext);
+            MarshallRequest(requestContext);
 
             // 1. Start request monitoring
-            var xRayPipelineHandler = new XRayPipelineHandler();
-            xRayPipelineHandler.ProcessBeginRequest(executionContext);
+            XRayPipelineHandler.ProcessBeginRequest(requestContext);
 
             TResponse? response = null;
             try
             {
                 // 2. Sign request
-                await SignRequestAsync(executionContext.RequestContext);
-                ConfigureRequest(executionContext.RequestContext);
+                await SignRequestAsync(requestContext);
+                ConfigureRequest(requestContext);
 
                 // 3. Send request
-                HttpResponseMessage responseMessage = await httpClient.SendAsync(executionContext.RequestContext.HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, executionContext.RequestContext.CancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                var httpResponseMessage = await httpClient.SendAsync(requestContext.HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, requestContext.CancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                responseContext = new ResponseContext { HttpResponse = httpResponseMessage };
+                var executionContext = new ExecutionContext(requestContext, responseContext);
 
                 // 4.1 Handle errors
-                if (!responseMessage.IsSuccessStatusCode)
+                if (!httpResponseMessage.IsSuccessStatusCode)
                 {
-                    // For all responses other than HTTP 2xx, return an exception.
-                    var exception = new HttpErrorResponseException(responseMessage);
-                    var exceptionHandler = new HttpErrorResponseExceptionHandler();
-                    await exceptionHandler.HandleAsync(executionContext, exception).ConfigureAwait(false);
-                    throw exception;
+                    throw await HttpErrorResponseExceptionHandler.HandleAsync(executionContext).ConfigureAwait(false); // HttpResponseMessage.Content.ReadAsStreamAsync
                 }
 
                 // 4.2 Manage response
-                executionContext.ResponseContext.HttpResponse = responseMessage;
                 await UnmarshallResponseAsync(executionContext).ConfigureAwait(false);
-                response = (TResponse)executionContext.ResponseContext.Response;
+                response = (TResponse)responseContext.Response;
             }
             catch (Exception e)
             {
-                xRayPipelineHandler.PopulateException(e);
+                XRayPipelineHandler.PopulateException(e);
                 throw;
             }
             finally
             {
-                xRayPipelineHandler.ProcessEndRequest(executionContext);
-                executionContext.RequestContext.HttpRequestMessage?.Dispose();
+                XRayPipelineHandler.ProcessEndRequest(requestContext, responseContext);
+                requestContext.HttpRequestMessage?.Dispose();
             }
 
             return response;
@@ -105,42 +98,31 @@ namespace Milochau.Core.Aws.Core.Runtime
         private static void ConfigureRequest(IRequestContext requestContext)
         {
             // Configure the Expect 100-continue header
-            if (requestContext != null && requestContext.OriginalRequest != null)
-            {
-                requestContext.HttpRequestMessage.Headers.ExpectContinue = false;
-            }
+            requestContext.HttpRequestMessage.Headers.ExpectContinue = false;
 
-            if (!requestContext.HttpRequestMessage.Headers.Contains(HeaderKeys.AmzSdkInvocationId))
-            {
-                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.AmzSdkInvocationId, requestContext.InvocationId.ToString());
-            }
+            var invocationId = Guid.NewGuid().ToString();
+            requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.AmzSdkInvocationId, invocationId);
         }
 
         /// <summary>
         /// Signs the request.
         /// </summary>
         /// <param name="requestContext">The request context.</param>
-        private static async Task SignRequestAsync(IRequestContext requestContext)
+        private async Task SignRequestAsync(IRequestContext requestContext)
         {
-            if (!requestContext.IsSigned)
+            if (EnvironmentVariables.UseToken)
             {
-                if (EnvironmentVariables.UseToken)
-                {
-                    requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, EnvironmentVariables.Token);
-                }
-
-                await requestContext.Signer.SignAsync(requestContext);
-                requestContext.IsSigned = true;
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, EnvironmentVariables.Token);
             }
+
+            await signer.SignAsync(requestContext);
         }
 
         /// <summary>
         /// Marshalls the request before calling invoking the next handler.
         /// </summary>
-        /// <param name="executionContext">The execution context, it contains the request and response context.</param>
-        private static void MarshallRequest(IExecutionContext executionContext)
+        private static void MarshallRequest(IRequestContext requestContext)
         {
-            var requestContext = executionContext.RequestContext;
             requestContext.HttpRequestMessage = requestContext.HttpRequestMessageMarshaller.CreateHttpRequestMessage(requestContext.OriginalRequest);
 
             if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_TraceId, out string? amznTraceId))
@@ -153,28 +135,20 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// Unmarshalls the HTTP response.
         /// </summary>
         /// <param name="executionContext">The execution context, it contains the request and response context.</param>
-        private static async System.Threading.Tasks.Task UnmarshallResponseAsync(IExecutionContext executionContext)
+        private static async Task UnmarshallResponseAsync(IExecutionContext executionContext)
         {
-            var requestContext = executionContext.RequestContext;
             var responseContext = executionContext.ResponseContext;
-            var unmarshaller = requestContext.Unmarshaller;
-            try
-            {
-                var responseStream = await responseContext.HttpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                var context = unmarshaller.CreateContext(responseContext.HttpResponse,
-                    false,
-                    responseStream,
-                    false);
 
-                var response = unmarshaller.UnmarshallResponse(context);
-                context.ValidateCRC32IfAvailable();
+            var responseStream = await responseContext.HttpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var context = new JsonUnmarshallerContext(responseStream,
+                maintainResponseBody: false,
+                responseContext.HttpResponse,
+                isException: false);
 
-                responseContext.Response = response;
-            }
-            finally
-            {
-                responseContext.HttpResponse?.Dispose();
-            }
+            var response = executionContext.RequestContext.Unmarshaller.UnmarshallResponse(context);
+            context.ValidateCRC32IfAvailable();
+
+            responseContext.Response = response;
         }
     }
 }

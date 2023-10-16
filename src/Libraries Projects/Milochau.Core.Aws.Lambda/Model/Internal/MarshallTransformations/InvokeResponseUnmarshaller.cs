@@ -17,8 +17,6 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
             InvokeResponse response = new InvokeResponse();
@@ -39,13 +37,12 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
+        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
         {
             var errorResponse = JsonErrorResponseUnmarshaller.Instance.Unmarshall(context);
-            errorResponse.InnerException = innerException;
             errorResponse.StatusCode = statusCode;
 
-            return new AmazonLambdaException(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
+            return new AmazonLambdaException(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 
         /// <summary>

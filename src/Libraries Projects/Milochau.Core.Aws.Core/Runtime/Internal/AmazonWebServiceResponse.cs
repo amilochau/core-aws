@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// Contains additional information about the request, such as the 
         /// Request Id.
         /// </summary>
-        public ResponseMetadata ResponseMetadata { get; set; }
+        public ResponseMetadata? ResponseMetadata { get; set; }
 
         /// <summary>
         /// Returns the status code of the HTTP response.

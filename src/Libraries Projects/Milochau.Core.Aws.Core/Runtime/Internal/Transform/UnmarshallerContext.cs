@@ -65,7 +65,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         {
             CrcStream = null;
 
-            if (responseData != null && uint.TryParse(responseData.Headers.GetValues("x-amz-crc32").FirstOrDefault(), out uint parsed))
+            if (responseData != null
+                && responseData.Headers.TryGetValues("x-amz-crc32", out var values)
+                && uint.TryParse(values.FirstOrDefault(), out uint parsed))
             {
                 Crc32Result = unchecked((int)parsed);
                 CrcStream = new CrcCalculatorStream(responseStream, contentLength);

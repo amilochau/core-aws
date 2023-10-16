@@ -15,7 +15,6 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>
-        /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
             return JsonSerializer.Deserialize(context.Stream, SendEmailJsonSerializerContext.Default.SendEmailResponse)!; // @todo null?
@@ -24,14 +23,12 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>
-        /// <returns></returns>
-        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
+        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context,  HttpStatusCode statusCode)
         {
             var errorResponse = JsonErrorResponseUnmarshaller.Instance.Unmarshall(context);
-            errorResponse.InnerException = innerException;
             errorResponse.StatusCode = statusCode;
 
-            return new AmazonSimpleEmailServiceV2Exception(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
+            return new AmazonSimpleEmailServiceV2Exception(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 
         /// <summary>
