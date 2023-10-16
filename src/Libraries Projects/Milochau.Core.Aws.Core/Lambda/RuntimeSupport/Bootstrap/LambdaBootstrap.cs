@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,23 +15,15 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// </summary>
     public class LambdaBootstrap : IDisposable
     {
-        /// <summary>
-        /// The Lambda container freezes the process at a point where an HTTP request is in progress.
-        /// We need to make sure we don't timeout waiting for the next invocation.
-        /// </summary>
-        private static readonly TimeSpan RuntimeApiHttpTimeout = TimeSpan.FromHours(12);
+        private readonly LambdaBootstrapHandler handler;
+        private readonly HttpClient httpClient;
 
-        private readonly LambdaBootstrapHandler _handler;
-
-        private readonly HttpClient _httpClient;
         internal IRuntimeApiClient Client { get; set; }
 
         /// <summary>
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
         /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
-        /// <param name="initializer">Delegate called to initialize the Lambda function.  If not provided the initialization step is skipped.</param>
-        /// <returns></returns>
         public LambdaBootstrap(HandlerWrapper handlerWrapper)
             : this(handlerWrapper.Handler)
         { }
@@ -41,20 +32,17 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
         /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        /// <returns></returns>
         public LambdaBootstrap(LambdaBootstrapHandler handler)
         {
-            _httpClient = ConstructHttpClient();
-            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            _httpClient.Timeout = RuntimeApiHttpTimeout;
-            Client = new RuntimeApiClient(_httpClient);
+            httpClient = ConstructHttpClient();
+            this.handler = handler;
+            Client = new RuntimeApiClient(httpClient);
         }
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns>A Task that represents the operation.</returns>
         public async Task RunAsync(CancellationToken cancellationToken = default)
         {
@@ -79,7 +67,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
             try
             {
-                response = await _handler(invocation);
+                response = await handler(invocation);
                 invokeSucceeded = true;
             }
             catch (Exception exception)
@@ -110,13 +98,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// <returns></returns>
         public static HttpClient ConstructHttpClient()
         {
-            var dotnetRuntimeVersion = new DirectoryInfo(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()).Name;
-            if (dotnetRuntimeVersion == "/")
-            {
-                dotnetRuntimeVersion = "unknown";
-            }
-            var amazonLambdaRuntimeSupport = typeof(LambdaBootstrap).Assembly.GetName().Version;
-
             // Create the SocketsHttpHandler directly to avoid spending cold start time creating the wrapper HttpClientHandler
             var handler = new SocketsHttpHandler
             {
@@ -124,13 +105,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
                 RequestHeaderEncodingSelector = delegate { return System.Text.Encoding.UTF8; }
             };
 
-            // If we are running in an AOT environment, mark it as such.
-            var userAgentString = $"aws-lambda-dotnet/{dotnetRuntimeVersion}-{amazonLambdaRuntimeSupport}-aot";
-
-            var client = new HttpClient(handler);
-
-            client.DefaultRequestHeaders.Add("User-Agent", userAgentString);
-            return client;
+            return new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromHours(12), // The Lambda container freezes the process at a point where an HTTP request is in progress. We need to make sure we don't timeout waiting for the next invocation.
+            };
         }
 
         private static void WriteUnhandledExceptionToLog(Exception exception)
@@ -149,7 +127,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             {
                 if (disposing)
                 {
-                    _httpClient?.Dispose();
+                    httpClient?.Dispose();
                 }
                 disposedValue = true;
             }

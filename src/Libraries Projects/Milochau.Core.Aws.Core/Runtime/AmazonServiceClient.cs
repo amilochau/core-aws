@@ -1,156 +1,154 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Linq;
 using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.RetryHandler;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.HttpHandler;
-using Milochau.Core.Aws.Core.Runtime.Pipeline.Handlers;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
+using System.Net.Http;
+using Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal;
+using Microsoft.Extensions.Http;
+using Polly.Extensions.Http;
+using Polly;
+using Milochau.Core.Aws.Core.Util;
+using Milochau.Core.Aws.Core.References;
+using System.Threading.Tasks;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
-    public abstract class AmazonServiceClient : IDisposable
+    public abstract class AmazonServiceClient
     {
-        private bool _disposed;
-        protected RuntimePipeline RuntimePipeline { get; set; }
-        public IClientConfig Config { get; }
+        private static readonly IAsyncPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(Math.Min(Math.Pow(2, retryAttempt), 20))); // Max 20 seconds
+        private static readonly SocketsHttpHandler socketHandler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15), // Recreate every 15 minutes
+        };
+        private static readonly PolicyHttpMessageHandler pollyHandler = new PolicyHttpMessageHandler(retryPolicy)
+        {
+            InnerHandler = socketHandler,
+        };
+        private static readonly HttpClient httpClient = new HttpClient(pollyHandler);
 
-        #region Constructors
+        private readonly IClientConfig config;
+        private readonly AWSSigner signer = new AWSSigner();
 
         protected AmazonServiceClient(ClientConfig config)
         {
-            Config = config;
-            Signer = new AWSSigner();
-            BuildRuntimePipeline();
+            this.config = config;
         }
 
-        protected AWSSigner Signer { get; private set; }
-
-        #endregion
-
-        #region Invoke methods
-
-        protected System.Threading.Tasks.Task<TResponse> InvokeAsync<TResponse>(
+        protected async Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
-            InvokeOptionsBase options,
+            InvokeOptions options,
             System.Threading.CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
-            ThrowIfDisposed();
+            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken);
+            IResponseContext? responseContext = null;
 
-            var executionContext = new ExecutionContext(
-                new RequestContext(Signer, Config, options.RequestMarshaller, options.ResponseUnmarshaller, request, cancellationToken),
-                new ResponseContext()
-            );
-            return RuntimePipeline.InvokeAsync<TResponse>(executionContext);
-        }
+            // 0. Marshall request
+            MarshallRequest(requestContext);
 
-        #endregion
+            // 1. Start request monitoring
+            XRayPipelineHandler.ProcessBeginRequest(requestContext);
 
-        #region Dispose methods
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
+            TResponse? response = null;
+            try
             {
-                RuntimePipeline?.Dispose();
+                // 2. Sign request
+                await SignRequestAsync(requestContext);
+                ConfigureRequest(requestContext);
 
-                _disposed = true;
-            }
-        }
+                // 3. Send request
+                var httpResponseMessage = await httpClient.SendAsync(requestContext.HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, requestContext.CancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                responseContext = new ResponseContext { HttpResponse = httpResponseMessage };
+                var executionContext = new ExecutionContext(requestContext, responseContext);
 
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        #endregion
-
-        private void BuildRuntimePipeline()
-        {
-            var httpHandler = new HttpHandler();
-
-            // Build default runtime pipeline.
-            RuntimePipeline = new RuntimePipeline(new List<IPipelineHandler>
+                // 4.1 Handle errors
+                if (!httpResponseMessage.IsSuccessStatusCode)
                 {
-                    httpHandler,
-                    new Unmarshaller(),
-                    new ErrorHandler(),
-                    new Signer(),
-                    // ChecksumHandler must come after CompressionHandler because we must calculate the checksum of a payload after compression.
-                    // ChecksumHandler must come after EndpointsResolver because of an upcoming project.
-                    new ChecksumHandler(),
-                    new RetryHandler(Config),
-                    new EndpointResolver(),
-                    new Marshaller(),
+                    throw await HttpErrorResponseExceptionHandler.HandleAsync(executionContext).ConfigureAwait(false); // HttpResponseMessage.Content.ReadAsStreamAsync
                 }
-            );
 
-            // Apply global pipeline customizations
-            RuntimePipelineCustomizerRegistry.Instance.ApplyCustomizations(RuntimePipeline);
-        }
-
-        /// <summary>
-        /// Assembles the Uri for a given SDK request
-        /// </summary>
-        /// <param name="iRequest">Request to compute Uri for</param>
-        /// <returns>Uri for the given SDK request</returns>
-        public static Uri ComposeUrl(IRequest iRequest)
-        {
-            return ComposeUrl(iRequest, true);
-        }
-
-        /// <summary>
-        /// Assembles the Uri for a given SDK request
-        /// </summary>
-        /// <param name="internalRequest">Request to compute Uri for</param>
-        /// <param name="skipEncodingValidPathChars">If true the accepted path characters {/+:} are not encoded.</param>
-        /// <returns>Uri for the given SDK request</returns>
-        public static Uri ComposeUrl(IRequest internalRequest, bool skipEncodingValidPathChars)
-        {
-            Uri url = internalRequest.Endpoint;
-            var resourcePath = internalRequest.ResourcePath;
-            if (resourcePath == null)
-                resourcePath = string.Empty;
-            else
+                // 4.2 Manage response
+                await UnmarshallResponseAsync(executionContext).ConfigureAwait(false);
+                response = (TResponse)responseContext.Response;
+            }
+            catch (Exception e)
             {
-                if (resourcePath.StartsWith("/", StringComparison.Ordinal))
-                    resourcePath = resourcePath.Substring(1);
-
-                resourcePath = AWSSDKUtils.ResolveResourcePath(resourcePath, internalRequest.PathResources, skipEncodingValidPathChars);
+                XRayPipelineHandler.PopulateException(e);
+                throw;
+            }
+            finally
+            {
+                XRayPipelineHandler.ProcessEndRequest(requestContext, responseContext);
+                requestContext.HttpRequestMessage?.Dispose();
             }
 
-            // Construct any sub resource/query parameter additions to append to the
-            // resource path. Services like S3 which allow '?' and/or '&' in resource paths 
-            // should use SubResources instead of appending them to the resource path with 
-            // query string delimiters during request marshalling.
+            return response;
+        }
 
-            var sb = new StringBuilder();
+        /// <summary>
+        /// Configures a request as per the request context.
+        /// </summary>
+        /// <param name="requestContext">The request context.</param>
+        private static void ConfigureRequest(IRequestContext requestContext)
+        {
+            // Configure the Expect 100-continue header
+            requestContext.HttpRequestMessage.Headers.ExpectContinue = false;
 
-            var parameterizedPath = string.Concat(resourcePath, sb);
+            var invocationId = Guid.NewGuid().ToString();
+            requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.AmzSdkInvocationId, invocationId);
+        }
 
-            var hasSlash = url.AbsoluteUri.EndsWith("/", StringComparison.Ordinal) || parameterizedPath.StartsWith("/", StringComparison.Ordinal);
-            var uri = hasSlash
-                ? new Uri(url.AbsoluteUri + parameterizedPath)
-                : new Uri(url.AbsoluteUri + "/" + parameterizedPath);
-            return uri;
+        /// <summary>
+        /// Signs the request.
+        /// </summary>
+        /// <param name="requestContext">The request context.</param>
+        private async Task SignRequestAsync(IRequestContext requestContext)
+        {
+            if (EnvironmentVariables.UseToken)
+            {
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, EnvironmentVariables.Token);
+            }
+
+            await signer.SignAsync(requestContext);
+        }
+
+        /// <summary>
+        /// Marshalls the request before calling invoking the next handler.
+        /// </summary>
+        private static void MarshallRequest(IRequestContext requestContext)
+        {
+            requestContext.HttpRequestMessage = requestContext.HttpRequestMessageMarshaller.CreateHttpRequestMessage(requestContext.OriginalRequest);
+
+            if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_TraceId, out string? amznTraceId))
+            {
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmznTraceIdHeader, AWSSDKUtils.EncodeTraceIdHeaderValue(amznTraceId));
+            }
+        }
+
+        /// <summary>
+        /// Unmarshalls the HTTP response.
+        /// </summary>
+        /// <param name="executionContext">The execution context, it contains the request and response context.</param>
+        private static async Task UnmarshallResponseAsync(IExecutionContext executionContext)
+        {
+            var responseContext = executionContext.ResponseContext;
+
+            var responseStream = await responseContext.HttpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var context = new JsonUnmarshallerContext(responseStream,
+                maintainResponseBody: false,
+                responseContext.HttpResponse,
+                isException: false);
+
+            var response = executionContext.RequestContext.Unmarshaller.UnmarshallResponse(context);
+            context.ValidateCRC32IfAvailable();
+
+            responseContext.Response = response;
         }
     }
 }

@@ -2,8 +2,8 @@ using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
-using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
@@ -16,8 +16,6 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <param name="context"></param>
-        /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
             InvokeResponse response = new InvokeResponse();
@@ -26,12 +24,10 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
             AWSSDKUtils.CopyStream(context.Stream, ms);
             ms.Seek(0, SeekOrigin.Begin);
             response.Payload = ms;
-            if (context.ResponseData.IsHeaderPresent("X-Amz-Executed-Version"))
-                response.ExecutedVersion = context.ResponseData.GetHeaderValue("X-Amz-Executed-Version");
-            if (context.ResponseData.IsHeaderPresent("X-Amz-Function-Error"))
-                response.FunctionError = context.ResponseData.GetHeaderValue("X-Amz-Function-Error");
-            if (context.ResponseData.IsHeaderPresent("X-Amz-Log-Result"))
-                response.LogResult = context.ResponseData.GetHeaderValue("X-Amz-Log-Result");
+            if (context.ResponseData.Headers.Contains("X-Amz-Function-Error"))
+                response.FunctionError = context.ResponseData.Headers.GetValues("X-Amz-Function-Error").FirstOrDefault();
+            if (context.ResponseData.Headers.Contains("X-Amz-Log-Result"))
+                response.LogResult = context.ResponseData.Headers.GetValues("X-Amz-Log-Result").FirstOrDefault();
             response.StatusCode = (int)context.ResponseData.StatusCode;
 
             return response;
@@ -40,13 +36,12 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
+        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
         {
-            var errorResponse = JsonErrorResponseUnmarshaller.GetInstance().Unmarshall(context);
-            errorResponse.InnerException = innerException;
+            var errorResponse = JsonErrorResponseUnmarshaller.Instance.Unmarshall(context);
             errorResponse.StatusCode = statusCode;
 
-            return new AmazonLambdaException(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
+            return new AmazonLambdaException(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 {
@@ -18,10 +17,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// Extracts an exeption with data from an ErrorResponse.
         /// </summary>
         /// <param name="input">The XML parsing context.</param>
-        /// <param name="innerException">An inner exception to be included with the returned exception</param>
         /// <param name="statusCode">The HttpStatusCode from the ErrorResponse</param>
         /// <returns>Either an exception based on the ErrorCode from the ErrorResponse, or the 
         /// general service exception for the service in question.</returns>
-        AmazonServiceException UnmarshallException(R input, Exception innerException, HttpStatusCode statusCode);
+        AmazonServiceException UnmarshallException(R input, HttpStatusCode statusCode);
     }
 }

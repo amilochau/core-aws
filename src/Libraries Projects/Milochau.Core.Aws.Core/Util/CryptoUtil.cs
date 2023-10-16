@@ -1,15 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Security.Cryptography;
 
 namespace Milochau.Core.Aws.Core.Util
 {
     public static partial class CryptoUtilFactory
     {
-        static readonly CryptoUtil util = new CryptoUtil();
-
-        public static ICryptoUtil CryptoInstance
-        {
-            get { return util; }
-        }
+        public static ICryptoUtil CryptoInstance { get; } = new CryptoUtil();
 
         partial class CryptoUtil : ICryptoUtil
         {
@@ -27,14 +23,45 @@ namespace Milochau.Core.Aws.Core.Util
                 return SHA256HashAlgorithmInstance.ComputeHash(data);
             }
 
-            /// <summary>
-            /// Computes a SHA256 hash
-            /// </summary>
-            /// <param name="steam">Input to compute the hash code for</param>
-            /// <returns>Computed hash code</returns>
-            public byte[] ComputeSHA256Hash(Stream steam)
+            public byte[] HMACSignBinary(byte[] data, byte[] key)
             {
-                return SHA256HashAlgorithmInstance.ComputeHash(steam);
+                if (key == null || key.Length == 0)
+                    throw new ArgumentNullException(nameof(key), "Please specify a Secret Signing Key.");
+
+                if (data == null || data.Length == 0)
+                    throw new ArgumentNullException(nameof(data), "Please specify data to sign.");
+
+                KeyedHashAlgorithm algorithm = new HMACSHA256();
+
+                try
+                {
+                    algorithm.Key = key;
+                    byte[] bytes = algorithm.ComputeHash(data);
+                    return bytes;
+                }
+                finally
+                {
+                    algorithm.Dispose();
+                }
+            }
+
+            [ThreadStatic]
+            private static HashAlgorithm _hashAlgorithm = null;
+            private static HashAlgorithm SHA256HashAlgorithmInstance
+            {
+                get
+                {
+                    if (null == _hashAlgorithm)
+                    {
+                        _hashAlgorithm = CreateSHA256Instance();
+                    }
+                    return _hashAlgorithm;
+                }
+            }
+
+            internal static HashAlgorithm CreateSHA256Instance()
+            {
+                return SHA256.Create();
             }
         }
     }

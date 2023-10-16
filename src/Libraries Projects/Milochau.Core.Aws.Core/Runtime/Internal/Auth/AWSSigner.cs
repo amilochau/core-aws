@@ -5,6 +5,10 @@ using System.Text;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Runtime.Pipeline;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
 {
@@ -44,56 +48,35 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// the resource path as a query string or in the Parameters collection must not have been
         /// uri encoded. If they have, use the SignRequest method to obtain a signature.
         /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Client configuration data encompassing the service call (notably authentication
-        /// region, endpoint and service name).
-        /// </param>
-        public void Sign(IRequest request, IClientConfig clientConfig)
+        public async Task SignAsync(IRequestContext requestContext)
         {
-            var signingResult = SignRequest(request, clientConfig);
-            request.Headers[HeaderKeys.AuthorizationHeader] = signingResult.ForAuthorizationHeader;
+            var signingResult = await SignRequestAsync(requestContext);
+            requestContext.HttpRequestMessage.Headers.TryAddWithoutValidation(HeaderKeys.AuthorizationHeader, signingResult.ForAuthorizationHeader);
         }
 
         /// <summary>
         /// Calculates and signs the specified request using the AWS4 signing protocol by using the
         /// AWS account credentials given in the method parameters.
         /// </summary>
-        /// <param name="request">
-        /// The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
-        /// ('host' and 'x-amz-date') will be added to the request before signing.
-        /// </param>
-        /// <param name="clientConfig">
-        /// Client configuration data encompassing the service call (notably authentication
-        /// region, endpoint and service name).
         /// <remarks>
         /// Parameters passed as part of the resource path should be uri-encoded prior to
         /// entry to the signer. Parameters passed in the request.Parameters collection should
         /// be not be encoded; encoding will be done for these parameters as part of the 
         /// construction of the canonical request.
         /// </remarks>
-        public static AWS4SigningResult SignRequest(IRequest request, IClientConfig clientConfig)
+        public static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext)
         {
-            ValidateRequest(request);
-            var signedAt = InitializeHeaders(request.Headers, request.Endpoint);
-            
-            var serviceSigningName = clientConfig.AuthenticationServiceName;
+            var signedAt = InitializeHeaders(requestContext.HttpRequestMessage);
 
-            var bodyHash = SetRequestBodyHash(request);
-            var sortedHeaders = SortAndPruneHeaders(request.Headers);
+            var bodyHash = await SetRequestBodyHashAsync(requestContext);
+            var sortedHeaders = SortAndPruneHeaders(requestContext.HttpRequestMessage.Headers);
 
-            var canonicalRequest = CanonicalizeRequest(request.Endpoint,
-                                                       request.ResourcePath,
-                                                       request.HttpMethod,
-                                                       sortedHeaders,
+            var canonicalRequest = CanonicalizeRequest(sortedHeaders,
                                                        bodyHash,
-                                                       request.PathResources);
+                                                       requestContext.HttpRequestMessage);
 
             return ComputeSignature(signedAt,
-                                    serviceSigningName,
+                                    requestContext.ClientConfig.AuthenticationServiceName,
                                     CanonicalizeHeaderNames(sortedHeaders),
                                     canonicalRequest);
         }
@@ -104,64 +87,23 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// Sets the AWS4 mandated 'host' and 'x-amz-date' headers, returning the date/time that will
         /// be used throughout the signing process in various elements and formats.
         /// </summary>
-        /// <param name="headers">The current set of headers</param>
-        /// <param name="requestEndpoint"></param>
         /// <returns>Date and time used for x-amz-date, in UTC</returns>
-        public static DateTime InitializeHeaders(IDictionary<string, string> headers, Uri requestEndpoint)
+        public static DateTime InitializeHeaders(HttpRequestMessage request)
         {
-            return InitializeHeaders(headers, requestEndpoint, CorrectClockSkew.GetCorrectedUtcNowForEndpoint(requestEndpoint.ToString()));
-        }
+            var requestDateTime = DateTime.UtcNow;
 
-        /// <summary>
-        /// Sets the AWS4 mandated 'host' and 'x-amz-date' headers, accepting and returning the date/time that will
-        /// be used throughout the signing process in various elements and formats.
-        /// </summary>
-        /// <param name="headers">The current set of headers</param>
-        /// <param name="requestEndpoint"></param>
-        /// <param name="requestDateTime"></param>
-        /// <returns>Date and time used for x-amz-date, in UTC</returns>
-        public static DateTime InitializeHeaders(IDictionary<string, string> headers, Uri requestEndpoint, DateTime requestDateTime)
-        {
             // clean up any prior signature in the headers if resigning
-            CleanHeaders(headers);
+            request.Headers.Remove(HeaderKeys.AuthorizationHeader);
+            request.Headers.Remove(HeaderKeys.XAmzContentSha256Header);
 
-            if (!headers.ContainsKey(HeaderKeys.HostHeader))
+            if (!request.Headers.Contains(HeaderKeys.HostHeader))
             {
-                var hostHeader = requestEndpoint.Host;
-                if (!requestEndpoint.IsDefaultPort)
-                    hostHeader += ":" + requestEndpoint.Port;
-                headers.Add(HeaderKeys.HostHeader, hostHeader);
+                request.Headers.Add(HeaderKeys.HostHeader, request.RequestUri.Authority);
             }
 
-            var dt = requestDateTime;
-            headers[HeaderKeys.XAmzDateHeader] = dt.ToUniversalTime().ToString(AWSSDKUtils.ISO8601BasicDateTimeFormat, CultureInfo.InvariantCulture);
+            request.Headers.Add(HeaderKeys.XAmzDateHeader, requestDateTime.ToUniversalTime().ToString(AWSSDKUtils.ISO8601BasicDateTimeFormat, CultureInfo.InvariantCulture));
 
-            return dt;
-        }
-
-        private static void CleanHeaders(IDictionary<string, string> headers)
-        {
-            headers.Remove(HeaderKeys.AuthorizationHeader);
-            headers.Remove(HeaderKeys.XAmzContentSha256Header);
-
-            if (headers.ContainsKey(HeaderKeys.XAmzDecodedContentLengthHeader))
-            {
-                headers[HeaderKeys.ContentLengthHeader] =
-                    headers[HeaderKeys.XAmzDecodedContentLengthHeader];
-                headers.Remove(HeaderKeys.XAmzDecodedContentLengthHeader);
-            }
-        }
-
-        private static void ValidateRequest(IRequest request)
-        {
-            Uri url = request.Endpoint;
-
-            // Before we sign the request, we need to validate if the request is being 
-            // sent over https when DisablePayloadSigning is true.
-            if((request.DisablePayloadSigning ?? false) && url.Scheme != "https")
-            {
-                throw new AmazonClientException("When DisablePayloadSigning is true, the request must be sent over HTTPS.");
-            }
+            return requestDateTime;
         }
 
         /// <summary>
@@ -246,45 +188,26 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// If not set as a header or in the request, attempt to compute a hash based on
         /// inspection of the style of the request content.
         /// </summary>
-        /// <param name="request">Request to sign</param>
-        /// <param name="signPayload">Whether to sign the payload</param>
-        /// <param name="chunkedBodyHash">The fixed value to set for the x-amz-content-sha256 header for chunked requests</param>
-        /// <param name="signatureLength">Length of the signature for each chunk in a chuncked request, in bytes</param>
         /// <returns>
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        public static string? SetRequestBodyHash(IRequest request)
+        public static async Task<string>? SetRequestBodyHashAsync(IRequestContext requestContext)
         {
-            // If unsigned payload, set the appropriate magic string in the header and return it
-            if (request.DisablePayloadSigning != null ? request.DisablePayloadSigning.Value : false)
-            {
-                return SetPayloadSignatureHeader(request, UnsignedPayload);
-            }
-
-            // if the body hash has been precomputed and already placed in the header, just extract and return it
-            var shaHeaderPresent = request.Headers.TryGetValue(HeaderKeys.XAmzContentSha256Header, out string? computedContentHash);
-            if (shaHeaderPresent)
-                return computedContentHash;
-
-            // otherwise continue to calculate the hash and set it in the headers before returning
-            if (request.ContentStream != null)
-                computedContentHash = request.ComputeContentStreamHash();
-            else
-            {
-                byte[] payloadBytes = AWSSDKUtils.GetRequestPayloadBytes(request, request.UseQueryString);
-                byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
-                computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
-            }
+            // Calculate the hash and set it in the headers before returning
+            byte[] payloadBytes = await requestContext.HttpRequestMessage.Content.ReadAsByteArrayAsync();
+            byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
+            string? computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
 
             // set the header if needed and return it
-            return SetPayloadSignatureHeader(request, computedContentHash ?? UnsignedPayload);
+            var payloadHash = computedContentHash ?? UnsignedPayload;
+            requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzContentSha256Header, payloadHash);
+            return payloadHash;
         }
 
         /// <summary>
         /// Compute and return the hash of a data blob using the specified key
         /// </summary>
-        /// <param name="algorithm">Algorithm to use for hashing</param>
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
@@ -296,7 +219,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <summary>
         /// Compute and return the hash of a data blob using the specified key
         /// </summary>
-        /// <param name="algorithm">Algorithm to use for hashing</param>
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
@@ -312,70 +234,24 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <returns></returns>
         public static byte[] ComputeHash(string data)
         {
-            return ComputeHash(Encoding.UTF8.GetBytes(data));
-        }
-
-        /// <summary>
-        /// Computes the non-keyed hash of the supplied data
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static byte[] ComputeHash(byte[] data)
-        {
-            return CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(data);
+            return CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(Encoding.UTF8.GetBytes(data));
         }
 
         #endregion
 
         #region Private Signing Helpers
-        static string SetPayloadSignatureHeader(IRequest request, string payloadHash)
-        {
-            if (request.Headers.ContainsKey(HeaderKeys.XAmzContentSha256Header))
-                request.Headers[HeaderKeys.XAmzContentSha256Header] = payloadHash;
-            else
-                request.Headers.Add(HeaderKeys.XAmzContentSha256Header, payloadHash);
-
-            return payloadHash;
-        }
 
         /// <summary>
         /// Computes and returns the canonical request
         /// </summary>
-        /// <param name="endpoint">The endpoint URL</param>
-        /// <param name="resourcePath">the path of the resource being operated on</param>
-        /// <param name="httpMethod">The http method used for the request</param>
-        /// <param name="sortedHeaders">The full request headers, sorted into canonical order</param>
-        /// <param name="precomputedBodyHash">
-        /// <param name="pathResources">The path resource values lookup to use to replace the keys within resourcePath</param>
-        /// The hash of the binary request body if present. If not supplied, the routine
-        /// will look for the hash as a header on the request.
-        /// </param>
         /// <returns>Canonicalised request as a string</returns>
-        protected static string CanonicalizeRequest(Uri endpoint,
-                                                    string resourcePath,
-                                                    string httpMethod,
-                                                    IDictionary<string, string> sortedHeaders,
+        protected static string CanonicalizeRequest(IDictionary<string, string> sortedHeaders,
                                                     string? precomputedBodyHash,
-                                                    IDictionary<string, string> pathResources)
-        {
-            return CanonicalizeRequestHelper(endpoint,
-                resourcePath,
-                httpMethod,
-                sortedHeaders,
-                precomputedBodyHash,
-                pathResources);
-        }
-
-        private static string CanonicalizeRequestHelper(Uri endpoint,
-                                                    string resourcePath,
-                                                    string httpMethod,
-                                                    IDictionary<string, string> sortedHeaders,
-                                                    string? precomputedBodyHash,
-                                                    IDictionary<string, string> pathResources)
+                                                    HttpRequestMessage httpRequestMessage)
         {
             var canonicalRequest = new StringBuilder();
-            canonicalRequest.AppendFormat("{0}\n", httpMethod);
-            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(endpoint, resourcePath, pathResources));
+            canonicalRequest.AppendFormat("{0}\n", httpRequestMessage.Method.Method);
+            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(new Uri(httpRequestMessage.RequestUri.GetLeftPart(UriPartial.Authority)), httpRequestMessage.RequestUri.LocalPath));
             canonicalRequest.AppendFormat("{0}\n", "");
 
             canonicalRequest.AppendFormat("{0}\n", CanonicalizeHeaders(sortedHeaders));
@@ -400,7 +276,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="requestHeaders">The set of proposed headers for the request</param>
         /// <returns>List of headers that must be included in the signature</returns>
         /// <remarks>For AWS4 signing, all headers are considered viable for inclusion</remarks>
-        protected internal static IDictionary<string, string> SortAndPruneHeaders(IEnumerable<KeyValuePair<string, string>> requestHeaders)
+        protected internal static IDictionary<string, string> SortAndPruneHeaders(HttpRequestHeaders requestHeaders)
         {
             // Refer https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html. (Step #4: "Build the canonical headers list by sorting the (lowercase) headers by character code"). StringComparer.OrdinalIgnoreCase incorrectly places '_' after lowercase chracters.
             var sortedHeaders = new SortedDictionary<string, string>(StringComparer.Ordinal);
@@ -410,9 +286,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                 {
                     continue;
                 }
-                sortedHeaders.Add(header.Key.ToLowerInvariant(), header.Value);
+                sortedHeaders.Add(header.Key.ToLowerInvariant(), header.Value.First());
             }
-            
+
             return sortedHeaders;
         }
 

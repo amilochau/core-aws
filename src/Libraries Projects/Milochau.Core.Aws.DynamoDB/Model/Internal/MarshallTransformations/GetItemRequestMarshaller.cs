@@ -1,48 +1,46 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+﻿using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// GetItem Request Marshaller
-    /// </summary>       
-    public class GetItemRequestMarshaller : IMarshaller<IRequest, GetItemRequest>, IMarshaller<IRequest, AmazonWebServiceRequest>
+    /// </summary>
+    public class GetItemRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
     {
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        /// <returns></returns>
-        public IRequest Marshall(AmazonWebServiceRequest input)
+        /// <summary>Creates an HTTP request message to call the service</summary>
+        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
         {
-            return Marshall((GetItemRequest)input);
+            return CreateHttpRequestMessage((GetItemRequest)input);
         }
 
-        /// <summary>
-        /// Marshaller the request object to the HTTP request.
-        /// </summary>  
-        /// <returns></returns>
-        public IRequest Marshall(GetItemRequest publicRequest)
+        /// <summary>Creates an HTTP request message to call the service</summary>
+        public HttpRequestMessage CreateHttpRequestMessage(GetItemRequest publicRequest)
         {
-            var serializedRequest = JsonSerializer.Serialize(publicRequest, AwsJsonSerializerContext.Default.GetItemRequest);
+            var serializedRequest = JsonSerializer.Serialize(publicRequest, GetItemJsonSerializerContext.Default.GetItemRequest);
 
-            IRequest request = new DefaultRequest(publicRequest, "Amazon.DynamoDBv2")
+            var httpRequestMessage = new HttpRequestMessage
             {
-                HttpMethod = "POST",
-                ResourcePath = "/",
-                Content = System.Text.Encoding.UTF8.GetBytes(serializedRequest)
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"https://dynamodb.{EnvironmentVariables.RegionName}.amazonaws.com/"),
+                Content = new StringContent(serializedRequest, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/x-amz-json-1.0")),
             };
-            request.Headers["X-Amz-Target"] = "DynamoDB_20120810.GetItem";
-            request.Headers["Content-Type"] = "application/x-amz-json-1.0";
-            request.Headers[HeaderKeys.XAmzApiVersion] = "2012-08-10";
+            httpRequestMessage.Headers.Add("X-Amz-Target", "DynamoDB_20120810.GetItem");
+            httpRequestMessage.Headers.Add(HeaderKeys.XAmzApiVersion, "2012-08-10");
 
-            return request;
+            return httpRequestMessage;
         }
 
         /// <summary>
         /// Gets the singleton.
-        /// </summary>  
+        /// </summary>
         public static GetItemRequestMarshaller Instance { get; } = new GetItemRequestMarshaller();
     }
 }

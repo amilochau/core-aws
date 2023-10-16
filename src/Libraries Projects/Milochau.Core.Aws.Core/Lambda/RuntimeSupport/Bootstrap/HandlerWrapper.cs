@@ -12,8 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// </summary>
     public class HandlerWrapper : IDisposable
     {
-        private static readonly InvocationResponse EmptyInvocationResponse =
-            new InvocationResponse(new MemoryStream(0), false);
+        private static readonly InvocationResponse EmptyInvocationResponse = new InvocationResponse(new MemoryStream(0), false);
 
         private readonly MemoryStream OutputStream = new MemoryStream();
 

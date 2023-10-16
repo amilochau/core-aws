@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Linq;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 
 namespace Milochau.Core.Aws.Core.Util
 {
@@ -24,12 +23,6 @@ namespace Milochau.Core.Aws.Core.Util
 
         public const int DefaultBufferSize = 8192;
 
-        internal static Dictionary<int, string> RFCEncodingSchemes = new Dictionary<int, string>
-        {
-            { 3986,  ValidUrlCharacters },
-            { 1738,  ValidUrlCharactersRFC1738 }
-        };
-
 #endregion
 
 #region Public Constants
@@ -44,12 +37,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// Characters outside of this set will be encoded.
         /// </summary>
         public const string ValidUrlCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
-
-        /// <summary>
-        /// The Set of accepted and valid Url characters per RFC1738. 
-        /// Characters outside of this set will be encoded.
-        /// </summary>
-        public const string ValidUrlCharactersRFC1738 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
         /// <summary>
         /// The set of accepted and valid Url path characters per RFC3986.
@@ -113,134 +100,34 @@ namespace Milochau.Core.Aws.Core.Util
 #region Internal Methods
 
         /// <summary>
-        /// Returns the request parameters in the form of a query string.
-        /// </summary>
-        /// <param name="request">The request instance</param>
-        /// <param name="usesQueryString">Optional parameter: if true, we will return an empty string</param>
-        /// <returns>Request parameters in query string byte array format</returns>
-        public static byte[] GetRequestPayloadBytes(IRequest request, bool? usesQueryString = null)
-        {
-            if (request.Content != null)
-                return request.Content;
-
-            return Array.Empty<byte>();
-        }
-
-        /// <summary>
         /// Returns the canonicalized resource path for the service endpoint.
         /// </summary>
         /// <param name="endpoint">Endpoint URL for the request.</param>
         /// <param name="resourcePath">Resource path for the request.</param>
-        /// <param name="pathResources">Dictionary of key/value parameters containing the values for the ResourcePath key replacements.</param>
         /// <remarks>If resourcePath begins or ends with slash, the resulting canonicalized path will follow suit.</remarks>
         /// <returns>Canonicalized resource path for the endpoint.</returns>
-        public static string CanonicalizeResourcePathV2(Uri endpoint, string resourcePath, IDictionary<string, string> pathResources)
+        public static string CanonicalizeResourcePathV2(Uri endpoint, string resourcePath)
         {
-            if (endpoint != null)
-            {
-                var path = endpoint.AbsolutePath;
-                if (string.IsNullOrEmpty(path) || string.Equals(path, Slash, StringComparison.Ordinal))
-                    path = string.Empty;
+            var path = endpoint.AbsolutePath;
+            if (string.IsNullOrEmpty(path) || string.Equals(path, Slash, StringComparison.Ordinal))
+                path = string.Empty;
 
-                if (!string.IsNullOrEmpty(resourcePath) && resourcePath.StartsWith(Slash, StringComparison.Ordinal))
-                    resourcePath = resourcePath.Substring(1);
+            if (!string.IsNullOrEmpty(resourcePath) && resourcePath.StartsWith(Slash, StringComparison.Ordinal))
+                resourcePath = resourcePath.Substring(1);
 
-                if (!string.IsNullOrEmpty(resourcePath))
-                    path = path + Slash + resourcePath;
+            if (!string.IsNullOrEmpty(resourcePath))
+                path = path + Slash + resourcePath;
 
-                resourcePath = path;
-            }
+            resourcePath = path;
 
             if (string.IsNullOrEmpty(resourcePath))
                 return Slash;
 
-            IEnumerable<string> encodedSegments = SplitResourcePathIntoSegments(resourcePath, pathResources);
+            IEnumerable<string> encodedSegments = resourcePath.Split(SlashChar, StringSplitOptions.None);
 
-            if (endpoint == null)
-                throw new ArgumentNullException(nameof(endpoint), "A non-null endpoint is necessary to decide whether or not to pre URL encode.");
+            encodedSegments = encodedSegments.Select(UrlEncode);
 
-            encodedSegments = encodedSegments.Select(segment => UrlEncode(segment, true).Replace(Slash, EncodedSlash));
-
-            return JoinResourcePathSegments(encodedSegments, false);
-        }
-
-        /// <summary>
-        /// Splits the resourcePath at / into segments then resolves any keys with the path resource values. Greedy
-        /// key values will be split into multiple segments at each /.
-        /// </summary>
-        /// <param name="resourcePath">The patterned resourcePath</param>
-        /// <param name="pathResources">The key/value lookup for the patterned resourcePath</param>
-        /// <returns>A list of path segments where all keys in the resourcePath have been resolved to one or more path segment values</returns>
-        public static IEnumerable<string> SplitResourcePathIntoSegments(string resourcePath, IDictionary<string, string> pathResources)
-        {
-            var splitChars = new char[] { SlashChar };
-            var pathSegments = resourcePath.Split(splitChars, StringSplitOptions.None);
-            if(pathResources == null || pathResources.Count == 0)
-            {
-                return pathSegments;
-            }
-
-            //Otherwise there are key/values that need to be resolved
-            var resolvedSegments = new List<string>();
-            foreach(var segment in pathSegments)
-            {
-                if (!pathResources.ContainsKey(segment))
-                {
-                    resolvedSegments.Add(segment);
-                    continue;
-                }
-
-                //Determine if the path is greedy. If greedy the segment will be split at each / into multiple segments.
-                if (segment.EndsWith("+}", StringComparison.Ordinal))
-                {
-                    resolvedSegments.AddRange(pathResources[segment].Split(splitChars, StringSplitOptions.None));
-                }
-                else
-                {
-                    resolvedSegments.Add(pathResources[segment]);
-                }
-            }
-
-            return resolvedSegments;
-        }
-
-        /// <summary>
-        /// Joins all path segments with the / character and encodes each segment before joining.
-        /// </summary>
-        /// <param name="pathSegments">The segments of a URL path split at each / character</param>
-        /// <param name="path">If the path property is specified,
-        /// the accepted path characters {/+:} are not encoded.</param>
-        /// <returns>A joined URL with encoded segments</returns>
-        public static string JoinResourcePathSegments(IEnumerable<string> pathSegments, bool path)
-        {
-            // Encode for canonicalization
-            pathSegments = pathSegments.Select(segment => UrlEncode(segment, path));
-
-            if (path)
-            {
-                pathSegments = pathSegments.Select(segment => segment.Replace(Slash, EncodedSlash));
-            }
-
-            // join the encoded segments with /
-            return string.Join(Slash, pathSegments.ToArray());
-        }
-
-        /// <summary>
-        /// Takes a patterned resource path and resolves it using the key/value path resources into
-        /// a segmented encoded URL.
-        /// </summary>
-        /// <param name="resourcePath">The patterned resourcePath</param>
-        /// <param name="pathResources">The key/value lookup for the patterned resourcePath</param>
-        /// <param name="skipEncodingValidPathChars">If true valid path characters {/+:} are not encoded</param>
-        /// <returns>A segmented encoded URL</returns>
-        public static string ResolveResourcePath(string resourcePath, IDictionary<string, string> pathResources, bool skipEncodingValidPathChars)
-        {
-            if (string.IsNullOrEmpty(resourcePath))
-            {
-                return resourcePath;
-            }
-
-            return JoinResourcePathSegments(SplitResourcePathIntoSegments(resourcePath, pathResources), skipEncodingValidPathChars);
+            return string.Join(Slash, encodedSegments.ToArray());
         }
 
         /// <summary>
@@ -317,33 +204,13 @@ namespace Milochau.Core.Aws.Core.Util
         /// the accepted path characters {/+:} are not encoded.
         /// </summary>
         /// <param name="data">The string to encode</param>
-        /// <param name="path">Whether the string is a URL path or not</param>
         /// <returns>The encoded string</returns>
-        public static string UrlEncode(string data, bool path)
-        {
-            return UrlEncode(3986, data, path);
-        }
-
-        /// <summary>
-        /// URL encodes a string per the specified RFC. If the path property is specified,
-        /// the accepted path characters {/+:} are not encoded.
-        /// </summary>
-        /// <param name="rfcNumber">RFC number determing safe characters</param>
-        /// <param name="data">The string to encode</param>
-        /// <param name="path">Whether the string is a URL path or not</param>
-        /// <returns>The encoded string</returns>
-        /// <remarks>
-        /// Currently recognised RFC versions are 1738 (Dec '94) and 3986 (Jan '05). 
-        /// If the specified RFC is not recognised, 3986 is used by default.
-        /// </remarks>
-        public static string UrlEncode(int rfcNumber, string data, bool path)
+        public static string UrlEncode(string data)
         {
             StringBuilder encoded = new StringBuilder(data.Length * 2);
 
-            if (!RFCEncodingSchemes.TryGetValue(rfcNumber, out string? validUrlCharacters))
-                validUrlCharacters = ValidUrlCharacters;
-
-            string unreservedChars = string.Concat(validUrlCharacters, path ? ValidPathCharacters : "");
+            var validUrlCharacters = ValidUrlCharacters;
+            string unreservedChars = string.Concat(validUrlCharacters, "");
 
             foreach (char symbol in Encoding.UTF8.GetBytes(data).Select(v => (char)v))
             {

@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers;
-using Milochau.Core.Aws.Core.References;
 using System;
 using System.IO;
 using System.Net.Http;

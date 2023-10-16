@@ -47,18 +47,6 @@ namespace Milochau.Core.Aws.SESv2
 
         #endregion
 
-        #region Dispose
-
-        /// <summary>
-        /// Disposes the service client.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
         /// <summary>
         /// Sends an email message. You can use the Amazon SES API v2 to send the following types
         /// of messages:
@@ -99,7 +87,7 @@ namespace Milochau.Core.Aws.SESv2
         {
             var options = new InvokeOptions
             {
-                RequestMarshaller = SendEmailRequestMarshaller.Instance,
+                HttpRequestMessageMarshaller = SendEmailRequestMarshaller.Instance,
                 ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance
             };
 

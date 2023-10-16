@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using System;
 using System.Net;
 using System.Text.Json;
 
@@ -15,23 +14,20 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
-        /// <returns></returns>
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            return JsonSerializer.Deserialize(context.Stream, AwsJsonSerializerContext.Default.DeleteItemResponse)!; // @todo null?
+            return JsonSerializer.Deserialize(context.Stream, DeleteItemJsonSerializerContext.Default.DeleteItemResponse)!; // @todo null?
         }
 
         /// <summary>
         /// Unmarshaller error response to exception.
         /// </summary>  
-        /// <returns></returns>
-        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, Exception innerException, HttpStatusCode statusCode)
+        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
         {
-            var errorResponse = JsonErrorResponseUnmarshaller.GetInstance().Unmarshall(context);
-            errorResponse.InnerException = innerException;
+            var errorResponse = JsonErrorResponseUnmarshaller.Instance.Unmarshall(context);
             errorResponse.StatusCode = statusCode;
 
-            return new AmazonDynamoDBException(errorResponse.Message, errorResponse.InnerException, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
+            return new AmazonDynamoDBException(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
 
         /// <summary>

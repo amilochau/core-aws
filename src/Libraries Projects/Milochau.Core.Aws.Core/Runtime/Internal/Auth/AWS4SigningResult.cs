@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
     /// or authorization query parameters for the final request as well as hold ongoing
     /// signature computations for subsequent calls related to the initial signing.
     /// </summary>
-    public class AWS4SigningResult : AWSSigningResultBase
+    public class AWS4SigningResult
     {
         private readonly byte[] _signature;
 
@@ -22,16 +22,27 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="signature">Computed signature</param>
         public AWS4SigningResult(string signedHeaders,
                                  string scope,
-                                 byte[] signature) :
-            base(signedHeaders, scope)
+                                 byte[] signature)
         {
             _signature = signature;
+            SignedHeaders = signedHeaders;
+            Scope = scope;
         }
+
+        /// <summary>
+        /// The ;-delimited collection of header names that were included in the signature computation
+        /// </summary>
+        public string SignedHeaders { get; }
+
+        /// <summary>
+        /// Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)
+        /// </summary>
+        public string Scope { get; }
 
         /// <summary>
         /// Returns the hex string representing the signature
         /// </summary>
-        public override string Signature
+        public string Signature
         {
             get { return AWSSDKUtils.ToHex(_signature, true); }
         }
@@ -39,7 +50,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <summary>
         /// Returns the signature in a form usable as an 'Authorization' header value.
         /// </summary>
-        public override string ForAuthorizationHeader
+        public string ForAuthorizationHeader
         {
             get
             {
