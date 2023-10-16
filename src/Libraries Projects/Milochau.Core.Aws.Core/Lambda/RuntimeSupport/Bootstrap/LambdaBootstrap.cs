@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,14 +98,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// <returns></returns>
         public static HttpClient ConstructHttpClient()
         {
-            // @todo Test to simplify that
-            var dotnetRuntimeVersion = new DirectoryInfo(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()).Name;
-            if (dotnetRuntimeVersion == "/")
-            {
-                dotnetRuntimeVersion = "unknown";
-            }
-            var amazonLambdaRuntimeSupport = typeof(LambdaBootstrap).Assembly.GetName().Version;
-
             // Create the SocketsHttpHandler directly to avoid spending cold start time creating the wrapper HttpClientHandler
             var handler = new SocketsHttpHandler
             {
@@ -114,16 +105,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
                 RequestHeaderEncodingSelector = delegate { return System.Text.Encoding.UTF8; }
             };
 
-            // If we are running in an AOT environment, mark it as such.
-            var userAgentString = $"aws-lambda-dotnet/{dotnetRuntimeVersion}-{amazonLambdaRuntimeSupport}-aot";
-
             return new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromHours(12), // The Lambda container freezes the process at a point where an HTTP request is in progress. We need to make sure we don't timeout waiting for the next invocation.
-                DefaultRequestHeaders =
-                {
-                    { "User-Agent", userAgentString }
-                }
             };
         }
 
