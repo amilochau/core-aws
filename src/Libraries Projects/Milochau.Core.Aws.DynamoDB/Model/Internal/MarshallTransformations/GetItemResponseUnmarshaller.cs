@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using System;
 using System.Net;
 using System.Text.Json;
 

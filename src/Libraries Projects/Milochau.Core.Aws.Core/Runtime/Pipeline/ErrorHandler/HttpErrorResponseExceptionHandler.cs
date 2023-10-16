@@ -2,7 +2,6 @@
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Linq;
-using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 {

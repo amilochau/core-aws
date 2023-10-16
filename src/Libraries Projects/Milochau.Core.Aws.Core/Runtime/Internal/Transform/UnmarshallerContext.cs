@@ -37,8 +37,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             {
                 return WrappingStream.AllReadBytes.ToArray();
             }
-
-            if (MaintainResponseBody)
+            else if (MaintainResponseBody)
             {
                 return WrappingStream.LoggableReadBytes.ToArray();
             }

@@ -81,20 +81,21 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             // if no message was found create a generic message
             if (string.IsNullOrEmpty(internalException.Message))
             {
+                var responseBody = context.ResponseBody;
                 if (string.IsNullOrEmpty(internalException.Type))
                 {
-                    if (string.IsNullOrEmpty(context.ResponseBody))
+                    if (string.IsNullOrEmpty(responseBody))
                         internalException.Message = "The service returned an error. See inner exception for details.";
                     else
-                        internalException.Message = "The service returned an error with HTTP Body: " + context.ResponseBody;
+                        internalException.Message = "The service returned an error with HTTP Body: " + responseBody;
                 }
                 else
                 {
                     internalException.Message = "The service returned an error with Error Code " + internalException.Type;
-                    if (string.IsNullOrEmpty(context.ResponseBody))
+                    if (string.IsNullOrEmpty(responseBody))
                         internalException.Message += ".";
                     else
-                        internalException.Message = " and HTTP Body: " + context.ResponseBody;
+                        internalException.Message = " and HTTP Body: " + responseBody;
                 }
             }
 
