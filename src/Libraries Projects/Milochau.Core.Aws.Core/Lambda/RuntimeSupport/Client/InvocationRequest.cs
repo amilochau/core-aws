@@ -1,6 +1,7 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Core;
 using System;
 using System.IO;
+using System.Net.Http;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
@@ -9,6 +10,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// </summary>
     public class InvocationRequest : IDisposable
     {
+        private readonly HttpResponseMessage response;
+
+        public InvocationRequest(HttpResponseMessage response)
+        {
+            this.response = response;
+        }
+
         /// <summary>
         /// Input to the function invocation.
         /// </summary>
@@ -23,6 +31,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         public void Dispose()
         {
+            response?.Dispose();
             InputStream?.Dispose();
         }
     }

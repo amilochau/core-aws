@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 {
     public delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation);
-    public delegate Task<bool> LambdaBootstrapInitializer();
 
     /// <summary>
     /// Class to communicate with the Lambda Runtime API, handle initialization,
     /// and run the invoke loop for an AWS Lambda function
     /// </summary>
-    public class LambdaBootstrap : IDisposable
+    public class LambdaBootstrap
     {
+        private static readonly HttpClient httpClient = ConstructHttpClient();
         private readonly LambdaBootstrapHandler handler;
-        private readonly HttpClient httpClient;
 
         internal IRuntimeApiClient Client { get; set; }
 
@@ -25,17 +24,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// </summary>
         /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
         public LambdaBootstrap(HandlerWrapper handlerWrapper)
-            : this(handlerWrapper.Handler)
-        { }
-
-        /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
-        /// </summary>
-        /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        public LambdaBootstrap(LambdaBootstrapHandler handler)
         {
-            httpClient = ConstructHttpClient();
-            this.handler = handler;
+            handler = handlerWrapper.Handler;
             Client = new RuntimeApiClient(httpClient);
         }
 
@@ -59,7 +49,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             }
         }
 
-        internal async Task InvokeOnceAsync(CancellationToken cancellationToken = default)
+        internal async Task InvokeOnceAsync(CancellationToken cancellationToken)
         {
             using var invocation = await Client.GetNextInvocationAsync(cancellationToken);
             InvocationResponse response = null;
@@ -113,28 +103,5 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             // will take care of writing to the function's log stream.
             Console.Error.WriteLine(exception);
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    httpClient?.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-        }
-        #endregion
     }
 }

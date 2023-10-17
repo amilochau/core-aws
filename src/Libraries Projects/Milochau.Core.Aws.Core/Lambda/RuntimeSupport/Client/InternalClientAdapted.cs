@@ -18,13 +18,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        Task<SwaggerResponse<System.IO.Stream>> NextAsync(CancellationToken cancellationToken);
+        Task<HttpResponseMessage> NextAsync(CancellationToken cancellationToken);
 
         /// <summary>Runtime makes this request in order to submit a response.</summary>
         /// <returns>Accepted</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        Task ResponseAsync(string awsRequestId, System.IO.Stream outputStream, CancellationToken cancellationToken);
+        Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken);
 
         /// <summary>
         /// Runtime makes this request in order to submit an error response. It can be either a function error, or a runtime error. Error will be served in response to the invoke.
@@ -50,7 +50,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async Task<SwaggerResponse<System.IO.Stream>> NextAsync(CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> NextAsync(CancellationToken cancellationToken)
         {
             using var request = new HttpRequestMessage
             {
@@ -59,36 +59,27 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.OK)
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false); // Do not dispose in this method!
+            if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
-                var inputBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                return new SwaggerResponse<System.IO.Stream>(response.Headers, new MemoryStream(inputBytes));
-            }
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Forbidden", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.InternalServerError)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode != HttpStatusCode.NoContent)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").", (int)response.StatusCode, responseData, null);
+                return response;
             }
 
-            return new SwaggerResponse<System.IO.Stream>(response.Headers, new System.IO.MemoryStream(0));
+            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var message = response.StatusCode switch
+            {
+                HttpStatusCode.Forbidden => "Forbidden",
+                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
+                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
+            };
+            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
         }
 
         /// <summary>Runtime makes this request in order to submit a response.</summary>
         /// <returns>Accepted</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async Task ResponseAsync(string awsRequestId, System.IO.Stream outputStream, CancellationToken cancellationToken)
+        public async Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
             if (awsRequestId == null)
                 throw new ArgumentNullException(nameof(awsRequestId));
@@ -105,34 +96,21 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
             using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.Accepted)
+            if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
+                return;
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
+
+            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var message = response.StatusCode switch
             {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Bad Request", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Forbidden", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.RequestEntityTooLarge)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Payload Too Large", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.InternalServerError)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").", (int)response.StatusCode, responseData, null);
-            }
+                HttpStatusCode.BadRequest => "Bad Request",
+                HttpStatusCode.Forbidden => "Forbidden",
+                HttpStatusCode.RequestEntityTooLarge => "Payload Too Large",
+                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
+                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
+            };
+            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
         }
 
         /// <summary>
@@ -176,41 +154,20 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             }
 
             using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.Accepted)
+            if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
+                return;
             }
-            else if (response.StatusCode == HttpStatusCode.BadRequest)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Bad Request", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Forbidden", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode == HttpStatusCode.InternalServerError)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("Container error. Non-recoverable state. Runtime should exit promptly.\n", (int)response.StatusCode, responseData, null);
-            }
-            else if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.NoContent)
-            {
-                var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new RuntimeApiClientException("The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").", (int)response.StatusCode, responseData, null);
-            }
-        }
-    }
 
-    internal partial class SwaggerResponse<TResult>
-    {
-        public HttpHeaders Headers { get; private set; }
-        public TResult Result { get; private set; }
-
-        public SwaggerResponse(HttpHeaders headers, TResult result)
-        {
-            Headers = headers;
-            Result = result;
+            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var message = response.StatusCode switch
+            {
+                HttpStatusCode.BadRequest => "Bad Request",
+                HttpStatusCode.Forbidden => "Forbidden",
+                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
+                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
+            };
+            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
         }
     }
 
