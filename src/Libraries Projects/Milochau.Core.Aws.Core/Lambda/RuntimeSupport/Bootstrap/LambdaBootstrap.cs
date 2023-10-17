@@ -63,31 +63,27 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         {
             using var invocation = await Client.GetNextInvocationAsync(cancellationToken);
             InvocationResponse response = null;
-            bool invokeSucceeded = false;
 
             try
             {
                 response = await handler(invocation);
-                invokeSucceeded = true;
             }
             catch (Exception exception)
             {
                 WriteUnhandledExceptionToLog(exception);
                 await Client.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception);
+                return;
             }
 
-            if (invokeSucceeded)
+            try
             {
-                try
+                await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
+            }
+            finally
+            {
+                if (response != null && response.DisposeOutputStream)
                 {
-                    await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
-                }
-                finally
-                {
-                    if (response != null && response.DisposeOutputStream)
-                    {
-                        response.OutputStream?.Dispose();
-                    }
+                    response.OutputStream?.Dispose();
                 }
             }
         }

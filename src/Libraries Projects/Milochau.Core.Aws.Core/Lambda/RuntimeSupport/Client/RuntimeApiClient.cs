@@ -14,13 +14,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// </summary>
     public class RuntimeApiClient : IRuntimeApiClient
     {
-        private readonly IInternalRuntimeApiClient _internalClient;
+        private readonly IInternalRuntimeApiClient internalClient;
 
-        private readonly IConsoleLoggerWriter _consoleLoggerRedirector = new LogLevelLoggerWriter();
+        private readonly IConsoleLoggerWriter consoleLoggerRedirector = new LogLevelLoggerWriter();
 
         internal RuntimeApiClient(HttpClient httpClient)
         {
-            _internalClient = new InternalRuntimeApiClient(httpClient);
+            internalClient = new InternalRuntimeApiClient(httpClient);
         }
 
         /// <summary>
@@ -31,12 +31,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <returns>A Task representing the asynchronous operation.</returns>
         public async Task<InvocationRequest> GetNextInvocationAsync(CancellationToken cancellationToken = default)
         {
-            SwaggerResponse<Stream> response = await _internalClient.NextAsync(cancellationToken);
+            SwaggerResponse<Stream> response = await internalClient.NextAsync(cancellationToken);
 
             var headers = new RuntimeApiHeaders(response.Headers);
-            _consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
+            consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
 
-            var lambdaContext = new LambdaContext(headers, _consoleLoggerRedirector);
+            var lambdaContext = new LambdaContext(headers, consoleLoggerRedirector);
             return new InvocationRequest
             {
                 InputStream = response.Result,
@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             var exceptionInfoJson = LambdaJsonExceptionWriter.WriteJson(exceptionInfo);
             var exceptionInfoXRayJson = LambdaXRayExceptionWriter.WriteJson(exceptionInfo);
 
-            return _internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
+            return internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
         }
 
 
@@ -76,7 +76,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
         public async Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken = default)
         {
-            await _internalClient.ResponseAsync(awsRequestId, outputStream, cancellationToken);
+            await internalClient.ResponseAsync(awsRequestId, outputStream, cancellationToken);
         }
     }
 }

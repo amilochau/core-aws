@@ -44,8 +44,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             {
                 var cancellationToken = CancellationToken.None;
 
-                var utf8Json = (requestStream as MemoryStream)!.ToArray();
-                var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
+                var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
 
                 var dynamoDBClient = new AmazonDynamoDBClient();
                 var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
@@ -75,9 +74,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         {
             var cancellationToken = CancellationToken.None;
 
-            var utf8Json = (requestStream as MemoryStream)!.ToArray();
             // Note: the following line should not deserialize as APIGatewayHttpApiV2ProxyRequest - but here we do that to help tests
-            var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
+            var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
 
             var dynamoDBClient = new AmazonDynamoDBClient();
             var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
