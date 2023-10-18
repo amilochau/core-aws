@@ -1,18 +1,15 @@
-using System.Text.Json;
 using System.Net;
-using System.Text.Json.Serialization;
 using Milochau.Core.Aws.Core.References;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
 using System.Net.Http.Headers;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
-    internal partial interface IInternalRuntimeApiClient
+    internal interface IInternalRuntimeApiClient
     {
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
@@ -32,17 +29,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         Task ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, CancellationToken cancellationToken);
     }
 
-    internal partial class InternalRuntimeApiClient : IInternalRuntimeApiClient
+    internal class InternalRuntimeApiClient : IInternalRuntimeApiClient
     {
         private const int MAX_HEADER_SIZE_BYTES = 1024 * 1024;
 
         private const string ErrorContentType = "application/vnd.aws.lambda.error+json";
-        private readonly HttpClient httpClient;
 
-        public InternalRuntimeApiClient(HttpClient httpClient)
-        {
-            this.httpClient = httpClient;
-        }
 
         public string BaseUrl { get; } = "http://" + EnvironmentVariables.RuntimeServerHostAndPort + "/2018-06-01";
 
@@ -59,7 +51,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false); // Do not dispose in this method!
+            var response = await HttpClients.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false); // Do not dispose in this method!
             if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
                 return response;
@@ -84,7 +76,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             if (awsRequestId == null)
                 throw new ArgumentNullException(nameof(awsRequestId));
 
-            using HttpContent content = outputStream == null ? new StringContent(string.Empty) : new StreamContent(new NonDisposingStreamWrapper(outputStream));
+            using var content = new StreamContent(outputStream);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             var request = new HttpRequestMessage
@@ -95,7 +87,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            using var response = await HttpClients.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
                 return;
@@ -153,7 +145,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                 }
             }
 
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            using var response = await HttpClients.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
             {
                 return;

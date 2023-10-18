@@ -1,5 +1,4 @@
 ﻿using System;
-using ExecutionContext = Amazon.Runtime.Internal.ExecutionContext;
 using Amazon.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler;
@@ -7,31 +6,16 @@ using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
 using System.Net.Http;
 using Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal;
-using Microsoft.Extensions.Http;
-using Polly.Extensions.Http;
-using Polly;
 using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.References;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using System.Threading;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
     public abstract class AmazonServiceClient
     {
-        private static readonly IAsyncPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .WaitAndRetryAsync(4, retryAttempt => TimeSpan.FromSeconds(Math.Min(Math.Pow(2, retryAttempt), 20))); // Max 20 seconds
-        private static readonly SocketsHttpHandler socketHandler = new SocketsHttpHandler
-        {
-            PooledConnectionLifetime = TimeSpan.FromMinutes(15), // Recreate every 15 minutes
-        };
-        private static readonly PolicyHttpMessageHandler pollyHandler = new PolicyHttpMessageHandler(retryPolicy)
-        {
-            InnerHandler = socketHandler,
-        };
-        private static readonly HttpClient httpClient = new HttpClient(pollyHandler);
-
         private readonly IClientConfig config;
         private readonly AWSSigner signer = new AWSSigner();
 
@@ -43,10 +27,10 @@ namespace Milochau.Core.Aws.Core.Runtime
         protected async Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
             InvokeOptions options,
-            System.Threading.CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
-            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, cancellationToken);
+            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request);
             IResponseContext? responseContext = null;
 
             // 0. Marshall request
@@ -63,9 +47,11 @@ namespace Milochau.Core.Aws.Core.Runtime
                 ConfigureRequest(requestContext);
 
                 // 3. Send request
-                var httpResponseMessage = await httpClient.SendAsync(requestContext.HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, requestContext.CancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(100)); // HttpClients.HttpClient has an infinite timeout
+                using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
+                var httpResponseMessage = await HttpClients.HttpClient.SendAsync(requestContext.HttpRequestMessage, HttpCompletionOption.ResponseHeadersRead, combinedCts.Token).ConfigureAwait(continueOnCapturedContext: false);
                 responseContext = new ResponseContext { HttpResponse = httpResponseMessage };
-                var executionContext = new ExecutionContext(requestContext, responseContext);
+                var executionContext = new Amazon.Runtime.Internal.ExecutionContext(requestContext, responseContext);
 
                 // 4.1 Handle errors
                 if (!httpResponseMessage.IsSuccessStatusCode)

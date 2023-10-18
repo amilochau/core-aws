@@ -18,9 +18,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         private readonly IConsoleLoggerWriter consoleLoggerRedirector = new LogLevelLoggerWriter();
 
-        internal RuntimeApiClient(HttpClient httpClient)
+        internal RuntimeApiClient()
         {
-            internalClient = new InternalRuntimeApiClient(httpClient);
+            internalClient = new InternalRuntimeApiClient();
         }
 
         /// <summary>
@@ -56,9 +56,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             if (awsRequestId == null)
                 throw new ArgumentNullException(nameof(awsRequestId));
 
-            if (exception == null)
-                throw new ArgumentNullException(nameof(exception));
-
             var exceptionInfo = ExceptionInfo.GetExceptionInfo(exception);
 
             var exceptionInfoJson = LambdaJsonExceptionWriter.WriteJson(exceptionInfo);
@@ -66,7 +63,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
             return internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
         }
-
 
         /// <summary>
         /// Send a response to a function invocation to the Runtime API as an asynchronous operation.

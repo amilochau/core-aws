@@ -23,7 +23,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
         /// <param name="handler">The handler that will be called for each Lambda invocation</param>
-        /// <returns></returns>
         public static LambdaBootstrapBuilder Create(Func<Stream, ILambdaContext, Task> handler)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
@@ -33,7 +32,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
         /// <param name="handler">The handler that will be called for each Lambda invocation</param>
-        /// <returns></returns>
         public static LambdaBootstrapBuilder Create(Func<Stream, ILambdaContext, Task<Stream>> handler)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));

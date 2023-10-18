@@ -16,20 +16,16 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers
         /// <summary>
         /// The current aws request id
         /// </summary>
-        /// <param name="awsRequestId"></param>
         void SetCurrentAwsRequestId(string awsRequestId);
 
         /// <summary>
         /// Format message with default log level
         /// </summary>
-        /// <param name="message"></param>
         void FormattedWriteLine(string message);
 
         /// <summary>
         /// Format message with given log level
         /// </summary>
-        /// <param name="level"></param>
-        /// <param name="message"></param>
         void FormattedWriteLine(LogLevel? level, string message);
     }
 
