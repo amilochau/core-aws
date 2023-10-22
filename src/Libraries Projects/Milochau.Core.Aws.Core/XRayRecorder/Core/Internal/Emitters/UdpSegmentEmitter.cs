@@ -11,17 +11,17 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
     /// </summary>
     public class UdpSegmentEmitter : ISegmentEmitter
     {
-        private readonly UdpClient _udpClient;
-        private DaemonConfig _daemonConfig;
-        private bool _disposed;
+        private readonly UdpClient udpClient;
+        private readonly DaemonConfig daemonConfig;
+        private bool disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpSegmentEmitter"/> class.
         /// </summary>
         public UdpSegmentEmitter()
         {
-            _udpClient = new UdpClient();
-            _daemonConfig = DaemonConfig.GetEndPoint();
+            udpClient = new UdpClient();
+            daemonConfig = DaemonConfig.GetEndPoint();
         }
 
         /// <summary>
@@ -39,8 +39,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
             {
                 var packet = segment.Marshall()!;
                 var data = Encoding.ASCII.GetBytes(packet);
-                var ip = _daemonConfig.UDPEndpoint; //Need local var to ensure ip do not 
-                _udpClient.Send(data, data.Length, ip);
+                var ip = daemonConfig.UDPEndpoint; //Need local var to ensure ip do not 
+                udpClient.Send(data, data.Length, ip);
             }
             catch (SocketException)
             {
@@ -72,16 +72,16 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (disposed)
             {
                 return;
             }
 
             if (disposing)
             {
-                _udpClient?.Dispose();
+                udpClient?.Dispose();
 
-                _disposed = true;
+                disposed = true;
             }
         }
     }

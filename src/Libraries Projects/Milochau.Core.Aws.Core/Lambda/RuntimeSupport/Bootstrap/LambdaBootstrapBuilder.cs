@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-
 using Milochau.Core.Aws.Core.Lambda.Core;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
@@ -12,11 +11,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// </summary>
     public class LambdaBootstrapBuilder
     {
-        private readonly HandlerWrapper _handlerWrapper;
+        private readonly HandlerWrapper handlerWrapper;
 
         private LambdaBootstrapBuilder(HandlerWrapper handlerWrapper)
         {
-            _handlerWrapper = handlerWrapper;
+            this.handlerWrapper = handlerWrapper;
         }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
         public LambdaBootstrap Build()
         {
-            return new LambdaBootstrap(_handlerWrapper);
+            return new LambdaBootstrap(handlerWrapper);
         }
     }
 }

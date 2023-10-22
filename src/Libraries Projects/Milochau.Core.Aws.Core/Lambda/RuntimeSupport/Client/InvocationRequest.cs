@@ -11,6 +11,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     public class InvocationRequest : IDisposable
     {
         private readonly HttpResponseMessage response;
+        private bool disposedValue;
 
         public InvocationRequest(HttpResponseMessage response)
         {
@@ -29,10 +30,24 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         internal InvocationRequest() { }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    response?.Dispose();
+                    InputStream?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
         public void Dispose()
         {
-            response?.Dispose();
-            InputStream?.Dispose();
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
