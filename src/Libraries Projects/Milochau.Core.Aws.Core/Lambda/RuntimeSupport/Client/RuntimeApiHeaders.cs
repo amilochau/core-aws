@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
@@ -8,7 +8,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         internal const string HeaderAwsRequestId = "Lambda-Runtime-Aws-Request-Id";
         internal const string HeaderTraceId = "Lambda-Runtime-Trace-Id";
 
-        public RuntimeApiHeaders(Dictionary<string, IEnumerable<string>> headers)
+        public RuntimeApiHeaders(HttpHeaders headers)
         {
             AwsRequestId = GetHeaderValueRequired(headers, HeaderAwsRequestId);
             TraceId = GetHeaderValueOrNull(headers, HeaderTraceId);
@@ -17,14 +17,14 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         public string AwsRequestId { get; private set; }
         public string TraceId { get; private set; }
 
-        private static string GetHeaderValueRequired(Dictionary<string, IEnumerable<string>> headers, string header)
+        private static string GetHeaderValueRequired(HttpHeaders headers, string header)
         {
-            return headers[header].FirstOrDefault();
+            return headers.GetValues(header).FirstOrDefault();
         }
 
-        private static string GetHeaderValueOrNull(Dictionary<string, IEnumerable<string>> headers, string header)
+        private static string GetHeaderValueOrNull(HttpHeaders headers, string header)
         {
-            if (headers.TryGetValue(header, out var values))
+            if (headers.TryGetValues(header, out var values))
             {
                 return values.FirstOrDefault();
             }

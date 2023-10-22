@@ -51,7 +51,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 				return CacheState.Invalid;
 			}
 
-			if (!(_timestampOfLastIPCacheUpdate is DateTime lastTimestamp))
+			if (_timestampOfLastIPCacheUpdate is not DateTime lastTimestamp)
 			{
 				return CacheState.Invalid;
 			}

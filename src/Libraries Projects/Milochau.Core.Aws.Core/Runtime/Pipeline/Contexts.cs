@@ -14,8 +14,6 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         IClientConfig ClientConfig { get; }
 
         HttpRequestMessage? HttpRequestMessage { get; set; }
-
-        System.Threading.CancellationToken CancellationToken { get; }
     }
 
     public interface IResponseContext
@@ -38,21 +36,18 @@ namespace Amazon.Runtime.Internal
         public RequestContext(IClientConfig clientConfig,
             IHttpRequestMessageMarshaller<AmazonWebServiceRequest> httpRequestMessageMarshaller,
             JsonResponseUnmarshaller unmarshaller,
-            AmazonWebServiceRequest originalRequest,
-            System.Threading.CancellationToken cancellationToken)
+            AmazonWebServiceRequest originalRequest)
         {
             ClientConfig = clientConfig;
             HttpRequestMessageMarshaller = httpRequestMessageMarshaller;
             Unmarshaller = unmarshaller;
             OriginalRequest = originalRequest;
-            CancellationToken = cancellationToken;
         }
 
         public IClientConfig ClientConfig { get; }
         public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         public JsonResponseUnmarshaller Unmarshaller { get; }
         public AmazonWebServiceRequest OriginalRequest { get; }
-        public System.Threading.CancellationToken CancellationToken { get; }
 
         public HttpRequestMessage? HttpRequestMessage { get; set; }
     }

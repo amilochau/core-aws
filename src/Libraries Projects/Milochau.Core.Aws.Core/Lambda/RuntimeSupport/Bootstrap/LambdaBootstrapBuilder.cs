@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-
 using Milochau.Core.Aws.Core.Lambda.Core;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
@@ -12,18 +11,17 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// </summary>
     public class LambdaBootstrapBuilder
     {
-        private readonly HandlerWrapper _handlerWrapper;
+        private readonly HandlerWrapper handlerWrapper;
 
         private LambdaBootstrapBuilder(HandlerWrapper handlerWrapper)
         {
-            _handlerWrapper = handlerWrapper;
+            this.handlerWrapper = handlerWrapper;
         }
 
         /// <summary>
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
         /// <param name="handler">The handler that will be called for each Lambda invocation</param>
-        /// <returns></returns>
         public static LambdaBootstrapBuilder Create(Func<Stream, ILambdaContext, Task> handler)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
@@ -33,7 +31,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Create a builder for creating the LambdaBootstrap.
         /// </summary>
         /// <param name="handler">The handler that will be called for each Lambda invocation</param>
-        /// <returns></returns>
         public static LambdaBootstrapBuilder Create(Func<Stream, ILambdaContext, Task<Stream>> handler)
         {
             return new LambdaBootstrapBuilder(HandlerWrapper.GetHandlerWrapper(handler));
@@ -41,7 +38,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
         public LambdaBootstrap Build()
         {
-            return new LambdaBootstrap(_handlerWrapper);
+            return new LambdaBootstrap(handlerWrapper);
         }
     }
 }

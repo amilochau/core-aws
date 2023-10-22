@@ -1,56 +1,44 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 {
     public delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation);
-    public delegate Task<bool> LambdaBootstrapInitializer();
 
     /// <summary>
     /// Class to communicate with the Lambda Runtime API, handle initialization,
     /// and run the invoke loop for an AWS Lambda function
     /// </summary>
-    public class LambdaBootstrap : IDisposable
+    public class LambdaBootstrap
     {
         private readonly LambdaBootstrapHandler handler;
-        private readonly HttpClient httpClient;
-
-        internal IRuntimeApiClient Client { get; set; }
+        private readonly IRuntimeApiClient runtimeApiClient;
 
         /// <summary>
         /// Create a LambdaBootstrap that will call the given initializer and handler.
         /// </summary>
         /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
         public LambdaBootstrap(HandlerWrapper handlerWrapper)
-            : this(handlerWrapper.Handler)
-        { }
-
-        /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
-        /// </summary>
-        /// <param name="handler">Delegate called for each invocation of the Lambda function.</param>
-        public LambdaBootstrap(LambdaBootstrapHandler handler)
         {
-            httpClient = ConstructHttpClient();
-            this.handler = handler;
-            Client = new RuntimeApiClient(httpClient);
+            handler = handlerWrapper.Handler;
+            runtimeApiClient = new RuntimeApiClient();
         }
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        /// <returns>A Task that represents the operation.</returns>
         public async Task RunAsync(CancellationToken cancellationToken = default)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    await InvokeOnceAsync(cancellationToken);
+                    using var cts = new CancellationTokenSource(TimeSpan.FromHours(12));
+                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
+                    await InvokeOnceAsync(combinedCts.Token);
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -59,56 +47,33 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             }
         }
 
-        internal async Task InvokeOnceAsync(CancellationToken cancellationToken = default)
+        private async Task InvokeOnceAsync(CancellationToken cancellationToken)
         {
-            using var invocation = await Client.GetNextInvocationAsync(cancellationToken);
+            using var invocation = await runtimeApiClient.GetNextInvocationAsync(cancellationToken);
             InvocationResponse response = null;
-            bool invokeSucceeded = false;
 
             try
             {
                 response = await handler(invocation);
-                invokeSucceeded = true;
             }
             catch (Exception exception)
             {
                 WriteUnhandledExceptionToLog(exception);
-                await Client.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception);
+                await runtimeApiClient.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception, cancellationToken);
+                return;
             }
 
-            if (invokeSucceeded)
+            try
             {
-                try
+                await runtimeApiClient.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response.OutputStream, cancellationToken);
+            }
+            finally
+            {
+                if (response != null && response.DisposeOutputStream)
                 {
-                    await Client.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response?.OutputStream);
-                }
-                finally
-                {
-                    if (response != null && response.DisposeOutputStream)
-                    {
-                        response.OutputStream?.Dispose();
-                    }
+                    response.OutputStream?.Dispose();
                 }
             }
-        }
-
-        /// <summary>
-        /// Utility method for creating an HttpClient used by LambdaBootstrap to interact with the Lambda Runtime API.
-        /// </summary>
-        /// <returns></returns>
-        public static HttpClient ConstructHttpClient()
-        {
-            // Create the SocketsHttpHandler directly to avoid spending cold start time creating the wrapper HttpClientHandler
-            var handler = new SocketsHttpHandler
-            {
-                // Fix for https://github.com/aws/aws-lambda-dotnet/issues/1231. HttpClient by default supports only ASCII characters in headers. Changing it to allow UTF8 characters.
-                RequestHeaderEncodingSelector = delegate { return System.Text.Encoding.UTF8; }
-            };
-
-            return new HttpClient(handler)
-            {
-                Timeout = TimeSpan.FromHours(12), // The Lambda container freezes the process at a point where an HTTP request is in progress. We need to make sure we don't timeout waiting for the next invocation.
-            };
         }
 
         private static void WriteUnhandledExceptionToLog(Exception exception)
@@ -117,28 +82,5 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             // will take care of writing to the function's log stream.
             Console.Error.WriteLine(exception);
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    httpClient?.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-        }
-        #endregion
     }
 }

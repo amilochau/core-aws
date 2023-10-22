@@ -26,7 +26,7 @@ namespace Milochau.Core.Aws.Core.References
 
         public static void SetEnvironmentVariable(string key, string value)
         {
-            Environment.SetEnvironmentVariable(key, value);
+            // We don't really set the environment variable
             if (Variables.Contains(key))
             {
                 Variables[key] = value;

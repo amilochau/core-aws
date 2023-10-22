@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token to use to stop listening for the next invocation.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
-        Task<InvocationRequest> GetNextInvocationAsync(CancellationToken cancellationToken = default);
+        Task<InvocationRequest> GetNextInvocationAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Report an invocation error as an asynchronous operation.
@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="exception">The exception to report.</param>
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
-        Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken = default);
+        Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send a response to a function invocation to the Runtime API as an asynchronous operation.
@@ -33,7 +33,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="awsRequestId">The ID of the function request being responded to.</param>
         /// <param name="outputStream">The content of the response to the function invocation.</param>
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
-        /// <returns></returns>
-        Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken = default);
+        Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken);
     }
 }

@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// be not be encoded; encoding will be done for these parameters as part of the 
         /// construction of the canonical request.
         /// </remarks>
-        public static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext)
+        private static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext)
         {
             var signedAt = InitializeHeaders(requestContext.HttpRequestMessage);
 
@@ -88,7 +88,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// be used throughout the signing process in various elements and formats.
         /// </summary>
         /// <returns>Date and time used for x-amz-date, in UTC</returns>
-        public static DateTime InitializeHeaders(HttpRequestMessage request)
+        private static DateTime InitializeHeaders(HttpRequestMessage request)
         {
             var requestDateTime = DateTime.UtcNow;
 
@@ -109,7 +109,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <summary>
         /// Computes and returns an AWS4 signature for the specified canonicalized request
         /// </summary>
-        public static AWS4SigningResult ComputeSignature(DateTime signedAt,
+        private static AWS4SigningResult ComputeSignature(DateTime signedAt,
                                                          string service,
                                                          string signedHeaders,
                                                          string canonicalRequest)
@@ -145,7 +145,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="dt"></param>
         /// <param name="formatString">The required format</param>
         /// <returns>The UTC date/time in the requested format</returns>
-        public static string FormatDateTime(DateTime dt, string formatString)
+        private static string FormatDateTime(DateTime dt, string formatString)
         {
             return dt.ToUniversalTime().ToString(formatString, CultureInfo.InvariantCulture);
         }
@@ -158,7 +158,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="date">Date of the request, in yyyyMMdd format</param>
         /// <param name="service">The name of the service being called by the request</param>
         /// <returns>Computed signing key</returns>
-        public static byte[] ComposeSigningKey(string awsSecretAccessKey, string region, string date, string service)
+        private static byte[] ComposeSigningKey(string awsSecretAccessKey, string region, string date, string service)
         {
             char[]? ksecret = null;
 
@@ -192,7 +192,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        public static async Task<string>? SetRequestBodyHashAsync(IRequestContext requestContext)
+        private static async Task<string>? SetRequestBodyHashAsync(IRequestContext requestContext)
         {
             // Calculate the hash and set it in the headers before returning
             byte[] payloadBytes = await requestContext.HttpRequestMessage.Content.ReadAsByteArrayAsync();
@@ -211,7 +211,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
-        public static byte[] ComputeKeyedHash(byte[] key, string data)
+        private static byte[] ComputeKeyedHash(byte[] key, string data)
         {
             return ComputeKeyedHash(key, Encoding.UTF8.GetBytes(data));
         }
@@ -222,7 +222,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="key">Hash key</param>
         /// <param name="data">Data blob</param>
         /// <returns>Hash of the data</returns>
-        public static byte[] ComputeKeyedHash(byte[] key, byte[] data)
+        private static byte[] ComputeKeyedHash(byte[] key, byte[] data)
         {
             return CryptoUtilFactory.CryptoInstance.HMACSignBinary(data, key);
         }
@@ -232,7 +232,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static byte[] ComputeHash(string data)
+        private static byte[] ComputeHash(string data)
         {
             return CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(Encoding.UTF8.GetBytes(data));
         }
@@ -245,7 +245,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// Computes and returns the canonical request
         /// </summary>
         /// <returns>Canonicalised request as a string</returns>
-        protected static string CanonicalizeRequest(IDictionary<string, string> sortedHeaders,
+        private static string CanonicalizeRequest(IDictionary<string, string> sortedHeaders,
                                                     string? precomputedBodyHash,
                                                     HttpRequestMessage httpRequestMessage)
         {
@@ -276,7 +276,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="requestHeaders">The set of proposed headers for the request</param>
         /// <returns>List of headers that must be included in the signature</returns>
         /// <remarks>For AWS4 signing, all headers are considered viable for inclusion</remarks>
-        protected internal static IDictionary<string, string> SortAndPruneHeaders(HttpRequestHeaders requestHeaders)
+        private static IDictionary<string, string> SortAndPruneHeaders(HttpRequestHeaders requestHeaders)
         {
             // Refer https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html. (Step #4: "Build the canonical headers list by sorting the (lowercase) headers by character code"). StringComparer.OrdinalIgnoreCase incorrectly places '_' after lowercase chracters.
             var sortedHeaders = new SortedDictionary<string, string>(StringComparer.Ordinal);
@@ -298,7 +298,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// </summary>
         /// <param name="sortedHeaders">All request headers, sorted into canonical order</param>
         /// <returns>Canonicalized string of headers, with the header names in lower case.</returns>
-        protected internal static string CanonicalizeHeaders(IEnumerable<KeyValuePair<string, string>> sortedHeaders)
+        private static string CanonicalizeHeaders(IEnumerable<KeyValuePair<string, string>> sortedHeaders)
         {
             if (sortedHeaders == null || !sortedHeaders.Any())
                 return string.Empty;
@@ -321,7 +321,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// </summary>
         /// <param name="sortedHeaders">The headers included in the signature</param>
         /// <returns>Formatted string of header names</returns>
-        protected static string CanonicalizeHeaderNames(IEnumerable<KeyValuePair<string, string>> sortedHeaders)
+        private static string CanonicalizeHeaderNames(IEnumerable<KeyValuePair<string, string>> sortedHeaders)
         {
             var builder = new StringBuilder();
             

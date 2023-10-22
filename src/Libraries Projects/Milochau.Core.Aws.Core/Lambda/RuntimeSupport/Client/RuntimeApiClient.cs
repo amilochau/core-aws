@@ -14,13 +14,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// </summary>
     public class RuntimeApiClient : IRuntimeApiClient
     {
-        private readonly IInternalRuntimeApiClient _internalClient;
+        private readonly IInternalRuntimeApiClient internalClient;
 
-        private readonly IConsoleLoggerWriter _consoleLoggerRedirector = new LogLevelLoggerWriter();
+        private readonly IConsoleLoggerWriter consoleLoggerRedirector = new LogLevelLoggerWriter();
 
-        internal RuntimeApiClient(HttpClient httpClient)
+        internal RuntimeApiClient()
         {
-            _internalClient = new InternalRuntimeApiClient(httpClient);
+            internalClient = new InternalRuntimeApiClient();
         }
 
         /// <summary>
@@ -29,17 +29,17 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token to use to stop listening for the next invocation.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
-        public async Task<InvocationRequest> GetNextInvocationAsync(CancellationToken cancellationToken = default)
+        public async Task<InvocationRequest> GetNextInvocationAsync(CancellationToken cancellationToken)
         {
-            SwaggerResponse<Stream> response = await _internalClient.NextAsync(cancellationToken);
+            HttpResponseMessage response = await internalClient.NextAsync(cancellationToken);
 
             var headers = new RuntimeApiHeaders(response.Headers);
-            _consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
+            consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
 
-            var lambdaContext = new LambdaContext(headers, _consoleLoggerRedirector);
-            return new InvocationRequest
+            var lambdaContext = new LambdaContext(headers, consoleLoggerRedirector);
+            return new InvocationRequest(response)
             {
-                InputStream = response.Result,
+                InputStream = await response.Content.ReadAsStreamAsync(),
                 LambdaContext = lambdaContext,
             };
         }
@@ -51,22 +51,18 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="exception">The exception to report.</param>
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
         /// <returns>A Task representing the asynchronous operation.</returns>
-        public Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken = default)
+        public Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken)
         {
             if (awsRequestId == null)
                 throw new ArgumentNullException(nameof(awsRequestId));
-
-            if (exception == null)
-                throw new ArgumentNullException(nameof(exception));
 
             var exceptionInfo = ExceptionInfo.GetExceptionInfo(exception);
 
             var exceptionInfoJson = LambdaJsonExceptionWriter.WriteJson(exceptionInfo);
             var exceptionInfoXRayJson = LambdaXRayExceptionWriter.WriteJson(exceptionInfo);
 
-            return _internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
+            return internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
         }
-
 
         /// <summary>
         /// Send a response to a function invocation to the Runtime API as an asynchronous operation.
@@ -74,9 +70,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <param name="awsRequestId">The ID of the function request being responded to.</param>
         /// <param name="outputStream">The content of the response to the function invocation.</param>
         /// <param name="cancellationToken">The optional cancellation token to use.</param>
-        public async Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken = default)
+        public async Task SendResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
-            await _internalClient.ResponseAsync(awsRequestId, outputStream, cancellationToken);
+            await internalClient.ResponseAsync(awsRequestId, outputStream, cancellationToken);
         }
     }
 }
