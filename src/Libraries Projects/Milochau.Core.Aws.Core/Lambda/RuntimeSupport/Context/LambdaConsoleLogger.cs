@@ -1,32 +1,62 @@
-﻿using Milochau.Core.Aws.Core.Lambda.Core;
-using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers;
-using Milochau.Core.Aws.Core.References;
+﻿using Microsoft.Extensions.Logging;
+using Milochau.Core.Aws.Core.Lambda.Core;
 using System;
+using System.IO;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
     internal class LambdaConsoleLogger : ILambdaLogger
     {
-        private readonly IConsoleLoggerWriter _consoleLoggerRedirector;
+        private readonly string currentAwsRequestId;
 
-        public LambdaConsoleLogger(IConsoleLoggerWriter consoleLoggerRedirector)
+        public LambdaConsoleLogger(string currentAwsRequestId)
         {
-            _consoleLoggerRedirector = consoleLoggerRedirector;
+            this.currentAwsRequestId = currentAwsRequestId;
         }
 
         public void Log(string message)
         {
-            Console.Write(message);
+            Console.Out.Write(message);
         }
 
-        public void LogLine(string message)
+        public void LogLine(LogLevel level, string message)
         {
-            _consoleLoggerRedirector.FormattedWriteLine(message);
+            FormattedWriteLine(Console.Out, level, message);
         }
 
-        public void Log(LogLevel level, string message)
+        public void LogLineError(LogLevel level, string message)
         {
-            _consoleLoggerRedirector.FormattedWriteLine(level, message);
+            FormattedWriteLine(Console.Error, level, message);
+        }
+
+        private void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
+        {
+            if (logLevel < LogLevel.Information)
+                return;
+
+            var displayLevel = ConvertLogLevelToLabel(logLevel);
+            var line = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss.fffZ}\t{currentAwsRequestId}\t{displayLevel}\t{message ?? string.Empty}";
+
+            textWriter.WriteLine(line);
+        }
+
+        /// <summary>
+        /// Convert LogLevel enums to the the same string label that console provider for Microsoft.Extensions.Logging.ILogger uses.
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        private static string ConvertLogLevelToLabel(LogLevel? level)
+        {
+            return level switch
+            {
+                LogLevel.Trace => "trce",
+                LogLevel.Debug => "dbug",
+                LogLevel.Information => "info",
+                LogLevel.Warning => "warn",
+                LogLevel.Error => "fail",
+                LogLevel.Critical => "crit",
+                _ => level.ToString(),
+            };
         }
     }
 }

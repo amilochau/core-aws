@@ -2,6 +2,8 @@
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
@@ -10,11 +12,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// This class provides methods that help you wrap existing C# Lambda implementations with LambdaBootstrapHandler delegates.
     /// This makes serialization and deserialization simpler and allows you to use existing functions them with an instance of LambdaBootstrap.
     /// </summary>
-    public class HandlerWrapper : IDisposable
+    public class HandlerWrapper
     {
         private static readonly InvocationResponse EmptyInvocationResponse = new InvocationResponse(new MemoryStream(0), false);
-
-        private readonly MemoryStream OutputStream = new MemoryStream();
 
         public LambdaBootstrapHandler Handler { get; private set; }
 
@@ -28,7 +28,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Note that you may have to cast your handler to its specific type to help the compiler.
         /// Example handler signature: Task Handler(Stream, ILambdaContext)
         /// </summary>
-        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
         /// <returns>A HandlerWrapper</returns>
         public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, Task> handler)
         {
@@ -42,9 +41,23 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task Handler(Stream, ILambdaContext)
+        /// </summary>
+        public static HandlerWrapper GetHandlerWrapper<TRequest>(Func<TRequest, ILambdaContext, Task> handler, JsonTypeInfo<TRequest> requestInfo)
+        {
+            return new HandlerWrapper(async (invocation) =>
+            {
+                var request = JsonSerializer.Deserialize(invocation.InputStream, requestInfo)!;
+                await handler(request, invocation.LambdaContext);
+                return EmptyInvocationResponse;
+            });
+        }
+
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
         /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
         /// </summary>
-        /// <param name="handler">Func called for each invocation of the Lambda function.</param>
         /// <returns>A HandlerWrapper</returns>
         public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, Task<Stream>> handler)
         {
@@ -54,26 +67,23 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             });
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
+        /// <summary>
+        /// Get a HandlerWrapper that will call the given method on function invocation.
+        /// Note that you may have to cast your handler to its specific type to help the compiler.
+        /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
+        /// </summary>
+        /// <returns>A HandlerWrapper</returns>
+        public static HandlerWrapper GetHandlerWrapper<TRequest, TResponse>(Func<TRequest, ILambdaContext, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
         {
-            if (!disposedValue)
+            return new HandlerWrapper(async (invocation) =>
             {
-                if (disposing)
-                {
-                    OutputStream.Dispose();
-                }
+                var request = JsonSerializer.Deserialize(invocation.InputStream, requestInfo)!;
+                var response = await handler(request, invocation.LambdaContext);
 
-                disposedValue = true;
-            }
+                var responseStream = new MemoryStream();
+                JsonSerializer.Serialize(responseStream, response, responseInfo);
+                return new InvocationResponse(responseStream);
+            });
         }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }

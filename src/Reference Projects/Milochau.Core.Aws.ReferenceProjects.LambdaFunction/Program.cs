@@ -17,74 +17,62 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
     public class Function
     {
-        public static readonly int handlerChoice = 0;
+
+        private static readonly int handlerChoice = 0;
+        private static readonly DynamoDbDataAccess dynamoDbDataAccess;
+        private static readonly EmailsLambdaDataAccess emailsLambdaDataAccess;
+        private static readonly SesDataAccess sesDataAccess;
+
+        static Function()
+        {
+            var dynamoDBClient = new AmazonDynamoDBClient();
+            dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
+            var lambdaClient = new AmazonLambdaClient();
+            emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
+            var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
+            sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
+        }
+
         private static async Task Main()
         {
             switch (handlerChoice)
             {
                 case 0:
-                    await LambdaBootstrapBuilder.Create(FunctionHandlerHttp).Build().RunAsync();
+                    await LambdaBootstrap.RunAsync(FunctionHandlerHttp, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
                     break;
                 case 1:
-                    await LambdaBootstrapBuilder.Create(FunctionHandlerAsync).Build().RunAsync();
+                    await LambdaBootstrap.RunAsync(FunctionHandlerAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest);
                     break;
                 case 2:
-                    await LambdaBootstrapBuilder.Create(FunctionHandlerScheduler).Build().RunAsync();
+                    await LambdaBootstrap.RunAsync(FunctionHandlerScheduler);
                     break;
                 case 3:
-                    await LambdaBootstrapBuilder.Create(FunctionHandlerSns).Build().RunAsync();
+                    await LambdaBootstrap.RunAsync(FunctionHandlerSns);
                     break;
             }
         }
 
-        public static async Task<Stream> FunctionHandlerHttp(Stream requestStream, ILambdaContext context)
+        public static async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandlerHttp(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            APIGatewayHttpApiV2ProxyResponse response;
             try
             {
                 var cancellationToken = CancellationToken.None;
 
-                var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
-
-                var dynamoDBClient = new AmazonDynamoDBClient();
-                var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-                var lambdaClient = new AmazonLambdaClient();
-                var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-                var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
-                var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
-
-                response = await DoAsync(request, context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
+                return await DoAsync(request, context, cancellationToken);
             }
             catch (Exception ex)
             {
-                context.Logger.LogError($"Error during test {ex.Message} {ex.StackTrace}");
-                response = HttpResponse.InternalServerError();
+                context.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, $"Error during test {ex.Message} {ex.StackTrace}");
+                return HttpResponse.InternalServerError();
             }
-
-            var responseStream = new MemoryStream();
-            using (var writer = new Utf8JsonWriter(responseStream))
-            {
-                JsonSerializer.Serialize(writer, response, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
-            }
-            responseStream.Position = 0;
-            return responseStream;
         }
 
-        public static async Task FunctionHandlerAsync(Stream requestStream, ILambdaContext context)
+        public static async Task FunctionHandlerAsync(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
+            // Note: the previous line should not deserialize as APIGatewayHttpApiV2ProxyRequest - but here we do that to help tests
             var cancellationToken = CancellationToken.None;
 
-            // Note: the following line should not deserialize as APIGatewayHttpApiV2ProxyRequest - but here we do that to help tests
-            var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest)!;
-
-            var dynamoDBClient = new AmazonDynamoDBClient();
-            var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-            var lambdaClient = new AmazonLambdaClient();
-            var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-            var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
-            var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
-
-            await DoAsync(request, context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
+            await DoAsync(request, context, cancellationToken);
         }
 
         public static async Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context)
@@ -93,18 +81,11 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             {
                 var cancellationToken = CancellationToken.None;
 
-                var dynamoDBClient = new AmazonDynamoDBClient();
-                var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-                var lambdaClient = new AmazonLambdaClient();
-                var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-                var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
-                var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
-
-                await DoAsync(new(), context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
+                await DoAsync(new(), context, cancellationToken);
             }
             catch (Exception ex)
             {
-                context.Logger.LogError($"Error during test {ex.Message} {ex.StackTrace}");
+                context.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, $"Error during test {ex.Message} {ex.StackTrace}");
                 throw;
             }
         }
@@ -113,27 +94,16 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         {
             var cancellationToken = CancellationToken.None;
 
-            var utf8Json = (requestStream as MemoryStream)!.ToArray();
-            var request = JsonSerializer.Deserialize(utf8Json, ApplicationJsonSerializerContext.Default.SNSEvent)!;
-
-            var dynamoDBClient = new AmazonDynamoDBClient();
-            var dynamoDbDataAccess = new DynamoDbDataAccess(dynamoDBClient);
-            var lambdaClient = new AmazonLambdaClient();
-            var emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
-            var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
-            var sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
+            var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.SNSEvent)!;
 
             foreach (var record in request.Records)
             {
-                await DoAsync(new(), context, dynamoDbDataAccess, emailsLambdaDataAccess, sesDataAccess, cancellationToken);
+                await DoAsync(new(), context, cancellationToken);
             }
         }
 
         public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(APIGatewayHttpApiV2ProxyRequest request,
             ILambdaContext context,
-            IDynamoDbDataAccess dynamoDbDataAccess,
-            IEmailsLambdaDataAccess emailsLambdaDataAccess,
-            ISesDataAccess sesDataAccess,
             CancellationToken cancellationToken)
         {
             if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out _))

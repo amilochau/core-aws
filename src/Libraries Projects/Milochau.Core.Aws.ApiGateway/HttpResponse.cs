@@ -15,7 +15,11 @@ namespace Milochau.Core.Aws.ApiGateway
             return new APIGatewayHttpApiV2ProxyResponse
             {
                 StatusCode = 200,
-                Body = JsonSerializer.Serialize(value, jsonTypeInfo)
+                Body = JsonSerializer.Serialize(value, jsonTypeInfo),
+                Headers = new Dictionary<string, string>
+                {
+                    { "Content-Type", "application/json" },
+                },
             };
         }
 
@@ -48,6 +52,10 @@ namespace Milochau.Core.Aws.ApiGateway
             {
                 StatusCode = 400,
                 Body = JsonSerializer.Serialize(problemDetails, HelpersJsonSerializerContext.Default.ValidationProblemDetails),
+                Headers = new Dictionary<string, string>
+                {
+                    { "Content-Type", "application/json" },
+                },
             };
         }
 

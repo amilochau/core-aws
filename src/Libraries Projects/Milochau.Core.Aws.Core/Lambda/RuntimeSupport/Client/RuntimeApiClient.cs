@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling;
-using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Helpers;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -15,8 +14,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     public class RuntimeApiClient : IRuntimeApiClient
     {
         private readonly IInternalRuntimeApiClient internalClient;
-
-        private readonly IConsoleLoggerWriter consoleLoggerRedirector = new LogLevelLoggerWriter();
 
         internal RuntimeApiClient()
         {
@@ -34,9 +31,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             HttpResponseMessage response = await internalClient.NextAsync(cancellationToken);
 
             var headers = new RuntimeApiHeaders(response.Headers);
-            consoleLoggerRedirector.SetCurrentAwsRequestId(headers.AwsRequestId);
-
-            var lambdaContext = new LambdaContext(headers, consoleLoggerRedirector);
+            var lambdaContext = new LambdaContext(headers);
             return new InvocationRequest(response)
             {
                 InputStream = await response.Content.ReadAsStreamAsync(),

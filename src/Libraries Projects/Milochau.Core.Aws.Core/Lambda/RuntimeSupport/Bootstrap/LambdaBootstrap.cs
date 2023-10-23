@@ -1,5 +1,8 @@
-﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
+﻿using Milochau.Core.Aws.Core.Lambda.Core;
+using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using System;
+using System.IO;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,43 +14,63 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     /// Class to communicate with the Lambda Runtime API, handle initialization,
     /// and run the invoke loop for an AWS Lambda function
     /// </summary>
-    public class LambdaBootstrap
+    public static class LambdaBootstrap
     {
-        private readonly LambdaBootstrapHandler handler;
-        private readonly IRuntimeApiClient runtimeApiClient;
-
         /// <summary>
-        /// Create a LambdaBootstrap that will call the given initializer and handler.
+        /// Run the initialization Func if provided.
+        /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        /// <param name="handlerWrapper">The HandlerWrapper to call for each invocation of the Lambda function.</param>
-        public LambdaBootstrap(HandlerWrapper handlerWrapper)
+        public static Task RunAsync(Func<Stream, ILambdaContext, Task> handler)
         {
-            handler = handlerWrapper.Handler;
-            runtimeApiClient = new RuntimeApiClient();
+            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
+            return RunAsync(handlerWrapper.Handler);
         }
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public async Task RunAsync(CancellationToken cancellationToken = default)
+        public static Task RunAsync(Func<Stream, ILambdaContext, Task<Stream>> handler)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
+            return RunAsync(handlerWrapper.Handler);
+        }
+
+        /// <summary>
+        /// Run the initialization Func if provided.
+        /// Then run the invoke loop, calling the handler for each invocation.
+        /// </summary>
+        public static Task RunAsync<TRequest>(Func<TRequest, ILambdaContext, Task> handler, JsonTypeInfo<TRequest> requestInfo)
+        {
+            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo);
+            return RunAsync(handlerWrapper.Handler);
+        }
+
+        /// <summary>
+        /// Run the initialization Func if provided.
+        /// Then run the invoke loop, calling the handler for each invocation.
+        /// </summary>
+        public static Task RunAsync<TRequest, TResponse>(Func<TRequest, ILambdaContext, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
+        {
+            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo, responseInfo);
+            return RunAsync(handlerWrapper.Handler);
+        }
+
+        /// <summary>
+        /// Run the initialization Func if provided.
+        /// Then run the invoke loop, calling the handler for each invocation.
+        /// </summary>
+        private async static Task RunAsync(LambdaBootstrapHandler handler)
+        {
+            var runtimeApiClient = new RuntimeApiClient();
+            while (true)
             {
-                try
-                {
-                    using var cts = new CancellationTokenSource(TimeSpan.FromHours(12));
-                    using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
-                    await InvokeOnceAsync(combinedCts.Token);
-                }
-                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-                {
-                    // Loop cancelled
-                }
+                using var cts = new CancellationTokenSource(TimeSpan.FromHours(12));
+                await InvokeOnceAsync(runtimeApiClient, handler, cts.Token);
             }
         }
 
-        private async Task InvokeOnceAsync(CancellationToken cancellationToken)
+        private async static Task InvokeOnceAsync(IRuntimeApiClient runtimeApiClient, LambdaBootstrapHandler handler, CancellationToken cancellationToken)
         {
             using var invocation = await runtimeApiClient.GetNextInvocationAsync(cancellationToken);
             InvocationResponse response = null;
@@ -58,13 +81,14 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             }
             catch (Exception exception)
             {
-                WriteUnhandledExceptionToLog(exception);
+                invocation.LambdaContext.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, exception.ToString());
                 await runtimeApiClient.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception, cancellationToken);
                 return;
             }
 
             try
             {
+                response.OutputStream.Position = 0;
                 await runtimeApiClient.SendResponseAsync(invocation.LambdaContext.AwsRequestId, response.OutputStream, cancellationToken);
             }
             finally
@@ -74,13 +98,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
                     response.OutputStream?.Dispose();
                 }
             }
-        }
-
-        private static void WriteUnhandledExceptionToLog(Exception exception)
-        {
-            // Console.Error.WriteLine are redirected to the IConsoleLoggerWriter which
-            // will take care of writing to the function's log stream.
-            Console.Error.WriteLine(exception);
         }
     }
 }
