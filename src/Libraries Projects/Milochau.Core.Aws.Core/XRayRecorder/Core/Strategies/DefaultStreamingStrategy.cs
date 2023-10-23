@@ -16,39 +16,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
         private const long DefaultMaxSubsegmentSize = 100;
         
         /// <summary>
-        /// Max subsegment size to stream fot the strategy.
-        /// </summary>
-        public long MaxSubsegmentSize { get; private set; } = DefaultMaxSubsegmentSize;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultStreamingStrategy"/> class.
-        /// </summary>
-        public DefaultStreamingStrategy() : this(DefaultMaxSubsegmentSize)
-        {
-            
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultStreamingStrategy"/> class.
-        /// </summary>
-        /// <param name="maxSubsegmentSize"></param>
-        public DefaultStreamingStrategy(long maxSubsegmentSize)
-        {
-            if(maxSubsegmentSize < 0)
-            {
-                throw new ArgumentException("maxSubsegmentSize cannot be a negative number.");
-            }
-            MaxSubsegmentSize = maxSubsegmentSize;
-        }
-
-        /// <summary>
         /// Checks whether subsegments of the current instance of  <see cref="Entity"/> should be streamed.
         /// </summary>
         /// <param name="entity">Instance of <see cref="Entity"/></param>
         /// <returns>True if the subsegments are streamable.</returns>
         public bool ShouldStream(Entity entity)
         {
-            return entity.Sampled == SampleDecision.Sampled && entity.RootSegment != null && entity.RootSegment.Size >= MaxSubsegmentSize;
+            return entity.Sampled == SampleDecision.Sampled && entity.RootSegment != null && entity.RootSegment.Size >= DefaultMaxSubsegmentSize;
         }
 
         private readonly object subsegmentsLock = new();
@@ -77,7 +51,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                 }
             }
 
-            if (entity.Sampled != SampleDecision.Sampled || entity is Segment || entity.IsInProgress || entity.Reference > 0 || entity.Subsegments != null)
+            if (entity.Sampled != SampleDecision.Sampled || entity is FacadeSegment || entity.IsInProgress || entity.Reference > 0 || entity.Subsegments != null)
             {
                 return;
             }

@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <summary>
         /// Initializes a new instance of the <see cref="Subsegment"/> class.
         /// </summary>
-        public Subsegment(string name, Entity parent) : base(name)
+        public Subsegment(string name, FacadeSegment parent) : base(name)
         {
             Parent = parent;
         }
@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets or sets parent segment
         /// </summary>
         [JsonIgnore]
-        public Entity Parent { get; set; }
+        public FacadeSegment Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the type
@@ -68,6 +68,28 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             var serializedEntity = JsonSerializer.Serialize(this, XRayJsonSerializerContext.Default.Subsegment);
             return ProtocolHeader + ProtocolDelimiter + serializedEntity;
+        }
+
+        /// <summary>Mark the current segment as fault.</summary>
+        public void MarkFault()
+        {
+            HasError = false;
+            HasFault = true;
+        }
+
+        /// <summary>Mark the current segment as error.</summary>
+        public void MarkError()
+        {
+            HasError = true;
+            HasFault = false;
+        }
+
+        /// <summary>Mark the current segment as being throttled. And Error will also be marked for current segment.</summary>
+        public void MarkThrottle()
+        {
+            HasError = false;
+            HasFault = true;
+            IsThrottled = true;
         }
     }
 }

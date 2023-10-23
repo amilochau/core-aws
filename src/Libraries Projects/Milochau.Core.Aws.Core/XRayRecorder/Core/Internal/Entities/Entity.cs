@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Threading;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 
@@ -157,26 +156,18 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets or sets the root segment
         /// </summary>
         [JsonIgnore]
-        public Segment? RootSegment { get; set; }
+        public FacadeSegment? RootSegment { get; set; }
 
-        private readonly object awsLock = new object();
         internal void AddToAws(string key, object? value)
         {
-            lock (awsLock)
-            {
-                Aws ??= new ConcurrentDictionary<string, object?>();
-                Aws.Add(key, value);
-            }
+            Aws ??= new ConcurrentDictionary<string, object?>();
+            Aws.Add(key, value);
         }
 
-        private readonly object httpLock = new object();
         internal void AddToHttp(string key, Dictionary<string, long> value)
         {
-            lock (httpLock)
-            {
-                Http ??= new ConcurrentDictionary<string, Dictionary<string, long>>();
-                Http.Add(key, value);
-            }
+            Http ??= new ConcurrentDictionary<string, Dictionary<string, long>>();
+            Http.Add(key, value);
         }
 
         /// <summary>
@@ -206,39 +197,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Sets start time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetStartTime(DateTime timestamp)
-        {
-            StartTime = timestamp.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Sets end time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetEndTime(DateTime timestamp)
-        {
-            EndTime = timestamp.ToUnixTimeSeconds();
-        }
-
-        private readonly object subsegmentsLock = new object();
-        /// <summary>
         /// Add a subsegment
         /// </summary>
         /// <param name="subsegment">The subsegment to add</param>
-        /// <exception cref="EntityNotAvailableException">Cannot add subsegment to a completed segment.</exception>
         public void AddSubsegment(Subsegment subsegment)
         {
-            if (!IsInProgress)
-            {
-                throw new EntityNotAvailableException("Cannot add subsegment to a completed segment.");
-            }
-
-            lock (subsegmentsLock)
-            {
-                Subsegments ??= new List<Subsegment>();
-                Subsegments.Add(subsegment);
-            }
+            Subsegments ??= new List<Subsegment>();
+            Subsegments.Add(subsegment);
 
             IncrementReferenceCounter();
             subsegment.RootSegment = RootSegment;
@@ -253,7 +218,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             HasFault = true;
             Cause = new Cause();
-            Cause.AddException(AWSXRayRecorder.Instance.ExceptionSerializationStrategy.DescribeException(e));
+            Cause.AddException(AWSXRayRecorder.ExceptionSerializationStrategy.DescribeException(e));
         }
 
         /// <summary>

@@ -13,67 +13,20 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
     [Serializable]
     public class DefaultExceptionSerializationStrategy : IExceptionSerializationStrategy
     {
-        private static readonly List<Type> _defaultExceptionClasses = new List<Type>() { typeof(AmazonServiceException)};
-        private readonly List<Type> _remoteExceptionClasses = new List<Type>();
-
         /// <summary>
         /// Default stack frame size for the recorded <see cref="Exception"/>.
         /// </summary>
         public const int DefaultStackFrameSize = 50;
 
         /// <summary>
-        /// The maximum stack frame size for the strategy.
-        /// </summary>
-        public int MaxStackFrameSize { get; private set; } = DefaultStackFrameSize;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="_defaultExceptionClasses"/> class.
-        /// </summary>
-        public DefaultExceptionSerializationStrategy() : this(DefaultStackFrameSize)
-        {
-        }
-
-        /// <summary>
-        /// Initializes <see cref="DefaultExceptionSerializationStrategy"/> instance with provided Stack frame size. 
-        /// While setting number consider max trace size limit : https://aws.amazon.com/xray/pricing/
-        /// </summary>
-        /// <param name="stackFrameSize">Integer value for stack frame size.</param>
-        public DefaultExceptionSerializationStrategy(int stackFrameSize) 
-        {
-            MaxStackFrameSize = GetValidStackFrameSize(stackFrameSize);
-            _remoteExceptionClasses.AddRange(_defaultExceptionClasses);
-        }
-
-        /// <summary>
-        /// Validates and returns valid max stack frame size.
-        /// </summary>
-        public static int GetValidStackFrameSize(int stackFrameSize)
-        {
-            if (stackFrameSize < 0)
-            {
-                return DefaultStackFrameSize;
-            }
-
-            return stackFrameSize;
-        }
-
-        /// <summary>
         /// Checks whether the exception should be marked as remote.
         /// </summary>
         /// <param name="e">Instance of <see cref="Exception"/>.</param>
-        /// <returns>True if the exception is of type present in <see cref="_remoteExceptionClasses"/>, else false.</returns>
-        private bool IsRemoteException(Exception e)
+        /// <returns>True if the exception is of type present in <see cref="remoteExceptionClasses"/>, else false.</returns>
+        private static bool IsRemoteException(Exception e)
         {
-            foreach (Type t in _remoteExceptionClasses)
-            {
-                Type exceptionType = e.GetType();
-                if (exceptionType == t || exceptionType.IsSubclassOf(t))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            Type exceptionType = e.GetType();
+            return exceptionType == typeof(AmazonServiceException) || exceptionType.IsSubclassOf(typeof(AmazonServiceException));
         }
 
         /// <summary>
@@ -100,11 +53,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                     Path = x.GetFileName(),
                     Line = x.GetFileLineNumber(),
                 }).ToArray();
-                if (frames != null && frames.Length > MaxStackFrameSize)
+                if (frames != null && frames.Length > DefaultStackFrameSize)
                 {
-                    curDescriptor.Truncated = frames.Length - MaxStackFrameSize > 0 ? frames.Length - MaxStackFrameSize : null;
-                    curDescriptor.Stack = new InternalStackFrame[MaxStackFrameSize];
-                    Array.Copy(frames, curDescriptor.Stack, MaxStackFrameSize);
+                    curDescriptor.Truncated = frames.Length - DefaultStackFrameSize > 0 ? frames.Length - DefaultStackFrameSize : null;
+                    curDescriptor.Stack = new InternalStackFrame[DefaultStackFrameSize];
+                    Array.Copy(frames, curDescriptor.Stack, DefaultStackFrameSize);
                 }
                 else
                 {

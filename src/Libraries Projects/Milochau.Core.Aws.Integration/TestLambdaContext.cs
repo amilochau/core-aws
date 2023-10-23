@@ -7,14 +7,10 @@ namespace Milochau.Core.Aws.Integration
     /// </summary>
     public class TestLambdaContext : ILambdaContext
     {
-        /// <summary>
-        /// The AWS request ID associated with the request.
-        /// </summary>
+        /// <inheritdoc/>
         public string AwsRequestId { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Lambda logger associated with the Context object. For the TestLambdaContext this is default to the TestLambdaLogger.
-        /// </summary>
+        /// <inheritdoc/>
         public ILambdaLogger Logger { get; set; } = new TestLambdaLogger();
     }
 }

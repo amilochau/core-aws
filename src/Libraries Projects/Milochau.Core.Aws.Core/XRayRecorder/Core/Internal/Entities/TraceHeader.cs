@@ -109,14 +109,14 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <summary>
         /// Convert a Segment to an instance of <see cref="TraceHeader"/>.
         /// </summary>
-        /// <param name="entity">A instance of <see cref="Entity"/> that will be used to convert to <see cref="TraceHeader"/>.</param>
-        /// <param name="header">When the method returns, contains the <see cref="TraceHeader"/> object converted from <paramref name="entity"/>,
-        /// if the conversion succeeded, or null if the conversion failed. The conversion fails if the <paramref name="entity"/> is null, or
+        /// <param name="facadeSegment">A instance of <see cref="Entity"/> that will be used to convert to <see cref="TraceHeader"/>.</param>
+        /// <param name="header">When the method returns, contains the <see cref="TraceHeader"/> object converted from <paramref name="facadeSegment"/>,
+        /// if the conversion succeeded, or null if the conversion failed. The conversion fails if the <paramref name="facadeSegment"/> is null, or
         /// is not of the correct format. This parameter is passed uninitialized; any value originally supplied will be overwritten.</param>
-        /// <returns>true if <paramref name="entity"/> converted successfully; otherwise, false.</returns>
-        public static bool TryParse(Entity entity, [NotNullWhen(true)] out TraceHeader? header)
+        /// <returns>true if <paramref name="facadeSegment"/> converted successfully; otherwise, false.</returns>
+        public static bool TryParse(FacadeSegment facadeSegment, [NotNullWhen(true)] out TraceHeader? header)
         {
-            if (entity == null || string.IsNullOrEmpty(entity.Id))
+            if (string.IsNullOrEmpty(facadeSegment.Id))
             {
                 header = null;
                 return false;
@@ -125,9 +125,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             header = new TraceHeader
             {
                 // Trace id doesn't exist in subsegment, so get it from rootsegment
-                RootTraceId = entity.RootSegment!.TraceId,
-                ParentId = entity.Id,
-                Sampled = entity.Sampled
+                RootTraceId = facadeSegment.RootSegment!.TraceId,
+                ParentId = facadeSegment.Id,
+                Sampled = facadeSegment.Sampled
             };
 
             return true;

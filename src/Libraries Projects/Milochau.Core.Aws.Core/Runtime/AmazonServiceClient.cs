@@ -11,6 +11,7 @@ using Milochau.Core.Aws.Core.References;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System.Threading;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
@@ -37,7 +38,8 @@ namespace Milochau.Core.Aws.Core.Runtime
             MarshallRequest(requestContext);
 
             // 1. Start request monitoring
-            XRayPipelineHandler.ProcessBeginRequest(requestContext);
+            var facadeSegment = FacadeSegment.Create();
+            var subsegment = XRayPipelineHandler.ProcessBeginRequest(facadeSegment, requestContext);
 
             TResponse? response = null;
             try
@@ -65,12 +67,12 @@ namespace Milochau.Core.Aws.Core.Runtime
             }
             catch (Exception e)
             {
-                XRayPipelineHandler.PopulateException(e);
+                XRayPipelineHandler.PopulateException(subsegment, e);
                 throw;
             }
             finally
             {
-                XRayPipelineHandler.ProcessEndRequest(requestContext, responseContext);
+                XRayPipelineHandler.ProcessEndRequest(subsegment, requestContext, responseContext);
                 requestContext.HttpRequestMessage?.Dispose();
             }
 
