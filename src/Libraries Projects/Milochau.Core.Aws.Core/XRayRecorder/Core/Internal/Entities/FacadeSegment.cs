@@ -3,7 +3,8 @@ using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 using Milochau.Core.Aws.Core.XRayRecorder.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using System.Threading;
+using System.Collections.Generic;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {
@@ -15,7 +16,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <seealso cref="Entity" />
     public class FacadeSegment : Entity
     {
-        private long _size;           // Total number of subsegments
+        /// <summary>Gets a readonly copy of the subsegment list.</summary>
+        [JsonPropertyName("subsegments")]
+        public List<Subsegment>? Subsegments { get; } = new List<Subsegment>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Segment"/> class.
@@ -27,7 +30,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             TraceId = traceId ?? Entities.TraceId.NewId();
             Id = parentId;
-            RootSegment = this;
 
             if (parentId != null)
             {
@@ -65,28 +67,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Gets the size of subsegments.
-        /// </summary>
-        [JsonIgnore]
-        public long Size => Interlocked.Read(ref _size);
-
-        /// <summary>
-        /// Increment the size count.
-        /// </summary>
-        public void IncrementSize()
-        {
-            Interlocked.Increment(ref _size);
-        }
-
-        /// <summary>
-        /// Decrement the size count.
-        /// </summary>
-        public void DecrementSize()
-        {
-            Interlocked.Decrement(ref _size);
-        }
-
-        /// <summary>
         /// Release reference to this instance of segment.
         /// </summary>
         /// <returns>Reference count after release.</returns>
@@ -102,6 +82,20 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public override bool IsEmittable()
         {
             return Reference == 0;
+        }
+
+        /// <summary>
+        /// Streams subsegments of instance of <see cref="Entity"/>.
+        /// </summary>
+        /// <param name="emitter">Instance of <see cref="ISegmentEmitter"/>.</param>
+        public void Stream(ISegmentEmitter emitter)
+        {
+            foreach (var subsegment in Subsegments)
+            {
+                subsegment.Stream(emitter);
+            }
+
+            Subsegments.RemoveAll(x => x.HasStreamed);
         }
     }
 }

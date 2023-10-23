@@ -1,4 +1,9 @@
-﻿using Milochau.Core.Aws.Core.XRayRecorder.Models;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies;
+using Milochau.Core.Aws.Core.XRayRecorder.Models;
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,31 +15,85 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <seealso cref="Entity" />
     public class Subsegment : Entity
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Subsegment"/> class.
-        /// </summary>
+        /// <summary>Default max subsegment size to stream for the strategy.</summary>
+        private const long DefaultMaxSubsegmentSize = 100;
+
+        /// <summary>Defines exception serialization stategy to process recorded exceptions.</summary>
+        private static readonly IExceptionSerializationStrategy exceptionSerializationStrategy = new DefaultExceptionSerializationStrategy();
+
+        /// <summary>Emitter used to send Traces.</summary>
+        private static readonly ISegmentEmitter emitter = new UdpSegmentEmitter();
+
+        /// <summary>Initializes a new instance of the <see cref="Subsegment"/> class.</summary>
         public Subsegment(string name, FacadeSegment parent) : base(name)
         {
             Parent = parent;
+            RootSegment = parent;
+            Sampled = parent.Sampled;
+            IsInProgress = true;
+            Namespace = "aws";
+            StartTime = DateTime.UtcNow.ToUnixTimeSeconds();
         }
 
-        /// <summary>
-        /// Gets or sets the namespace of the subsegment
-        /// </summary>
+        /// <summary>Gets or sets the namespace of the subsegment</summary>
         [JsonPropertyName("namespace")]
         public string? Namespace { get; set; }
 
-        /// <summary>
-        /// Gets or sets parent segment
-        /// </summary>
+        /// <summary>Gets or sets the type</summary>
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "subsegment";
+
+        /// <summary>Gets or sets a value indicating whether the segment has errored</summary>
+        [JsonPropertyName("error")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool HasError { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the remote segment is throttled</summary>
+        [JsonPropertyName("throttle")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool IsThrottled { get; set; }
+
+        /// <summary>Gets the cause of fault or error</summary>
+        [JsonPropertyName("cause")]
+        public Cause? Cause { get; private set; }
+
+        /// <summary>Gets or sets a value indicating whether the segment has faulted or failed</summary>
+        [JsonPropertyName("fault")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool HasFault { get; set; }
+
+        /// <summary>Gets or sets the start time of this segment with Unix time in seconds.</summary>
+        [JsonPropertyName("start_time")]
+        public decimal StartTime { get; set; }
+
+        /// <summary>Gets or sets the end time of this segment with Unix time in seconds.</summary>
+        [JsonPropertyName("end_time")]
+        public decimal EndTime { get; set; }
+
+
+        /// <summary>Gets or sets parent segment</summary>
         [JsonIgnore]
-        public FacadeSegment Parent { get; set; }
+        public FacadeSegment Parent { get; }
+
+        /// <summary>Gets or sets a value indicating whether the entity has been streamed</summary>
+        [JsonIgnore]
+        public bool HasStreamed { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the segment is in progress</summary>
+        [JsonIgnore]
+        public bool IsInProgress { get; set; }
+
+        /// <summary>Gets or sets the root segment</summary>
+        [JsonIgnore]
+        public FacadeSegment RootSegment { get; }
 
         /// <summary>
-        /// Gets or sets the type
+        /// Set end time of the entity to current time
         /// </summary>
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
+        public void SetEndTimeToNow()
+        {
+            EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
+        }
 
         /// <summary>
         /// Check if this segment or the root segment that this segment belongs to is ok to emit
@@ -52,7 +111,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public override long Release()
         {
             long count = DecrementReferenceCounter();
-            if (count == 0 && Parent != null)
+            if (count == 0)
             {
                 Parent.Release();
             }
@@ -70,26 +129,44 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             return ProtocolHeader + ProtocolDelimiter + serializedEntity;
         }
 
-        /// <summary>Mark the current segment as fault.</summary>
-        public void MarkFault()
+
+        /// <summary>
+        /// Adds the exception to cause and set this segment to has fault.
+        /// </summary>
+        /// <param name="e">The exception to be added.</param>
+        public void AddException(Exception e)
         {
-            HasError = false;
             HasFault = true;
+            Cause = new Cause();
+            Cause.AddException(exceptionSerializationStrategy.DescribeException(e));
         }
 
-        /// <summary>Mark the current segment as error.</summary>
-        public void MarkError()
+        /// <summary>
+        /// Streams subsegments of instance of <see cref="Entity"/>.
+        /// </summary>
+        /// <param name="emitter">Instance of <see cref="ISegmentEmitter"/>.</param>
+        public void Stream(ISegmentEmitter emitter)
         {
-            HasError = true;
-            HasFault = false;
+            if (Sampled != SampleDecision.Sampled || IsInProgress || Reference > 0)
+            {
+                return;
+            }
+
+            TraceId = RootSegment?.TraceId;
+            ParentId = Parent.Id;
+            emitter.Send(this);
+            HasStreamed = true;
         }
 
-        /// <summary>Mark the current segment as being throttled. And Error will also be marked for current segment.</summary>
-        public void MarkThrottle()
+        /// <summary>End a subsegment.</summary>
+        public void End()
         {
-            HasError = false;
-            HasFault = true;
-            IsThrottled = true;
+            IsInProgress = false;
+            Release();
+            SetEndTimeToNow();
+
+            Parent.Release();
+            Parent.Stream(emitter); // Facade segment is not emitted, all its subsegments, if emmittable, are emitted
         }
     }
 }

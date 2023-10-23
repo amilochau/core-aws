@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Milochau.Core.Aws.Core.XRayRecorder.Core;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using System.Linq;
 using Milochau.Core.Aws.Core.Runtime;
@@ -55,9 +54,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
         public static Subsegment ProcessBeginRequest(FacadeSegment facadeSegment, IRequestContext requestContext)
         {
             var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.ClientConfig.MonitoringServiceName);
-            var subsegment = AWSXRayRecorder.BeginSubsegment(facadeSegment, AWSXRaySDKUtils.FormatServiceName(serviceName));
-            subsegment.Namespace = "aws";
 
+            // Create subsegment
+            var subsegment = new Subsegment(AWSXRaySDKUtils.FormatServiceName(serviceName), facadeSegment);
+            facadeSegment.Subsegments.Add(subsegment);
+            facadeSegment.IncrementReferenceCounter();
+
+            // Add trace headers to request headers
             if (TraceHeader.TryParse(facadeSegment, out TraceHeader? traceHeader))
             {
                 requestContext.HttpRequestMessage!.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
@@ -109,51 +112,61 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
 
             AddHttpInformation(responseContext.HttpResponse, subsegment);
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
-            AWSXRayRecorder.EndSubsegment(subsegment);
+            subsegment.End();
         }
 
         private static void AddHttpInformation(HttpResponseMessage httpResponse, Subsegment subsegment)
         {
-            var responseAttributes = new Dictionary<string, long>();
             int statusCode = (int)httpResponse.StatusCode;
-            if (statusCode >= 400 && statusCode <= 499)
+            if (statusCode == 429)
             {
-                subsegment.MarkError();
-
-                if (statusCode == 429)
-                {
-                    subsegment.MarkThrottle();
-                }
+                subsegment.HasError = false;
+                subsegment.HasFault = true;
+                subsegment.IsThrottled = true;
+            }
+            else if (statusCode >= 400 && statusCode <= 499)
+            {
+                subsegment.HasError = true;
+                subsegment.HasFault = false;
             }
             else if (statusCode >= 500 && statusCode <= 599)
             {
-                subsegment.MarkFault();
+                subsegment.HasError = false;
+                subsegment.HasFault = true;
             }
 
-            responseAttributes["status"] = statusCode;
-            responseAttributes["content_length"] = httpResponse.Content.Headers.ContentLength ?? 0;
+            var responseAttributes = new Dictionary<string, long>
+            {
+                ["status"] = statusCode,
+                ["content_length"] = httpResponse.Content.Headers.ContentLength ?? 0,
+            };
             subsegment.AddToHttp("response", responseAttributes);
         }
 
         private static void ProcessException(AmazonServiceException ex, Subsegment subsegment)
         {
             int statusCode = (int)ex.StatusCode;
-            var responseAttributes = new Dictionary<string, long>();
-
-            if (statusCode >= 400 && statusCode <= 499)
+            if (statusCode == 429)
             {
-                subsegment.MarkError();
-                if (statusCode == 429)
-                {
-                    subsegment.MarkThrottle();
-                }
+                subsegment.HasError = false;
+                subsegment.HasFault = true;
+                subsegment.IsThrottled = true;
+            }
+            else if (statusCode >= 400 && statusCode <= 499)
+            {
+                subsegment.HasError = true;
+                subsegment.HasFault = false;
             }
             else if (statusCode >= 500 && statusCode <= 599)
             {
-                subsegment.MarkFault();
+                subsegment.HasError = false;
+                subsegment.HasFault = true;
             }
 
-            responseAttributes["status"] = statusCode;
+            var responseAttributes = new Dictionary<string, long>
+            {
+                ["status"] = statusCode,
+            };
             subsegment.AddToHttp("response", responseAttributes);
 
             subsegment.AddToAws("request_id", ex.RequestId);
@@ -185,7 +198,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             {
                 ProcessException(amazonServiceException, subsegment);
             }
-            return;
         }
     }
 }

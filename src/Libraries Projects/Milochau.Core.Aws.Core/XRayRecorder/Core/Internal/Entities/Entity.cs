@@ -29,7 +29,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public Entity(string name)
         {
             Id = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
-            IsInProgress = true;
             Name = name;
             IncrementReferenceCounter();
         }
@@ -52,18 +51,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public string? TraceId { get; set; }
 
         /// <summary>
-        /// Gets or sets the start time of this segment with Unix time in seconds.
-        /// </summary>
-        [JsonPropertyName("start_time")]
-        public decimal StartTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the end time of this segment with Unix time in seconds.
-        /// </summary>
-        [JsonPropertyName("end_time")]
-        public decimal EndTime { get; set; }
-
-        /// <summary>
         /// Gets or sets the unique id of upstream segment
         /// </summary>
         /// <value>
@@ -84,55 +71,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public string Name { get; }
 
         /// <summary>
-        /// Gets a readonly copy of the subsegment list.
-        /// </summary>
-        [JsonPropertyName("subsegments")]
-        public List<Subsegment>? Subsegments { get; set; }
-
-        /// <summary>
         /// Gets aws information
         /// </summary>
         [JsonPropertyName("aws")]
         public IDictionary<string, object?>? Aws { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the segment has faulted or failed
-        /// </summary>
-        [JsonPropertyName("fault")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool HasFault { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the segment has errored
-        /// </summary>
-        [JsonPropertyName("error")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool HasError { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the remote segment is throttled
-        /// </summary>
-        [JsonPropertyName("throttle")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool IsThrottled { get; set; }
-
-        /// <summary>
-        /// Gets the cause of fault or error
-        /// </summary>
-        [JsonPropertyName("cause")]
-        public Cause? Cause { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the segment is in progress
-        /// </summary>
-        [JsonIgnore]
-        public bool IsInProgress { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the entity has been streamed 
-        /// </summary>
-        [JsonIgnore]
-        public bool HasStreamed { get; set; }
 
         /// <summary>
         /// Gets reference of this instance of segment
@@ -151,12 +93,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// </summary>
         [JsonIgnore]
         public SampleDecision Sampled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the root segment
-        /// </summary>
-        [JsonIgnore]
-        public FacadeSegment? RootSegment { get; set; }
 
         internal void AddToAws(string key, object? value)
         {
@@ -178,47 +114,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public static bool IsIdValid(string id)
         {
             return id.Length == SegmentIdHexDigits && long.TryParse(id, NumberStyles.HexNumber, null, out _);
-        }
-
-        /// <summary>
-        /// Set start time of the entity to current time
-        /// </summary>
-        public void SetStartTimeToNow()
-        {
-            StartTime = DateTime.UtcNow.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Set end time of the entity to current time
-        /// </summary>
-        public void SetEndTimeToNow()
-        {
-            EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Add a subsegment
-        /// </summary>
-        /// <param name="subsegment">The subsegment to add</param>
-        public void AddSubsegment(Subsegment subsegment)
-        {
-            Subsegments ??= new List<Subsegment>();
-            Subsegments.Add(subsegment);
-
-            IncrementReferenceCounter();
-            subsegment.RootSegment = RootSegment;
-            RootSegment?.IncrementSize();
-        }
-
-        /// <summary>
-        /// Adds the exception to cause and set this segment to has fault.
-        /// </summary>
-        /// <param name="e">The exception to be added.</param>
-        public void AddException(Exception e)
-        {
-            HasFault = true;
-            Cause = new Cause();
-            Cause.AddException(AWSXRayRecorder.ExceptionSerializationStrategy.DescribeException(e));
         }
 
         /// <summary>
@@ -246,7 +141,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Add reference to this instance of segment
         /// </summary>
         /// <returns>Reference count after add</returns>
-        protected long IncrementReferenceCounter()
+        public long IncrementReferenceCounter()
         {
             return Interlocked.Increment(ref _referenceCounter);
         }

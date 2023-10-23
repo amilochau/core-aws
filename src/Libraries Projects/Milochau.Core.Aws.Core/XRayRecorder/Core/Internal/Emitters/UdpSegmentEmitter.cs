@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         /// Send segment to local daemon
         /// </summary>
         /// <param name="segment">The segment to be sent</param>
-        public void Send(Entity? segment)
+        public void Send(Entity segment)
         {
             if (segment == null)
             {

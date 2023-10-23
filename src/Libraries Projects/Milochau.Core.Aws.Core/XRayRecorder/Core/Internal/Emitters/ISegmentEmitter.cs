@@ -12,6 +12,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         /// Send the segment to service
         /// </summary>
         /// <param name="segment">Segment to send</param>
-        void Send(Entity? segment);
+        void Send(Entity segment);
     }
 }
