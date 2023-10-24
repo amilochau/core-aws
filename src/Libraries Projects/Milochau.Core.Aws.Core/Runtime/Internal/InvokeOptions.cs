@@ -11,10 +11,13 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
     /// </summary>
     public class InvokeOptions
     {
+        /// <summary>Request marshaller</summary>
         public required IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; set; }
 
+        /// <summary>Response unmarshaller</summary>
         public required JsonResponseUnmarshaller ResponseUnmarshaller { get; set; }
 
+        /// <summary>Original request name for monitoring</summary>
         /// <remarks>Should not end with "Request"</remarks>
         public required string MonitoringOriginalRequestName { get; set; }
     }

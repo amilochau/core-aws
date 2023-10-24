@@ -17,7 +17,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
     {
         private static readonly InvocationResponse EmptyInvocationResponse = new InvocationResponse(new MemoryStream(0), false);
 
-        public LambdaBootstrapHandler Handler { get; private set; }
+        internal LambdaBootstrapHandler Handler { get; private set; }
 
         private HandlerWrapper(LambdaBootstrapHandler handler)
         {
@@ -57,7 +57,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.
-        /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
         /// </summary>
         /// <returns>A HandlerWrapper</returns>
         public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, CancellationToken, Task<Stream>> handler)
@@ -71,7 +70,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// <summary>
         /// Get a HandlerWrapper that will call the given method on function invocation.
         /// Note that you may have to cast your handler to its specific type to help the compiler.
-        /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
         /// </summary>
         /// <returns>A HandlerWrapper</returns>
         public static HandlerWrapper GetHandlerWrapper<TRequest, TResponse>(Func<TRequest, ILambdaContext, CancellationToken, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)

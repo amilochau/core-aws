@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 {
-    public delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation, CancellationToken cancellationToken);
+    internal delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation, CancellationToken cancellationToken);
 
     /// <summary>
     /// Class to communicate with the Lambda Runtime API, handle initialization,

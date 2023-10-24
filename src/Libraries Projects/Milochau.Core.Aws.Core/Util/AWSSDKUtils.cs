@@ -13,19 +13,9 @@ namespace Milochau.Core.Aws.Core.Util
     /// </summary>
     public static partial class AWSSDKUtils
     {
-#region Internal Constants
-
         private const char SlashChar = '/';
         private const string Slash = "/";
-        private const string EncodedSlash = "%2F";
-
-        public static readonly DateTime EPOCH_START = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public const int DefaultBufferSize = 8192;
-
-#endregion
-
-#region Public Constants
+        private const int DefaultBufferSize = 8192;
 
         /// <summary>
         /// The user agent string header
@@ -94,10 +84,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// The ISO8601 basic date format. Used during AWS4 signature computation.
         /// </summary>
         public const string ISO8601BasicDateFormat = "yyyyMMdd";
-
-#endregion
-
-#region Internal Methods
 
         /// <summary>
         /// Returns the canonicalized resource path for the service endpoint.
@@ -195,9 +181,6 @@ namespace Milochau.Core.Aws.Core.Util
                 destination.Write(array, 0, count);
             }
         }
-#endregion
-
-#region Public Methods and Properties
 
         /// <summary>
         /// URL encodes a string per RFC3986. If the path property is specified,
@@ -205,7 +188,7 @@ namespace Milochau.Core.Aws.Core.Util
         /// </summary>
         /// <param name="data">The string to encode</param>
         /// <returns>The encoded string</returns>
-        public static string UrlEncode(string data)
+        private static string UrlEncode(string data)
         {
             StringBuilder encoded = new StringBuilder(data.Length * 2);
 
@@ -298,7 +281,5 @@ namespace Milochau.Core.Aws.Core.Util
             }
             return stringBuilder.ToString();
         }
-
-#endregion
     }
 }

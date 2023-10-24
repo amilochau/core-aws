@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
     /// <summary>
     /// The exception handler for HttpErrorResponseException exception.
     /// </summary>
-    public class HttpErrorResponseExceptionHandler
+    internal class HttpErrorResponseExceptionHandler
     {
         /// <summary>
         /// Handles an exception for the given execution context.

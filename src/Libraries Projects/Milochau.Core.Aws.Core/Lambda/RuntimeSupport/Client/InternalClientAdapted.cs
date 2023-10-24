@@ -14,13 +14,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         Task<HttpResponseMessage> NextAsync(CancellationToken cancellationToken);
 
         /// <summary>Runtime makes this request in order to submit a response.</summary>
         /// <returns>Accepted</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken);
 
         /// <summary>
@@ -70,7 +68,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <summary>Runtime makes this request in order to submit a response.</summary>
         /// <returns>Accepted</returns>
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         public async Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
             if (awsRequestId == null)
@@ -163,7 +160,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         }
     }
 
-    public partial class RuntimeApiClientException : Exception
+    internal class RuntimeApiClientException : Exception
     {
         public string Response { get; private set; }
 

@@ -14,7 +14,6 @@
         /// <summary>
         /// Given the current position in the XML stream, extract a T.
         /// </summary>
-        /// <param name="input">The XML parsing context</param>
         /// <returns>An object of type T populated with data from the XML stream.</returns>
         TUnmarshaller Unmarshall(TUnmarshalleContext input, ErrorResponse errorResponse);
     }

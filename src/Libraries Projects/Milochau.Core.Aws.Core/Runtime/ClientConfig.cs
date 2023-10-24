@@ -6,8 +6,6 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public class ClientConfig : IClientConfig
     {
-        public const int DefaultBufferSize = 8192;
-
         /// <summary>Name of the service</summary>
         /// <remarks>Used to sign requests</remarks>
         public required string AuthenticationServiceName { get; set; }

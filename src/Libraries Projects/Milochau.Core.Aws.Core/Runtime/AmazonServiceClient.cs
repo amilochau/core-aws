@@ -15,16 +15,19 @@ using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
+    /// <summary>Amazon service client</summary>
     public abstract class AmazonServiceClient
     {
         private readonly IClientConfig config;
         private readonly AWSSigner signer = new AWSSigner();
 
+        /// <summary>Constructor</summary>
         protected AmazonServiceClient(ClientConfig config)
         {
             this.config = config;
         }
 
+        /// <summary>Invoke</summary>
         protected async Task<TResponse> InvokeAsync<TResponse>(
             AmazonWebServiceRequest request,
             InvokeOptions options,
@@ -81,7 +84,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// Configures a request as per the request context.
         /// </summary>
-        /// <param name="requestContext">The request context.</param>
         private static void ConfigureRequest(HttpRequestMessage httpRequestMessage)
         {
             // Configure the Expect 100-continue header
@@ -123,7 +125,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// Unmarshalls the HTTP response.
         /// </summary>
-        /// <param name="executionContext">The execution context, it contains the request and response context.</param>
         private static async Task<AmazonWebServiceResponse> UnmarshallResponseAsync(HttpResponseMessage httpResponseMessage, JsonResponseUnmarshaller unmarshaller)
         {
             var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);

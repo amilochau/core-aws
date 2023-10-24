@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// <summary>
     /// Client to call the AWS Lambda Runtime API.
     /// </summary>
-    public class RuntimeApiClient : IRuntimeApiClient
+    internal class RuntimeApiClient : IRuntimeApiClient
     {
         private readonly IInternalRuntimeApiClient internalClient;
 

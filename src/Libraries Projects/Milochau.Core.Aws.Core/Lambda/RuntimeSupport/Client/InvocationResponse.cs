@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// <summary>
     /// Class that contains the response for an invocation of an AWS Lambda function.
     /// </summary>
-    public class InvocationResponse
+    internal class InvocationResponse
     {
         /// <summary>
         /// Output from the function invocation.
