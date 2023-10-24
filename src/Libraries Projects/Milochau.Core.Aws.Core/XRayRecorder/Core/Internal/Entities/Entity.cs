@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 
@@ -15,7 +12,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     public abstract class Entity
     {
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
-        private long _referenceCounter;      // Reference count
 
         /// <summary>Protocol header</summary>
         protected const string ProtocolHeader = "{\"format\":\"json\",\"version\":1}";
@@ -30,7 +26,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             Id = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
             Name = name;
-            IncrementReferenceCounter();
         }
 
         /// <summary>
@@ -39,14 +34,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <value>
         /// The unique for Entity.
         /// </value>
-        /// <exception cref="ArgumentException">The id is invalid. - value</exception>
         [JsonPropertyName("id")]
         public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique id for the trace.
         /// </summary>
-        /// <exception cref="ArgumentException">Trace id is invalid. - value</exception>
         [JsonPropertyName("trace_id")]
         public string? TraceId { get; set; }
 
@@ -56,7 +49,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <value>
         /// The unique id for parent Entity.
         /// </value>
-        /// <exception cref="ArgumentException">The parent id is invalid. - value</exception>
         [JsonPropertyName("parent_id")]
         public string? ParentId { get; set; }
 
@@ -66,7 +58,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <value>
         /// The name.
         /// </value>
-        /// <exception cref="ArgumentNullException">Thrown when value is null.</exception>
         [JsonPropertyName("name")]
         public string Name { get; }
 
@@ -75,12 +66,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// </summary>
         [JsonPropertyName("aws")]
         public IDictionary<string, object?>? Aws { get; set; }
-
-        /// <summary>
-        /// Gets reference of this instance of segment
-        /// </summary>
-        [JsonIgnore]
-        public long Reference => Interlocked.Read(ref _referenceCounter);
 
         /// <summary>
         /// Gets the http attribute
@@ -96,14 +81,14 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 
         internal void AddToAws(string key, object? value)
         {
-            Aws ??= new ConcurrentDictionary<string, object?>();
-            Aws.Add(key, value);
+            Aws ??= new Dictionary<string, object?>();
+            Aws[key] = value;
         }
 
         internal void AddToHttp(string key, Dictionary<string, long> value)
         {
-            Http ??= new ConcurrentDictionary<string, Dictionary<string, long>>();
-            Http.Add(key, value);
+            Http ??= new Dictionary<string, Dictionary<string, long>>();
+            Http[key] = value;
         }
 
         /// <summary>
@@ -117,39 +102,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         }
 
         /// <summary>
-        /// Check if this segment or the root segment that this segment belongs to is ok to emit
-        /// </summary>
-        /// <returns>If the segment is ready to emit</returns>
-        public abstract bool IsEmittable();
-
-        /// <summary>
-        /// Release reference to this instance of segment
-        /// </summary>
-        /// <returns>Reference count after release</returns>
-        public abstract long Release();
-
-        /// <summary>
-        /// Release reference to this instance of segment
-        /// </summary>
-        /// <returns>Reference count after release</returns>
-        protected long DecrementReferenceCounter()
-        {
-            return Interlocked.Decrement(ref _referenceCounter);
-        }
-
-        /// <summary>
-        /// Add reference to this instance of segment
-        /// </summary>
-        /// <returns>Reference count after add</returns>
-        public long IncrementReferenceCounter()
-        {
-            return Interlocked.Increment(ref _referenceCounter);
-        }
-
-        /// <summary>
         /// Marshall the segment into JSON string
         /// </summary>
         /// <returns>The JSON string parsed from given segment</returns>
-        public abstract string? Marshall();
+        public abstract string Marshall();
     }
 }

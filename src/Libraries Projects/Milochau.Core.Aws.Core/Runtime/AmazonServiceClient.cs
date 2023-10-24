@@ -31,14 +31,14 @@ namespace Milochau.Core.Aws.Core.Runtime
             CancellationToken cancellationToken)
             where TResponse : AmazonWebServiceResponse, new()
         {
-            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request);
+            var requestContext = new RequestContext(config, options.HttpRequestMessageMarshaller, options.ResponseUnmarshaller, request, options.MonitoringOriginalRequestName);
             IResponseContext? responseContext = null;
 
             // 0. Marshall request
             MarshallRequest(requestContext);
 
             // 1. Start request monitoring
-            var facadeSegment = FacadeSegment.Create();
+            var facadeSegment = new FacadeSegment();
             var subsegment = XRayPipelineHandler.ProcessBeginRequest(facadeSegment, requestContext);
 
             TResponse? response = null;

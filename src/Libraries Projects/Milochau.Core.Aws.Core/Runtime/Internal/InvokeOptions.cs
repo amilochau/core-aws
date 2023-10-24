@@ -14,5 +14,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; set; }
 
         public JsonResponseUnmarshaller ResponseUnmarshaller { get; set; }
+
+        /// <remarks>Should not end with "Request"</remarks>
+        public string MonitoringOriginalRequestName { get; set; }
     }
 }

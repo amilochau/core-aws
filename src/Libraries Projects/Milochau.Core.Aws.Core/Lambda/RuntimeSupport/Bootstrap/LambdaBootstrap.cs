@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 {
-    public delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation);
+    public delegate Task<InvocationResponse> LambdaBootstrapHandler(InvocationRequest invocation, CancellationToken cancellationToken);
 
     /// <summary>
     /// Class to communicate with the Lambda Runtime API, handle initialization,
@@ -20,7 +20,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync(Func<Stream, ILambdaContext, Task> handler)
+        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task> handler)
         {
             var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
             return RunAsync(handlerWrapper.Handler);
@@ -30,7 +30,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync(Func<Stream, ILambdaContext, Task<Stream>> handler)
+        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task<Stream>> handler)
         {
             var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
             return RunAsync(handlerWrapper.Handler);
@@ -40,7 +40,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync<TRequest>(Func<TRequest, ILambdaContext, Task> handler, JsonTypeInfo<TRequest> requestInfo)
+        public static Task RunAsync<TRequest>(Func<TRequest, ILambdaContext, CancellationToken, Task> handler, JsonTypeInfo<TRequest> requestInfo)
         {
             var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo);
             return RunAsync(handlerWrapper.Handler);
@@ -50,7 +50,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync<TRequest, TResponse>(Func<TRequest, ILambdaContext, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
+        public static Task RunAsync<TRequest, TResponse>(Func<TRequest, ILambdaContext, CancellationToken, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
         {
             var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo, responseInfo);
             return RunAsync(handlerWrapper.Handler);
@@ -77,12 +77,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
 
             try
             {
-                response = await handler(invocation);
+                response = await handler(invocation, cancellationToken);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                invocation.LambdaContext.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, exception.ToString());
-                await runtimeApiClient.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, exception, cancellationToken);
+                invocation.LambdaContext.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, ex.ToString());
+                await runtimeApiClient.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, ex, cancellationToken);
                 return;
             }
 

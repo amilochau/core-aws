@@ -16,49 +16,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
     /// </summary>
     public class XRayPipelineHandler
     {
-        /// <summary>
-        /// Removes amazon prefix from service name. There are two type of service name.
-        ///     Amazon.DynamoDbV2
-        ///     AmazonS3
-        /// </summary>
-        /// <param name="serviceName">Name of the service.</param>
-        /// <returns>String after removing Amazon prefix.</returns>
-        private static string RemoveAmazonPrefixFromServiceName(string serviceName)
-        {
-            return RemovePrefix(RemovePrefix(serviceName, "Amazon"), ".");
-        }
-
-        private static string RemovePrefix(string originalString, string prefix)
-        {
-            if (originalString.StartsWith(prefix))
-            {
-                return originalString.Substring(prefix.Length);
-            }
-
-            return originalString;
-        }
-
-        private static string RemoveSuffix(string originalString, string suffix)
-        {
-            if (originalString.EndsWith(suffix))
-            {
-                return originalString.Substring(0, originalString.Length - suffix.Length);
-            }
-
-            return originalString;
-        }
-
-        /// <summary>
-        /// Processes Begin request by starting subsegment.
-        /// </summary>
+        /// <summary>Processes Begin request by starting subsegment.</summary>
         public static Subsegment ProcessBeginRequest(FacadeSegment facadeSegment, IRequestContext requestContext)
         {
-            var serviceName = RemoveAmazonPrefixFromServiceName(requestContext.ClientConfig.MonitoringServiceName);
-
             // Create subsegment
-            var subsegment = new Subsegment(AWSXRaySDKUtils.FormatServiceName(serviceName), facadeSegment);
+            var subsegment = new Subsegment(requestContext.ClientConfig.MonitoringServiceName, facadeSegment);
             facadeSegment.Subsegments.Add(subsegment);
-            facadeSegment.IncrementReferenceCounter();
 
             // Add trace headers to request headers
             if (TraceHeader.TryParse(facadeSegment, out TraceHeader? traceHeader))
@@ -68,15 +31,22 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             return subsegment;
         }
 
-        /// <summary>
-        /// Processes End request by ending subsegment.
-        /// </summary>
+        /// <summary>Populate exception.</summary>
+        public static void PopulateException(Subsegment subsegment, Exception e)
+        {
+            subsegment.AddException(e);
+
+            if (e is AmazonServiceException amazonServiceException)
+            {
+                ProcessException(amazonServiceException, subsegment);
+            }
+        }
+
+        /// <summary>Processes End request by ending subsegment.</summary>
         public static void ProcessEndRequest(Subsegment subsegment, IRequestContext requestContext, IResponseContext? responseContext)
         {
-            var operation = RemoveSuffix(requestContext.OriginalRequest.GetType().Name, "Request");
-
             subsegment.AddToAws("region", EnvironmentVariables.RegionName);
-            subsegment.AddToAws("operation", operation);
+            subsegment.AddToAws("operation", requestContext.MonitoringOriginalRequestName);
             if (responseContext.Response == null)
             {
                 if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amzn-RequestId", out var requestIds))
@@ -145,30 +115,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
 
         private static void ProcessException(AmazonServiceException ex, Subsegment subsegment)
         {
-            int statusCode = (int)ex.StatusCode;
-            if (statusCode == 429)
-            {
-                subsegment.HasError = false;
-                subsegment.HasFault = true;
-                subsegment.IsThrottled = true;
-            }
-            else if (statusCode >= 400 && statusCode <= 499)
-            {
-                subsegment.HasError = true;
-                subsegment.HasFault = false;
-            }
-            else if (statusCode >= 500 && statusCode <= 599)
-            {
-                subsegment.HasError = false;
-                subsegment.HasFault = true;
-            }
-
-            var responseAttributes = new Dictionary<string, long>
-            {
-                ["status"] = statusCode,
-            };
-            subsegment.AddToHttp("response", responseAttributes);
-
             subsegment.AddToAws("request_id", ex.RequestId);
         }
 
@@ -187,16 +133,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             foreach (var item in xrayResponseParameters.Where(x => x.Value != null))
             {
                 entity.AddToAws(item.Key, item.Value);
-            }
-        }
-
-        public static void PopulateException(Subsegment subsegment, Exception e)
-        {
-            subsegment.AddException(e); // record exception 
-
-            if (e is AmazonServiceException amazonServiceException)
-            {
-                ProcessException(amazonServiceException, subsegment);
             }
         }
     }

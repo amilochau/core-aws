@@ -88,7 +88,8 @@ namespace Milochau.Core.Aws.SESv2
             var options = new InvokeOptions
             {
                 HttpRequestMessageMarshaller = SendEmailRequestMarshaller.Instance,
-                ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance
+                ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "SendEmail",
             };
 
             return InvokeAsync<SendEmailResponse>(request, options, cancellationToken);

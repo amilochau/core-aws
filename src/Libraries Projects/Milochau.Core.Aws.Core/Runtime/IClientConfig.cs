@@ -11,7 +11,10 @@ namespace Milochau.Core.Aws.Core.Runtime
         string AuthenticationServiceName { get; }
 
         /// <summary>Name of the service</summary>
-        /// <remarks>Used to monitor requests</remarks>
+        /// <remarks>
+        /// Used to monitor requests
+        /// Should not start with "Amazon" or "."
+        /// "SimpleNotificationService" should be set to "SNS"</remarks>
         string MonitoringServiceName { get; }
     }
 }

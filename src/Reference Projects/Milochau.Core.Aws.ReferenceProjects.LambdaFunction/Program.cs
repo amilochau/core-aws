@@ -2,7 +2,6 @@
 using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
-using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,10 +37,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             switch (handlerChoice)
             {
                 case 0:
-                    await LambdaBootstrap.RunAsync(FunctionHandlerHttp, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
+                    await LambdaBootstrap.RunAsync(DoAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
                     break;
                 case 1:
-                    await LambdaBootstrap.RunAsync(FunctionHandlerAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest);
+                    await LambdaBootstrap.RunAsync(DoAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest);
                     break;
                 case 2:
                     await LambdaBootstrap.RunAsync(FunctionHandlerScheduler);
@@ -52,48 +51,13 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             }
         }
 
-        public static async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandlerHttp(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public static Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
         {
-            try
-            {
-                var cancellationToken = CancellationToken.None;
-
-                return await DoAsync(request, context, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                context.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, $"Error during test {ex.Message} {ex.StackTrace}");
-                return HttpResponse.InternalServerError();
-            }
+            return DoAsync(new(), context, cancellationToken);
         }
 
-        public static async Task FunctionHandlerAsync(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public static async Task FunctionHandlerSns(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
         {
-            // Note: the previous line should not deserialize as APIGatewayHttpApiV2ProxyRequest - but here we do that to help tests
-            var cancellationToken = CancellationToken.None;
-
-            await DoAsync(request, context, cancellationToken);
-        }
-
-        public static async Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context)
-        {
-            try
-            {
-                var cancellationToken = CancellationToken.None;
-
-                await DoAsync(new(), context, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                context.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, $"Error during test {ex.Message} {ex.StackTrace}");
-                throw;
-            }
-        }
-
-        public static async Task FunctionHandlerSns(Stream requestStream, ILambdaContext context)
-        {
-            var cancellationToken = CancellationToken.None;
-
             var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.SNSEvent)!;
 
             foreach (var record in request.Records)

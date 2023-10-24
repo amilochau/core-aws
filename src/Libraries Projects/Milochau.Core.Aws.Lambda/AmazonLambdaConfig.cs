@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Lambda
         public AmazonLambdaConfig()
         {
             AuthenticationServiceName = "lambda";
-            MonitoringServiceName = "Amazon.Lambda";
+            MonitoringServiceName = "Lambda";
         }
     }
 }

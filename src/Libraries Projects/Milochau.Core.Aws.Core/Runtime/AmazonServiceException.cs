@@ -43,7 +43,6 @@ namespace Milochau.Core.Aws.Core.Runtime
             : base(message ??
                 BuildGenericErrorMessage(errorCode, statusCode))
         {
-            ErrorCode = errorCode;
             ErrorType = errorType;
             RequestId = requestId;
             StatusCode = statusCode;
@@ -54,7 +53,6 @@ namespace Milochau.Core.Aws.Core.Runtime
                 BuildGenericErrorMessage(errorCode, statusCode), 
                 innerException)
         {
-            ErrorCode = errorCode;
             ErrorType = errorType;
             RequestId = requestId;
             StatusCode = statusCode;
@@ -72,11 +70,6 @@ namespace Milochau.Core.Aws.Core.Runtime
         public ErrorType ErrorType { get; set; }
 
         /// <summary>
-        /// The error code returned by the service
-        /// </summary>
-        public string? ErrorCode { get; set; }
-
-        /// <summary>
         /// The id of the request which generated the exception.
         /// </summary>
         public string? RequestId { get; set; }
@@ -85,29 +78,5 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// The HTTP status code from the service response
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
-
-        /// <summary>
-        /// Flag indicating if the exception is retryable and the associated retry
-        /// details. A null value indicates that the exception is not retryable.
-        /// </summary>
-        public virtual RetryableDetails? Retryable => null;
-    }
-
-    /// <summary>
-    /// Class containing the retryable details for an AmazonServiceException
-    /// </summary>
-    public class RetryableDetails
-    {
-        public RetryableDetails(bool throttling)
-        {
-            Throttling = throttling;
-        }
-
-        /// <summary>
-        /// This property indicates that this exception is a 
-        /// throttling exception and should be subject to congestion
-        /// control throttling.
-        /// </summary>
-        public bool Throttling { get; private set; }
     }
 }

@@ -8,6 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 {
     public interface IRequestContext
     {
+        string MonitoringOriginalRequestName { get; }
         AmazonWebServiceRequest OriginalRequest { get; }
         IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         JsonResponseUnmarshaller Unmarshaller { get; }
@@ -36,18 +37,21 @@ namespace Amazon.Runtime.Internal
         public RequestContext(IClientConfig clientConfig,
             IHttpRequestMessageMarshaller<AmazonWebServiceRequest> httpRequestMessageMarshaller,
             JsonResponseUnmarshaller unmarshaller,
-            AmazonWebServiceRequest originalRequest)
+            AmazonWebServiceRequest originalRequest,
+            string monitoringOriginalRequestName)
         {
             ClientConfig = clientConfig;
             HttpRequestMessageMarshaller = httpRequestMessageMarshaller;
             Unmarshaller = unmarshaller;
             OriginalRequest = originalRequest;
+            MonitoringOriginalRequestName = monitoringOriginalRequestName;
         }
 
         public IClientConfig ClientConfig { get; }
         public IHttpRequestMessageMarshaller<AmazonWebServiceRequest> HttpRequestMessageMarshaller { get; }
         public JsonResponseUnmarshaller Unmarshaller { get; }
         public AmazonWebServiceRequest OriginalRequest { get; }
+        public string MonitoringOriginalRequestName { get; }
 
         public HttpRequestMessage? HttpRequestMessage { get; set; }
     }

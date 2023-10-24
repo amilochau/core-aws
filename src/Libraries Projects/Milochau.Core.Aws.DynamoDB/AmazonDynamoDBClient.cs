@@ -146,6 +146,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = BatchWriteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = BatchWriteItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "BatchWriteItem",
             };
 
             return InvokeAsync<BatchWriteItemResponse>(request, options, cancellationToken);
@@ -189,6 +190,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = DeleteItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = DeleteItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "DeleteItem",
             };
 
             return InvokeAsync<DeleteItemResponse>(request, options, cancellationToken);
@@ -223,6 +225,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = GetItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = GetItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "GetItem",
             };
 
             return InvokeAsync<GetItemResponse>(request, options, cancellationToken);
@@ -282,6 +285,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = PutItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = PutItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "PutItem",
             };
 
             return InvokeAsync<PutItemResponse>(request, options, cancellationToken);
@@ -371,6 +375,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = QueryRequestMarshaller.Instance,
                 ResponseUnmarshaller = QueryResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "Query",
             };
 
             return InvokeAsync<QueryResponse>(request, options, cancellationToken);
@@ -405,6 +410,7 @@ namespace Milochau.Core.Aws.DynamoDB
             {
                 HttpRequestMessageMarshaller = UpdateItemRequestMarshaller.Instance,
                 ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "UpdateItem",
             };
 
             return InvokeAsync<UpdateItemResponse>(request, options, cancellationToken);

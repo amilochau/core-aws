@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
@@ -29,11 +30,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Example handler signature: Task Handler(Stream, ILambdaContext)
         /// </summary>
         /// <returns>A HandlerWrapper</returns>
-        public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, Task> handler)
+        public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, CancellationToken, Task> handler)
         {
-            return new HandlerWrapper(async (invocation) =>
+            return new HandlerWrapper(async (invocation, cancellationToken) =>
             {
-                await handler(invocation.InputStream, invocation.LambdaContext);
+                await handler(invocation.InputStream, invocation.LambdaContext, cancellationToken);
                 return EmptyInvocationResponse;
             });
         }
@@ -43,12 +44,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Note that you may have to cast your handler to its specific type to help the compiler.
         /// Example handler signature: Task Handler(Stream, ILambdaContext)
         /// </summary>
-        public static HandlerWrapper GetHandlerWrapper<TRequest>(Func<TRequest, ILambdaContext, Task> handler, JsonTypeInfo<TRequest> requestInfo)
+        public static HandlerWrapper GetHandlerWrapper<TRequest>(Func<TRequest, ILambdaContext, CancellationToken, Task> handler, JsonTypeInfo<TRequest> requestInfo)
         {
-            return new HandlerWrapper(async (invocation) =>
+            return new HandlerWrapper(async (invocation, cancellationToken) =>
             {
                 var request = JsonSerializer.Deserialize(invocation.InputStream, requestInfo)!;
-                await handler(request, invocation.LambdaContext);
+                await handler(request, invocation.LambdaContext, cancellationToken);
                 return EmptyInvocationResponse;
             });
         }
@@ -59,11 +60,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
         /// </summary>
         /// <returns>A HandlerWrapper</returns>
-        public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, Task<Stream>> handler)
+        public static HandlerWrapper GetHandlerWrapper(Func<Stream, ILambdaContext, CancellationToken, Task<Stream>> handler)
         {
-            return new HandlerWrapper(async (invocation) =>
+            return new HandlerWrapper(async (invocation, cancellationToken) =>
             {
-                return new InvocationResponse(await handler(invocation.InputStream, invocation.LambdaContext));
+                return new InvocationResponse(await handler(invocation.InputStream, invocation.LambdaContext, cancellationToken));
             });
         }
 
@@ -73,12 +74,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Example handler signature: Task&ltStream&gt Handler(Stream, ILambdaContext)
         /// </summary>
         /// <returns>A HandlerWrapper</returns>
-        public static HandlerWrapper GetHandlerWrapper<TRequest, TResponse>(Func<TRequest, ILambdaContext, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
+        public static HandlerWrapper GetHandlerWrapper<TRequest, TResponse>(Func<TRequest, ILambdaContext, CancellationToken, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
         {
-            return new HandlerWrapper(async (invocation) =>
+            return new HandlerWrapper(async (invocation, cancellationToken) =>
             {
                 var request = JsonSerializer.Deserialize(invocation.InputStream, requestInfo)!;
-                var response = await handler(request, invocation.LambdaContext);
+                var response = await handler(request, invocation.LambdaContext, cancellationToken);
 
                 var responseStream = new MemoryStream();
                 JsonSerializer.Serialize(responseStream, response, responseInfo);

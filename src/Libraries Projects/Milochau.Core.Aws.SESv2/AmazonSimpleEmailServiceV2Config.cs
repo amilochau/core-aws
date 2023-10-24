@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.SESv2
         public AmazonSimpleEmailServiceV2Config()
         {
             AuthenticationServiceName = "ses";
-            MonitoringServiceName = "Amazon.SimpleEmailV2";
+            MonitoringServiceName = "SimpleEmailV2";
         }
     }
 }

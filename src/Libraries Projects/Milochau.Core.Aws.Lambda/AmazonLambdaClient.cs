@@ -204,7 +204,8 @@ namespace Milochau.Core.Aws.Lambda
             var options = new InvokeOptions
             {
                 HttpRequestMessageMarshaller = InvokeRequestMarshaller.Instance,
-                ResponseUnmarshaller = InvokeResponseUnmarshaller.Instance
+                ResponseUnmarshaller = InvokeResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "Invoke",
             };
 
             return InvokeAsync<InvokeResponse>(request, options, cancellationToken);

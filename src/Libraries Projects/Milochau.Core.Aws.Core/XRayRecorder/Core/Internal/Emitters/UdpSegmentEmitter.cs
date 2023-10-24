@@ -30,11 +30,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         /// <param name="segment">The segment to be sent</param>
         public void Send(Entity segment)
         {
-            if (segment == null)
-            {
-                return;
-            }
-
             try
             {
                 var packet = segment.Marshall()!;

@@ -15,9 +15,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <seealso cref="Entity" />
     public class Subsegment : Entity
     {
-        /// <summary>Default max subsegment size to stream for the strategy.</summary>
-        private const long DefaultMaxSubsegmentSize = 100;
-
         /// <summary>Defines exception serialization stategy to process recorded exceptions.</summary>
         private static readonly IExceptionSerializationStrategy exceptionSerializationStrategy = new DefaultExceptionSerializationStrategy();
 
@@ -88,47 +85,14 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public FacadeSegment RootSegment { get; }
 
         /// <summary>
-        /// Set end time of the entity to current time
-        /// </summary>
-        public void SetEndTimeToNow()
-        {
-            EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Check if this segment or the root segment that this segment belongs to is ok to emit
-        /// </summary>
-        /// <returns>If the segment is ready to emit</returns>
-        public override bool IsEmittable()
-        {
-            return Reference == 0 && Parent.IsEmittable();
-        }
-
-        /// <summary>
-        /// Release reference to this instance of segment
-        /// </summary>
-        /// <returns>Reference count after release</returns>
-        public override long Release()
-        {
-            long count = DecrementReferenceCounter();
-            if (count == 0)
-            {
-                Parent.Release();
-            }
-
-            return count;
-        }
-
-        /// <summary>
         /// Marshall the segment into JSON string
         /// </summary>
         /// <returns>The JSON string parsed from given segment</returns>
-        public override string? Marshall()
+        public override string Marshall()
         {
             var serializedEntity = JsonSerializer.Serialize(this, XRayJsonSerializerContext.Default.Subsegment);
             return ProtocolHeader + ProtocolDelimiter + serializedEntity;
         }
-
 
         /// <summary>
         /// Adds the exception to cause and set this segment to has fault.
@@ -137,8 +101,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public void AddException(Exception e)
         {
             HasFault = true;
-            Cause = new Cause();
-            Cause.AddException(exceptionSerializationStrategy.DescribeException(e));
+            Cause = new Cause(exceptionSerializationStrategy.DescribeException(e));
         }
 
         /// <summary>
@@ -147,7 +110,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <param name="emitter">Instance of <see cref="ISegmentEmitter"/>.</param>
         public void Stream(ISegmentEmitter emitter)
         {
-            if (Sampled != SampleDecision.Sampled || IsInProgress || Reference > 0)
+            if (Sampled != SampleDecision.Sampled || IsInProgress)
             {
                 return;
             }
@@ -162,10 +125,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public void End()
         {
             IsInProgress = false;
-            Release();
-            SetEndTimeToNow();
+            EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
 
-            Parent.Release();
             Parent.Stream(emitter); // Facade segment is not emitted, all its subsegments, if emmittable, are emitted
         }
     }

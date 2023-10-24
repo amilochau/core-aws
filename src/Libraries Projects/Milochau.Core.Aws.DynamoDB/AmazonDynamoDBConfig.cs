@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.DynamoDB
         public AmazonDynamoDBConfig()
         {
             AuthenticationServiceName = "dynamodb";
-            MonitoringServiceName = "Amazon.DynamoDBv2";
+            MonitoringServiceName = "DynamoDBv2";
         }
     }
 }
