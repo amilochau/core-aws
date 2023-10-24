@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.Core.Util
             }
 
             [ThreadStatic]
-            private static HashAlgorithm _hashAlgorithm = null;
+            private static HashAlgorithm? _hashAlgorithm = null;
             private static HashAlgorithm SHA256HashAlgorithmInstance
             {
                 get

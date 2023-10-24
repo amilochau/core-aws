@@ -46,30 +46,30 @@ namespace Milochau.Core.Aws.Core.References
             }
             else
             {
-                value = Variables[key].ToString();
-                return true;
+                value = Variables[key]!.ToString();
+                return value != null;
             }
         }
 
         /// <summary>
         /// Gets the name of the AWS region.
         /// </summary>
-        public static string RegionName { get; } = GetEnvironmentVariable(Key_Region);
+        public static string RegionName { get; } = GetEnvironmentVariable(Key_Region)!;
 
         /// <summary>
         /// Gets the AccessKey property for the current credentials.
         /// </summary>
-        public static string AccessKey { get; } = GetEnvironmentVariable(Key_AccessKeyId);
+        public static string AccessKey { get; } = GetEnvironmentVariable(Key_AccessKeyId)!;
 
         /// <summary>
         /// Gets the SecretKey property for the current credentials.
         /// </summary>
-        public static string SecretKey { get; } = GetEnvironmentVariable(Key_SecretAccessKey);
+        public static string SecretKey { get; } = GetEnvironmentVariable(Key_SecretAccessKey)!;
 
         /// <summary>
         /// Gets the Token property for the current credentials.
         /// </summary>
-        public static string Token { get; } = GetEnvironmentVariable(Key_SessionToken);
+        public static string? Token { get; } = GetEnvironmentVariable(Key_SessionToken);
 
         /// <summary>
         /// Gets the UseToken property for the current credentials.

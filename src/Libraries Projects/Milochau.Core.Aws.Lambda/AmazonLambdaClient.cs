@@ -129,7 +129,12 @@ namespace Milochau.Core.Aws.Lambda
         ///
         /// </summary>
         public AmazonLambdaClient()
-            : base(new AmazonLambdaConfig()) { }
+            : base(new ClientConfig
+            {
+                AuthenticationServiceName = "lambda",
+                MonitoringServiceName = "Lambda",
+            })
+        { }
 
         #endregion
 

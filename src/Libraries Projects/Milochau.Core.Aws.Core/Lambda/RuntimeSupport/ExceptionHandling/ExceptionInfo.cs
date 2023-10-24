@@ -13,10 +13,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
     {
         public string ErrorMessage { get; set; }
         public string ErrorType { get; set; }
-        public StackFrameInfo[] StackFrames { get; set; }
-        public string StackTrace { get; set; }
+        public StackFrameInfo[]? StackFrames { get; set; }
+        public string? StackTrace { get; set; }
 
-        public ExceptionInfo InnerException { get; set; }
+        public ExceptionInfo? InnerException { get; set; }
         public List<ExceptionInfo> InnerExceptions { get; internal set; } = new List<ExceptionInfo>();
 
         public ExceptionInfo(Exception exception, bool isNestedException = false)

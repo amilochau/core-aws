@@ -29,7 +29,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
                 throw new ArgumentNullException(nameof(ex));
 
             MeteredStringBuilder jsonBuilder = new MeteredStringBuilder(TEXT_ENCODING, MAX_PAYLOAD_SIZE);
-            string json = AppendJson(ex, 0, false, MAX_PAYLOAD_SIZE - jsonBuilder.SizeInBytes);
+            string? json = AppendJson(ex, 0, false, MAX_PAYLOAD_SIZE - jsonBuilder.SizeInBytes);
             if (json != null && jsonBuilder.HasRoomForString(json))
             {
                 jsonBuilder.Append(json);
@@ -41,7 +41,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             return jsonBuilder.ToString();
         }
 
-        private static string AppendJson(ExceptionInfo ex, int tab, bool appendComma, int remainingRoom)
+        private static string? AppendJson(ExceptionInfo ex, int tab, bool appendComma, int remainingRoom)
         {
             if (remainingRoom <= 0)
                 return null;
@@ -53,14 +53,14 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             List<string> jsonElements = new List<string>();
 
             // Grab the elements we want to capture
-            string message = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorMessage);
-            string type = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorType);
-            string stackTrace = ex.StackTrace;
-            ExceptionInfo innerException = ex.InnerException;
+            string? message = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorMessage);
+            string? type = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorType);
+            string? stackTrace = ex.StackTrace;
+            ExceptionInfo? innerException = ex.InnerException;
             List<ExceptionInfo> innerExceptions = ex.InnerExceptions;
 
             // Create the JSON lines for each non-null element
-            string messageJson = null;
+            string? messageJson = null;
             if (message != null)
             {
                 // Trim important for Aggregate Exceptions, whose
@@ -69,7 +69,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             }
 
             string typeJson = TabString($"\"{ERROR_TYPE}\": \"{type}\"", nextTabDepth);
-            string stackTraceJson = GetStackTraceJson(stackTrace, nextTabDepth);
+            string? stackTraceJson = GetStackTraceJson(stackTrace, nextTabDepth);
 
 
             // Add each non-null element to the json elements list
@@ -83,11 +83,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             jsonBuilder.AppendLine(TabString("{", tab));
             jsonBuilder.Append(exceptionJsonBody);
 
-            bool hasInnerException = innerException != null;
             bool hasInnerExceptionList = innerExceptions != null && innerExceptions.Count > 0;
 
             // Before we close, check for inner exception(s)
-            if (hasInnerException)
+            if (innerException != null)
             {
                 // We have to add the inner exception, which means we need
                 // another comma after the exception json body
@@ -95,7 +94,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
 
                 jsonBuilder.Append(TabString($"\"{INNER_EXCEPTION}\": ", nextTabDepth));
 
-                string innerJson = AppendJson(innerException, nextTabDepth, hasInnerExceptionList, remainingRoom - jsonBuilder.SizeInBytes);
+                string? innerJson = AppendJson(innerException, nextTabDepth, hasInnerExceptionList, remainingRoom - jsonBuilder.SizeInBytes);
                 if (innerJson != null && jsonBuilder.HasRoomForString(innerJson))
                 {
                     jsonBuilder.Append(innerJson);
@@ -114,7 +113,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
                 {
                     var isLastOne = i == innerExceptions.Count - 1;
                     var innerException2 = innerExceptions[i];
-                    string innerJson = AppendJson(innerException2, nextNextTabDepth, !isLastOne, remainingRoom - jsonBuilder.SizeInBytes);
+                    string? innerJson = AppendJson(innerException2, nextNextTabDepth, !isLastOne, remainingRoom - jsonBuilder.SizeInBytes);
                     if (innerJson != null && jsonBuilder.HasRoomForString(innerJson))
                     {
                         jsonBuilder.Append(innerJson);
@@ -129,7 +128,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
                 jsonBuilder.AppendLine(TabString($"]", nextTabDepth));
             }
 
-            if (!hasInnerException && !hasInnerExceptionList)
+            if (innerException == null && !hasInnerExceptionList)
             {
                 // No inner exceptions = no trailing comma needed
                 jsonBuilder.AppendLine();
@@ -139,7 +138,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             return jsonBuilder.ToString();
         }
 
-        private static string GetStackTraceJson(string stackTrace, int tab)
+        private static string? GetStackTraceJson(string? stackTrace, int tab)
         {
             if (stackTrace == null)
             {

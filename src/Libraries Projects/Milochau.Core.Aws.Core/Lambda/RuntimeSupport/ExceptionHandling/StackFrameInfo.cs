@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             Line = stackFrame.GetFileLineNumber();
         }
 
-        public string Path { get; }
+        public string? Path { get; }
         public int Line { get; }
     }
 }

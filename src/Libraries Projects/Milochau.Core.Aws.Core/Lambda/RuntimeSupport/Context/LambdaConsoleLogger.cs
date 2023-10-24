@@ -7,9 +7,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
     internal class LambdaConsoleLogger : ILambdaLogger
     {
-        private readonly string currentAwsRequestId;
+        private readonly string? currentAwsRequestId;
 
-        public LambdaConsoleLogger(string currentAwsRequestId)
+        public LambdaConsoleLogger(string? currentAwsRequestId)
         {
             this.currentAwsRequestId = currentAwsRequestId;
         }
@@ -45,7 +45,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        private static string ConvertLogLevelToLabel(LogLevel? level)
+        private static string ConvertLogLevelToLabel(LogLevel level)
         {
             return level switch
             {

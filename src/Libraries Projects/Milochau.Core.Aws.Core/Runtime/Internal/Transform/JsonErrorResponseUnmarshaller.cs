@@ -118,7 +118,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
 
         private static void GetValuesFromJsonIfPossible(JsonUnmarshallerContext context, out InternalException internalException)
         {
-            internalException = JsonSerializer.Deserialize(context.Stream, InternalExceptionJsonSerializerContext.Default.InternalException);
+            internalException = JsonSerializer.Deserialize(context.Stream, InternalExceptionJsonSerializerContext.Default.InternalException)!;
         }
 
         /// <summary>

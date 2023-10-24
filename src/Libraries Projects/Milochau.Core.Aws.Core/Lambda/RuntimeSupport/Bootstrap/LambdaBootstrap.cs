@@ -73,7 +73,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         private async static Task InvokeOnceAsync(IRuntimeApiClient runtimeApiClient, LambdaBootstrapHandler handler, CancellationToken cancellationToken)
         {
             using var invocation = await runtimeApiClient.GetNextInvocationAsync(cancellationToken);
-            InvocationResponse response = null;
+            InvocationResponse? response = null;
 
             try
             {

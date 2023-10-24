@@ -11,34 +11,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     {
         #region Constructors
 
-        public AmazonUnmarshallingException(string requestId, string lastKnownLocation, Exception innerException)
-            : base("Error unmarshalling response back from AWS.", innerException)
-        {
-            RequestId = requestId;
-        }
-
-        public AmazonUnmarshallingException(string requestId, string lastKnownLocation, string responseBody, Exception innerException)
-            : base("Error unmarshalling response back from AWS.", innerException)
-        {
-            RequestId = requestId;
-            ResponseBody = responseBody;
-        }
-
-        public AmazonUnmarshallingException(string requestId, string lastKnownLocation,
-            string responseBody, string message, Exception innerException)
-            : base("Error unmarshalling response back from AWS. " + message, innerException)
-        {
-            RequestId = requestId;
-            ResponseBody = responseBody;
-        }
-
-        public AmazonUnmarshallingException(string requestId, Exception innerException, HttpStatusCode statusCode)
-            : base("Error unmarshalling response back from AWS.", innerException, statusCode)
-        {
-            RequestId = requestId;
-        }
-
-        public AmazonUnmarshallingException(string requestId, string responseBody, Exception innerException, HttpStatusCode statusCode)
+        public AmazonUnmarshallingException(string? requestId, string responseBody, Exception innerException, HttpStatusCode statusCode)
             : base("Error unmarshalling response back from AWS.", innerException, statusCode)
         {
             RequestId = requestId;
@@ -52,7 +25,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// The entire response body that caused this exception, if available.
         /// </summary>
-        public string ResponseBody { get; private set; }
+        public string? ResponseBody { get; private set; }
 
         #endregion
 
@@ -78,7 +51,7 @@ namespace Milochau.Core.Aws.Core.Runtime
 
         #region Private methods
 
-        private static void AppendFormat(StringBuilder sb, string format, string value)
+        private static void AppendFormat(StringBuilder sb, string format, string? value)
         {
             if (string.IsNullOrEmpty(value))
                 return;

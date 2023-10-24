@@ -7,13 +7,13 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// </summary>
     public class ResponseMetadata
     {
-        private IDictionary<string, string> _metadata;
+        private IDictionary<string, string>? _metadata;
 
         /// <summary>
         /// Gets and sets the RequestId property.
         /// ID that uniquely identifies a request. Amazon keeps track of request IDs. If you have a question about a request, include the request ID in your correspondence.
         /// </summary>
-        public string RequestId { get; set; }
+        public string RequestId { get; set; } = null!;
 
         public IDictionary<string, string> Metadata
         {

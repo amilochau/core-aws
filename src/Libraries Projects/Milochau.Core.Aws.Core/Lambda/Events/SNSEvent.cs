@@ -12,28 +12,28 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// <summary>
         /// List of SNS records.
         /// </summary>
-        public IList<SNSRecord> Records { get; set; }
+        public IList<SNSRecord> Records { get; set; } = null!;
+    }
 
+    /// <summary>
+    /// An SNS message record.
+    /// </summary>
+    public class SNSRecord
+    {
         /// <summary>
-        /// An SNS message record.
+        /// The SNS message.
         /// </summary>
-        public class SNSRecord
-        {
-            /// <summary>
-            /// The SNS message.
-            /// </summary>
-            public SNSMessage Sns { get; set; }
-        }
+        public SNSMessage Sns { get; set; } = null!;
+    }
 
+    /// <summary>
+    /// An SNS message record.
+    /// </summary>
+    public class SNSMessage
+    {
         /// <summary>
-        /// An SNS message record.
+        /// The message.
         /// </summary>
-        public class SNSMessage
-        {
-            /// <summary>
-            /// The message.
-            /// </summary>
-            public string Message { get; set; }
-        }
+        public string Message { get; set; } = null!;
     }
 }

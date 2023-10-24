@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         /// TODO: rewrite the *JsonExceptionWriter classes to use a JSON library instead of building strings directly.
         /// @todo
         /// </summary>
-        public static string EscapeStringForJson(string str)
+        public static string? EscapeStringForJson(string? str)
         {
             if (str == null)
                 return null;

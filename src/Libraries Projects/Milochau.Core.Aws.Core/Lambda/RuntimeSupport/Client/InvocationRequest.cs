@@ -21,14 +21,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <summary>
         /// Input to the function invocation.
         /// </summary>
-        public Stream InputStream { get; internal set; }
+        public required Stream InputStream { get; set; }
 
         /// <summary>
         /// Context for the invocation.
         /// </summary>
-        public ILambdaContext LambdaContext { get; internal set; }
-
-        internal InvocationRequest() { }
+        public required ILambdaContext LambdaContext { get; set; }
 
         protected virtual void Dispose(bool disposing)
         {

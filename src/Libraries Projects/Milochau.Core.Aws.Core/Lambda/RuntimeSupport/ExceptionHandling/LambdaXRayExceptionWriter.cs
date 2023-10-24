@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
 
         public static string WriteJson(ExceptionInfo ex)
         {
-            string workingDir = JsonExceptionWriterHelpers.EscapeStringForJson(System.IO.Directory.GetCurrentDirectory());
+            string? workingDir = JsonExceptionWriterHelpers.EscapeStringForJson(System.IO.Directory.GetCurrentDirectory());
             string exceptionTxt = CreateExceptionJson(ex, 1);
 
             string workingDirJson = TabString($"\"{WORKING_DIR}\": \"{workingDir}\"", 1);
@@ -49,12 +49,12 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         {
 
             // Grab the elements we want to capture
-            string message = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorMessage);
-            string type = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorType);
+            string? message = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorMessage);
+            string? type = JsonExceptionWriterHelpers.EscapeStringForJson(ex.ErrorType);
             var stackTrace = ex.StackFrames;
 
             // Create the JSON lines for each non-null element
-            string messageJson = null;
+            string? messageJson = null;
             if (message != null)
             {
                 // Trim important for Aggregate Exceptions, whose
@@ -63,7 +63,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             }
 
             string typeJson = TabString($"\"{ERROR_TYPE}\": \"{type}\"", tab + 1);
-            string stackTraceJson = GetStackTraceJson(stackTrace, tab + 1);
+            string? stackTraceJson = GetStackTraceJson(stackTrace, tab + 1);
 
             // Add each non-null element to the json elements list
             string[] jsonElements = GetNonNullElements(typeJson, messageJson, stackTraceJson);
@@ -71,7 +71,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         }
 
         // Craft the JSON element (ex: "stack": [ {...}, {...} ]) for the stack trace
-        private static string GetStackTraceJson(StackFrameInfo[] stackTrace, int tab)
+        private static string? GetStackTraceJson(StackFrameInfo[]? stackTrace, int tab)
         {
             // Null stack trace means the entire stack trace json should be null, and therefore not included
             if (stackTrace == null)
@@ -102,11 +102,11 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         // Craft JSON object {...} for a particular stack frame
         private static string CreateStackFrameJson(StackFrameInfo stackFrame, int tab)
         {
-            string file = JsonExceptionWriterHelpers.EscapeStringForJson(stackFrame.Path);
+            string? file = JsonExceptionWriterHelpers.EscapeStringForJson(stackFrame.Path);
             int line = stackFrame.Line;
 
-            string fileJson = null;
-            string lineJson = null;
+            string? fileJson = null;
+            string? lineJson = null;
             if (file != null)
             {
                 fileJson = TabString($"\"{STACK_FRAME_FILE}\": \"{file}\"", tab);
@@ -142,7 +142,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
             return jsonBuilder.ToString();
         }
 
-        private static string[] GetNonNullElements(params string[] elements)
+        private static string[] GetNonNullElements(params string?[] elements)
         {
             return (from x in elements where x != null select x).ToArray();
         }

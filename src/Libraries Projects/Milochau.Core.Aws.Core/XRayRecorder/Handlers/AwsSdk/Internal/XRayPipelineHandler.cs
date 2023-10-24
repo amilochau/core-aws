@@ -43,25 +43,25 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
         }
 
         /// <summary>Processes End request by ending subsegment.</summary>
-        public static void ProcessEndRequest(Subsegment subsegment, IRequestContext requestContext, IResponseContext? responseContext)
+        public static void ProcessEndRequest(Subsegment subsegment, IRequestContext requestContext, IResponseContext responseContext)
         {
             subsegment.AddToAws("region", EnvironmentVariables.RegionName);
             subsegment.AddToAws("operation", requestContext.MonitoringOriginalRequestName);
             if (responseContext.Response == null)
             {
-                if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amzn-RequestId", out var requestIds))
+                if (requestContext.HttpRequestMessage.Headers.TryGetValues("x-amzn-RequestId", out var requestIds))
                 {
                     subsegment.AddToAws("request_id", requestIds.First());
                 }
                 // s3 doesn't follow request header id convention
                 else
                 {
-                    if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amz-request-id", out requestIds))
+                    if (requestContext.HttpRequestMessage.Headers.TryGetValues("x-amz-request-id", out requestIds))
                     {
                         subsegment.AddToAws("request_id", requestIds.First());
                     }
 
-                    if (requestContext.HttpRequestMessage!.Headers.TryGetValues("x-amz-id-2", out requestIds))
+                    if (requestContext.HttpRequestMessage.Headers.TryGetValues("x-amz-id-2", out requestIds))
                     {
                         subsegment.AddToAws("id_2", requestIds.First());
                     }
@@ -80,7 +80,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
                 AddResponseSpecificInformation(responseContext.Response, subsegment);
             }
 
-            AddHttpInformation(responseContext.HttpResponse, subsegment);
+            AddHttpInformation(responseContext.HttpResponse!, subsegment);
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
             subsegment.End();
         }

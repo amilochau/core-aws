@@ -43,7 +43,12 @@ namespace Milochau.Core.Aws.SESv2
         ///
         /// </summary>
         public AmazonSimpleEmailServiceV2Client()
-            : base(new AmazonSimpleEmailServiceV2Config()) { }
+            : base(new ClientConfig
+            {
+                AuthenticationServiceName = "ses",
+                MonitoringServiceName = "SimpleEmailV2",
+            })
+        { }
 
         #endregion
 

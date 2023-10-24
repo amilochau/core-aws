@@ -19,7 +19,12 @@ namespace Milochau.Core.Aws.DynamoDB
         /// default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance.
         /// </summary>
         public AmazonDynamoDBClient()
-            : base(new AmazonDynamoDBConfig()) { }
+            : base(new ClientConfig
+            {
+                AuthenticationServiceName = "dynamodb",
+                MonitoringServiceName = "DynamoDBv2"
+            })
+        { }
 
         #endregion
 

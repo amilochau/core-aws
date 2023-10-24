@@ -98,7 +98,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
 
             if (!request.Headers.Contains(HeaderKeys.HostHeader))
             {
-                request.Headers.Add(HeaderKeys.HostHeader, request.RequestUri.Authority);
+                request.Headers.Add(HeaderKeys.HostHeader, request.RequestUri!.Authority);
             }
 
             request.Headers.Add(HeaderKeys.XAmzDateHeader, requestDateTime.ToUniversalTime().ToString(AWSSDKUtils.ISO8601BasicDateTimeFormat, CultureInfo.InvariantCulture));
@@ -192,10 +192,10 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        private static async Task<string>? SetRequestBodyHashAsync(IRequestContext requestContext)
+        private static async Task<string> SetRequestBodyHashAsync(IRequestContext requestContext)
         {
             // Calculate the hash and set it in the headers before returning
-            byte[] payloadBytes = await requestContext.HttpRequestMessage.Content.ReadAsByteArrayAsync();
+            byte[] payloadBytes = await requestContext.HttpRequestMessage.Content!.ReadAsByteArrayAsync();
             byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
             string? computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
 
@@ -251,7 +251,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         {
             var canonicalRequest = new StringBuilder();
             canonicalRequest.AppendFormat("{0}\n", httpRequestMessage.Method.Method);
-            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(new Uri(httpRequestMessage.RequestUri.GetLeftPart(UriPartial.Authority)), httpRequestMessage.RequestUri.LocalPath));
+            canonicalRequest.AppendFormat("{0}\n", AWSSDKUtils.CanonicalizeResourcePathV2(new Uri(httpRequestMessage.RequestUri!.GetLeftPart(UriPartial.Authority)), httpRequestMessage.RequestUri.LocalPath));
             canonicalRequest.AppendFormat("{0}\n", "");
 
             canonicalRequest.AppendFormat("{0}\n", CanonicalizeHeaders(sortedHeaders));

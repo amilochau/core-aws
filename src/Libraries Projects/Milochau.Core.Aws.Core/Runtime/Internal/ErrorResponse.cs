@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// <summary>
         /// Error message
         /// </summary>
-        public string Message { get; set; }
+        public required string Message { get; set; }
 
         /// <summary>
         /// RequestId of the error.
