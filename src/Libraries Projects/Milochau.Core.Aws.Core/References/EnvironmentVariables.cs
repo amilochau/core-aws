@@ -58,28 +58,28 @@ namespace Milochau.Core.Aws.Core.References
         /// <summary>
         /// Gets the name of the AWS region.
         /// </summary>
-        internal static string RegionName { get; } = GetEnvironmentVariable(Key_Region)!;
+        public static string RegionName { get; } = GetEnvironmentVariable(Key_Region)!;
 
         /// <summary>
         /// Gets the AccessKey property for the current credentials.
         /// </summary>
-        internal static string AccessKey { get; } = GetEnvironmentVariable(Key_AccessKeyId)!;
+        public static string AccessKey { get; } = GetEnvironmentVariable(Key_AccessKeyId)!;
 
         /// <summary>
         /// Gets the SecretKey property for the current credentials.
         /// </summary>
-        internal static string SecretKey { get; } = GetEnvironmentVariable(Key_SecretAccessKey)!;
+        public static string SecretKey { get; } = GetEnvironmentVariable(Key_SecretAccessKey)!;
 
         /// <summary>
         /// Gets the Token property for the current credentials.
         /// </summary>
-        internal static string? Token { get; } = GetEnvironmentVariable(Key_SessionToken);
+        public static string? Token { get; } = GetEnvironmentVariable(Key_SessionToken);
 
         /// <summary>
         /// Gets the UseToken property for the current credentials.
         /// Specifies if Token property is non-empty.
         /// </summary>
-        internal static bool UseToken { get; } = !string.IsNullOrEmpty(Token);
+        public static bool UseToken { get; } = !string.IsNullOrEmpty(Token);
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
     }

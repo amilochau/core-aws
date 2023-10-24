@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
     /// <summary>
     ///    First-pass unmarshaller for all errors
     /// </summary>
-    internal class JsonErrorResponseUnmarshaller : IUnmarshaller<ErrorResponse, JsonUnmarshallerContext>
+    public class JsonErrorResponseUnmarshaller : IUnmarshaller<ErrorResponse, JsonUnmarshallerContext>
     {
         /// <summary>
         /// Build an ErrorResponse from json 
