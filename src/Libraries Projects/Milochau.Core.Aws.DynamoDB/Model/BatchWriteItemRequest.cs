@@ -111,7 +111,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// </para>
     ///  </li> </ul>
     /// </summary>
-    public partial class BatchWriteItemRequest : AmazonDynamoDBRequest
+    public class BatchWriteItemRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property RequestItems. 

@@ -6,7 +6,7 @@
     /// If you do need to perform both of these operations, you need to provide two separate
     /// <code>WriteRequest</code> objects.
     /// </summary>
-    public partial class WriteRequest
+    public class WriteRequest
     {
         /// <summary>
         /// Gets and sets the property DeleteRequest. 

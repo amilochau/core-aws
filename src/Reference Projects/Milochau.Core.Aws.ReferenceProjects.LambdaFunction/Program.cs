@@ -46,7 +46,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                     await LambdaBootstrap.RunAsync(FunctionHandlerScheduler);
                     break;
                 case 3:
-                    await LambdaBootstrap.RunAsync(FunctionHandlerSns);
+                    await LambdaBootstrap.RunAsync(FunctionHandlerSns, ApplicationJsonSerializerContext.Default.SNSEvent);
+                    break;
+                case 4:
+                    await LambdaBootstrap.RunAsync(FunctionHandlerDynamoDbStream);
                     break;
             }
         }
@@ -56,14 +59,17 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             return DoAsync(new(), context, cancellationToken);
         }
 
-        public static async Task FunctionHandlerSns(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
+        public static async Task FunctionHandlerSns(SNSEvent request, ILambdaContext context, CancellationToken cancellationToken)
         {
-            var request = JsonSerializer.Deserialize(requestStream, ApplicationJsonSerializerContext.Default.SNSEvent)!;
-
             foreach (var record in request.Records)
             {
                 await DoAsync(new(), context, cancellationToken);
             }
+        }
+
+        public static async Task FunctionHandlerDynamoDbStream(Stream requestStream, ILambdaContext lambdaContext, CancellationToken cancellationToken)
+        {
+
         }
 
         public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(APIGatewayHttpApiV2ProxyRequest request,

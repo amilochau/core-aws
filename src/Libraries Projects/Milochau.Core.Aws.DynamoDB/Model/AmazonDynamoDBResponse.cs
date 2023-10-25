@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Base class for DynamoDB operation responses.
     /// </summary>
-    public partial class AmazonDynamoDBResponse : AmazonWebServiceResponse
+    public class AmazonDynamoDBResponse : AmazonWebServiceResponse
     {
         /// <summary>
         /// Gets and sets the property ConsumedCapacity. 

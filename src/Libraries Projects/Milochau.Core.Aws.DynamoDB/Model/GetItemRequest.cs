@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// read, it always returns the last updated value.
     /// </para>
     /// </summary>
-    public partial class GetItemRequest : AmazonDynamoDBRequest
+    public class GetItemRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property AttributesToGet. 

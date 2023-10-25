@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents a request to perform a <code>PutItem</code> operation on an item.
     /// </summary>
-    public partial class PutRequest
+    public class PutRequest
     {
         /// <summary>
         /// Gets and sets the property Item. 

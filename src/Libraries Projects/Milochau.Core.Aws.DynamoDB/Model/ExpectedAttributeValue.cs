@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// at once, DynamoDB will return a <code>ValidationException</code> exception.
     /// </para>
     /// </summary>
-    public partial class ExpectedAttributeValue
+    public class ExpectedAttributeValue
     {
         /// <summary>
         /// Gets and sets the property AttributeValueList. 

@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// asked for it. For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ProvisionedThroughputIntro.html">Provisioned
     /// Throughput</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </summary>
-    public partial class ConsumedCapacity
+    public class ConsumedCapacity
     {
         /// <summary>
         /// Gets and sets the property CapacityUnits. 

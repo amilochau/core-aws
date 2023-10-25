@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>DeleteItem</code> operation.
     /// </summary>
-    public partial class DeleteItemResponse : AmazonDynamoDBResponse
+    public class DeleteItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property Attributes. 

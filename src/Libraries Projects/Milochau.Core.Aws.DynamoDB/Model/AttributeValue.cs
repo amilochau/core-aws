@@ -17,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// Types</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
     /// </summary>
-    public partial class AttributeValue
+    public class AttributeValue
     {
         /// <summary>
         /// Gets and sets the property B. 

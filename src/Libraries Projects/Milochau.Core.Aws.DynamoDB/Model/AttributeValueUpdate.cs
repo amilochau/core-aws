@@ -17,7 +17,7 @@
     /// values will be rejected with a <code>ValidationException</code> exception.
     /// </para>
     /// </summary>
-    public partial class AttributeValueUpdate
+    public class AttributeValueUpdate
     {
         /// <summary>
         /// Gets and sets the property Action. 

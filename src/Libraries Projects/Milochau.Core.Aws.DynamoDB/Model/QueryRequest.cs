@@ -71,7 +71,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// when querying a global secondary index.
     /// </para>
     /// </summary>
-    public partial class QueryRequest : AmazonDynamoDBRequest
+    public class QueryRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property AttributesToGet. 

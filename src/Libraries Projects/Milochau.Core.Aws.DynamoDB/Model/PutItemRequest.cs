@@ -41,7 +41,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// with Items</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
     /// </summary>
-    public partial class PutItemRequest : AmazonDynamoDBRequest
+    public class PutItemRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property ConditionalOperator. 

@@ -4,7 +4,7 @@
     /// Represents the amount of provisioned throughput capacity consumed on a table or an
     /// index.
     /// </summary>
-    public partial class Capacity
+    public class Capacity
     {
         /// <summary>
         /// Gets and sets the property CapacityUnits. 
