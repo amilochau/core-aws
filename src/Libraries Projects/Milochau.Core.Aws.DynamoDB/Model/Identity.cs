@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milochau.Core.Aws.DynamoDB.Model
+﻿namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
     /// Contains details about the type of identity that made the request.
@@ -18,7 +12,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// is "dynamodb.amazonaws.com".
         /// </para>
         /// </summary>
-        public string PrincipalId { get; set; }
+        public string PrincipalId { get; set; } = null!;
 
         /// <summary>
         /// Gets and sets the property Type. 
@@ -26,6 +20,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// The type of the identity. For Time To Live, the type is "Service".
         /// </para>
         /// </summary>
-        public string Type { get; set; }
+        public string Type { get; set; } = null!;
     }
 }

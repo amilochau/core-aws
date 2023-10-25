@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Milochau.Core.Aws.DynamoDB.Model;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.DynamoDB.Events
 {
@@ -16,7 +13,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
         /// <summary>
         /// List of DynamoDB event records.
         /// </summary>
-        public IList<DynamodbStreamRecord> Records { get; set; }
+        public IList<DynamodbStreamRecord> Records { get; set; } = null!;
 
         /// <summary>
         /// DynamoDB stream record
@@ -27,7 +24,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
             /// <summary>
             /// The event source arn of DynamoDB.
             /// </summary>
-            public string EventSourceArn { get; set; }
+            public string EventSourceArn { get; set; } = null!;
         }
     }
 }

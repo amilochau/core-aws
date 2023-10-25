@@ -3,7 +3,6 @@ using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 using System.IO;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,9 +66,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             }
         }
 
-        public static async Task FunctionHandlerDynamoDbStream(Stream requestStream, ILambdaContext lambdaContext, CancellationToken cancellationToken)
+        public static Task FunctionHandlerDynamoDbStream(Stream requestStream, ILambdaContext lambdaContext, CancellationToken cancellationToken)
         {
-
+            return Task.CompletedTask;
         }
 
         public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(APIGatewayHttpApiV2ProxyRequest request,
