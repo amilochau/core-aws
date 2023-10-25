@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>BatchWriteItem</code> operation.
     /// </summary>
-    public partial class BatchWriteItemResponse : AmazonDynamoDBResponse
+    public class BatchWriteItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property ItemCollectionMetrics. 

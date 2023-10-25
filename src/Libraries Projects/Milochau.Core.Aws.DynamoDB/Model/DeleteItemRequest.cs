@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// is not deleted.
     /// </para>
     /// </summary>
-    public partial class DeleteItemRequest : AmazonDynamoDBRequest
+    public class DeleteItemRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property ConditionalOperator. 

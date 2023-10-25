@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>Query</code> operation.
     /// </summary>
-    public partial class QueryResponse : AmazonDynamoDBResponse
+    public class QueryResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property Count. 

@@ -3,6 +3,50 @@
     // @todo To be improved with .NET 8 - see https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation-modes?pivots=dotnet-8-0#serialize-enum-fields-as-strings
 
     /// <summary>
+    /// Constants used for properties of type StreamViewType.
+    /// </summary>
+    // @todo [JsonConverter(typeof(JsonStringEnumConverter<StreamViewType>))]
+    public enum StreamViewType
+    {
+        /// <summary>
+        /// Constant KEYS_ONLY for StreamViewType
+        /// </summary>
+        KEYS_ONLY,
+        /// <summary>
+        /// Constant NEW_AND_OLD_IMAGES for StreamViewType
+        /// </summary>
+        NEW_AND_OLD_IMAGES,
+        /// <summary>
+        /// Constant NEW_IMAGE for StreamViewType
+        /// </summary>
+        NEW_IMAGE,
+        /// <summary>
+        /// Constant OLD_IMAGE for StreamViewType
+        /// </summary>
+        OLD_IMAGE,
+    }
+
+    /// <summary>
+    /// Constants used for properties of type OperationType.
+    /// </summary>
+    // @todo [JsonConverter(typeof(JsonStringEnumConverter<OperationType>))]
+    public enum OperationType
+    {
+        /// <summary>
+        /// Constant INSERT for OperationType
+        /// </summary>
+        INSERT,
+        /// <summary>
+        /// Constant MODIFY for OperationType
+        /// </summary>
+        MODIFY,
+        /// <summary>
+        /// Constant REMOVE for OperationType
+        /// </summary>
+        REMOVE,
+    }
+
+    /// <summary>
     /// Constants used for properties of type AttributeAction.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ReturnConsumedCapacity>))]

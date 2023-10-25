@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+
 namespace Milochau.Core.Aws.Core.Lambda.Events
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Simple Notification Service event
     /// http://docs.aws.amazon.com/lambda/latest/dg/with-sns.html

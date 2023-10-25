@@ -27,7 +27,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// </para>
     ///  </li> </ul>
     /// </summary>
-    public partial class Condition
+    public class Condition
     {
         /// <summary>
         /// Gets and sets the property AttributeValueList. 

@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// operation using the <code>ReturnValues</code> parameter.
     /// </para>
     /// </summary>
-    public partial class UpdateItemRequest : AmazonDynamoDBRequest
+    public class UpdateItemRequest : AmazonDynamoDBRequest
     {
         /// <summary>
         /// Gets and sets the property AttributeUpdates. 

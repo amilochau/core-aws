@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents the output of a <code>GetItem</code> operation.
     /// </summary>
-    public partial class GetItemResponse : AmazonDynamoDBResponse
+    public class GetItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property Item. 

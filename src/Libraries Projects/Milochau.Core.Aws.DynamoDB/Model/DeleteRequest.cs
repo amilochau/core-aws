@@ -5,7 +5,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <summary>
     /// Represents a request to perform a <code>DeleteItem</code> operation on an item.
     /// </summary>
-    public partial class DeleteRequest
+    public class DeleteRequest
     {
         /// <summary>
         /// Gets and sets the property Key. 

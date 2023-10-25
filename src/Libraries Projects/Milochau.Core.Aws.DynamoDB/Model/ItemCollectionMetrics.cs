@@ -7,7 +7,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// is only returned if the request asked for it. If the table does not have any local
     /// secondary indexes, this information is not returned in the response.
     /// </summary>
-    public partial class ItemCollectionMetrics
+    public class ItemCollectionMetrics
     {
         /// <summary>
         /// Gets and sets the property ItemCollectionKey. 
