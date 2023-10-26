@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.Lambda;
+﻿using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Lambda;
 using System;
 using System.Text.Json;
 using System.Threading;
@@ -13,7 +14,6 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
     public class EmailsLambdaDataAccess : IEmailsLambdaDataAccess
     {
-        public static string ConventionsHost { get; set; } = Environment.GetEnvironmentVariable("CONVENTION__HOST")!;
         private readonly IAmazonLambda amazonLambda;
 
         public EmailsLambdaDataAccess(IAmazonLambda amazonLambda)
@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
             await amazonLambda.InvokeAsync(new Lambda.Model.InvokeRequest
             {
-                FunctionName = $"emails-{ConventionsHost}-fn-async-send-emails",
+                FunctionName = $"emails-{EnvironmentVariables.ConventionHost}-fn-async-send-emails",
                 InvocationType = InvocationType.Event,
                 Payload = JsonSerializer.Serialize(emailRequest, ApplicationJsonSerializerContext.Default.EmailRequest),
             }, cancellationToken);

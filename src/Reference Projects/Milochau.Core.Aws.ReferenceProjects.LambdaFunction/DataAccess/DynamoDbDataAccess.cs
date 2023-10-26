@@ -6,6 +6,7 @@ using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.DynamoDB.Model;
 using System.Linq;
 using Milochau.Core.Aws.DynamoDB.Helpers;
+using Milochau.Core.Aws.Core.References;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -16,8 +17,6 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
     public class DynamoDbDataAccess : IDynamoDbDataAccess
     {
-        public static string ConventionsPrefix { get; set; } = Environment.GetEnvironmentVariable("CONVENTION__PREFIX")!;
-
         protected readonly IAmazonDynamoDB amazonDynamoDB;
 
         public DynamoDbDataAccess(IAmazonDynamoDB amazonDynamoDB)
@@ -29,7 +28,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest
             {
-                TableName = $"{ConventionsPrefix}-table-test",
+                TableName = $"{EnvironmentVariables.ConventionPrefix}-table-test",
                 Key = new Dictionary<string, AttributeValue>()
                     .Append("id", "0dc388584487498c98c98a4b9d2cad3c")
                     .ToDictionary(x => x.Key, x => x.Value),

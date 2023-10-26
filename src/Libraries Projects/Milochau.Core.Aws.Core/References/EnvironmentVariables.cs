@@ -16,6 +16,9 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_Region = "AWS_REGION";
         internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
         internal const string Key_XRayContextMissing = "AWS_XRAY_CONTEXT_MISSING";
+        internal const string Key_ConventionPrefix = "CONVENTION__PREFIX";
+        internal const string Key_ConventionApplication = "CONVENTION__APPLICATION";
+        internal const string Key_ConventionHost = "CONVENTION__HOST";
 
         private static IDictionary Variables { get; } = Environment.GetEnvironmentVariables();
 
@@ -80,6 +83,15 @@ namespace Milochau.Core.Aws.Core.References
         /// Specifies if Token property is non-empty.
         /// </summary>
         public static bool UseToken { get; } = !string.IsNullOrEmpty(Token);
+
+        /// <summary>Convention - Prefix</summary>
+        public static string ConventionPrefix { get; } = GetEnvironmentVariable(Key_ConventionPrefix)!;
+
+        /// <summary>Convention - Application</summary>
+        public static string ConventionApplication{ get; } = GetEnvironmentVariable(Key_ConventionApplication)!;
+
+        /// <summary>Convention - Host</summary>
+        public static string ConventionHost { get; } = GetEnvironmentVariable(Key_ConventionHost)!;
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
     }
