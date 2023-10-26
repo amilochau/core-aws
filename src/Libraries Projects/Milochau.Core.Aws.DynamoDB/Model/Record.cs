@@ -1,4 +1,6 @@
-﻿namespace Milochau.Core.Aws.DynamoDB.Model
+﻿using System.Text.Json.Serialization;
+
+namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
     /// A description of a unique event within a stream.
@@ -11,6 +13,7 @@
         /// The region in which the <code>GetRecords</code> request was received.
         /// </para>
         /// </summary>
+        [JsonPropertyName("awsRegion")]
         public string AwsRegion { get; set; } = null!;
 
         /// <summary>
@@ -19,6 +22,7 @@
         /// The main body of the stream record, containing all of the DynamoDB-specific fields.
         /// </para>
         /// </summary>
+        [JsonPropertyName("dynamodb")]
         public StreamRecord Dynamodb { get; set; } = null!;
 
         /// <summary>
@@ -27,6 +31,7 @@
         /// A globally unique identifier for the event that was recorded in this stream record.
         /// </para>
         /// </summary>
+        [JsonPropertyName("eventID")]
         public string EventID { get; set; } = null!;
 
         /// <summary>
@@ -48,6 +53,7 @@
         /// </para>
         ///  </li> </ul>
         /// </summary>
+        [JsonPropertyName("eventName")]
         public OperationType EventName { get; set; }
 
         /// <summary>
@@ -57,6 +63,7 @@
         /// Streams, this is <code>aws:dynamodb</code>.
         /// </para>
         /// </summary>
+        [JsonPropertyName("eventSource")]
         public string EventSource { get; set; } = null!;
 
         /// <summary>
@@ -72,6 +79,7 @@
         /// will only increase as the low-level DynamoDB Streams API evolves.
         /// </para>
         /// </summary>
+        [JsonPropertyName("eventVersion")]
         public string EventVersion { get; set; } = null!;
 
         /// <summary>
@@ -98,6 +106,7 @@
         /// </para>
         ///  </li> </ul>
         /// </summary>
+        [JsonPropertyName("userIdentity")]
         public Identity? UserIdentity { get; set; }
     }
 }

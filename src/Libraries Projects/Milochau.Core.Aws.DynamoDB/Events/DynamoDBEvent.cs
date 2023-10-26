@@ -1,5 +1,6 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Model;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.DynamoDB.Events
 {
@@ -24,6 +25,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
             /// <summary>
             /// The event source arn of DynamoDB.
             /// </summary>
+            [JsonPropertyName("eventSourceArn")]
             public string EventSourceArn { get; set; } = null!;
         }
     }

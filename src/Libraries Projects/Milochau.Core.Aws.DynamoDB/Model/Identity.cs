@@ -1,4 +1,6 @@
-﻿namespace Milochau.Core.Aws.DynamoDB.Model
+﻿using System.Text.Json.Serialization;
+
+namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
     /// Contains details about the type of identity that made the request.
@@ -12,6 +14,7 @@
         /// is "dynamodb.amazonaws.com".
         /// </para>
         /// </summary>
+        [JsonPropertyName("principalId")]
         public string PrincipalId { get; set; } = null!;
 
         /// <summary>
@@ -20,6 +23,7 @@
         /// The type of the identity. For Time To Live, the type is "Service".
         /// </para>
         /// </summary>
+        [JsonPropertyName("type")]
         public string Type { get; set; } = null!;
     }
 }
