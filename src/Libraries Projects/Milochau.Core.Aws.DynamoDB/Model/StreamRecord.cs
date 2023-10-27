@@ -16,7 +16,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// epoch time</a> format and rounded down to the closest second.
         /// </para>
         /// </summary>
-        public DateTime ApproximateCreationDateTime { get; set; }
+        public long ApproximateCreationDateTime { get; set; }
 
         /// <summary>
         /// Gets and sets the property Keys. 
