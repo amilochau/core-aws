@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
         /// A list of records which failed processing. Returning the first record which failed would retry all remaining records from the batch.
         /// </summary>
         [JsonPropertyName("batchItemFailures")]
-        public IList<BatchItemFailure> BatchItemFailures { get; set; } = null!;
+        public IList<BatchItemFailure> BatchItemFailures { get; set; } = new List<BatchItemFailure>();
     }
 
     /// <summary>
