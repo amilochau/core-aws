@@ -10,12 +10,15 @@ using Milochau.Core.Aws.SESv2;
 using Milochau.Core.Aws.Lambda;
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap;
+using Milochau.Core.Aws.DynamoDB.Events;
+using System.Collections.Generic;
+using System.Linq;
+using Milochau.Core.Aws.Core.References.Serialization;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
     public class Function
     {
-
         private static readonly int handlerChoice = 0;
         private static readonly DynamoDbDataAccess dynamoDbDataAccess;
         private static readonly EmailsLambdaDataAccess emailsLambdaDataAccess;
@@ -48,7 +51,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                     await LambdaBootstrap.RunAsync(FunctionHandlerSns, ApplicationJsonSerializerContext.Default.SNSEvent);
                     break;
                 case 4:
-                    await LambdaBootstrap.RunAsync(FunctionHandlerDynamoDbStream);
+                    await LambdaBootstrap.RunAsync(FunctionHandlerDynamoDbStream, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent, ApplicationJsonSerializerContext2.Default.StreamsEventResponse);
                     break;
             }
         }
@@ -66,9 +69,35 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             }
         }
 
-        public static Task FunctionHandlerDynamoDbStream(Stream requestStream, ILambdaContext lambdaContext, CancellationToken cancellationToken)
+        public static Task<StreamsEventResponse> FunctionHandlerDynamoDbStream(DynamoDBEvent request, ILambdaContext lambdaContext, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var response = new StreamsEventResponse
+            {
+                BatchItemFailures = new List<BatchItemFailure>()
+            };
+
+            foreach (var record in request.Records.OrderBy(x => x.Dynamodb.ApproximateCreationDateTime))
+            {
+                try
+                {
+                    if (record.EventName == OperationType.MODIFY && record.Dynamodb.OldImage != null && record.Dynamodb.NewImage != null)
+                    {
+
+                    }
+                    else if (record.EventName == OperationType.REMOVE)
+                    {
+
+                    }
+                }
+                catch (System.Exception)
+                {
+                    response.BatchItemFailures.Add(new BatchItemFailure
+                    {
+                        ItemIdentifier = record.Dynamodb.SequenceNumber
+                    });
+                }
+            }
+            return Task.FromResult(response);
         }
 
         public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(APIGatewayHttpApiV2ProxyRequest request,
@@ -97,6 +126,13 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
     [JsonSerializable(typeof(EmailRequestContent))]
     [JsonSerializable(typeof(FunctionResponse))]
     public partial class ApplicationJsonSerializerContext : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSerializable(typeof(DynamoDBEvent))]
+    [JsonSerializable(typeof(StreamsEventResponse))]
+    public partial class ApplicationJsonSerializerContext2 : JsonSerializerContext
     {
     }
 }
