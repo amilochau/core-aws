@@ -16,7 +16,11 @@
   @amilochau/core-aws
 </h1>
 
-`@amilochau/core-aws` is a set of opinionated packages used to create AWS Lambda functions with .NET 7.0 native AOT.
+`@amilochau/core-aws` is a set of opinionated packages used to create AWS Lambda functions with .NET 7.0 native AOT. This repository comes from a fork of multiple AWS dotnet packages, rewritten to focus on performances:
+
+- [aws/aws-sdk-dotnet](https://github.com/aws/aws-sdk-net)
+- [aws/aws-lambda-dotnet](https://github.com/aws/aws-lambda-dotnet)
+- [aws/aws-xray-sdk-dotnet](https://github.com/aws/aws-xray-sdk-dotnet)
 
 ## Main features
 
@@ -35,21 +39,16 @@ Run the following command to install the NuGet packages - use the packages you w
 ```pwsh
 dotnet add package Milochau.Core.Aws.Abstractions
 dotnet add package Milochau.Core.Aws.ApiGateway
+dotnet add package Milochau.Core.Aws.Core
 dotnet add package Milochau.Core.Aws.DynamoDB
 dotnet add package Milochau.Core.Aws.Integration
+dotnet add package Milochau.Core.Aws.Lambda
+dotnet add package Milochau.Core.Aws.SESv2
 ```
 
 2. Use the packages
 
-See internal tests to find usage examples.
-
----
-
-## Dependencies
-
-The following NuGet packages are installed by `@amilochau/core-aws`:
-- `Amazon.Lambda.APIGatewayEvents`
-- `AWSSDK.DynamoDBv2`
+See [the reference project](./src/Reference%20Projects/Milochau.Core.Aws.ReferenceProjects.LambdaFunction/) to find usage examples.
 
 --- 
 
