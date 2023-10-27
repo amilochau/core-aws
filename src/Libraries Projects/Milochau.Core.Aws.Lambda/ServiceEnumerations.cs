@@ -3,19 +3,19 @@ namespace Milochau.Core.Aws.Lambda
     /// <summary>
     /// Constants used for properties of type InvocationType.
     /// </summary>
-    public enum InvocationType
+    public static class InvocationType
     {
         /// <summary>
         /// Constant DryRun for InvocationType
         /// </summary>
-        DryRun,
+        public const string DryRun = "DryRun";
         /// <summary>
         /// Constant Event for InvocationType
         /// </summary>
-        Event,
+        public const string Event = "Event";
         /// <summary>
         /// Constant RequestResponse for InvocationType
         /// </summary>
-        RequestResponse,
+        public const string RequestResponse = "RequestResponse";
     }
 }

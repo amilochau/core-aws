@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.References;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -14,10 +14,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public EmailRequest(List<EmailRequestRecipient> tos, string rawTemplateData)
         {
-            var conventionsHost = Environment.GetEnvironmentVariable("CONVENTION__HOST")!;
-        
             TemplateId = "contacts-summary";
-            UnsubscribeFunctionName = $"contacts-{conventionsHost}-fn-async-unsubscribe-emails";
+            UnsubscribeFunctionName = $"contacts-{EnvironmentVariables.ConventionHost}-fn-async-unsubscribe-emails";
             Tos = tos;
             RawTemplateData = rawTemplateData;
         }

@@ -6,243 +6,243 @@
     /// Constants used for properties of type StreamViewType.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<StreamViewType>))]
-    public enum StreamViewType
+    public static class StreamViewType
     {
         /// <summary>
         /// Constant KEYS_ONLY for StreamViewType
         /// </summary>
-        KEYS_ONLY,
+        public const string KEYS_ONLY = "KEYS_ONLY";
         /// <summary>
         /// Constant NEW_AND_OLD_IMAGES for StreamViewType
         /// </summary>
-        NEW_AND_OLD_IMAGES,
+        public const string NEW_AND_OLD_IMAGES = "NEW_AND_OLD_IMAGES";
         /// <summary>
         /// Constant NEW_IMAGE for StreamViewType
         /// </summary>
-        NEW_IMAGE,
+        public const string NEW_IMAGE = "NEW_IMAGE";
         /// <summary>
         /// Constant OLD_IMAGE for StreamViewType
         /// </summary>
-        OLD_IMAGE,
+        public const string OLD_IMAGE = "OLD_IMAGE";
     }
 
     /// <summary>
     /// Constants used for properties of type OperationType.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<OperationType>))]
-    public enum OperationType
+    public static class OperationType
     {
         /// <summary>
         /// Constant INSERT for OperationType
         /// </summary>
-        INSERT,
+        public const string INSERT = "INSERT";
         /// <summary>
         /// Constant MODIFY for OperationType
         /// </summary>
-        MODIFY,
+        public const string MODIFY = "MODIFY";
         /// <summary>
         /// Constant REMOVE for OperationType
         /// </summary>
-        REMOVE,
+        public const string REMOVE = "REMOVE";
     }
 
     /// <summary>
     /// Constants used for properties of type AttributeAction.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ReturnConsumedCapacity>))]
-    public enum ReturnConsumedCapacity
+    public static class ReturnConsumedCapacity
     {
         /// <summary>
         /// Constant INDEXES for ReturnConsumedCapacity
         /// </summary>
-        INDEXES,
+        public const string INDEXES = "INDEXES";
         /// <summary>
         /// Constant NONE for ReturnConsumedCapacity
         /// </summary>
-        NONE,
+        public const string NONE = "NONE";
         /// <summary>
         /// Constant TOTAL for ReturnConsumedCapacity
         /// </summary>
-        TOTAL,
+        public const string TOTAL = "TOTAL";
     }
 
     /// <summary>
     /// Constants used for properties of type AttributeAction.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<AttributeAction>))]
-    public enum AttributeAction
+    public static class AttributeAction
     {
         /// <summary>
         /// Constant ADD for AttributeAction
         /// </summary>
-        ADD,
+        public const string ADD = "ADD";
         /// <summary>
         /// Constant DELETE for AttributeAction
         /// </summary>
-        DELETE,
+        public const string DELETE = "DELETE";
         /// <summary>
         /// Constant PUT for AttributeAction
         /// </summary>
-        PUT,
+        public const string PUT = "PUT";
     }
 
     /// <summary>
     /// Constants used for properties of type ReturnItemCollectionMetrics.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ReturnItemCollectionMetrics>))]
-    public enum ReturnItemCollectionMetrics
+    public static class ReturnItemCollectionMetrics
     {
         /// <summary>
         /// Constant NONE for ReturnItemCollectionMetrics
         /// </summary>
-        NONE,
+        public const string NONE = "NONE";
         /// <summary>
         /// Constant SIZE for ReturnItemCollectionMetrics
         /// </summary>
-        SIZE,
+        public const string SIZE = "SIZE";
     }
 
     /// <summary>
     /// Constants used for properties of type ConditionalOperator.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ConditionalOperator>))]
-    public enum ConditionalOperator
+    public static class ConditionalOperator
     {
         /// <summary>
         /// Constant AND for ConditionalOperator
         /// </summary>
-        AND,
+        public const string AND = "AND";
         /// <summary>
         /// Constant OR for ConditionalOperator
         /// </summary>
-        OR,
+        public const string OR = "OR";
     }
 
     /// <summary>
     /// Constants used for properties of type ReturnValue.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ReturnValue>))]
-    public enum ReturnValue
+    public static class ReturnValue
     {
         /// <summary>
         /// Constant ALL_NEW for ReturnValue
         /// </summary>
-        ALL_NEW,
+        public const string ALL_NEW = "ALL_NEW";
         /// <summary>
         /// Constant ALL_OLD for ReturnValue
         /// </summary>
-        ALL_OLD,
+        public const string ALL_OLD = "ALL_OLD";
         /// <summary>
         /// Constant NONE for ReturnValue
         /// </summary>
-        NONE,
+        public const string NONE = "NONE";
         /// <summary>
         /// Constant UPDATED_NEW for ReturnValue
         /// </summary>
-        UPDATED_NEW,
+        public const string UPDATED_NEW = "UPDATED_NEW";
         /// <summary>
         /// Constant UPDATED_OLD for ReturnValue
         /// </summary>
-        UPDATED_OLD,
+        public const string UPDATED_OLD = "UPDATED_OLD";
     }
 
     /// <summary>
     /// Constants used for properties of type ReturnValuesOnConditionCheckFailure.
     /// </summary>>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ReturnValuesOnConditionCheckFailure>))]
-    public enum ReturnValuesOnConditionCheckFailure
+    public static class ReturnValuesOnConditionCheckFailure
     {
         /// <summary>
         /// Constant ALL_OLD for ReturnValuesOnConditionCheckFailure
         /// </summary>
-        ALL_OLD,
+        public const string ALL_OLD = "ALL_OLD";
         /// <summary>
         /// Constant NONE for ReturnValuesOnConditionCheckFailure
         /// </summary>
-        NONE,
+        public const string NONE = "NONE";
     }
 
     /// <summary>
     /// Constants used for properties of type Select.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<Select>))]
-    public enum Select
+    public static class Select
     {
         /// <summary>
         /// Constant ALL_ATTRIBUTES for Select
         /// </summary>
-        ALL_ATTRIBUTES,
+        public const string ALL_ATTRIBUTES = "ALL_ATTRIBUTES";
         /// <summary>
         /// Constant ALL_PROJECTED_ATTRIBUTES for Select
         /// </summary>
-        ALL_PROJECTED_ATTRIBUTES,
+        public const string ALL_PROJECTED_ATTRIBUTES = "ALL_PROJECTED_ATTRIBUTES";
         /// <summary>
         /// Constant COUNT for Select
         /// </summary>
-        COUNT,
+        public const string COUNT = "COUNT";
         /// <summary>
         /// Constant SPECIFIC_ATTRIBUTES for Select
         /// </summary>
-        SPECIFIC_ATTRIBUTES,
+        public const string SPECIFIC_ATTRIBUTES = "SPECIFIC_ATTRIBUTES";
     }
 
     /// <summary>
     /// Constants used for properties of type ComparisonOperator.
     /// </summary>
     // @todo [JsonConverter(typeof(JsonStringEnumConverter<ComparisonOperator>))]
-    public enum ComparisonOperator
+    public static class ComparisonOperator
     {
         /// <summary>
         /// Constant BEGINS_WITH for ComparisonOperator
         /// </summary>
-        BEGINS_WITH,
+        public const string BEGINS_WITH = "BEGINS_WITH";
         /// <summary>
         /// Constant BETWEEN for ComparisonOperator
         /// </summary>
-        BETWEEN,
+        public const string BETWEEN = "BETWEEN";
         /// <summary>
         /// Constant CONTAINS for ComparisonOperator
         /// </summary>
-        CONTAINS,
+        public const string CONTAINS = "CONTAINS";
         /// <summary>
         /// Constant EQ for ComparisonOperator
         /// </summary>
-        EQ,
+        public const string EQ = "EQ";
         /// <summary>
         /// Constant GE for ComparisonOperator
         /// </summary>
-        GE,
+        public const string GE = "GE";
         /// <summary>
         /// Constant GT for ComparisonOperator
         /// </summary>
-        GT,
+        public const string GT = "GT";
         /// <summary>
         /// Constant IN for ComparisonOperator
         /// </summary>
-        IN,
+        public const string IN = "IN";
         /// <summary>
         /// Constant LE for ComparisonOperator
         /// </summary>
-        LE,
+        public const string LE = "LE";
         /// <summary>
         /// Constant LT for ComparisonOperator
         /// </summary>
-        LT,
+        public const string LT = "LT";
         /// <summary>
         /// Constant NE for ComparisonOperator
         /// </summary>
-        NE,
+        public const string NE = "NE";
         /// <summary>
         /// Constant NOT_CONTAINS for ComparisonOperator
         /// </summary>
-        NOT_CONTAINS,
+        public const string NOT_CONTAINS = "NOT_CONTAINS";
         /// <summary>
         /// Constant NOT_NULL for ComparisonOperator
         /// </summary>
-        NOT_NULL,
+        public const string NOT_NULL = "NOT_NULL";
         /// <summary>
         /// Constant NULL for ComparisonOperator
         /// </summary>
-        NULL,
+        public const string NULL = "NULL";
     }
 }

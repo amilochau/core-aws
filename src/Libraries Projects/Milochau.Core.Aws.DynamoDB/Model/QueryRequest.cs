@@ -91,7 +91,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        public ConditionalOperator? ConditionalOperator { get; set; }
+        /// <remarks><see cref="DynamoDB.ConditionalOperator"/></remarks>
+        public string? ConditionalOperator { get; set; }
 
         /// <summary>
         /// Gets and sets the property ConsistentRead. 
@@ -522,7 +523,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </note>
         /// </summary>
-        public Select? Select { get; set; }
+        /// <remarks><see cref="DynamoDB.Select"/></remarks>
+        public string? Select { get; set; }
 
         /// <summary>
         /// Gets and sets the property TableName. 

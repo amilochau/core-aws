@@ -82,6 +82,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        public StreamViewType StreamViewType { get; set; }
+        /// <remarks><see cref="DynamoDB.StreamViewType"/></remarks>
+        public string StreamViewType { get; set; } = null!;
     }
 }

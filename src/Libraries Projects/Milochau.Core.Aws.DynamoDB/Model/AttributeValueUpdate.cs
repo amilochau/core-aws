@@ -118,7 +118,8 @@
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        public AttributeAction? Action { get; set; }
+        /// <remarks><see cref="AttributeAction"/></remarks>
+        public string? Action { get; set; }
 
         /// <summary>
         /// Gets and sets the property Value. 

@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.SESv2;
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;

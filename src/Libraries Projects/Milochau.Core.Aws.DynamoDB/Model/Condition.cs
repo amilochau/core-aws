@@ -262,6 +262,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// Conditional Parameters</a> in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        public ComparisonOperator? ComparisonOperator { get; set; }
+        /// <remarks><see cref="DynamoDB.ComparisonOperator"/></remarks>
+        public string? ComparisonOperator { get; set; }
     }
 }

@@ -127,7 +127,8 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        public InvocationType? InvocationType { get; set; }
+        /// <remarks><see cref="Lambda.InvocationType"/></remarks>
+        public string? InvocationType { get; set; }
 
         /// <summary>
         /// Gets and sets the property PayloadStream. 

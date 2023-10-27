@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Lambda;
-using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;

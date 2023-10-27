@@ -51,7 +51,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        public ConditionalOperator? ConditionalOperator { get; set; }
+        /// <remarks><see cref="DynamoDB.ConditionalOperator"/></remarks>
+        public string? ConditionalOperator { get; set; }
 
         /// <summary>
         /// Gets and sets the property ConditionExpression. 
@@ -245,7 +246,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// default), no statistics are returned.
         /// </para>
         /// </summary>
-        public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
+        /// <remarks><see cref="DynamoDB.ReturnItemCollectionMetrics"/></remarks>
+        public string? ReturnItemCollectionMetrics { get; set; }
 
         /// <summary>
         /// Gets and sets the property ReturnValues. 
@@ -282,7 +284,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </note>
         /// </summary>
-        public ReturnValue? ReturnValues { get; set; }
+        /// <remarks><see cref="DynamoDB.ReturnValue"/></remarks>
+        public string? ReturnValues { get; set; }
 
         /// <summary>
         /// Gets and sets the property ReturnValuesOnConditionCheckFailure. 
@@ -297,7 +300,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// units are consumed.
         /// </para>
         /// </summary>
-        public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; set; }
+        /// <remarks><see cref="DynamoDB.ReturnValuesOnConditionCheckFailure"/></remarks>
+        public string? ReturnValuesOnConditionCheckFailure { get; set; }
 
         /// <summary>
         /// Gets and sets the property TableName. 

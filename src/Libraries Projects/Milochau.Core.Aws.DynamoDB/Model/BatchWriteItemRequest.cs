@@ -165,6 +165,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// default), no statistics are returned.
         /// </para>
         /// </summary>
-        public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
+        /// <remarks><see cref="DynamoDB.ReturnItemCollectionMetrics"/></remarks>
+        public string? ReturnItemCollectionMetrics { get; set; }
     }
 }
