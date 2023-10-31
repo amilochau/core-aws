@@ -4,6 +4,8 @@ using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies;
 using Milochau.Core.Aws.Core.XRayRecorder.Models;
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -28,7 +30,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             RootSegment = parent;
             Sampled = parent.Sampled;
             IsInProgress = true;
-            Namespace = "aws";
             StartTime = DateTime.UtcNow.ToUnixTimeSeconds();
         }
 
@@ -102,6 +103,45 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             HasFault = true;
             Cause = new Cause(exceptionSerializationStrategy.DescribeException(e));
+        }
+
+        /// <remarks>Not used for AWS services, but used for external calls</remarks>
+        public void AddHttpInformation(HttpRequestMessage httpRequest)
+        {
+            var requestAttributes = new Dictionary<string, object>
+            {
+                ["method"] = httpRequest.Method.Method,
+                ["url"] = httpRequest.RequestUri!.GetLeftPart(UriPartial.Path),
+            };
+            Http["request"] = requestAttributes;
+        }
+
+        public void AddHttpInformation(HttpResponseMessage httpResponse)
+        {
+            int statusCode = (int)httpResponse.StatusCode;
+            if (statusCode == 429)
+            {
+                HasError = false;
+                HasFault = true;
+                IsThrottled = true;
+            }
+            else if (statusCode >= 400 && statusCode <= 499)
+            {
+                HasError = true;
+                HasFault = false;
+            }
+            else if (statusCode >= 500 && statusCode <= 599)
+            {
+                HasError = false;
+                HasFault = true;
+            }
+
+            var responseAttributes = new Dictionary<string, object>
+            {
+                ["status"] = statusCode,
+                ["content_length"] = httpResponse.Content.Headers.ContentLength ?? 0,
+            };
+            Http["response"] = responseAttributes;
         }
 
         /// <summary>

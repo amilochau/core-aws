@@ -65,31 +65,31 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets aws information
         /// </summary>
         [JsonPropertyName("aws")]
-        public IDictionary<string, object?>? Aws { get; set; }
+        public IDictionary<string, object?> Aws { get; set; } = new Dictionary<string, object?>();
 
         /// <summary>
         /// Gets the http attribute
         /// </summary>
         [JsonPropertyName("http")]
-        public IDictionary<string, Dictionary<string, long>>? Http { get; set; }
+        public IDictionary<string, Dictionary<string, object>> Http { get; set; } = new Dictionary<string, Dictionary<string, object>>();
+
+        /// <summary>
+        /// Gets annotations, indexed
+        /// </summary>
+        [JsonPropertyName("annotations")]
+        public IDictionary<string, object> Annotations { get; set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Gets metadata, not indexed
+        /// </summary>
+        [JsonPropertyName("metadata")]
+        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets or sets the sample decision
         /// </summary>
         [JsonIgnore]
         public SampleDecision Sampled { get; set; }
-
-        internal void AddToAws(string key, object? value)
-        {
-            Aws ??= new Dictionary<string, object?>();
-            Aws[key] = value;
-        }
-
-        internal void AddToHttp(string key, Dictionary<string, long> value)
-        {
-            Http ??= new Dictionary<string, Dictionary<string, long>>();
-            Http[key] = value;
-        }
 
         /// <summary>
         /// Validate the segment id
