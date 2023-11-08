@@ -10,8 +10,7 @@ env:
   PROJECTS_BUILD: './src/Milochau.Core.Aws.Sdk.sln'
   PROJECTS_LIBRARIES: './src/Milochau.Core.Aws.Sdk.sln'
   VERSION_FILE: './src/Directory.Build.props'
-  NUGET_URL: 'https://nuget.pkg.github.com/amilochau/index.json'
-  DOTNET_VERSION: 8.0.x
+  DOTNET_VERSION: 7.0.x
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
@@ -20,15 +19,17 @@ jobs:
     name: Deploy libraries
     runs-on: ubuntu-latest
     environment: PKG
+    env:
+      GH_TOKEN: ${{ github.token }}
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Deploy libraries
-        uses: amilochau/github-actions/release/nuget@v3
+        uses: amilochau/github-actions/release/nuget@v4
         with:
           dotnetVersion: ${{ env.DOTNET_VERSION }}
           projectsToBuild: ${{ env.PROJECTS_BUILD }}
-          projectsToPublish: ${{ env.PROJECTS_LIBRARIES }}
+          projectsToPack: ${{ env.PROJECTS_LIBRARIES }}
           versionFile: ${{ env.VERSION_FILE }}
-          githubPackagesUrl: ${{ env.NUGET_URL }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
           nugetOrgToken: ${{ secrets.NUGETORG_TOKEN }}
