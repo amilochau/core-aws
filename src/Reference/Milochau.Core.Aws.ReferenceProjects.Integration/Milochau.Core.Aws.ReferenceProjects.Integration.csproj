@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries Projects\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj" />
     <ProjectReference Include="..\Milochau.Core.Aws.ReferenceProjects.LambdaFunction\Milochau.Core.Aws.ReferenceProjects.LambdaFunction.csproj" />
   </ItemGroup>
 

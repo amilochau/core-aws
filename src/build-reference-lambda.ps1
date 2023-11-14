@@ -1,7 +1,7 @@
 $framework = 'net8.0'
 $dockerfilePath = 'Dockerfile-reference-lambda'
 $solutionPath = './Milochau.Core.Aws.ReferenceProjects.LambdaFunction.sln'
-$bootstrapPath = "./Reference Projects/Milochau.Core.Aws.ReferenceProjects.LambdaFunction/bin/Release/$framework/linux-x64/publish/bootstrap"
+$bootstrapPath = "./Reference/Milochau.Core.Aws.ReferenceProjects.LambdaFunction/bin/Release/$framework/linux-x64/publish/bootstrap"
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
 $dir = (Get-Location).Path
