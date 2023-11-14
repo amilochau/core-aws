@@ -1,4 +1,4 @@
-$framework = 'net7.0'
+$framework = 'net8.0'
 $dockerfilePath = 'Dockerfile-reference-lambda'
 $solutionPath = './Milochau.Core.Aws.ReferenceProjects.LambdaFunction.sln'
 $bootstrapPath = "./Reference Projects/Milochau.Core.Aws.ReferenceProjects.LambdaFunction/bin/Release/$framework/linux-x64/publish/bootstrap"
