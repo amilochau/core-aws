@@ -39,7 +39,7 @@ module "functions_app" {
 
   lambda_settings = {
     architecture = "x86_64"
-    runtime      = "provided.al2"
+    runtime      = "provided.al2023"
     functions = {
       for k, v in var.lambda_settings.functions : "${replace(k, "/", "-")}" => {
         memory_size_mb        = v.memory_size_mb
