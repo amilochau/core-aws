@@ -44,7 +44,11 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                             {
                                 new EmailRequestContentMessage
                                 {
-                                    Message = "Ok"
+                                    Id = System.Guid.NewGuid().ToString(),
+                                    Message = "Ok",
+                                    SenderEmail = "aaa@outlook.com",
+                                    SenderName = "aaa",
+                                    Status = "OK",
                                 }
                             }
                         }, ApplicationJsonSerializerContext.Default.EmailRequestContent),

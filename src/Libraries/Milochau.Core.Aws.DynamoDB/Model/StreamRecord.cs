@@ -24,7 +24,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// The primary key attribute(s) for the DynamoDB item that was modified.
         /// </para>
         /// </summary>
-        public Dictionary<string, AttributeValue> Keys { get; set; } = null!;
+        public required Dictionary<string, AttributeValue> Keys { get; set; }
 
         /// <summary>
         /// Gets and sets the property NewImage. 
@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// The sequence number of the stream record.
         /// </para>
         /// </summary>
-        public string SequenceNumber { get; set; } = null!;
+        public required string SequenceNumber { get; set; }
 
         /// <summary>
         /// Gets and sets the property SizeBytes. 
@@ -83,6 +83,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         ///  </li> </ul>
         /// </summary>
         /// <remarks><see cref="DynamoDB.StreamViewType"/></remarks>
-        public string StreamViewType { get; set; } = null!;
+        public required string StreamViewType { get; set; }
     }
 }

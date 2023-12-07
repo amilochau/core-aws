@@ -14,7 +14,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("awsRegion")]
-        public string AwsRegion { get; set; } = null!;
+        public required string AwsRegion { get; set; }
 
         /// <summary>
         /// Gets and sets the property Dynamodb. 
@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("dynamodb")]
-        public StreamRecord Dynamodb { get; set; } = null!;
+        public required StreamRecord Dynamodb { get; set; }
 
         /// <summary>
         /// Gets and sets the property EventID. 
@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("eventID")]
-        public string EventID { get; set; } = null!;
+        public required string EventID { get; set; }
 
         /// <summary>
         /// Gets and sets the property EventName. 
@@ -55,7 +55,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         /// <remarks>See <see cref="OperationType"/></remarks>
         [JsonPropertyName("eventName")]
-        public string EventName { get; set; } = null!;
+        public required string EventName { get; set; }
 
         /// <summary>
         /// Gets and sets the property EventSource. 
@@ -65,7 +65,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("eventSource")]
-        public string EventSource { get; set; } = null!;
+        public required string EventSource { get; set; }
 
         /// <summary>
         /// Gets and sets the property EventVersion. 
@@ -81,7 +81,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("eventVersion")]
-        public string EventVersion { get; set; } = null!;
+        public required string EventVersion { get; set; }
 
         /// <summary>
         /// Gets and sets the property UserIdentity. 

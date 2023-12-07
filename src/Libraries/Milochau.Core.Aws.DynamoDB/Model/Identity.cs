@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("principalId")]
-        public string PrincipalId { get; set; } = null!;
+        public required string PrincipalId { get; set; }
 
         /// <summary>
         /// Gets and sets the property Type. 
@@ -24,6 +24,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         [JsonPropertyName("type")]
-        public string Type { get; set; } = null!;
+        public required string Type { get; set; }
     }
 }

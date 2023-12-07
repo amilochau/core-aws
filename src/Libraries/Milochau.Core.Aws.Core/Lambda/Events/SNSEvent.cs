@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// <summary>
         /// List of SNS records.
         /// </summary>
-        public IList<SNSRecord> Records { get; set; } = null!;
+        public required IList<SNSRecord> Records { get; set; }
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// <summary>
         /// The SNS message.
         /// </summary>
-        public SNSMessage Sns { get; set; } = null!;
+        public required SNSMessage Sns { get; set; }
     }
 
     /// <summary>
@@ -34,6 +34,6 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// <summary>
         /// The message.
         /// </summary>
-        public string Message { get; set; } = null!;
+        public required string Message { get; set; }
     }
 }

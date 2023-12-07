@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.ApiGateway
     {
         /// <summary>Authenticated user</summary>
         [JsonIgnore]
-        public IdentityUser? User { get; set; } = null!;
+        public IdentityUser? User { get; set; }
 
         /// <summary>Parse request to get authentication data</summary>
         /// <remarks>

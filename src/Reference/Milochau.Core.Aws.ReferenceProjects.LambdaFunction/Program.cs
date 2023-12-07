@@ -58,14 +58,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 
         public static Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
         {
-            return DoAsync(new(), context, cancellationToken);
+            return DoAsync(new FunctionRequest(), context, cancellationToken);
         }
 
         public static async Task FunctionHandlerSns(SNSEvent request, ILambdaContext context, CancellationToken cancellationToken)
         {
             foreach (var record in request.Records)
             {
-                await DoAsync(new(), context, cancellationToken);
+                await DoAsync(new FunctionRequest(), context, cancellationToken);
             }
         }
 
@@ -104,11 +104,23 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             ILambdaContext context,
             CancellationToken cancellationToken)
         {
-            if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out _))
+            if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out var requestData))
             {
                 return proxyResponse;
             }
 
+            //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
+            //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
+            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+
+            var response = new FunctionResponse();
+            return await DoAsync(requestData, context, cancellationToken);
+        }
+
+        public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(FunctionRequest requestData,
+            ILambdaContext context,
+            CancellationToken cancellationToken)
+        {
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
             await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
