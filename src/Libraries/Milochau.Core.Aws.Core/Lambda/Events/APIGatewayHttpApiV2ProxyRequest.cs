@@ -21,7 +21,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// <summary>
         /// The request context for the request
         /// </summary>
-        public ProxyRequestContext RequestContext { get; set; } = null!;
+        public required ProxyRequestContext RequestContext { get; set; }
 
         /// <summary>
         /// The HTTP request body.

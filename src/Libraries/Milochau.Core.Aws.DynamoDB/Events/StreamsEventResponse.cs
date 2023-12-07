@@ -25,6 +25,6 @@ namespace Milochau.Core.Aws.DynamoDB.Events
         /// Sequence number of the record which failed processing.
         /// </summary>
         [JsonPropertyName("itemIdentifier")]
-        public string ItemIdentifier { get; set; } = null!;
+        public required string ItemIdentifier { get; set; }
     }
 }

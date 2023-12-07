@@ -14,7 +14,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
         /// <summary>
         /// List of DynamoDB event records.
         /// </summary>
-        public IList<DynamodbStreamRecord> Records { get; set; } = null!;
+        public required IList<DynamodbStreamRecord> Records { get; set; }
 
         /// <summary>
         /// DynamoDB stream record
@@ -26,7 +26,7 @@ namespace Milochau.Core.Aws.DynamoDB.Events
             /// The event source arn of DynamoDB.
             /// </summary>
             [JsonPropertyName("eventSourceArn")]
-            public string EventSourceArn { get; set; } = null!;
+            public required string EventSourceArn { get; set; }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
     public class EmailRequestRecipient
     {
-        public string EmailAddress { get; set; } = null!;
+        public required string EmailAddress { get; set; }
     }
 
     public class EmailRequestContent
@@ -38,18 +38,18 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
     public class EmailRequestContentMessage
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = null!;
+        public required string Id { get; set; }
 
         [JsonPropertyName("status")]
-        public string Status { get; set; } = null!;
+        public required string Status { get; set; }
 
         [JsonPropertyName("sender_email")]
-        public string SenderEmail { get; set; } = null!;
+        public required string SenderEmail { get; set; }
 
         [JsonPropertyName("sender_name")]
-        public string SenderName { get; set; } = null!;
+        public required string SenderName { get; set; }
 
         [JsonPropertyName("message")]
-        public string Message { get; set; } = null!;
+        public required string Message { get; set; }
     }
 }
