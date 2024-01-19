@@ -17,6 +17,7 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
         internal const string Key_XRayContextMissing = "AWS_XRAY_CONTEXT_MISSING";
         internal const string Key_ConventionPrefix = "CONVENTION__PREFIX";
+        internal const string Key_ConventionOrganization = "CONVENTION__ORGANIZATION";
         internal const string Key_ConventionApplication = "CONVENTION__APPLICATION";
         internal const string Key_ConventionHost = "CONVENTION__HOST";
 
@@ -86,6 +87,9 @@ namespace Milochau.Core.Aws.Core.References
 
         /// <summary>Convention - Prefix</summary>
         public static string ConventionPrefix { get; } = GetEnvironmentVariable(Key_ConventionPrefix)!;
+
+        /// <summary>Convention - Organization</summary>
+        public static string ConventionOrganization { get; } = GetEnvironmentVariable(Key_ConventionOrganization)!;
 
         /// <summary>Convention - Application</summary>
         public static string ConventionApplication{ get; } = GetEnvironmentVariable(Key_ConventionApplication)!;
