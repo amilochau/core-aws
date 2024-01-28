@@ -92,6 +92,28 @@ namespace Milochau.Core.Aws.Cognito
     public partial interface IAmazonCognitoIdentityProvider
     {
         /// <summary>
+        /// Gets the user attributes and metadata for a user.
+        /// 
+        ///  <note> 
+        /// <para>
+        /// Amazon Cognito doesn't evaluate Identity and Access Management (IAM) policies in requests
+        /// for this API operation. For this operation, you can't use IAM credentials to authorize
+        /// requests, and you can't grant IAM permissions in policies. For more information about
+        /// authorization models in Amazon Cognito, see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/user-pools-API-operations.html">Using
+        /// the Amazon Cognito native and OIDC APIs</a>.
+        /// </para>
+        ///  </note>
+        /// </summary>
+        /// <param name="request">Container for the necessary parameters to execute the GetUser service method.</param>
+        /// <param name="cancellationToken">
+        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+        /// </param>
+        /// 
+        /// <returns>The response from the GetUser service method, as returned by CognitoIdentityProvider.</returns>
+        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
+        Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Initiates sign-in for a user in the Amazon Cognito user directory. You can't sign
         /// in a user with a federated IdP with <code>InitiateAuth</code>. For more information,
         /// see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html">

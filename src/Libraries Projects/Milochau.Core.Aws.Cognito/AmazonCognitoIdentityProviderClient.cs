@@ -122,6 +122,41 @@ namespace Milochau.Core.Aws.Cognito
 
         #endregion
 
+        #region  GetUser
+
+        /// <summary>
+        /// Gets the user attributes and metadata for a user.
+        /// 
+        ///  <note> 
+        /// <para>
+        /// Amazon Cognito doesn't evaluate Identity and Access Management (IAM) policies in requests
+        /// for this API operation. For this operation, you can't use IAM credentials to authorize
+        /// requests, and you can't grant IAM permissions in policies. For more information about
+        /// authorization models in Amazon Cognito, see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/user-pools-API-operations.html">Using
+        /// the Amazon Cognito native and OIDC APIs</a>.
+        /// </para>
+        ///  </note>
+        /// </summary>
+        /// <param name="request">Container for the necessary parameters to execute the GetUser service method.</param>
+        /// <param name="cancellationToken">
+        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+        /// </param>
+        /// 
+        /// <returns>The response from the GetUser service method, as returned by CognitoIdentityProvider.</returns>
+        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
+        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, System.Threading.CancellationToken cancellationToken)
+        {
+            var options = new InvokeOptions
+            {
+                HttpRequestMessageMarshaller = GetUserRequestMarshaller.Instance,
+                ResponseUnmarshaller = GetUserResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "GetUser",
+            };
+
+            return InvokeAsync<GetUserResponse>(request, options, cancellationToken);
+        }
+
+        #endregion
         #region InitiateAuth
 
         /// <summary>

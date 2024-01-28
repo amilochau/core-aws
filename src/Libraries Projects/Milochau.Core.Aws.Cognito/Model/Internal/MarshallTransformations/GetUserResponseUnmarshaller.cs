@@ -3,26 +3,25 @@ using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
 {
     /// <summary>
-    /// Response Unmarshaller for InitiateAuth operation
+    /// Response Unmarshaller for GetUser operation
     /// </summary>  
-    public class InitiateAuthResponseUnmarshaller : JsonResponseUnmarshaller
+    public class GetUserResponseUnmarshaller : JsonResponseUnmarshaller
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
         /// </summary>  
         public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
         {
-            return JsonSerializer.Deserialize(context.Stream, InitiateAuthJsonSerializerContext.Default.InitiateAuthResponse)!; // @todo null?
+            return JsonSerializer.Deserialize(context.Stream, GetUserJsonSerializerContext.Default.GetUserResponse)!; // @todo null?
         }
 
         /// <summary>
@@ -39,6 +38,6 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
         /// <summary>
         /// Gets the singleton.
         /// </summary>  
-        public static InitiateAuthResponseUnmarshaller Instance { get; } = new InitiateAuthResponseUnmarshaller();
+        public static GetUserResponseUnmarshaller Instance { get; } = new GetUserResponseUnmarshaller();
     }
 }

@@ -38,6 +38,16 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 },
                 ClientId = "aaa",
             }, cancellationToken);
+
+            if (string.IsNullOrEmpty(response.AuthenticationResult?.AccessToken))
+            {
+                return;
+            }
+
+            var user = await amazonCognitoIdentityProvider.GetUserAsync(new GetUserRequest
+            {
+                AccessToken = response.AuthenticationResult.AccessToken
+            }, cancellationToken);
         }
     }
 }
