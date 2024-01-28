@@ -7,11 +7,11 @@ namespace Milochau.Core.Aws.Core.Runtime
     public class ClientConfig : IClientConfig
     {
         /// <summary>Name of the service</summary>
-        /// <remarks>Used to sign requests</remarks>
+        /// <remarks>Used to sign requests. See AmazonCognitoIdentityProviderConfig.AuthenticationServiceName in official SDK</remarks>
         public required string AuthenticationServiceName { get; set; }
 
         /// <summary>Name of the service</summary>
-        /// <remarks>Used to monitor requests</remarks>
+        /// <remarks>Used to monitor requests. See </remarks>
         public required string MonitoringServiceName { get; set; }
     }
 }
