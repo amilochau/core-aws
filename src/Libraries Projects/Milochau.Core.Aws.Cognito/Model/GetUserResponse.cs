@@ -1,9 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Cognito.Model
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milochau.Core.Aws.Cognito
+﻿namespace Milochau.Core.Aws.Cognito
 {
     // @todo To be improved with .NET 8 - see https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation-modes?pivots=dotnet-8-0#serialize-enum-fields-as-strings
 

@@ -1,11 +1,5 @@
 ﻿using Milochau.Core.Aws.Cognito;
-using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.DynamoDB.Model;
-using Milochau.Core.Aws.DynamoDB;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Cognito.Model;

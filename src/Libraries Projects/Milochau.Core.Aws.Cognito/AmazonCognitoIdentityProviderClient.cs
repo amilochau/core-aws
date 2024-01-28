@@ -2,10 +2,6 @@
 using Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

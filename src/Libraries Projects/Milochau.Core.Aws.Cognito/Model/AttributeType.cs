@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milochau.Core.Aws.Cognito.Model
+﻿namespace Milochau.Core.Aws.Cognito.Model
 {
     /// <summary>
     /// Specifies whether the attribute is standard or custom.
