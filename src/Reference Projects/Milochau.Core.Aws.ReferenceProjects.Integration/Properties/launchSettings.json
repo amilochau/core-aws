@@ -10,7 +10,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CONVENTION__APPLICATION": "test",
         "CONVENTION__HOST": "dev",
-        "CONVENTION__PREFIX": "test-dev"
+        "CONVENTION__PREFIX": "test-dev",
+        "AWS_REGION": "eu-west-3"
       }
     }
   }

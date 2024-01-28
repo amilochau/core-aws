@@ -14,6 +14,7 @@ using Milochau.Core.Aws.DynamoDB.Events;
 using System.Collections.Generic;
 using System.Linq;
 using Milochau.Core.Aws.Core.References.Serialization;
+using Milochau.Core.Aws.Cognito;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
@@ -23,6 +24,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         private static readonly DynamoDbDataAccess dynamoDbDataAccess;
         private static readonly EmailsLambdaDataAccess emailsLambdaDataAccess;
         private static readonly SesDataAccess sesDataAccess;
+        private static readonly CognitoDataAccess cognitoDataAccess;
 
         static Function()
         {
@@ -32,6 +34,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             emailsLambdaDataAccess = new EmailsLambdaDataAccess(lambdaClient);
             var simpleEmailServiceClient = new AmazonSimpleEmailServiceV2Client();
             sesDataAccess = new SesDataAccess(simpleEmailServiceClient);
+            var cognitoIdentityProviderClient = new AmazonCognitoIdentityProviderClient();
+            cognitoDataAccess = new CognitoDataAccess(cognitoIdentityProviderClient);
         }
 
         private static async Task Main()
@@ -111,7 +115,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
-            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+            //await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+            await cognitoDataAccess.LoginAsync(cancellationToken);
 
             var response = new FunctionResponse();
             return HttpResponse.Ok(response, ApplicationJsonSerializerContext.Default.FunctionResponse);
