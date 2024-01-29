@@ -24,12 +24,12 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// One or more name-value pairs containing the validation data in the request to register a user. The validation data is set and then passed from the client in the request to register a user. You can pass this data to your Lambda function by using the ClientMetadata parameter in the InitiateAuth and AdminInitiateAuth API actions.
         /// </summary>
         [JsonPropertyName("validationData")]
-        public Dictionary<string, string> ValidationData { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string>? ValidationData { get; set; }
 
         /// <summary>
         /// One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the pre sign-up trigger. You can pass this data to your Lambda function by using the ClientMetadata parameter in the following API actions: AdminCreateUser, AdminRespondToAuthChallenge, ForgotPassword, and SignUp.
         /// </summary>
         [JsonPropertyName("clientMetadata")]
-        public Dictionary<string, string> ClientMetadata { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string>? ClientMetadata { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// One or more pairs of user attribute names and values.Each pair is in the form "name": "value".
         /// </summary>
         [JsonPropertyName("userAttributes")]
-        public Dictionary<string, string> UserAttributes { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string>? UserAttributes { get; set; }
     }
 }

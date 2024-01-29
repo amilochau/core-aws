@@ -9,6 +9,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
     public interface ICognitoDataAccess
     {
         Task LoginAsync(CancellationToken cancellationToken);
+        Task UpdateAttributesAsync(CancellationToken cancellationToken);
     }
 
     public class CognitoDataAccess : ICognitoDataAccess
@@ -41,6 +42,19 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             var user = await amazonCognitoIdentityProvider.GetUserAsync(new GetUserRequest
             {
                 AccessToken = response.AuthenticationResult.AccessToken
+            }, cancellationToken);
+        }
+
+        public async Task UpdateAttributesAsync(CancellationToken cancellationToken)
+        {
+            var response = await amazonCognitoIdentityProvider.AdminUpdateUserAttributesAsync(new AdminUpdateUserAttributesRequest
+            {
+                Username = "aaa@outlook.fr",
+                UserPoolId = "eu-west-3_Trx7Zxn8M",
+                UserAttributes = new List<AttributeType>
+                {
+                    new AttributeType { Name = "custom:user_id", Value = "XXX" },
+                },
             }, cancellationToken);
         }
     }

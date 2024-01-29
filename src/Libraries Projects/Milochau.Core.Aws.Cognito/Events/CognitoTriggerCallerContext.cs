@@ -18,6 +18,5 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// </summary>
         [JsonPropertyName("clientId")]
         public string ClientId { get; set; } = null!;
-
     }
 }
