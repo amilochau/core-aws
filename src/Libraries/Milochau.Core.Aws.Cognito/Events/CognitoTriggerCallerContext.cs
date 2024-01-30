@@ -11,12 +11,12 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// The AWS SDK version number.
         /// </summary>
         [JsonPropertyName("awsSdkVersion")]
-        public string AwsSdkVersion { get; set; } = null!;
+        public required string AwsSdkVersion { get; set; }
 
         /// <summary>
         /// The ID of the client associated with the user pool.
         /// </summary>
         [JsonPropertyName("clientId")]
-        public string ClientId { get; set; } = null!;
+        public required string ClientId { get; set; }
     }
 }

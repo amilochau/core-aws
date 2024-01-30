@@ -141,7 +141,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// to your user.
         /// </para>
         /// </summary>
-        public List<AttributeType> UserAttributes { get; set; } = null!;
+        public required List<AttributeType> UserAttributes { get; set; }
 
         /// <summary>
         /// Gets and sets the property Username. 
@@ -149,7 +149,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// The user name of the user for whom you want to update user attributes.
         /// </para>
         /// </summary>
-        public string Username { get; set; } = null!;
+        public required string Username { get; set; }
 
         /// <summary>
         /// Gets and sets the property UserPoolId. 
@@ -157,6 +157,6 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// The user pool ID for the user pool where you want to update user attributes.
         /// </para>
         /// </summary>
-        public string UserPoolId { get; set; } = null!;
+        public required string UserPoolId { get; set; }
     }
 }

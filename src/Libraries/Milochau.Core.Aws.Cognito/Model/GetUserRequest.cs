@@ -24,6 +24,6 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// A non-expired access token for the user whose information you want to query.
         /// </para>
         /// </summary>
-        public string AccessToken { get; set; } = null!;
+        public required string AccessToken { get; set; }
     }
 }

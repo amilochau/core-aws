@@ -18,13 +18,13 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// During sign-in, this attribute can be set to CONFIRMED, or not set, to auto-confirm your users and allow them to sign-in with their previous passwords. This is the simplest experience for the user.
         /// </summary>
         [JsonPropertyName("finalUserStatus")]
-        public string? FinalUserStatus { get; set; } = null!;
+        public string? FinalUserStatus { get; set; }
 
         /// <summary>
         /// This attribute can be set to "SUPPRESS" to suppress the welcome message usually sent by Amazon Cognito to new users. If this attribute is not returned, the welcome message will be sent.
         /// </summary>
         [JsonPropertyName("messageAction")]
-        public string? MessageAction { get; set; } = null!;
+        public string? MessageAction { get; set; }
 
         /// <summary>
         /// This attribute can be set to "EMAIL" to send the welcome message by email, or "SMS" to send the welcome message by SMS. If this attribute is not returned, the welcome message will be sent by SMS.

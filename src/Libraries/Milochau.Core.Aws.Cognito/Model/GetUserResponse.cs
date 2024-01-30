@@ -39,7 +39,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// name.
         /// </para>
         /// </summary>
-        public List<AttributeType> UserAttributes { get; set; } = null!;
+        public List<AttributeType>? UserAttributes { get; set; }
 
         ///// <summary>
         ///// Gets and sets the property UserMFASettingList. 
@@ -56,6 +56,6 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// The username of the user that you requested.
         /// </para>
         /// </summary>
-        public string Username { get; set; } = null!;
+        public string? Username { get; set; }
     }
 }

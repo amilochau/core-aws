@@ -11,7 +11,7 @@
         /// The name of the attribute.
         /// </para>
         /// </summary>
-        public string Name { get; set; } = null!;
+        public required string Name { get; set; }
 
         /// <summary>
         /// Gets and sets the property Value. 

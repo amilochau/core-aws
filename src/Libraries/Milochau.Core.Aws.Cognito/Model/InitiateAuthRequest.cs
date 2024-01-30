@@ -102,7 +102,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// </para>
         /// </summary>
         /// <remarks>See AuthFlowType</remarks>
-        public string AuthFlow { get; set; } = null!;
+        public required string AuthFlow { get; set; }
 
         /// <summary>
         /// Gets and sets the property AuthParameters. 
@@ -150,7 +150,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// The app client ID.
         /// </para>
         /// </summary>
-        public string ClientId { get; set; } = null!;
+        public required string ClientId { get; set; }
 
         /// <summary>
         /// Gets and sets the property ClientMetadata. 

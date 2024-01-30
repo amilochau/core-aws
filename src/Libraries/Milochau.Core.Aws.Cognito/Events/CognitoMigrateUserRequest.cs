@@ -12,13 +12,13 @@ namespace Milochau.Core.Aws.Cognito.Events
         /// The username entered by the user.
         /// </summary>
         [JsonPropertyName("userName")]
-        public string UserName { get; set; } = null!;
+        public required string UserName { get; set; }
 
         /// <summary>
         /// The password entered by the user for sign-in. It is not set in the forgot-password flow.
         /// </summary>
         [JsonPropertyName("password")]
-        public string Password { get; set; } = null!;
+        public required string Password { get; set; }
 
         /// <summary>
         /// One or more name-value pairs containing the validation data in the request to register a user. The validation data is set and then passed from the client in the request to register a user. You can pass this data to your Lambda function by using the ClientMetadata parameter in the InitiateAuth and AdminInitiateAuth API actions.
