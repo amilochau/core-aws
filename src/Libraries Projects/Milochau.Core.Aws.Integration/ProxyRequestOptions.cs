@@ -8,9 +8,13 @@ namespace Milochau.Core.Aws.Integration
         /// <summary>Whether the request is anonymous</summary>
         public bool AnonymousRequest { get; set; }
 
+        /// <summary>User sub</summary>
+        /// <remarks>Is not used if <see cref="AnonymousRequest"/> is set to true</remarks>
+        public string UserSub { get; set; } = "00000000-0000-0000-0000-000000000000";
+
         /// <summary>User id</summary>
         /// <remarks>Is not used if <see cref="AnonymousRequest"/> is set to true</remarks>
-        public string UserId { get; set; } = "00000000000000000000000000000001";
+        public string UserId { get; set; } = "00000000-0000-0000-0000-000000000001";
 
         /// <summary>User name</summary>
         /// <remarks>Is not used if <see cref="AnonymousRequest"/> is set to true</remarks>

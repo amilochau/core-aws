@@ -18,15 +18,17 @@ namespace Milochau.Core.Aws.ApiGateway
         /// </remarks>
         protected bool ParseAuthentication(APIGatewayHttpApiV2ProxyRequest request)
         {
-            if (request.TryGetJwtClaims("sub", out var userId)
+            if (request.TryGetJwtClaims("sub", out var userSub)
                 && request.TryGetJwtClaims("email", out var userEmail)
-                && request.TryGetJwtClaims("name", out var userName))
+                && request.TryGetJwtClaims("name", out var userName)
+                && request.TryGetJwtClaims("custom:user_id", out var userId))
             {
                 User = new IdentityUser
                 {
-                    Id = userId,
+                    Sub = userSub,
                     Email = userEmail,
                     Name = userName,
+                    UserId = userId,
                 };
             }
 
