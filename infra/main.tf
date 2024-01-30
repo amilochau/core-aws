@@ -29,12 +29,12 @@ provider "aws" {
 }
 
 module "checks" {
-  source      = "git::https://github.com/amilochau/tf-modules.git//shared/checks?ref=v2"
+  source  = "git::https://github.com/amilochau/tf-modules.git//shared/checks?ref=v2"
   context = var.context
 }
 
 module "functions_app" {
-  source      = "git::https://github.com/amilochau/tf-modules.git//aws/functions-app?ref=v2"
+  source  = "git::https://github.com/amilochau/tf-modules.git//aws/functions-app?ref=v2"
   context = var.context
 
   lambda_settings = {
