@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dockerfile-reference-lambda = Dockerfile-reference-lambda
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference ", "Reference ", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference", "Reference", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{CB7C2181-2BFA-4105-9CAE-6520D08F9664}"
 EndProject
@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Lambda", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "Libraries\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj", "{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries Projects\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{1DD4A494-19A4-4FEA-9300-81E7581673E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{236BD429-80EB-450F-80FE-1F0219D0E26E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,10 +84,10 @@ Global
 		{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DD4A494-19A4-4FEA-9300-81E7581673E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DD4A494-19A4-4FEA-9300-81E7581673E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DD4A494-19A4-4FEA-9300-81E7581673E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DD4A494-19A4-4FEA-9300-81E7581673E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,7 +104,7 @@ Global
 		{9A8F74FC-62EC-4E13-ADEE-D2F82421E71F} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{2329DD57-0657-43C9-B411-052096BA23B4} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
-		{1DD4A494-19A4-4FEA-9300-81E7581673E2} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{236BD429-80EB-450F-80FE-1F0219D0E26E} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}
