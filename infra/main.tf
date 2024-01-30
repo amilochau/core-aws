@@ -14,7 +14,7 @@ terraform {
     }
   }
 
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.6.3, < 2.0.0"
 }
 
 provider "aws" {
@@ -22,8 +22,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      application = var.context.application_name
-      host        = var.context.host_name
+      organization = var.context.organization_name
+      application  = var.context.application_name
+      host         = var.context.host_name
     }
   }
 }

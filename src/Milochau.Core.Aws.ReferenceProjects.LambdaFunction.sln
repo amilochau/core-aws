@@ -8,25 +8,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference Projects", "Reference Projects", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference", "Reference", "{2E096EB8-7464-42F8-B04C-617BF240F956}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries Projects", "Libraries Projects", "{CB7C2181-2BFA-4105-9CAE-6520D08F9664}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{CB7C2181-2BFA-4105-9CAE-6520D08F9664}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ReferenceProjects.LambdaFunction", "Reference Projects\Milochau.Core.Aws.ReferenceProjects.LambdaFunction\Milochau.Core.Aws.ReferenceProjects.LambdaFunction.csproj", "{CC24090B-FDEE-4F2B-A4BB-8B2D2C13CBD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ReferenceProjects.LambdaFunction", "Reference\Milochau.Core.Aws.ReferenceProjects.LambdaFunction\Milochau.Core.Aws.ReferenceProjects.LambdaFunction.csproj", "{CC24090B-FDEE-4F2B-A4BB-8B2D2C13CBD0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Abstractions", "Libraries Projects\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj", "{8AD3EF5C-1AFF-4D50-86B7-AC711A1DE7E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Abstractions", "Libraries\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj", "{8AD3EF5C-1AFF-4D50-86B7-AC711A1DE7E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ApiGateway", "Libraries Projects\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj", "{3444C713-A266-4C16-8628-03D9D9DAAC06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.ApiGateway", "Libraries\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj", "{3444C713-A266-4C16-8628-03D9D9DAAC06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB", "Libraries Projects\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj", "{270F4B69-786B-484E-A2BE-6C9130E9745F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB", "Libraries\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj", "{270F4B69-786B-484E-A2BE-6C9130E9745F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Integration", "Libraries Projects\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj", "{455964C3-5BDE-40B1-9C88-6E118384C043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Integration", "Libraries\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj", "{455964C3-5BDE-40B1-9C88-6E118384C043}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Core", "Libraries Projects\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj", "{83B8398C-754E-4FA1-BB8F-955AC249A4EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Core", "Libraries\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj", "{83B8398C-754E-4FA1-BB8F-955AC249A4EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "Libraries Projects\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj", "{BF5A8043-7B21-4FA3-989C-16C6B4037675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "Libraries\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj", "{BF5A8043-7B21-4FA3-989C-16C6B4037675}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Lambda", "Libraries Projects\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj", "{5B7486D1-1593-4364-B2F1-B2622D2863BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Lambda", "Libraries\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj", "{5B7486D1-1593-4364-B2F1-B2622D2863BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries Projects\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{2BB036AF-A4FF-40F1-A0D1-686F6A1AA435}"
 EndProject
