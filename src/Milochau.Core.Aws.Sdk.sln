@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Lambda", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "Libraries\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj", "{BAE2FC56-B410-494D-B020-6F3B025F19FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries Projects\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{78D678C6-DE09-4AE5-9A42-CA491C7C14EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{B80BBE95-2102-47B3-83DE-36CDA4B55A46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAE2FC56-B410-494D-B020-6F3B025F19FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78D678C6-DE09-4AE5-9A42-CA491C7C14EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78D678C6-DE09-4AE5-9A42-CA491C7C14EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78D678C6-DE09-4AE5-9A42-CA491C7C14EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78D678C6-DE09-4AE5-9A42-CA491C7C14EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B80BBE95-2102-47B3-83DE-36CDA4B55A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B80BBE95-2102-47B3-83DE-36CDA4B55A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B80BBE95-2102-47B3-83DE-36CDA4B55A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B80BBE95-2102-47B3-83DE-36CDA4B55A46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
