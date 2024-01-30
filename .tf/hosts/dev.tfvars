@@ -1,4 +1,4 @@
-conventions = {
+context = {
   application_name = "test"
   host_name        = "dev"
 }

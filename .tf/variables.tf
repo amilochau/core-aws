@@ -1,5 +1,5 @@
-variable "conventions" {
-  description = "Conventions to use"
+variable "context" {
+  description = "Context to use"
   type = object({
     application_name = string
     host_name        = string
