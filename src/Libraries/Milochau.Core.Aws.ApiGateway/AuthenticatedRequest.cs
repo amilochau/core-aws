@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.ApiGateway
         /// </remarks>
         protected bool ParseAuthentication(APIGatewayHttpApiV2ProxyRequest request)
         {
-            if (!request.TryGetJwtClaims("sub", out var userId))
+            if (!request.TryGetJwtClaims("sub", out var userSub))
             {
                 return false;
             }
@@ -30,12 +30,17 @@ namespace Milochau.Core.Aws.ApiGateway
             {
                 return false;
             }
+            if (!request.TryGetJwtClaims("custom:user_id", out var userId))
+            {
+                return false;
+            }
 
             User = new IdentityUser
             {
-                Id = userId,
+                Sub = userSub,
                 Email = userEmail,
                 Name = userName,
+                UserId = userId,
             };
             return true;
         }

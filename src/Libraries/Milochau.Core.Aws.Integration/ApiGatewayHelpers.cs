@@ -38,9 +38,10 @@ namespace Milochau.Core.Aws.Integration
                     {
                         Claims = new Dictionary<string, string>
                         {
-                            { "sub", options.UserId },
+                            { "sub", options.UserSub },
                             { "name", options.UserName },
                             { "email", options.UserEmail },
+                            { "custom:user_id", options.UserId },
                         },
                     },
                 };
