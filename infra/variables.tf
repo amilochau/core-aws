@@ -7,6 +7,13 @@ variable "context" {
   })
 }
 
+variable "assume_roles" {
+  description = "Roles to be assumed"
+  type = object({
+    workloads      = string
+  })
+}
+
 variable "aws_provider_settings" {
   description = "Settings to configure the AWS provider"
   type = object({

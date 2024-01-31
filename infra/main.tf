@@ -18,7 +18,12 @@ terraform {
 }
 
 provider "aws" {
+  alias  = "workloads"
   region = var.aws_provider_settings.region
+
+  assume_role {
+    role_arn = var.assume_roles.workloads
+  }
 
   default_tags {
     tags = {
@@ -34,13 +39,20 @@ module "checks" {
   context = var.context
 }
 
+module "auth" {
+  context = var.context
+
+  providers = {
+    aws.workloads = aws.workloads
+  }
+}
+
 module "functions_app" {
-  source  = "git::https://github.com/amilochau/tf-modules.git//aws/functions-app?ref=v2"
   context = var.context
 
   lambda_settings = {
     architecture = "x86_64"
-    runtime      = "provided.al2"
+    runtime      = "provided.al2023"
     functions = {
       for k, v in var.lambda_settings.functions : "${replace(k, "/", "-")}" => {
         memory_size_mb        = v.memory_size_mb
@@ -57,5 +69,11 @@ module "functions_app" {
     }
   }
 
+  cognito_user_pool_id = module.auth.cognito_user_pool_id
+
   dynamodb_tables_settings = var.dynamodb_tables_settings
+
+  providers = {
+    aws.workloads = aws.workloads
+  }
 }
