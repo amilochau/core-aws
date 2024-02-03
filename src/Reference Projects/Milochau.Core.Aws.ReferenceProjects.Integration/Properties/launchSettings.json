@@ -12,7 +12,8 @@
         "CONVENTION__APPLICATION": "maps",
         "CONVENTION__HOST": "dev",
         "CONVENTION__PREFIX": "mil-maps-dev",
-        "AWS_REGION": "eu-west-3"
+        "AWS_REGION": "eu-west-3",
+        "AWS_ROLE_ARN": "arn:aws:iam::339712953809:role/administrator-access"
       }
     }
   }

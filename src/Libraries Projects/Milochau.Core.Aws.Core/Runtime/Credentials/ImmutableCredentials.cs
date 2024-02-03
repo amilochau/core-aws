@@ -20,7 +20,6 @@
         /// </summary>
         public string? Token { get; set; }
 
-
         /// <summary>
         /// Gets the UseToken property for the current credentials.
         /// Specifies if Token property is non-empty.
