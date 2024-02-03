@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Lambda.Model;
 using Milochau.Core.Aws.Lambda.Model.MarshallTransformations;
@@ -114,22 +115,10 @@ namespace Milochau.Core.Aws.Lambda
         #region Constructors
 
         /// <summary>
-        /// Constructs AmazonLambdaClient with the credentials loaded from the application's
-        /// default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance.
-        /// 
-        /// Example App.config with credentials set. 
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSProfileName" value="AWS Default"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        ///
+        /// Constructs AmazonLambdaClient
         /// </summary>
-        public AmazonLambdaClient()
-            : base(new ClientConfig
+        public AmazonLambdaClient(IAWSCredentials credentials)
+            : base(credentials, new ClientConfig
             {
                 AuthenticationServiceName = "lambda",
                 MonitoringServiceName = "Lambda",

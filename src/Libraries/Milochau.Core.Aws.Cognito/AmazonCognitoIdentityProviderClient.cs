@@ -1,6 +1,7 @@
 ﻿using Milochau.Core.Aws.Cognito.Model;
 using Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations;
 using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,28 +94,15 @@ namespace Milochau.Core.Aws.Cognito
         #region Constructors
 
         /// <summary>
-        /// Constructs AmazonCognitoIdentityProviderClient with the credentials loaded from the application's
-        /// default configuration, and if unsuccessful from the Instance Profile service on an EC2 instance.
-        /// 
-        /// Example App.config with credentials set. 
-        /// <code>
-        /// &lt;?xml version="1.0" encoding="utf-8" ?&gt;
-        /// &lt;configuration&gt;
-        ///     &lt;appSettings&gt;
-        ///         &lt;add key="AWSProfileName" value="AWS Default"/&gt;
-        ///     &lt;/appSettings&gt;
-        /// &lt;/configuration&gt;
-        /// </code>
-        ///
+        /// Constructs AmazonCognitoIdentityProviderClient
         /// </summary>
-        public AmazonCognitoIdentityProviderClient()
-            : base(new ClientConfig
+        public AmazonCognitoIdentityProviderClient(IAWSCredentials credentials)
+            : base(credentials, new ClientConfig
             {
                 AuthenticationServiceName = "cognito-idp",
                 MonitoringServiceName = "cognito-idp"
             })
-        {
-        }
+        { }
 
         #endregion
 

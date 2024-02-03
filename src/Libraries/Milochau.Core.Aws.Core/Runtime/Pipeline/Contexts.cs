@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using System.Net.Http;
@@ -12,6 +13,8 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
         IClientConfig ClientConfig { get; }
 
         HttpRequestMessage HttpRequestMessage { get; set; }
+
+        ImmutableCredentials ImmutableCredentials { get; set; }
     }
 
     public interface IResponseContext
@@ -39,6 +42,8 @@ namespace Amazon.Runtime.Internal
         public string MonitoringOriginalRequestName { get; }
 
         public required HttpRequestMessage HttpRequestMessage { get; set; }
+
+        public required ImmutableCredentials ImmutableCredentials { get; set; }
     }
 
     public class ResponseContext : IResponseContext

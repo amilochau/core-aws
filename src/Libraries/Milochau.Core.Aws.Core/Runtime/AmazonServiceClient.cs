@@ -12,18 +12,21 @@ using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 
 namespace Milochau.Core.Aws.Core.Runtime
 {
     /// <summary>Amazon service client</summary>
     public abstract class AmazonServiceClient
     {
+        private readonly IAWSCredentials credentials;
         private readonly IClientConfig config;
         private readonly AWSSigner signer = new AWSSigner();
 
         /// <summary>Constructor</summary>
-        protected AmazonServiceClient(ClientConfig config)
+        protected AmazonServiceClient(IAWSCredentials credentials, ClientConfig config)
         {
+            this.credentials = credentials;
             this.config = config;
         }
 
@@ -38,6 +41,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             var requestContext = new RequestContext(config, request, options.MonitoringOriginalRequestName)
             {
                 HttpRequestMessage = MarshallRequest(options.HttpRequestMessageMarshaller, request),
+                ImmutableCredentials = await credentials.GetCredentialsAsync(),
             };
             IResponseContext responseContext = new ResponseContext();
 
@@ -99,12 +103,14 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <param name="requestContext">The request context.</param>
         private async Task SignRequestAsync(IRequestContext requestContext)
         {
-            if (EnvironmentVariables.UseToken)
+            var immutableCredentials = requestContext.ImmutableCredentials;
+
+            if (immutableCredentials.UseToken)
             {
-                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, EnvironmentVariables.Token);
+                requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, immutableCredentials.Token);
             }
 
-            await signer.SignAsync(requestContext);
+            await signer.SignAsync(requestContext, immutableCredentials);
         }
 
         /// <summary>
