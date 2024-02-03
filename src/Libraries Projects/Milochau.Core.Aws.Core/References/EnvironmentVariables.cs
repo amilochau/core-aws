@@ -78,12 +78,6 @@ namespace Milochau.Core.Aws.Core.References
         /// </summary>
         public static string? Token { get; } = GetEnvironmentVariable(Key_SessionToken);
 
-        /// <summary>
-        /// Gets the UseToken property for the current credentials.
-        /// Specifies if Token property is non-empty.
-        /// </summary>
-        public static bool UseToken { get; } = !string.IsNullOrEmpty(Token);
-
         /// <summary>Convention - Prefix</summary>
         public static string ConventionPrefix { get; } = GetEnvironmentVariable(Key_ConventionPrefix)!;
 

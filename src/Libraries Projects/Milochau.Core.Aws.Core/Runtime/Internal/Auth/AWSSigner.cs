@@ -9,6 +9,7 @@ using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
 {
@@ -48,9 +49,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// the resource path as a query string or in the Parameters collection must not have been
         /// uri encoded. If they have, use the SignRequest method to obtain a signature.
         /// </summary>
-        public async Task SignAsync(IRequestContext requestContext)
+        public async Task SignAsync(IRequestContext requestContext, ImmutableCredentials immutableCredentials)
         {
-            var signingResult = await SignRequestAsync(requestContext);
+            var signingResult = await SignRequestAsync(requestContext, immutableCredentials.AccessKey, immutableCredentials.SecretKey);
             requestContext.HttpRequestMessage.Headers.TryAddWithoutValidation(HeaderKeys.AuthorizationHeader, signingResult.ForAuthorizationHeader);
         }
 
@@ -64,7 +65,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// be not be encoded; encoding will be done for these parameters as part of the 
         /// construction of the canonical request.
         /// </remarks>
-        private static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext)
+        private static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext,
+                                             string awsAccessKeyId,
+                                             string awsSecretAccessKey)
         {
             var signedAt = InitializeHeaders(requestContext.HttpRequestMessage);
 
@@ -75,7 +78,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
                                                        bodyHash,
                                                        requestContext.HttpRequestMessage);
 
-            return ComputeSignature(signedAt,
+            return ComputeSignature(awsAccessKeyId,
+                                    awsSecretAccessKey,
+                                    signedAt,
                                     requestContext.ClientConfig.AuthenticationServiceName,
                                     CanonicalizeHeaderNames(sortedHeaders),
                                     canonicalRequest);
@@ -109,7 +114,9 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <summary>
         /// Computes and returns an AWS4 signature for the specified canonicalized request
         /// </summary>
-        private static AWS4SigningResult ComputeSignature(DateTime signedAt,
+        private static AWS4SigningResult ComputeSignature(string awsAccessKey,
+                                                         string awsSecretAccessKey,
+                                                         DateTime signedAt,
                                                          string service,
                                                          string signedHeaders,
                                                          string canonicalRequest)
@@ -129,14 +136,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             var canonicalRequestHashBytes = ComputeHash(canonicalRequest);
             stringToSignBuilder.Append(AWSSDKUtils.ToHex(canonicalRequestHashBytes, true));
 
-            var key = ComposeSigningKey(EnvironmentVariables.SecretKey,
+            var key = ComposeSigningKey(awsSecretAccessKey,
                                         region,
                                         dateStamp,
                                         service);
 
             var stringToSign = stringToSignBuilder.ToString();
             var signature = ComputeKeyedHash(key, stringToSign);
-            return new AWS4SigningResult(signedHeaders, scope, signature);
+            return new AWS4SigningResult(awsAccessKey, signedHeaders, scope, signature);
         }
 
         /// <summary>

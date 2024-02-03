@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Util;
+﻿using Milochau.Core.Aws.Core.Util;
 using System.Text;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
@@ -12,19 +11,23 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
     /// </summary>
     public class AWS4SigningResult
     {
-        private readonly byte[] _signature;
+        private readonly string awsAccessKeyId;
+        private readonly byte[] signature;
 
         /// <summary>
         /// Constructs a new signing result instance for a computed signature
         /// </summary>
+        /// <param name="awsAccessKeyId">The access key that was included in the signature</param>
         /// <param name="signedHeaders">The collection of headers names that were included in the signature</param>
         /// <param name="scope">Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)</param>
         /// <param name="signature">Computed signature</param>
-        public AWS4SigningResult(string signedHeaders,
+        public AWS4SigningResult(string awsAccessKeyId,
+                                 string signedHeaders,
                                  string scope,
                                  byte[] signature)
         {
-            _signature = signature;
+            this.signature = signature;
+            this.awsAccessKeyId = awsAccessKeyId;
             SignedHeaders = signedHeaders;
             Scope = scope;
         }
@@ -44,7 +47,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// </summary>
         public string Signature
         {
-            get { return AWSSDKUtils.ToHex(_signature, true); }
+            get { return AWSSDKUtils.ToHex(signature, true); }
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
             {
                 var authorizationHeader = new StringBuilder()
                     .Append(AWSSigner.AWS4AlgorithmTag)
-                    .AppendFormat(" {0}={1}/{2},", AWSSigner.Credential, EnvironmentVariables.AccessKey, Scope)
+                    .AppendFormat(" {0}={1}/{2},", AWSSigner.Credential, awsAccessKeyId, Scope)
                     .AppendFormat(" {0}={1},", AWSSigner.SignedHeaders, SignedHeaders)
                     .AppendFormat(" {0}={1}", AWSSigner.Signature, Signature);
 

@@ -8,9 +8,10 @@
       "applicationUrl": "http://localhost:4000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CONVENTION__APPLICATION": "test",
+        "CONVENTION__ORGANIZATION": "mil",
+        "CONVENTION__APPLICATION": "maps",
         "CONVENTION__HOST": "dev",
-        "CONVENTION__PREFIX": "test-dev",
+        "CONVENTION__PREFIX": "mil-maps-dev",
         "AWS_REGION": "eu-west-3"
       }
     }

@@ -7,6 +7,8 @@ using System.Text.Json;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
 using Milochau.Core.Aws.DynamoDB.Events;
 using Milochau.Core.Aws.Core.References.Serialization;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Amazon.Runtime;
 
 namespace Milochau.Core.Aws.ReferenceProjects.Integration
 {
@@ -38,7 +40,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
             {
                 var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
-                var proxyResponse = await LambdaFunction.Function.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
+                var credentials = new Aws.Integration.AssumeRoleAWSCredentials("arn:aws:iam::339712953809:role/administrator-access");
+                var lambdaFunction = new LambdaFunction.Function(credentials);
+                var proxyResponse = await lambdaFunction.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
                 return ApiGatewayHelpers.BuildResult(proxyResponse);
             })
             .Produces(204)
@@ -48,7 +52,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             app.MapPost("/dynamodb", async (HttpContext httpContext, CancellationToken cancellationToken) =>
             {
                 var proxyRequest = await JsonSerializer.DeserializeAsync(httpContext.Request.Body, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent);
-                await LambdaFunction.Function.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
+                var credentials = new Aws.Integration.AssumeRoleAWSCredentials("arn:aws:iam::339712953809:role/administrator-access");
+                var lambdaFunction = new LambdaFunction.Function(credentials);
+                await lambdaFunction.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
             })
             .Produces(204)
             .Accepts<DynamoDBEvent>("application/json")
