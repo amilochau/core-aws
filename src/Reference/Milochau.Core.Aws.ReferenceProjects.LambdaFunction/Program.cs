@@ -122,6 +122,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                 return proxyResponse;
             }
 
+            var response = new FunctionResponse();
+            return await DoAsync(requestData, context, cancellationToken);
+        }
+
+        public async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(FunctionRequest requestData,
+            ILambdaContext context,
+            CancellationToken cancellationToken)
+        {
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
             await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
