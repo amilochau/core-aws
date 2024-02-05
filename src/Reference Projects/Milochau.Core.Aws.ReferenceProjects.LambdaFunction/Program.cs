@@ -49,10 +49,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 
     public class Function
     {
-        private readonly DynamoDbDataAccess dynamoDbDataAccess;
-        private readonly EmailsLambdaDataAccess emailsLambdaDataAccess;
-        private readonly SesDataAccess sesDataAccess;
-        private readonly CognitoDataAccess cognitoDataAccess;
+        private readonly IDynamoDbDataAccess dynamoDbDataAccess;
+        private readonly IEmailsLambdaDataAccess emailsLambdaDataAccess;
+        private readonly ISesDataAccess sesDataAccess;
+        private readonly ICognitoDataAccess cognitoDataAccess;
 
         public Function(IAWSCredentials credentials)
             : this(dynamoDbDataAccess: new DynamoDbDataAccess(new AmazonDynamoDBClient(credentials)),
@@ -61,7 +61,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                    cognitoDataAccess: new CognitoDataAccess(new AmazonCognitoIdentityProviderClient(credentials)))
         { }
 
-        public Function(DynamoDbDataAccess dynamoDbDataAccess, EmailsLambdaDataAccess emailsLambdaDataAccess, SesDataAccess sesDataAccess, CognitoDataAccess cognitoDataAccess)
+        public Function(IDynamoDbDataAccess dynamoDbDataAccess, IEmailsLambdaDataAccess emailsLambdaDataAccess, ISesDataAccess sesDataAccess, ICognitoDataAccess cognitoDataAccess)
         {
             this.dynamoDbDataAccess = dynamoDbDataAccess;
             this.emailsLambdaDataAccess = emailsLambdaDataAccess;
