@@ -267,8 +267,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        /// <remarks><see cref="DynamoDB.ComparisonOperator"/></remarks>
-        public string? ComparisonOperator { get; set; }
+        public ComparisonOperator? ComparisonOperator { get; set; }
 
         /// <summary>
         /// Gets and sets the property Exists. 

@@ -1,21 +1,24 @@
+using System.Text.Json.Serialization;
+
 namespace Milochau.Core.Aws.Lambda
 {
     /// <summary>
     /// Constants used for properties of type InvocationType.
     /// </summary>
-    public static class InvocationType
+    [JsonConverter(typeof(JsonStringEnumConverter<InvocationType>))]
+    public enum InvocationType
     {
         /// <summary>
         /// Constant DryRun for InvocationType
         /// </summary>
-        public const string DryRun = "DryRun";
+        DryRun,
         /// <summary>
         /// Constant Event for InvocationType
         /// </summary>
-        public const string Event = "Event";
+        Event,
         /// <summary>
         /// Constant RequestResponse for InvocationType
         /// </summary>
-        public const string RequestResponse = "RequestResponse";
+        RequestResponse,
     }
 }

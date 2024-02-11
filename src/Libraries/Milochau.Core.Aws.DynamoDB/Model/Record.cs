@@ -53,9 +53,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        /// <remarks>See <see cref="OperationType"/></remarks>
         [JsonPropertyName("eventName")]
-        public required string EventName { get; set; }
+        public OperationType EventName { get; set; }
 
         /// <summary>
         /// Gets and sets the property EventSource. 
