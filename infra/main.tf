@@ -40,6 +40,7 @@ module "checks" {
 }
 
 module "auth" {
+  source = "git::https://github.com/amilochau/tf-modules.git//aws/auth"
   context = var.context
 
   providers = {
@@ -48,6 +49,7 @@ module "auth" {
 }
 
 module "functions_app" {
+  source = "git::https://github.com/amilochau/tf-modules.git//aws/functions-app"
   context = var.context
 
   lambda_settings = {

@@ -13,9 +13,6 @@ env:
   PROJECT_API_BUILD: './src/Milochau.Core.Aws.sln'
   PROJECT_API_TESTS: './src/Milochau.Core.Aws.sln'
   DOTNET_VERSION: 8.0.x
-  DOTNET_NOLOGO: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
-  VERBOSITY: normal
 
 jobs:
   build:

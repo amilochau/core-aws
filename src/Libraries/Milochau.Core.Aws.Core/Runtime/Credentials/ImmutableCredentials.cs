@@ -8,12 +8,12 @@
         /// <summary>
         /// Gets the AccessKey property for the current credentials.
         /// </summary>
-        public string AccessKey { get; set; } = null!; // @todo use required with .NET 8
+        public required string AccessKey { get; set; } = null!;
 
         /// <summary>
         /// Gets the SecretKey property for the current credentials.
         /// </summary>
-        public string SecretKey { get; set; } = null!; // @todo use required with .NET 8
+        public required string SecretKey { get; set; } = null!;
 
         /// <summary>
         /// Gets the Token property for the current credentials.
