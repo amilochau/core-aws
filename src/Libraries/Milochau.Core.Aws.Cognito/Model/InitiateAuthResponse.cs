@@ -98,8 +98,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        /// <remarks>See ChallengeNameType</remarks>
-        public string? ChallengeName { get; set; }
+        public ChallengeNameType? ChallengeName { get; set; }
 
         /// <summary>
         /// Gets and sets the property ChallengeParameters. 

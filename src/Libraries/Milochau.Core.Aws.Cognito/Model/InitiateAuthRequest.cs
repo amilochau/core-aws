@@ -101,8 +101,7 @@ namespace Milochau.Core.Aws.Cognito.Model
         ///  <code>ADMIN_NO_SRP_AUTH</code> isn't a valid value.
         /// </para>
         /// </summary>
-        /// <remarks>See AuthFlowType</remarks>
-        public required string AuthFlow { get; set; }
+        public required AuthFlowType AuthFlow { get; set; }
 
         /// <summary>
         /// Gets and sets the property AuthParameters. 
