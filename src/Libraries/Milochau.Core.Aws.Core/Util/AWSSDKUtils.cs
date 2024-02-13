@@ -29,31 +29,9 @@ namespace Milochau.Core.Aws.Core.Util
         public const string ValidUrlCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
-        /// The set of accepted and valid Url path characters per RFC3986.
-        /// </summary>
-        private static readonly string ValidPathCharacters = DetermineValidPathCharacters();
-
-        /// <summary>
         /// The set of characters which are not to be encoded as part of the X-Amzn-Trace-Id header values
         /// </summary>
         public const string ValidTraceIdHeaderValueCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=;:+&[]{}\"',";
-
-        // Checks which path characters should not be encoded
-        // This set will be different for .NET 4 and .NET 4.5, as
-        // per http://msdn.microsoft.com/en-us/library/hh367887%28v=vs.110%29.aspx
-        private static string DetermineValidPathCharacters()
-        {
-            const string basePathCharacters = "/:'()!*[]$";
-
-            var sb = new StringBuilder();
-            foreach (var c in basePathCharacters)
-            {
-                var escaped = Uri.EscapeDataString(c.ToString());
-                if (escaped.Length == 1 && escaped[0] == c)
-                    sb.Append(c);
-            }
-            return sb.ToString();
-        }
 
         /// <summary>
         /// The string representing Url Encoded Content in HTTP requests
@@ -137,8 +115,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// <summary>
         /// Utility method for converting a string to a MemoryStream.
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
         public static MemoryStream GenerateMemoryStreamFromString(string s)
         {
             MemoryStream stream = new MemoryStream();
@@ -152,8 +128,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// <summary>
         /// Utility method for copy the contents of the source stream to the destination stream.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
         public static void CopyStream(Stream source, Stream destination)
         {
             CopyStream(source, destination, DefaultBufferSize);
@@ -162,9 +136,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// <summary>
         /// Utility method for copy the contents of the source stream to the destination stream.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        /// <param name="bufferSize"></param>
         public static void CopyStream(Stream source, Stream destination, int bufferSize)
         {
             if (source == null)
@@ -256,8 +227,6 @@ namespace Milochau.Core.Aws.Core.Util
         /// <summary>
         /// Utility method that accepts a string and replaces white spaces with a space.
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public static string? CompressSpaces(string? data)
         {
             if (data == null)

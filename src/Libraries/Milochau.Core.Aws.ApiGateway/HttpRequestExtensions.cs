@@ -25,7 +25,6 @@ namespace Milochau.Core.Aws.ApiGateway
             {
                 if (!request.TryGetJwtClaims("sub", out var _))
                 {
-
                     proxyResponse = HttpResponse.Unauthorized();
                     return false;
                 }

@@ -7,8 +7,6 @@ using System.Text.Json;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
 using Milochau.Core.Aws.DynamoDB.Events;
 using Milochau.Core.Aws.Core.References.Serialization;
-using Milochau.Core.Aws.Core.Runtime.Credentials;
-using Amazon.Runtime;
 using System;
 
 namespace Milochau.Core.Aws.ReferenceProjects.Integration

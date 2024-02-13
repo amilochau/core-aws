@@ -20,7 +20,6 @@ namespace Milochau.Core.Aws.ApiGateway
     /// <summary>Validation options</summary>
     public class ValidationOptions
     {
-
         /// <summary>Whether the authentication is required</summary>
         public bool AuthenticationRequired { get; set; } = true;
 
