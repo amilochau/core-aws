@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.47" />
-    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.46" />
-    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.41" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.50" />
+    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.49" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.44" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
