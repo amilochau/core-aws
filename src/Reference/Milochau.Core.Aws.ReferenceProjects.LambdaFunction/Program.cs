@@ -71,14 +71,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 
         public Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
         {
-            return DoAsync(new FunctionRequest(), context, cancellationToken);
+            return DoAsync(new FunctionRequest(null), context, cancellationToken);
         }
 
         public async Task FunctionHandlerSns(SNSEvent request, ILambdaContext context, CancellationToken cancellationToken)
         {
             foreach (var record in request.Records)
             {
-                await DoAsync(new FunctionRequest(), context, cancellationToken);
+                await DoAsync(new FunctionRequest(null), context, cancellationToken);
             }
         }
 

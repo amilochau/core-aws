@@ -44,7 +44,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         public static List<string> ReadListString(this Dictionary<string, AttributeValue> attributes, string key)
         {
             var attribute = attributes[key];
-            if (attribute.SS != null && attribute.SS.Any())
+            if (attribute.SS != null && attribute.SS.Count != 0)
             {
                 return attribute.SS;
             }
@@ -59,7 +59,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         {
             if (attributes.TryGetValue(key, out var attribute) && attribute != null)
             {
-                if (attribute.SS != null && attribute.SS.Any())
+                if (attribute.SS != null && attribute.SS.Count != 0)
                 {
                     return attribute.SS;
                 }

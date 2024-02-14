@@ -27,7 +27,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 return attributes;
             }
             var formattedList = value.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-            if (!formattedList.Any())
+            if (formattedList.Count == 0)
             {
                 return attributes;
             }
@@ -69,7 +69,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 return attributes;
             }
             var formattedList = value.Where(x => x != null).Select(x => $"{x}").ToList();
-            if (!formattedList.Any())
+            if (formattedList.Count == 0)
             {
                 return attributes;
             }
@@ -127,7 +127,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         /// <summary>Append an object value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Dictionary<string, AttributeValue>? value)
         {
-            if (value == null || !value.Any())
+            if (value == null || value.Count == 0)
             {
                 return attributes;
             }

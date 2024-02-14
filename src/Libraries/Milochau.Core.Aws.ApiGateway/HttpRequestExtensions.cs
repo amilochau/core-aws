@@ -28,7 +28,7 @@ namespace Milochau.Core.Aws.ApiGateway
                     proxyResponse = HttpResponse.Unauthorized();
                     return false;
                 }
-                else if (options.GroupsRequired.Any())
+                else if (options.GroupsRequired.Count != 0)
                 {
                     if (!request.TryGetJwtClaims("cognito:groups", out var userGroups))
                     {
@@ -57,20 +57,13 @@ namespace Milochau.Core.Aws.ApiGateway
             // Validate
             requestData.Validate(modelStateDictionary);
 
-            if (modelStateDictionary.Any())
+            if (modelStateDictionary.Count != 0)
             {
                 proxyResponse = HttpResponse.BadRequest(modelStateDictionary);
                 return false;
             }
 
             return true;
-        }
-
-        /// <summary>Try get JWT claims from the API Gateway request</summary>
-        public static bool TryGetJwtClaims(this APIGatewayHttpApiV2ProxyRequest request, string key, [NotNullWhen(true)] out string? value)
-        {
-            value = null;
-            return request.RequestContext.Authorizer?.Jwt?.Claims?.TryGetValue(key, out value) ?? false;
         }
 
         /// <summary>Populate a model state dictionary with errors</summary>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Milochau.Core.Aws.Abstractions;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Milochau.Core.Aws.Core.Lambda.Events
 {
@@ -91,6 +93,37 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
                 /// </summary>
                 public IDictionary<string, string>? Claims { get; set; }
             }
+        }
+
+
+        /// <summary>Try get JWT claims</summary>
+        public bool TryGetJwtClaims(string key, [NotNullWhen(true)] out string? value)
+        {
+            value = null;
+            return RequestContext.Authorizer?.Jwt?.Claims?.TryGetValue(key, out value) ?? false;
+        }
+
+        /// <summary>Try get Identity User</summary>
+        public bool TryGetIdentityUser([NotNullWhen(true)] out IdentityUser? user)
+        {
+            user = null;
+
+            if (!TryGetJwtClaims("sub", out var userSub)
+                || !TryGetJwtClaims("email", out var userEmail)
+                || !TryGetJwtClaims("name", out var userName)
+                || !TryGetJwtClaims("custom:user_id", out var userId))
+            {
+                return false;
+            }
+
+            user = new IdentityUser
+            {
+                Sub = userSub,
+                Email = userEmail,
+                Name = userName,
+                UserId = userId,
+            };
+            return true;
         }
     }
 }
