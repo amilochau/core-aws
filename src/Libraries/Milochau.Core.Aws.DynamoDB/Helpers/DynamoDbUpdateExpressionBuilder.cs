@@ -34,22 +34,22 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         public string Build()
         {
             var updateExpressionItems = new List<string>();
-            if (Set.Any())
+            if (Set.Count != 0)
             {
                 var setItems = new StringBuilder().AppendJoin(", ", Set.Select(x => $"#{x} = :v_{x}"));
                 updateExpressionItems.Add($"SET {setItems}");
             }
-            if (Remove.Any())
+            if (Remove.Count != 0)
             {
                 var removeItems = new StringBuilder().AppendJoin(", ", Remove.Select(x => $"#{x}"));
                 updateExpressionItems.Add($"REMOVE {removeItems}");
             }
-            if (Add.Any())
+            if (Add.Count != 0)
             {
                 var addItems = new StringBuilder().AppendJoin(", ", Add.Select(x => $"#{x} :v_{x}"));
                 updateExpressionItems.Add($"ADD {addItems}");
             }
-            if (Delete.Any())
+            if (Delete.Count != 0)
             {
                 var deleteItems = new StringBuilder().AppendJoin(", ", Delete.Select(x => $"#{x} :v_{x}"));
                 updateExpressionItems.Add($"DELETE {deleteItems}");

@@ -47,7 +47,7 @@ namespace Milochau.Core.Aws.Integration
                 };
             }
 
-            if (options.PathParameters.Any())
+            if (options.PathParameters.Count != 0)
             {
                 proxyRequest.PathParameters = options.PathParameters;
             }
