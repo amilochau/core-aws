@@ -15,5 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
   
 </Project>

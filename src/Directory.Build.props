@@ -14,6 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>$(GITHUB_REF)</RepositoryBranch>
     <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     
     <Version>0.2.2</Version>
     <InformationalVersion Condition="('$(GITHUB_ACTION)' != '') And ('$(GITHUB_SHA)' != '')">$(Version)+$(GITHUB_ACTION)-$(GITHUB_SHA)</InformationalVersion>

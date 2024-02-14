@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
 </Project>
