@@ -1,6 +1,8 @@
 ﻿using Milochau.Core.Aws.Abstractions;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Milochau.Core.Aws.Core.Lambda.Events
 {
@@ -124,6 +126,40 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
                 UserId = userId,
             };
             return true;
+        }
+
+        /// <summary>Try get the value of a path parameter</summary>
+        public bool TryGetPathParameter(string key, [NotNullWhen(true)] out string? value)
+        {
+            value = null;
+            return PathParameters?.TryGetValue(key, out value) ?? false;
+        }
+
+        /// <summary>Try get the value of a query string parameter</summary>
+        public bool TryGetQueryStringParameter(string key, [NotNullWhen(true)] out string? value)
+        {
+            value = null;
+            return QueryStringParameters?.TryGetValue(key, out value) ?? false;
+        }
+
+        /// <summary>Try get the value of a header</summary>
+        public bool TryGetHeader(string key, [NotNullWhen(true)] out string? value)
+        {
+            value = null;
+            return Headers?.TryGetValue(key, out value) ?? false;
+        }
+
+        /// <summary>Try deserialize the body</summary>
+        public bool TryDeserializeBody<TBody>([NotNullWhen(true)] out TBody? value, JsonTypeInfo<TBody> jsonTypeInfo)
+        {
+            value = default;
+            if (Body == null)
+            {
+                return false;
+            }
+
+            value = JsonSerializer.Deserialize(Body, jsonTypeInfo);
+            return value != null;
         }
     }
 }
