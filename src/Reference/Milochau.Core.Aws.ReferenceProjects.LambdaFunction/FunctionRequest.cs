@@ -11,7 +11,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
     {
         public static bool TryParse(APIGatewayHttpApiV2ProxyRequest request, [NotNullWhen(true)] out FunctionRequest? result)
         {
-            request.TryGetIdentityUser(out var user);
+            if (!request.TryGetIdentityUser(out var user))
+            {
+                user = null; // Default value
+            }
             result = new FunctionRequest(user);
             return true;
         }
