@@ -8,12 +8,12 @@
         /// <summary>
         /// Gets the AccessKey property for the current credentials.
         /// </summary>
-        public required string AccessKey { get; set; } = null!;
+        public required string AccessKey { get; set; }
 
         /// <summary>
         /// Gets the SecretKey property for the current credentials.
         /// </summary>
-        public required string SecretKey { get; set; } = null!;
+        public required string SecretKey { get; set; }
 
         /// <summary>
         /// Gets the Token property for the current credentials.
