@@ -34,26 +34,6 @@ namespace Milochau.Core.Aws.Core.Util
         public const string ValidTraceIdHeaderValueCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-=;:+&[]{}\"',";
 
         /// <summary>
-        /// The string representing Url Encoded Content in HTTP requests
-        /// </summary>
-        public const string UrlEncodedContent = "application/x-www-form-urlencoded; charset=utf-8";
-
-        /// <summary>
-        /// The GMT Date Format string. Used when parsing date objects
-        /// </summary>
-        public const string GMTDateFormat = "ddd, dd MMM yyyy HH:mm:ss \\G\\M\\T";
-
-        /// <summary>
-        /// The ISO8601Date Format string. Used when parsing date objects
-        /// </summary>
-        public const string ISO8601DateFormat = "yyyy-MM-dd\\THH:mm:ss.fff\\Z";
-
-        /// <summary>
-        /// The ISO8601Date Format string. Used when parsing date objects
-        /// </summary>
-        public const string ISO8601DateFormatNoMS = "yyyy-MM-dd\\THH:mm:ss\\Z";
-
-        /// <summary>
         /// The ISO8601 Basic date/time format string. Used when parsing date objects
         /// </summary>
         public const string ISO8601BasicDateTimeFormat = "yyyyMMddTHHmmssZ";
