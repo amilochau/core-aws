@@ -19,6 +19,17 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             return attributes.Append(new(key, new AttributeValue { S = value.Trim() }));
         }
 
+        /// <summary>Append a GUID value</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Guid? value)
+        {
+            var valueAsString = value.ToString();
+            if (string.IsNullOrWhiteSpace(valueAsString))
+            {
+                return attributes;
+            }
+            return attributes.Append(new(key, new AttributeValue { S = valueAsString }));
+        }
+
         /// <summary>Append an enumerable value of strings</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string>? value, bool preserveOrder = false)
         {

@@ -87,6 +87,22 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             return null;
         }
 
+        /// <summary>Read a value as a GUID</summary>
+        public static Guid ReadGuid(this Dictionary<string, AttributeValue> attributes, string key)
+        {
+            return Guid.Parse(attributes[key].S!);
+        }
+
+        /// <summary>Read an optional value as a GUID</summary>
+        public static Guid? ReadGuidOptional(this Dictionary<string, AttributeValue> attributes, string key)
+        {
+            if (attributes.TryGetValue(key, out var attribute) && attribute != null && attribute.S != null)
+            {
+                return Guid.Parse(attribute.S);
+            }
+            return null;
+        }
+
         /// <summary>Read a value as an integer</summary>
         public static int ReadInt(this Dictionary<string, AttributeValue> attributes, string key)
         {
