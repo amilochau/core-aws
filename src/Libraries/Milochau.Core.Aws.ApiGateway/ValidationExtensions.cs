@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -167,6 +168,23 @@ namespace Milochau.Core.Aws.ApiGateway
                 {
                     modelStateDictionary.Populate(key, "URI required");
                 }
+            }
+        }
+
+        #endregion
+        #region ValidationOptions
+
+        /// <summary>Validate using an options validator</summary>
+        public static void UseValidator<TValidator, TOptions>(this Dictionary<string, Collection<string>> modelStateDictionary, TOptions value)
+            where TValidator: IValidateOptions<TOptions>, new()
+            where TOptions: class
+        {
+            var validator = new TValidator();
+            var result = validator.Validate(null, value);
+
+            if (result.Failures != null)
+            {
+                modelStateDictionary.Add(string.Empty, new Collection<string>(result.Failures.ToList()));
             }
         }
 
