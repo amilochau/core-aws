@@ -16,6 +16,7 @@ using System.Linq;
 using Milochau.Core.Aws.Core.References.Serialization;
 using Milochau.Core.Aws.Cognito;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Milochau.Core.Aws.Core.JsonConverters;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
@@ -141,7 +142,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         }
     }
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = [typeof(GuidConverter)])]
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
     [JsonSerializable(typeof(SNSEvent))]
