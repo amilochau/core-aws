@@ -7,7 +7,7 @@ namespace Milochau.Core.Aws.Abstractions
     {
         /// <summary>User sub</summary>
         /// <remarks>This attribute can change in the future, when migrating the user store. Prefer using the <see cref="UserId"/> attribute</remarks>
-        public required Guid Sub { get; set; }
+        public required string Sub { get; set; }
 
         /// <summary>User name</summary>
         public required string Name { get; set; }
