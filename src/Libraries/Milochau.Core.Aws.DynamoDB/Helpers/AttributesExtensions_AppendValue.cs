@@ -22,11 +22,11 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         /// <summary>Append a GUID value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Guid? value)
         {
-            var valueAsString = value.ToString();
-            if (string.IsNullOrWhiteSpace(valueAsString))
+            if (value == null)
             {
                 return attributes;
             }
+            var valueAsString = value.Value.ToString("N");
             return attributes.Append(new($":v_{key}", new AttributeValue { S = valueAsString }));
         }
 
