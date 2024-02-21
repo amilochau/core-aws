@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -110,10 +111,10 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         {
             user = null;
 
-            if (!TryGetJwtClaims("sub", out var userSub)
+            if (!TryGetJwtClaims("sub", out var rawUserSub) || !Guid.TryParse(rawUserSub, out var userSub)
                 || !TryGetJwtClaims("email", out var userEmail)
                 || !TryGetJwtClaims("name", out var userName)
-                || !TryGetJwtClaims("custom:user_id", out var userId))
+                || !TryGetJwtClaims("custom:user_id", out var rawUserId) || !Guid.TryParse(rawUserId, out var userId))
             {
                 return false;
             }
