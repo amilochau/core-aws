@@ -6,6 +6,7 @@ using Milochau.Core.Aws.DynamoDB.Model;
 using System.Linq;
 using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.Core.References;
+using System;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -27,7 +28,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest
             {
-                UserId = "real_user_id_to_put_here",
+                UserId = null,
                 TableName = $"{EnvironmentVariables.ConventionPrefix}-table-maps",
                 Key = new Dictionary<string, AttributeValue>()
                     .Append("id", "0dc388584487498c98c98a4b9d2cad3c")

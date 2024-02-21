@@ -25,6 +25,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonCognitoIdentityProvider.InitiateAuthAsync(new InitiateAuthRequest
             {
+                UserId = null,
                 AuthFlow = AuthFlowType.USER_PASSWORD_AUTH,
                 AuthParameters = new Dictionary<string, string>
                 {
@@ -41,6 +42,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
             var user = await amazonCognitoIdentityProvider.GetUserAsync(new GetUserRequest
             {
+                UserId = null,
                 AccessToken = response.AuthenticationResult.AccessToken
             }, cancellationToken);
         }
@@ -49,6 +51,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             var response = await amazonCognitoIdentityProvider.AdminUpdateUserAttributesAsync(new AdminUpdateUserAttributesRequest
             {
+                UserId = null,
                 Username = "aaa@outlook.fr",
                 UserPoolId = "eu-west-3_Trx7Zxn8M",
                 UserAttributes = new List<AttributeType>
