@@ -28,6 +28,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             _ = await amazonSimpleEmailServiceV2.SendEmailAsync(new SESv2.Model.SendEmailRequest
             {
+                UserId = null,
                 FromEmailAddress = "noreply@dev.milochau.com",
                 Destination = new SESv2.Model.Destination
                 {

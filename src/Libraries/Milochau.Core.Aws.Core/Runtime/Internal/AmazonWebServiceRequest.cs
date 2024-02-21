@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal
@@ -7,7 +8,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
     {
         /// <summary>User id, used as a monitoring annotation</summary>
         [JsonIgnore]
-        public string? UserId { get; set; }
+        public required Guid? UserId { get; set; }
 
         /// <summary>Get request parameters for XRay</summary>
         public virtual Dictionary<string, object?> GetXRayRequestParameters()

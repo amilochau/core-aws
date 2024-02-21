@@ -1,5 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.Lambda;
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
             await amazonLambda.InvokeAsync(new Lambda.Model.InvokeRequest
             {
+                UserId = null,
                 FunctionName = $"emails-{EnvironmentVariables.ConventionHost}-fn-async-send-emails",
                 InvocationType = InvocationType.Event,
                 Payload = JsonSerializer.Serialize(emailRequest, ApplicationJsonSerializerContext.Default.EmailRequest),

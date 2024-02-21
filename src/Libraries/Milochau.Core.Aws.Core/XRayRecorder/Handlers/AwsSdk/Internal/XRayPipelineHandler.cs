@@ -85,9 +85,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             subsegment.AddHttpInformation(responseContext.HttpResponse!);
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
 
-            if (!string.IsNullOrEmpty(requestContext.OriginalRequest.UserId))
+            if (requestContext.OriginalRequest.UserId != null && requestContext.OriginalRequest.UserId.Value != default)
             {
-                subsegment.Annotations["user_id"] = requestContext.OriginalRequest.UserId;
+                subsegment.Annotations["user_id"] = requestContext.OriginalRequest.UserId.Value.ToString("N");
             }
 
             subsegment.End();
