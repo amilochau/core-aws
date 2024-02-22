@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -16,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// read, it always returns the last updated value.
     /// </para>
     /// </summary>
-    public class GetItemRequest : AmazonDynamoDBRequest
+    public class GetItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property AttributesToGet. 

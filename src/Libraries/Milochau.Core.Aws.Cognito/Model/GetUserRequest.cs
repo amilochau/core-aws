@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using System;
 
 namespace Milochau.Core.Aws.Cognito.Model
 {
@@ -16,7 +17,7 @@ namespace Milochau.Core.Aws.Cognito.Model
     /// </para>
     ///  </note>
     /// </summary>
-    public partial class GetUserRequest : AmazonWebServiceRequest
+    public partial class GetUserRequest(Guid? userId) : AmazonWebServiceRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property AccessToken. 

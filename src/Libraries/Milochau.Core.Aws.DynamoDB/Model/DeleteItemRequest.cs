@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -25,7 +26,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// is not deleted.
     /// </para>
     /// </summary>
-    public class DeleteItemRequest : AmazonDynamoDBRequest
+    public class DeleteItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property ConditionalOperator. 

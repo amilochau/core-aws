@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -16,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// operation using the <code>ReturnValues</code> parameter.
     /// </para>
     /// </summary>
-    public class UpdateItemRequest : AmazonDynamoDBRequest
+    public class UpdateItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property AttributeUpdates. 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -71,7 +72,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// when querying a global secondary index.
     /// </para>
     /// </summary>
-    public class QueryRequest : AmazonDynamoDBRequest
+    public class QueryRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property AttributesToGet. 

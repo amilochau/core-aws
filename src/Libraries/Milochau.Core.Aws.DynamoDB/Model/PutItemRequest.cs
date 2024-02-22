@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -41,7 +42,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// with Items</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
     /// </summary>
-    public class PutItemRequest : AmazonDynamoDBRequest
+    public class PutItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property ConditionalOperator. 

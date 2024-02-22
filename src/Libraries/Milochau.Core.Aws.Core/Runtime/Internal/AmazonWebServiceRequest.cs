@@ -6,9 +6,14 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
 {
     public abstract partial class AmazonWebServiceRequest
     {
+        public AmazonWebServiceRequest(Guid? userId)
+        {
+            UserId = userId;
+        }
+
         /// <summary>User id, used as a monitoring annotation</summary>
         [JsonIgnore]
-        public required Guid? UserId { get; set; }
+        public Guid? UserId { get; }
 
         /// <summary>Get request parameters for XRay</summary>
         public virtual Dictionary<string, object?> GetXRayRequestParameters()
