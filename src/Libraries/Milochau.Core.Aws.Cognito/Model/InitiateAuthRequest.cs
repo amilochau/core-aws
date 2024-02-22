@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using System;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.Cognito.Model
@@ -41,7 +42,7 @@ namespace Milochau.Core.Aws.Cognito.Model
     /// </para>
     ///  </note>
     /// </summary>
-    public partial class InitiateAuthRequest : AmazonWebServiceRequest
+    public partial class InitiateAuthRequest(Guid? userId) : AmazonWebServiceRequest(userId)
     {
         ///// <summary>
         ///// Gets and sets the property AnalyticsMetadata. 

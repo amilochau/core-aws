@@ -1,4 +1,5 @@
 using Milochau.Core.Aws.Core.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -61,7 +62,7 @@ namespace Milochau.Core.Aws.Lambda.Model
     /// function access to other accounts</a>.
     /// </para>
     /// </summary>
-    public partial class InvokeRequest : AmazonLambdaRequest
+    public partial class InvokeRequest(Guid? userId) : AmazonLambdaRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property ClientContextBase64. 

@@ -26,9 +26,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task SendEmailAsync(FunctionRequest emailRequest, CancellationToken cancellationToken)
         {
-            _ = await amazonSimpleEmailServiceV2.SendEmailAsync(new SESv2.Model.SendEmailRequest
+            _ = await amazonSimpleEmailServiceV2.SendEmailAsync(new SESv2.Model.SendEmailRequest(null)
             {
-                UserId = null,
                 FromEmailAddress = "noreply@dev.milochau.com",
                 Destination = new SESv2.Model.Destination
                 {

@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using System;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.Cognito.Model
@@ -64,7 +65,7 @@ namespace Milochau.Core.Aws.Cognito.Model
     /// </para>
     ///  </li> </ul> </note>
     /// </summary>
-    public partial class AdminUpdateUserAttributesRequest : AmazonWebServiceRequest
+    public partial class AdminUpdateUserAttributesRequest(Guid? userId) : AmazonWebServiceRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property ClientMetadata. 

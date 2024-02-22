@@ -25,9 +25,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task GetTestItemAsync(CancellationToken cancellationToken)
         {
-            var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest
+            var response = await amazonDynamoDB.GetItemAsync(new GetItemRequest(null)
             {
-                UserId = null,
                 TableName = $"{EnvironmentVariables.ConventionPrefix}-table-maps",
                 Key = new Dictionary<string, AttributeValue>()
                     .Append("id", "0dc388584487498c98c98a4b9d2cad3c")

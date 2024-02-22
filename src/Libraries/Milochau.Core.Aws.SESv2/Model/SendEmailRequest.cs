@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.SESv2.Model
@@ -28,7 +29,7 @@ namespace Milochau.Core.Aws.SESv2.Model
     /// </para>
     ///  </li> </ul>
     /// </summary>
-    public partial class SendEmailRequest : AmazonSimpleEmailServiceV2Request
+    public partial class SendEmailRequest(Guid? userId) : AmazonSimpleEmailServiceV2Request(userId)
     {
         /// <summary>
         /// Gets and sets the property ConfigurationSetName. 

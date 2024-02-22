@@ -41,11 +41,11 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                         SenderName = "sender name",
                     }
                 }
-            }, ApplicationJsonSerializerContext.Default.EmailRequestContent));
+            }, ApplicationJsonSerializerContext.Default.EmailRequestContent),
+            null);
 
-            await amazonLambda.InvokeAsync(new Lambda.Model.InvokeRequest
+            await amazonLambda.InvokeAsync(new Lambda.Model.InvokeRequest(null)
             {
-                UserId = null,
                 FunctionName = $"emails-{EnvironmentVariables.ConventionHost}-fn-async-send-emails",
                 InvocationType = InvocationType.Event,
                 Payload = JsonSerializer.Serialize(emailRequest, ApplicationJsonSerializerContext.Default.EmailRequest),

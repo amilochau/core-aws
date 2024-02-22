@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -111,7 +112,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// </para>
     ///  </li> </ul>
     /// </summary>
-    public class BatchWriteItemRequest : AmazonDynamoDBRequest
+    public class BatchWriteItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
         /// Gets and sets the property RequestItems. 
