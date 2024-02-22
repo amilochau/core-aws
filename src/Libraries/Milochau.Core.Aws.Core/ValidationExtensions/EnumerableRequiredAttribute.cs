@@ -6,11 +6,11 @@ using System.Linq;
 namespace Milochau.Core.Aws.Core.ValidationExtensions
 {
     /// <summary>
-    /// Validation attribute to assert a dictionary property, field or parameter does not include null or whitespace key or value
+    /// Validation attribute to assert an enumerable property, field or parameter does not include null or whitespace value
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
 
-    public class DictionaryRequiredAttribute<TKey, TValue> : ValidationAttribute
+    public class EnumerableRequiredAttribute<TValue> : ValidationAttribute
     {
         public override bool IsValid(object? value)
         {
@@ -20,11 +20,9 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            var dictionary = (IDictionary<TKey, TValue>)value;
+            var dictionary = (IEnumerable<TValue>)value;
 
-            return dictionary.All(x =>
-                x.Key is not null && (x.Key is not string key || !string.IsNullOrWhiteSpace(key)) &&
-                x.Value is not null && (x.Value is not string value || !string.IsNullOrWhiteSpace(value)));
+            return dictionary.All(x => x is not null && (x is not string value || !string.IsNullOrWhiteSpace(value)));
         }
     }
 }
