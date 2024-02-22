@@ -6,7 +6,6 @@ using Milochau.Core.Aws.DynamoDB.Model;
 using System.Linq;
 using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.Core.References;
-using System;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
