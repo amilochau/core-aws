@@ -82,7 +82,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             }
 
             subsegment.AddHttpInformation(requestContext.HttpRequestMessage);
-            subsegment.AddHttpInformation(responseContext.HttpResponse!);
+            if (responseContext.HttpResponse != null)
+            {
+                subsegment.AddHttpInformation(responseContext.HttpResponse);
+            }
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment);
 
             if (requestContext.OriginalRequest.UserId != null && requestContext.OriginalRequest.UserId.Value != default)
