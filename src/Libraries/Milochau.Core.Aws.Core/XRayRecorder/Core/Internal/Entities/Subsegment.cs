@@ -108,12 +108,15 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <remarks>Not used for AWS services, but used for external calls</remarks>
         public void AddHttpInformation(HttpRequestMessage httpRequest)
         {
-            var requestAttributes = new Dictionary<string, object>
+            if (httpRequest.RequestUri != null)
             {
-                ["method"] = httpRequest.Method.Method,
-                ["url"] = httpRequest.RequestUri!.GetLeftPart(UriPartial.Path),
-            };
-            Http["request"] = requestAttributes;
+                var requestAttributes = new Dictionary<string, object>
+                {
+                    ["method"] = httpRequest.Method.Method,
+                    ["url"] = httpRequest.RequestUri.GetLeftPart(UriPartial.Path),
+                };
+                Http["request"] = requestAttributes;
+            }
         }
 
         public void AddHttpInformation(HttpResponseMessage httpResponse)
