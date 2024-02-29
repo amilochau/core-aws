@@ -9,9 +9,28 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     public static partial class AttributesExtensions
     {
         /// <summary>Read a value as an object</summary>
+        public static TEntity ReadObject<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
+            where TEntity: IDynamoDbEntity<TEntity>
+        {
+            return TEntity.ParseFromDynamoDb(ReadObject(attributes, key));
+        }
+
+        /// <summary>Read a value as an object</summary>
         public static Dictionary<string, AttributeValue> ReadObject(this Dictionary<string, AttributeValue> attributes, string key)
         {
             return attributes[key].M!;
+        }
+
+        /// <summary>Read an optional value as an object</summary>
+        public static TEntity? ReadObjectOptional<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
+            where TEntity : class, IDynamoDbEntity<TEntity>
+        {
+            var rawEntity = ReadObjectOptional(attributes, key);
+            if (rawEntity == null)
+            {
+                return null;
+            }
+            return TEntity.ParseFromDynamoDb(rawEntity);
         }
 
         /// <summary>Read an optional value as an object</summary>
@@ -25,9 +44,27 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Read a value as a list of objects</summary>
+        public static List<TEntity> ReadList<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
+            where TEntity: IDynamoDbEntity<TEntity>
+        {
+            return attributes[key].L!.Select(x => TEntity.ParseFromDynamoDb(x.M!)).ToList();
+        }
+
+        /// <summary>Read a value as a list of objects</summary>
         public static List<Dictionary<string, AttributeValue>> ReadList(this Dictionary<string, AttributeValue> attributes, string key)
         {
             return attributes[key].L!.Select(x => x.M!).ToList();
+        }
+
+        /// <summary>Read an optional value as a list of objects</summary>
+        public static List<TEntity>? ReadListOptional<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
+            where TEntity : IDynamoDbEntity<TEntity>
+        {
+            if (attributes.TryGetValue(key, out var attribute) && attribute != null)
+            {
+                return attribute.L!.Select(x => TEntity.ParseFromDynamoDb(x.M!)).ToList();
+            }
+            return null;
         }
 
         /// <summary>Read an optional value as a list of objects</summary>

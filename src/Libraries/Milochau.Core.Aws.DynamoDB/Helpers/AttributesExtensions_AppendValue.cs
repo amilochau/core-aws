@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.DynamoDB.Model;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using Milochau.Core.Aws.DynamoDB.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,6 +137,13 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an object value</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue<TEntity>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IDynamoDbEntity<TEntity>? value)
+            where TEntity: IDynamoDbEntity<TEntity>
+        {
+            return attributes.AppendValue(key, value?.FormatForDynamoDb());
+        }
+
+        /// <summary>Append an object value</summary>
         public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Dictionary<string, AttributeValue>? value)
         {
             if (value == null || value.Count == 0)
@@ -143,6 +151,17 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 return attributes;
             }
             return attributes.Append(new($":v_{key}", new AttributeValue { M = value }));
+        }
+
+        /// <summary>Append an enumerable value of objects</summary>
+        public static IEnumerable<KeyValuePair<string, AttributeValue>> AppendValue<TEntity>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<TEntity>? value)
+            where TEntity : IDynamoDbEntity<TEntity>
+        {
+            if (value == null || !value.Any())
+            {
+                return attributes;
+            }
+            return attributes.Append(new($":v_{key}", new AttributeValue { L = value.Select(x => new AttributeValue { M = x.FormatForDynamoDb() }).ToList() }));
         }
 
         /// <summary>Append an enumerable value of objects</summary>
