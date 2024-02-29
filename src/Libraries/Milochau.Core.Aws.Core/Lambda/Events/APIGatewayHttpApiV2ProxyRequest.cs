@@ -45,6 +45,11 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         public class ProxyRequestContext
         {
             /// <summary>
+            /// The domain name.
+            /// </summary>
+            public string? DomainName { get; set; }
+
+            /// <summary>
             /// Information about the current requesters authorization including claims and scopes.
             /// </summary>
             public AuthorizerDescription? Authorizer { get; set; }
@@ -74,6 +79,16 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
             /// The protocal used to make the rquest
             /// </summary>
             public string? Protocol { get; set; }
+
+            /// <summary>
+            /// The source ip for the request.
+            /// </summary>
+            public string? SourceIp { get; set; }
+
+            /// <summary>
+            /// The user agent for the request.
+            /// </summary>
+            public string? UserAgent { get; set; }
         }
 
         /// <summary>
