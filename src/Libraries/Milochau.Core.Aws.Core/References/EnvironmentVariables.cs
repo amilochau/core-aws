@@ -20,6 +20,7 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_ConventionOrganization = "CONVENTION__ORGANIZATION";
         internal const string Key_ConventionApplication = "CONVENTION__APPLICATION";
         internal const string Key_ConventionHost = "CONVENTION__HOST";
+        internal const string Key_AccountId = "ACCOUNT_ID";
 
         private static IDictionary Variables { get; } = Environment.GetEnvironmentVariables();
 
@@ -90,6 +91,9 @@ namespace Milochau.Core.Aws.Core.References
 
         /// <summary>Convention - Host</summary>
         public static string ConventionHost { get; } = GetEnvironmentVariable(Key_ConventionHost)!;
+
+        /// <summary>Account id</summary>
+        public static string AccountId { get; } = GetEnvironmentVariable(Key_AccountId)!;
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
     }
