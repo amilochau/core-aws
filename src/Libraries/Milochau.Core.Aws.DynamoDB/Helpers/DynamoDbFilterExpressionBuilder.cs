@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             expressionAttributeNames.AddExpressionAttributeNames(AttributeType.ToArray());
             expressionAttributeNames.AddExpressionAttributeNames(BeginsWith.ToArray());
             expressionAttributeNames.AddExpressionAttributeNames(Contains.ToArray());
-            return expressionAttributeNames.ToDictionary(x => x.Key, x => x.Value);
+            return expressionAttributeNames.ToDictionary();
         }
 
         /// <summary>Build the filter expression</summary>

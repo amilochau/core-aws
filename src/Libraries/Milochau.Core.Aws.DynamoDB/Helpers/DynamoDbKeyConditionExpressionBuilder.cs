@@ -41,7 +41,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             expressionAttributeNames.AddExpressionAttributeNames(GreaterOrEqual.ToArray());
             expressionAttributeNames.AddExpressionAttributeNames(Between.ToArray());
             expressionAttributeNames.AddExpressionAttributeNames(BeginsWith.ToArray());
-            return expressionAttributeNames.ToDictionary(x => x.Key, x => x.Value);
+            return expressionAttributeNames.ToDictionary();
         }
 
         /// <summary>Build the key condition expression</summary>

@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         public static Dictionary<string, string> BuildExpressionAttributeNames(IEnumerable<string> attributes, params string[] more)
         {
             var allAttributes = attributes.Union(more).Select(x => new KeyValuePair<string, string>($"#{x}", x));
-            return allAttributes.ToDictionary(x => x.Key, x => x.Value);
+            return allAttributes.ToDictionary();
         }
 
         /// <summary>Build a dictionary of expression attribute names from an enumerable of attributes</summary>
@@ -26,7 +26,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         {
             var expressionAttributeNames = new List<KeyValuePair<string, string>>();
             expressionAttributeNames.AddExpressionAttributeNames(attributes);
-            return expressionAttributeNames.ToDictionary(x => x.Key, x => x.Value);
+            return expressionAttributeNames.ToDictionary();
         }
 
         /// <summary>Add expression attribute names from an enumerable of attributes to an existing dictionary</summary>
