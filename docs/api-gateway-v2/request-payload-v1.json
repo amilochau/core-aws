@@ -5,10 +5,10 @@
   "httpMethod": "GET",
   "headers": {
       "Content-Length": "0",
-      "Host": "vbu0ke3tt3.execute-api.eu-west-3.amazonaws.com",
+      "Host": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
       "X-Amzn-Trace-Id": "Root=1-65e08079-137852876b56d5b001ad7acf",
-      "X-Forwarded-For": "88.166.218.207",
+      "X-Forwarded-For": "xxx.xxx.xxx.xxx",
       "X-Forwarded-Port": "443",
       "X-Forwarded-Proto": "https",
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -29,7 +29,7 @@
           "0"
       ],
       "Host": [
-          "vbu0ke3tt3.execute-api.eu-west-3.amazonaws.com"
+          "xxxxxx.execute-api.eu-west-3.amazonaws.com"
       ],
       "User-Agent": [
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0"
@@ -38,7 +38,7 @@
           "Root=1-65e08079-137852876b56d5b001ad7acf"
       ],
       "X-Forwarded-For": [
-          "88.166.218.207"
+          "xxx.xxx.xxx.xxx"
       ],
       "X-Forwarded-Port": [
           "443"
@@ -87,9 +87,9 @@
   "multiValueQueryStringParameters": null,
   "requestContext": {
       "accountId": "381492034295",
-      "apiId": "vbu0ke3tt3",
-      "domainName": "vbu0ke3tt3.execute-api.eu-west-3.amazonaws.com",
-      "domainPrefix": "vbu0ke3tt3",
+      "apiId": "xxxxxx",
+      "domainName": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
+      "domainPrefix": "xxxxxx",
       "extendedRequestId": "T5kDAj04iGYEMhA=",
       "httpMethod": "GET",
       "identity": {
@@ -102,7 +102,7 @@
           "cognitoIdentityId": null,
           "cognitoIdentityPoolId": null,
           "principalOrgId": null,
-          "sourceIp": "88.166.218.207",
+          "sourceIp": "xxx.xxx.xxx.xxx",
           "user": null,
           "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
           "userArn": null
