@@ -201,7 +201,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         private static async Task<string> SetRequestBodyHashAsync(IRequestContext requestContext)
         {
             // Calculate the hash and set it in the headers before returning
-            byte[] payloadBytes = await requestContext.HttpRequestMessage.Content!.ReadAsByteArrayAsync();
+            byte[] payloadBytes = [];
+            if (requestContext.HttpRequestMessage.Content != null)
+            {
+                payloadBytes = await requestContext.HttpRequestMessage.Content.ReadAsByteArrayAsync();
+            }
             byte[] payloadHashBytes = CryptoUtilFactory.CryptoInstance.ComputeSHA256Hash(payloadBytes);
             string? computedContentHash = AWSSDKUtils.ToHex(payloadHashBytes, true);
 

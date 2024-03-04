@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SESv2", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito", "Libraries\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj", "{236BD429-80EB-450F-80FE-1F0219D0E26E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SNS", "Libraries\Milochau.Core.Aws.SNS\Milochau.Core.Aws.SNS.csproj", "{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{236BD429-80EB-450F-80FE-1F0219D0E26E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +111,7 @@ Global
 		{2329DD57-0657-43C9-B411-052096BA23B4} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{C9A1BC99-F5BF-450B-8058-7FCD87E5CF4B} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{236BD429-80EB-450F-80FE-1F0219D0E26E} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}

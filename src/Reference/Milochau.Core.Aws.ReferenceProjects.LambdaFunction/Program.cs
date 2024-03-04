@@ -17,6 +17,7 @@ using Milochau.Core.Aws.Core.References.Serialization;
 using Milochau.Core.Aws.Cognito;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
 using Milochau.Core.Aws.Core.JsonConverters;
+using Milochau.Core.Aws.SNS;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
@@ -53,20 +54,23 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
         private readonly IDynamoDbDataAccess dynamoDbDataAccess;
         private readonly IEmailsLambdaDataAccess emailsLambdaDataAccess;
         private readonly ISesDataAccess sesDataAccess;
+        private readonly ISnsDataAccess snsDataAccess;
         private readonly ICognitoDataAccess cognitoDataAccess;
 
         public Function(IAWSCredentials credentials)
             : this(dynamoDbDataAccess: new DynamoDbDataAccess(new AmazonDynamoDBClient(credentials)),
                    emailsLambdaDataAccess: new EmailsLambdaDataAccess(new AmazonLambdaClient(credentials)),
                    sesDataAccess: new SesDataAccess(new AmazonSimpleEmailServiceV2Client(credentials)),
+                   snsDataAccess: new SnsDataAccess(new AmazonSimpleNotificationServiceClient(credentials)),
                    cognitoDataAccess: new CognitoDataAccess(new AmazonCognitoIdentityProviderClient(credentials)))
         { }
 
-        public Function(IDynamoDbDataAccess dynamoDbDataAccess, IEmailsLambdaDataAccess emailsLambdaDataAccess, ISesDataAccess sesDataAccess, ICognitoDataAccess cognitoDataAccess)
+        public Function(IDynamoDbDataAccess dynamoDbDataAccess, IEmailsLambdaDataAccess emailsLambdaDataAccess, ISesDataAccess sesDataAccess, ISnsDataAccess snsDataAccess, ICognitoDataAccess cognitoDataAccess)
         {
             this.dynamoDbDataAccess = dynamoDbDataAccess;
             this.emailsLambdaDataAccess = emailsLambdaDataAccess;
             this.sesDataAccess = sesDataAccess;
+            this.snsDataAccess = snsDataAccess;
             this.cognitoDataAccess = cognitoDataAccess;
         }
 
@@ -131,9 +135,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             ILambdaContext context,
             CancellationToken cancellationToken)
         {
+            await snsDataAccess.SendEventAsync(requestData, cancellationToken);
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
-            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+            //await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
             //await cognitoDataAccess.LoginAsync(cancellationToken);
             //await cognitoDataAccess.UpdateAttributesAsync(cancellationToken);
 

@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.SNS\Milochau.Core.Aws.SNS.csproj" />
   </ItemGroup>
 
   <ItemGroup>
