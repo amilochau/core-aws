@@ -1,0 +1,123 @@
+{
+  "version": "1.0",
+  "resource": "/todelete-lambda-apigatewayv2",
+  "path": "/default/todelete-lambda-apigatewayv2",
+  "httpMethod": "GET",
+  "headers": {
+      "Content-Length": "0",
+      "Host": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+      "X-Amzn-Trace-Id": "Root=1-65e08079-137852876b56d5b001ad7acf",
+      "X-Forwarded-For": "xxx.xxx.xxx.xxx",
+      "X-Forwarded-Port": "443",
+      "X-Forwarded-Proto": "https",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+      "accept-encoding": "gzip, deflate, br",
+      "accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "dnt": "1",
+      "sec-ch-ua": "\"Chromium\";v=\"122\", \"Not(A:Brand\";v=\"24\", \"Microsoft Edge\";v=\"122\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-site": "cross-site",
+      "sec-fetch-user": "?1",
+      "upgrade-insecure-requests": "1"
+  },
+  "multiValueHeaders": {
+      "Content-Length": [
+          "0"
+      ],
+      "Host": [
+          "xxxxxx.execute-api.eu-west-3.amazonaws.com"
+      ],
+      "User-Agent": [
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0"
+      ],
+      "X-Amzn-Trace-Id": [
+          "Root=1-65e08079-137852876b56d5b001ad7acf"
+      ],
+      "X-Forwarded-For": [
+          "xxx.xxx.xxx.xxx"
+      ],
+      "X-Forwarded-Port": [
+          "443"
+      ],
+      "X-Forwarded-Proto": [
+          "https"
+      ],
+      "accept": [
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+      ],
+      "accept-encoding": [
+          "gzip, deflate, br"
+      ],
+      "accept-language": [
+          "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7"
+      ],
+      "dnt": [
+          "1"
+      ],
+      "sec-ch-ua": [
+          "\"Chromium\";v=\"122\", \"Not(A:Brand\";v=\"24\", \"Microsoft Edge\";v=\"122\""
+      ],
+      "sec-ch-ua-mobile": [
+          "?0"
+      ],
+      "sec-ch-ua-platform": [
+          "\"Windows\""
+      ],
+      "sec-fetch-dest": [
+          "document"
+      ],
+      "sec-fetch-mode": [
+          "navigate"
+      ],
+      "sec-fetch-site": [
+          "cross-site"
+      ],
+      "sec-fetch-user": [
+          "?1"
+      ],
+      "upgrade-insecure-requests": [
+          "1"
+      ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "requestContext": {
+      "accountId": "381492034295",
+      "apiId": "xxxxxx",
+      "domainName": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
+      "domainPrefix": "xxxxxx",
+      "extendedRequestId": "T5kDAj04iGYEMhA=",
+      "httpMethod": "GET",
+      "identity": {
+          "accessKey": null,
+          "accountId": null,
+          "caller": null,
+          "cognitoAmr": null,
+          "cognitoAuthenticationProvider": null,
+          "cognitoAuthenticationType": null,
+          "cognitoIdentityId": null,
+          "cognitoIdentityPoolId": null,
+          "principalOrgId": null,
+          "sourceIp": "xxx.xxx.xxx.xxx",
+          "user": null,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+          "userArn": null
+      },
+      "path": "/default/todelete-lambda-apigatewayv2",
+      "protocol": "HTTP/1.1",
+      "requestId": "T5kDAj04iGYEMhA=",
+      "requestTime": "29/Feb/2024:13:02:49 +0000",
+      "requestTimeEpoch": 1709211769320,
+      "resourceId": "ANY /todelete-lambda-apigatewayv2",
+      "resourcePath": "/todelete-lambda-apigatewayv2",
+      "stage": "default"
+  },
+  "pathParameters": null,
+  "stageVariables": null,
+  "body": null,
+  "isBase64Encoded": false
+}

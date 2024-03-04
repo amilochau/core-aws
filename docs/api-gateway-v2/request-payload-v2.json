@@ -1,0 +1,47 @@
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/default",
+  "rawQueryString": "",
+  "headers": {
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+      "accept-encoding": "gzip, deflate, br",
+      "accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+      "cache-control": "max-age=0",
+      "content-length": "0",
+      "dnt": "1",
+      "host": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
+      "sec-ch-ua": "\"Chromium\";v=\"122\", \"Not(A:Brand\";v=\"24\", \"Microsoft Edge\";v=\"122\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-fetch-dest": "document",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-site": "cross-site",
+      "sec-fetch-user": "?1",
+      "upgrade-insecure-requests": "1",
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+      "x-amzn-trace-id": "Root=1-65e084cf-1d8f8b6a4d2dcf3e277eb1c0",
+      "x-forwarded-for": "xxx.xxx.xxx.xxx",
+      "x-forwarded-port": "443",
+      "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+      "accountId": "381492034295",
+      "apiId": "xxxxxx",
+      "domainName": "xxxxxx.execute-api.eu-west-3.amazonaws.com",
+      "domainPrefix": "xxxxxx",
+      "http": {
+          "method": "GET",
+          "path": "/default",
+          "protocol": "HTTP/1.1",
+          "sourceIp": "xxx.xxx.xxx.xxx",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0"
+      },
+      "requestId": "T5mwbiAaCGYEMcw=",
+      "routeKey": "$default",
+      "stage": "default",
+      "time": "29/Feb/2024:13:21:19 +0000",
+      "timeEpoch": 1709212879211
+  },
+  "isBase64Encoded": false
+}

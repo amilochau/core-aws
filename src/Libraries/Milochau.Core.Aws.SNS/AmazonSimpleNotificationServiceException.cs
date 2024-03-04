@@ -1,0 +1,52 @@
+﻿using Milochau.Core.Aws.Core.Runtime;
+using System;
+using System.Net;
+
+namespace Milochau.Core.Aws.SNS
+{
+    ///<summary>
+    /// Common exception for the SimpleNotificationService service.
+    /// </summary>
+    public partial class AmazonSimpleNotificationServiceException : AmazonServiceException
+    {
+        /// <summary>
+        /// Construct instance of AmazonSimpleNotificationServiceException
+        /// </summary>
+        public AmazonSimpleNotificationServiceException(string message)
+            : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Construct instance of AmazonSimpleNotificationServiceException
+        /// </summary>
+        public AmazonSimpleNotificationServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Construct instance of AmazonSimpleNotificationServiceException
+        /// </summary>
+        public AmazonSimpleNotificationServiceException(Exception innerException)
+            : base(innerException.Message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Construct instance of AmazonSimpleNotificationServiceException
+        /// </summary>
+        public AmazonSimpleNotificationServiceException(string message, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
+            : base(message, errorType, errorCode, requestId, statusCode)
+        {
+        }
+
+        /// <summary>
+        /// Construct instance of AmazonSimpleNotificationServiceException
+        /// </summary>
+        public AmazonSimpleNotificationServiceException(string message, Exception innerException, ErrorType errorType, string? errorCode, string? requestId, HttpStatusCode statusCode)
+            : base(message, innerException, errorType, errorCode, requestId, statusCode)
+        {
+        }
+    }
+}
