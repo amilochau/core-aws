@@ -225,5 +225,14 @@ namespace Milochau.Core.Aws.SNS.Model
         /// </para>
         /// </summary>
         public required string TopicArn { get; set; }
+
+        /// <summary>Get request parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayRequestParameters()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "topic_arn", TopicArn },
+            };
+        }
     }
 }
