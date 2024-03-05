@@ -47,7 +47,7 @@ namespace Milochau.Core.Aws.SNS
             : base(credentials, new ClientConfig
             {
                 AuthenticationServiceName = "sns",
-                MonitoringServiceName = "SNS",
+                MonitoringServiceName = "SimpleNotificationService",
             })
         { }
 
