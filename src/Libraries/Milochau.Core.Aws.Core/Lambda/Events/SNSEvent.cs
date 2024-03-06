@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.Core.Lambda.Events
@@ -32,8 +33,18 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
     public class SNSMessage
     {
         /// <summary>
+        /// The subject for the message.
+        /// </summary>
+        public string? Subject { get; set; }
+
+        /// <summary>
         /// The message.
         /// </summary>
         public required string Message { get; set; }
+
+        /// <summary>
+        /// The message time stamp.
+        /// </summary>
+        public required DateTime Timestamp { get; set; }
     }
 }
