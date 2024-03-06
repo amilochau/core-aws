@@ -46,5 +46,26 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         /// The message time stamp.
         /// </summary>
         public required DateTime Timestamp { get; set; }
+
+        /// <summary>
+        /// The attributes associated with the message.
+        /// </summary>
+        public IDictionary<string, MessageAttribute>? MessageAttributes { get; set; }
+    }
+
+    /// <summary>
+    /// An SNS message attribute.
+    /// </summary>
+    public class MessageAttribute
+    {
+        /// <summary>
+        /// The attribute type.
+        /// </summary>
+        public string? Type { get; set; }
+
+        /// <summary>
+        /// The attribute value.
+        /// </summary>
+        public string? Value { get; set; }
     }
 }
