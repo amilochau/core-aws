@@ -35,8 +35,8 @@ namespace Milochau.Core.Aws.DynamoDB
     public partial interface IAmazonDynamoDB
     {
         /// <summary>
-        /// The <code>BatchWriteItem</code> operation puts or deletes multiple items in one or
-        /// more tables. A single call to <code>BatchWriteItem</code> can transmit up to 16MB
+        /// The <c>BatchWriteItem</c> operation puts or deletes multiple items in one or
+        /// more tables. A single call to <c>BatchWriteItem</c> can transmit up to 16MB
         /// of data over the network, consisting of up to 25 item put or delete operations. While
         /// individual items can be up to 400 KB once stored, it's important to note that an item's
         /// representation might be greater than 400KB while being sent in DynamoDB's JSON format
@@ -45,26 +45,26 @@ namespace Milochau.Core.Aws.DynamoDB
         /// 
         ///  <note> 
         /// <para>
-        ///  <code>BatchWriteItem</code> cannot update items. If you perform a <code>BatchWriteItem</code>
+        ///  <c>BatchWriteItem</c> cannot update items. If you perform a <c>BatchWriteItem</c>
         /// operation on an existing item, that item's values will be overwritten by the operation
         /// and it will appear like it was updated. To update items, we recommend you use the
-        /// <code>UpdateItem</code> action.
+        /// <c>UpdateItem</c> action.
         /// </para>
         ///  </note> 
         /// <para>
-        /// The individual <code>PutItem</code> and <code>DeleteItem</code> operations specified
-        /// in <code>BatchWriteItem</code> are atomic; however <code>BatchWriteItem</code> as
+        /// The individual <c>PutItem</c> and <c>DeleteItem</c> operations specified
+        /// in <c>BatchWriteItem</c> are atomic; however <c>BatchWriteItem</c> as
         /// a whole is not. If any requested operations fail because the table's provisioned throughput
         /// is exceeded or an internal processing failure occurs, the failed operations are returned
-        /// in the <code>UnprocessedItems</code> response parameter. You can investigate and optionally
-        /// resend the requests. Typically, you would call <code>BatchWriteItem</code> in a loop.
-        /// Each iteration would check for unprocessed items and submit a new <code>BatchWriteItem</code>
+        /// in the <c>UnprocessedItems</c> response parameter. You can investigate and optionally
+        /// resend the requests. Typically, you would call <c>BatchWriteItem</c> in a loop.
+        /// Each iteration would check for unprocessed items and submit a new <c>BatchWriteItem</c>
         /// request with those unprocessed items until all items have been processed.
         /// </para>
         ///  
         /// <para>
         /// If <i>none</i> of the items can be processed due to insufficient provisioned throughput
-        /// on all of the tables in the request, then <code>BatchWriteItem</code> returns a <code>ProvisionedThroughputExceededException</code>.
+        /// on all of the tables in the request, then <c>BatchWriteItem</c> returns a <c>ProvisionedThroughputExceededException</c>.
         /// </para>
         ///  <important> 
         /// <para>
@@ -82,19 +82,19 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </para>
         ///  </important> 
         /// <para>
-        /// With <code>BatchWriteItem</code>, you can efficiently write or delete large amounts
+        /// With <c>BatchWriteItem</c>, you can efficiently write or delete large amounts
         /// of data, such as from Amazon EMR, or copy data from another database into DynamoDB.
-        /// In order to improve performance with these large-scale operations, <code>BatchWriteItem</code>
-        /// does not behave in the same way as individual <code>PutItem</code> and <code>DeleteItem</code>
+        /// In order to improve performance with these large-scale operations, <c>BatchWriteItem</c>
+        /// does not behave in the same way as individual <c>PutItem</c> and <c>DeleteItem</c>
         /// calls would. For example, you cannot specify conditions on individual put and delete
-        /// requests, and <code>BatchWriteItem</code> does not return deleted items in the response.
+        /// requests, and <c>BatchWriteItem</c> does not return deleted items in the response.
         /// </para>
         ///  
         /// <para>
         /// If you use a programming language that supports concurrency, you can use threads to
         /// write items in parallel. Your application must include the necessary logic to manage
         /// the threads. With languages that don't support threading, you must update or delete
-        /// the specified items one at a time. In both situations, <code>BatchWriteItem</code>
+        /// the specified items one at a time. In both situations, <c>BatchWriteItem</c>
         /// performs the specified put and delete operations in parallel, giving you the power
         /// of the thread pool approach without having to introduce complexity into your application.
         /// </para>
@@ -110,7 +110,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        /// One or more tables specified in the <code>BatchWriteItem</code> request does not exist.
+        /// One or more tables specified in the <c>BatchWriteItem</c> request does not exist.
         /// </para>
         ///  </li> <li> 
         /// <para>
@@ -119,8 +119,8 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </para>
         ///  </li> <li> 
         /// <para>
-        /// You try to perform multiple operations on the same item in the same <code>BatchWriteItem</code>
-        /// request. For example, you cannot put and delete the same item in the same <code>BatchWriteItem</code>
+        /// You try to perform multiple operations on the same item in the same <c>BatchWriteItem</c>
+        /// request. For example, you cannot put and delete the same item in the same <c>BatchWriteItem</c>
         /// request. 
         /// </para>
         ///  </li> <li> 
@@ -158,11 +158,11 @@ namespace Milochau.Core.Aws.DynamoDB
         ///  
         /// <para>
         /// In addition to deleting an item, you can also return the item's attribute values in
-        /// the same operation, using the <code>ReturnValues</code> parameter.
+        /// the same operation, using the <c>ReturnValues</c> parameter.
         /// </para>
         ///  
         /// <para>
-        /// Unless you specify conditions, the <code>DeleteItem</code> is an idempotent operation;
+        /// Unless you specify conditions, the <c>DeleteItem</c> is an idempotent operation;
         /// running it multiple times on the same item or attribute does <i>not</i> result in
         /// an error response.
         /// </para>
@@ -183,14 +183,14 @@ namespace Milochau.Core.Aws.DynamoDB
         Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken);
 
         /// <summary>
-        /// The <code>GetItem</code> operation returns a set of attributes for the item with the
-        /// given primary key. If there is no matching item, <code>GetItem</code> does not return
-        /// any data and there will be no <code>Item</code> element in the response.
+        /// The <c>GetItem</c> operation returns a set of attributes for the item with the
+        /// given primary key. If there is no matching item, <c>GetItem</c> does not return
+        /// any data and there will be no <c>Item</c> element in the response.
         /// 
         ///  
         /// <para>
-        ///  <code>GetItem</code> provides an eventually consistent read by default. If your application
-        /// requires a strongly consistent read, set <code>ConsistentRead</code> to <code>true</code>.
+        ///  <c>GetItem</c> provides an eventually consistent read by default. If your application
+        /// requires a strongly consistent read, set <c>ConsistentRead</c> to <c>true</c>.
         /// Although a strongly consistent read might take more time than an eventually consistent
         /// read, it always returns the last updated value.
         /// </para>
@@ -210,7 +210,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// completely replaces the existing item. You can perform a conditional put operation
         /// (add a new item if one with the specified primary key doesn't exist), or replace an
         /// existing item if it has certain attribute values. You can return the item's attribute
-        /// values in the same operation, using the <code>ReturnValues</code> parameter.
+        /// values in the same operation, using the <c>ReturnValues</c> parameter.
         /// 
         ///  
         /// <para>
@@ -225,20 +225,20 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </para>
         ///  
         /// <para>
-        /// Invalid Requests with empty values will be rejected with a <code>ValidationException</code>
+        /// Invalid Requests with empty values will be rejected with a <c>ValidationException</c>
         /// exception.
         /// </para>
         ///  <note> 
         /// <para>
         /// To prevent a new item from replacing an existing item, use a conditional expression
-        /// that contains the <code>attribute_not_exists</code> function with the name of the
+        /// that contains the <c>attribute_not_exists</c> function with the name of the
         /// attribute being used as the partition key for the table. Since every record must contain
-        /// that attribute, the <code>attribute_not_exists</code> function will only succeed if
+        /// that attribute, the <c>attribute_not_exists</c> function will only succeed if
         /// no matching item exists.
         /// </para>
         ///  </note> 
         /// <para>
-        /// For more information about <code>PutItem</code>, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html">Working
+        /// For more information about <c>PutItem</c>, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html">Working
         /// with Items</a> in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
@@ -253,24 +253,24 @@ namespace Milochau.Core.Aws.DynamoDB
 
         /// <summary>
         /// You must provide the name of the partition key attribute and a single value for that
-        /// attribute. <code>Query</code> returns all items with that partition key value. Optionally,
+        /// attribute. <c>Query</c> returns all items with that partition key value. Optionally,
         /// you can provide a sort key attribute and use a comparison operator to refine the search
         /// results.
         /// 
         ///  
         /// <para>
-        /// Use the <code>KeyConditionExpression</code> parameter to provide a specific value
-        /// for the partition key. The <code>Query</code> operation will return all of the items
+        /// Use the <c>KeyConditionExpression</c> parameter to provide a specific value
+        /// for the partition key. The <c>Query</c> operation will return all of the items
         /// from the table or index with that partition key value. You can optionally narrow the
-        /// scope of the <code>Query</code> operation by specifying a sort key value and a comparison
-        /// operator in <code>KeyConditionExpression</code>. To further refine the <code>Query</code>
-        /// results, you can optionally provide a <code>FilterExpression</code>. A <code>FilterExpression</code>
+        /// scope of the <c>Query</c> operation by specifying a sort key value and a comparison
+        /// operator in <c>KeyConditionExpression</c>. To further refine the <c>Query</c>
+        /// results, you can optionally provide a <c>FilterExpression</c>. A <c>FilterExpression</c>
         /// determines which items within the results should be returned to you. All of the other
         /// results are discarded. 
         /// </para>
         ///  
         /// <para>
-        ///  A <code>Query</code> operation always returns a result set. If no matching items
+        ///  A <c>Query</c> operation always returns a result set. If no matching items
         /// are found, the result set will be empty. Queries that do not return results consume
         /// the minimum number of read capacity units for that type of read operation. 
         /// </para>
@@ -280,42 +280,42 @@ namespace Milochau.Core.Aws.DynamoDB
         /// not on the amount of data that is returned to an application. The number of capacity
         /// units consumed will be the same whether you request all of the attributes (the default
         /// behavior) or just some of them (using a projection expression). The number will also
-        /// be the same whether or not you use a <code>FilterExpression</code>. 
+        /// be the same whether or not you use a <c>FilterExpression</c>. 
         /// </para>
         ///  </note> 
         /// <para>
-        ///  <code>Query</code> results are always sorted by the sort key value. If the data type
+        ///  <c>Query</c> results are always sorted by the sort key value. If the data type
         /// of the sort key is Number, the results are returned in numeric order; otherwise, the
         /// results are returned in order of UTF-8 bytes. By default, the sort order is ascending.
-        /// To reverse the order, set the <code>ScanIndexForward</code> parameter to false. 
+        /// To reverse the order, set the <c>ScanIndexForward</c> parameter to false. 
         /// </para>
         ///  
         /// <para>
-        ///  A single <code>Query</code> operation will read up to the maximum number of items
-        /// set (if using the <code>Limit</code> parameter) or a maximum of 1 MB of data and then
-        /// apply any filtering to the results using <code>FilterExpression</code>. If <code>LastEvaluatedKey</code>
+        ///  A single <c>Query</c> operation will read up to the maximum number of items
+        /// set (if using the <c>Limit</c> parameter) or a maximum of 1 MB of data and then
+        /// apply any filtering to the results using <c>FilterExpression</c>. If <c>LastEvaluatedKey</c>
         /// is present in the response, you will need to paginate the result set. For more information,
         /// see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html#Query.Pagination">Paginating
         /// the Results</a> in the <i>Amazon DynamoDB Developer Guide</i>. 
         /// </para>
         ///  
         /// <para>
-        ///  <code>FilterExpression</code> is applied after a <code>Query</code> finishes, but
-        /// before the results are returned. A <code>FilterExpression</code> cannot contain partition
-        /// key or sort key attributes. You need to specify those attributes in the <code>KeyConditionExpression</code>.
+        ///  <c>FilterExpression</c> is applied after a <c>Query</c> finishes, but
+        /// before the results are returned. A <c>FilterExpression</c> cannot contain partition
+        /// key or sort key attributes. You need to specify those attributes in the <c>KeyConditionExpression</c>.
         /// 
         /// </para>
         ///  <note> 
         /// <para>
-        ///  A <code>Query</code> operation can return an empty result set and a <code>LastEvaluatedKey</code>
+        ///  A <c>Query</c> operation can return an empty result set and a <c>LastEvaluatedKey</c>
         /// if all the items read for the page of results are filtered out. 
         /// </para>
         ///  </note> 
         /// <para>
         /// You can query a table, a local secondary index, or a global secondary index. For a
-        /// query on a table or on a local secondary index, you can set the <code>ConsistentRead</code>
-        /// parameter to <code>true</code> and obtain a strongly consistent result. Global secondary
-        /// indexes support eventually consistent reads only, so do not specify <code>ConsistentRead</code>
+        /// query on a table or on a local secondary index, you can set the <c>ConsistentRead</c>
+        /// parameter to <c>true</c> and obtain a strongly consistent result. Global secondary
+        /// indexes support eventually consistent reads only, so do not specify <c>ConsistentRead</c>
         /// when querying a global secondary index.
         /// </para>
         /// </summary>
@@ -337,8 +337,8 @@ namespace Milochau.Core.Aws.DynamoDB
         /// 
         ///  
         /// <para>
-        /// You can also return the item's attribute values in the same <code>UpdateItem</code>
-        /// operation using the <code>ReturnValues</code> parameter.
+        /// You can also return the item's attribute values in the same <c>UpdateItem</c>
+        /// operation using the <c>ReturnValues</c> parameter.
         /// </para>
         /// </summary>
         /// <param name="request">Container for the necessary parameters to execute the UpdateItem service method.</param>

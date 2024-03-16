@@ -3,7 +3,7 @@
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
-    /// Represents the output of a <code>Query</code> operation.
+    /// Represents the output of a <c>Query</c> operation.
     /// </summary>
     public class QueryResponse : AmazonDynamoDBResponse
     {
@@ -14,13 +14,13 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  
         /// <para>
-        /// If you used a <code>QueryFilter</code> in the request, then <code>Count</code> is
-        /// the number of items returned after the filter was applied, and <code>ScannedCount</code>
+        /// If you used a <c>QueryFilter</c> in the request, then <c>Count</c> is
+        /// the number of items returned after the filter was applied, and <c>ScannedCount</c>
         /// is the number of matching items before the filter was applied.
         /// </para>
         ///  
         /// <para>
-        /// If you did not use a filter in the request, then <code>Count</code> and <code>ScannedCount</code>
+        /// If you did not use a filter in the request, then <c>Count</c> and <c>ScannedCount</c>
         /// are the same.
         /// </para>
         /// </summary>
@@ -44,14 +44,14 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  
         /// <para>
-        /// If <code>LastEvaluatedKey</code> is empty, then the "last page" of results has been
+        /// If <c>LastEvaluatedKey</c> is empty, then the "last page" of results has been
         /// processed and there is no more data to be retrieved.
         /// </para>
         ///  
         /// <para>
-        /// If <code>LastEvaluatedKey</code> is not empty, it does not necessarily mean that there
+        /// If <c>LastEvaluatedKey</c> is not empty, it does not necessarily mean that there
         /// is more data in the result set. The only way to know when you have reached the end
-        /// of the result set is when <code>LastEvaluatedKey</code> is empty.
+        /// of the result set is when <c>LastEvaluatedKey</c> is empty.
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? LastEvaluatedKey { get; set; }
@@ -59,15 +59,15 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ScannedCount. 
         /// <para>
-        /// The number of items evaluated, before any <code>QueryFilter</code> is applied. A high
-        /// <code>ScannedCount</code> value with few, or no, <code>Count</code> results indicates
-        /// an inefficient <code>Query</code> operation. For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/QueryAndScan.html#Count">Count
+        /// The number of items evaluated, before any <c>QueryFilter</c> is applied. A high
+        /// <c>ScannedCount</c> value with few, or no, <c>Count</c> results indicates
+        /// an inefficient <c>Query</c> operation. For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/QueryAndScan.html#Count">Count
         /// and ScannedCount</a> in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         ///  
         /// <para>
-        /// If you did not use a filter in the request, then <code>ScannedCount</code> is the
-        /// same as <code>Count</code>.
+        /// If you did not use a filter in the request, then <c>ScannedCount</c> is the
+        /// same as <c>Count</c>.
         /// </para>
         /// </summary>
         public int? ScannedCount { get; set; }

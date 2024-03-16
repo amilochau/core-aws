@@ -3,16 +3,16 @@
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
-    /// Represents the output of a <code>DeleteItem</code> operation.
+    /// Represents the output of a <c>DeleteItem</c> operation.
     /// </summary>
     public class DeleteItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property Attributes. 
         /// <para>
-        /// A map of attribute names to <code>AttributeValue</code> objects, representing the
-        /// item as it appeared before the <code>DeleteItem</code> operation. This map appears
-        /// in the response only if <code>ReturnValues</code> was specified as <code>ALL_OLD</code>
+        /// A map of attribute names to <c>AttributeValue</c> objects, representing the
+        /// item as it appeared before the <c>DeleteItem</c> operation. This map appears
+        /// in the response only if <c>ReturnValues</c> was specified as <c>ALL_OLD</c>
         /// in the request.
         /// </para>
         /// </summary>
@@ -21,23 +21,23 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ItemCollectionMetrics. 
         /// <para>
-        /// Information about item collections, if any, that were affected by the <code>DeleteItem</code>
-        /// operation. <code>ItemCollectionMetrics</code> is only returned if the <code>ReturnItemCollectionMetrics</code>
+        /// Information about item collections, if any, that were affected by the <c>DeleteItem</c>
+        /// operation. <c>ItemCollectionMetrics</c> is only returned if the <c>ReturnItemCollectionMetrics</c>
         /// parameter was specified. If the table does not have any local secondary indexes, this
         /// information is not returned in the response.
         /// </para>
         ///  
         /// <para>
-        /// Each <code>ItemCollectionMetrics</code> element consists of:
+        /// Each <c>ItemCollectionMetrics</c> element consists of:
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>ItemCollectionKey</code> - The partition key value of the item collection.
+        ///  <c>ItemCollectionKey</c> - The partition key value of the item collection.
         /// This is the same as the partition key value of the item itself.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>SizeEstimateRangeGB</code> - An estimate of item collection size, in gigabytes.
+        ///  <c>SizeEstimateRangeGB</c> - An estimate of item collection size, in gigabytes.
         /// This value is a two-element array containing a lower bound and an upper bound for
         /// the estimate. The estimate includes the size of all the items in the table, plus the
         /// size of all attributes projected into all of the local secondary indexes on that table.

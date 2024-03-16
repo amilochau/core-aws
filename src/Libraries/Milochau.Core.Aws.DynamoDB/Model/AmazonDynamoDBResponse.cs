@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ConsumedCapacity. 
         /// <para>
-        /// The capacity units consumed by the entire <code>BatchWriteItem</code> operation.
+        /// The capacity units consumed by the entire <c>BatchWriteItem</c> operation.
         /// </para>
         ///  
         /// <para>
@@ -19,11 +19,11 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>TableName</code> - The table that consumed the provisioned throughput.
+        ///  <c>TableName</c> - The table that consumed the provisioned throughput.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>CapacityUnits</code> - The total number of capacity units consumed.
+        ///  <c>CapacityUnits</c> - The total number of capacity units consumed.
         /// </para>
         ///  </li> </ul>
         /// </summary>

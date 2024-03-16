@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// completely replaces the existing item. You can perform a conditional put operation
     /// (add a new item if one with the specified primary key doesn't exist), or replace an
     /// existing item if it has certain attribute values. You can return the item's attribute
-    /// values in the same operation, using the <code>ReturnValues</code> parameter.
+    /// values in the same operation, using the <c>ReturnValues</c> parameter.
     /// 
     ///  
     /// <para>
@@ -25,20 +25,20 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// </para>
     ///  
     /// <para>
-    /// Invalid Requests with empty values will be rejected with a <code>ValidationException</code>
+    /// Invalid Requests with empty values will be rejected with a <c>ValidationException</c>
     /// exception.
     /// </para>
     ///  <note> 
     /// <para>
     /// To prevent a new item from replacing an existing item, use a conditional expression
-    /// that contains the <code>attribute_not_exists</code> function with the name of the
+    /// that contains the <c>attribute_not_exists</c> function with the name of the
     /// attribute being used as the partition key for the table. Since every record must contain
-    /// that attribute, the <code>attribute_not_exists</code> function will only succeed if
+    /// that attribute, the <c>attribute_not_exists</c> function will only succeed if
     /// no matching item exists.
     /// </para>
     ///  </note> 
     /// <para>
-    /// For more information about <code>PutItem</code>, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html">Working
+    /// For more information about <c>PutItem</c>, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html">Working
     /// with Items</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
     /// </summary>
@@ -47,7 +47,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ConditionalOperator. 
         /// <para>
-        /// This is a legacy parameter. Use <code>ConditionExpression</code> instead. For more
+        /// This is a legacy parameter. Use <c>ConditionExpression</c> instead. For more
         /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.ConditionalOperator.html">ConditionalOperator</a>
         /// in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
@@ -57,7 +57,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ConditionExpression. 
         /// <para>
-        /// A condition that must be satisfied in order for a conditional <code>PutItem</code>
+        /// A condition that must be satisfied in order for a conditional <c>PutItem</c>
         /// operation to succeed.
         /// </para>
         ///  
@@ -66,8 +66,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        /// Functions: <code>attribute_exists | attribute_not_exists | attribute_type | contains
-        /// | begins_with | size</code> 
+        /// Functions: <c>attribute_exists | attribute_not_exists | attribute_type | contains
+        /// | begins_with | size</c> 
         /// </para>
         ///  
         /// <para>
@@ -75,12 +75,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> <li> 
         /// <para>
-        /// Comparison operators: <code>= | &lt;&gt; | &lt; | &gt; | &lt;= | &gt;= | BETWEEN |
-        /// IN </code> 
+        /// Comparison operators: <c>= | &lt;&gt; | &lt; | &gt; | &lt;= | &gt;= | BETWEEN |
+        /// IN </c> 
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  Logical operators: <code>AND | OR | NOT</code> 
+        ///  Logical operators: <c>AND | OR | NOT</c> 
         /// </para>
         ///  </li> </ul> 
         /// <para>
@@ -93,7 +93,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property Expected. 
         /// <para>
-        /// This is a legacy parameter. Use <code>ConditionExpression</code> instead. For more
+        /// This is a legacy parameter. Use <c>ConditionExpression</c> instead. For more
         /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.Expected.html">Expected</a>
         /// in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
@@ -104,7 +104,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// Gets and sets the property ExpressionAttributeNames. 
         /// <para>
         /// One or more substitution tokens for attribute names in an expression. The following
-        /// are some use cases for using <code>ExpressionAttributeNames</code>:
+        /// are some use cases for using <c>ExpressionAttributeNames</c>:
         /// </para>
         ///  <ul> <li> 
         /// <para>
@@ -126,18 +126,18 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>Percentile</code> 
+        ///  <c>Percentile</c> 
         /// </para>
         ///  </li> </ul> 
         /// <para>
         /// The name of this attribute conflicts with a reserved word, so it cannot be used directly
         /// in an expression. (For the complete list of reserved words, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html">Reserved
         /// Words</a> in the <i>Amazon DynamoDB Developer Guide</i>). To work around this, you
-        /// could specify the following for <code>ExpressionAttributeNames</code>:
+        /// could specify the following for <c>ExpressionAttributeNames</c>:
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>{"#P":"Percentile"}</code> 
+        ///  <c>{"#P":"Percentile"}</c> 
         /// </para>
         ///  </li> </ul> 
         /// <para>
@@ -145,7 +145,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>#P = :val</code> 
+        ///  <c>#P = :val</c> 
         /// </para>
         ///  </li> </ul> <note> 
         /// <para>
@@ -173,16 +173,16 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  
         /// <para>
-        ///  <code>Available | Backordered | Discontinued</code> 
+        ///  <c>Available | Backordered | Discontinued</c> 
         /// </para>
         ///  
         /// <para>
-        /// You would first need to specify <code>ExpressionAttributeValues</code> as follows:
+        /// You would first need to specify <c>ExpressionAttributeValues</c> as follows:
         /// </para>
         ///  
         /// <para>
-        ///  <code>{ ":avail":{"S":"Available"}, ":back":{"S":"Backordered"}, ":disc":{"S":"Discontinued"}
-        /// }</code> 
+        ///  <c>{ ":avail":{"S":"Available"}, ":back":{"S":"Backordered"}, ":disc":{"S":"Discontinued"}
+        /// }</c> 
         /// </para>
         ///  
         /// <para>
@@ -190,7 +190,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  
         /// <para>
-        ///  <code>ProductStatus IN (:avail, :back, :disc)</code> 
+        ///  <c>ProductStatus IN (:avail, :back, :disc)</c> 
         /// </para>
         ///  
         /// <para>
@@ -232,7 +232,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  
         /// <para>
-        /// Each element in the <code>Item</code> map is an <code>AttributeValue</code> object.
+        /// Each element in the <c>Item</c> map is an <c>AttributeValue</c> object.
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? Item { get; set; }
@@ -240,9 +240,9 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ReturnItemCollectionMetrics. 
         /// <para>
-        /// Determines whether item collection metrics are returned. If set to <code>SIZE</code>,
+        /// Determines whether item collection metrics are returned. If set to <c>SIZE</c>,
         /// the response includes statistics about item collections, if any, that were modified
-        /// during the operation are returned in the response. If set to <code>NONE</code> (the
+        /// during the operation are returned in the response. If set to <c>NONE</c> (the
         /// default), no statistics are returned.
         /// </para>
         /// </summary>
@@ -251,18 +251,18 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ReturnValues. 
         /// <para>
-        /// Use <code>ReturnValues</code> if you want to get the item attributes as they appeared
-        /// before they were updated with the <code>PutItem</code> request. For <code>PutItem</code>,
+        /// Use <c>ReturnValues</c> if you want to get the item attributes as they appeared
+        /// before they were updated with the <c>PutItem</c> request. For <c>PutItem</c>,
         /// the valid values are:
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>NONE</code> - If <code>ReturnValues</code> is not specified, or if its value
-        /// is <code>NONE</code>, then nothing is returned. (This setting is the default for <code>ReturnValues</code>.)
+        ///  <c>NONE</c> - If <c>ReturnValues</c> is not specified, or if its value
+        /// is <c>NONE</c>, then nothing is returned. (This setting is the default for <c>ReturnValues</c>.)
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>ALL_OLD</code> - If <code>PutItem</code> overwrote an attribute name-value
+        ///  <c>ALL_OLD</c> - If <c>PutItem</c> overwrote an attribute name-value
         /// pair, then the content of the old item is returned.
         /// </para>
         ///  </li> </ul> 
@@ -277,9 +277,9 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <note> 
         /// <para>
-        /// The <code>ReturnValues</code> parameter is used by several DynamoDB operations; however,
-        /// <code>PutItem</code> does not recognize any values other than <code>NONE</code> or
-        /// <code>ALL_OLD</code>.
+        /// The <c>ReturnValues</c> parameter is used by several DynamoDB operations; however,
+        /// <c>PutItem</c> does not recognize any values other than <c>NONE</c> or
+        /// <c>ALL_OLD</c>.
         /// </para>
         ///  </note>
         /// </summary>
@@ -288,7 +288,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ReturnValuesOnConditionCheckFailure. 
         /// <para>
-        /// An optional parameter that returns the item attributes for a <code>PutItem</code>
+        /// An optional parameter that returns the item attributes for a <c>PutItem</c>
         /// operation that failed a condition check.
         /// </para>
         ///  

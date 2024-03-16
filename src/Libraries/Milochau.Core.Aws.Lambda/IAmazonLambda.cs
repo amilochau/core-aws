@@ -110,8 +110,8 @@ namespace Milochau.Core.Aws.Lambda
     {
         /// <summary>
         /// Invokes a Lambda function. You can invoke a function synchronously (and wait for the
-        /// response), or asynchronously. To invoke a function asynchronously, set <code>InvocationType</code>
-        /// to <code>Event</code>.
+        /// response), or asynchronously. To invoke a function asynchronously, set <c>InvocationType</c>
+        /// to <c>Event</c>.
         /// 
         ///  
         /// <para>
@@ -145,9 +145,9 @@ namespace Milochau.Core.Aws.Lambda
         /// reserved for errors that prevent your function from executing, such as permissions
         /// errors, <a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html">quota</a>
         /// errors, or issues with your function's code and configuration. For example, Lambda
-        /// returns <code>TooManyRequestsException</code> if running the function would cause
-        /// you to exceed a concurrency limit at either the account level (<code>ConcurrentInvocationLimitExceeded</code>)
-        /// or function level (<code>ReservedFunctionConcurrentInvocationLimitExceeded</code>).
+        /// returns <c>TooManyRequestsException</c> if running the function would cause
+        /// you to exceed a concurrency limit at either the account level (<c>ConcurrentInvocationLimitExceeded</c>)
+        /// or function level (<c>ReservedFunctionConcurrentInvocationLimitExceeded</c>).
         /// </para>
         ///  
         /// <para>
