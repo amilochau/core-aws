@@ -29,16 +29,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class DeleteItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
-        /// Gets and sets the property ConditionalOperator. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>ConditionExpression</c> instead. For more
-        /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.ConditionalOperator.html">ConditionalOperator</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public ConditionalOperator? ConditionalOperator { get; set; }
-
-        /// <summary>
         /// Gets and sets the property ConditionExpression. 
         /// <para>
         /// A condition that must be satisfied in order for a conditional <c>DeleteItem</c>
@@ -73,16 +63,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public string? ConditionExpression { get; set; }
-
-        /// <summary>
-        /// Gets and sets the property Expected. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>ConditionExpression</c> instead. For more
-        /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.Expected.html">Expected</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public Dictionary<string, ExpectedAttributeValue>? Expected { get; set; }
 
         /// <summary>
         /// Gets and sets the property ExpressionAttributeNames. 

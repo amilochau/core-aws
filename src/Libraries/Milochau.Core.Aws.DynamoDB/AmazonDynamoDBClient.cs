@@ -138,11 +138,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </para>
         ///  </li> </ul>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the BatchWriteItem service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the BatchWriteItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/BatchWriteItem">REST API Reference for BatchWriteItem Operation</seealso>
         public virtual Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken)
@@ -182,11 +177,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// is not deleted.
         /// </para>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the DeleteItem service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the DeleteItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/DeleteItem">REST API Reference for DeleteItem Operation</seealso>
         public virtual Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken)
@@ -217,11 +207,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// read, it always returns the last updated value.
         /// </para>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the GetItem service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the GetItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/GetItem">REST API Reference for GetItem Operation</seealso>
         public virtual Task<GetItemResponse> GetItemAsync(GetItemRequest request, CancellationToken cancellationToken)
@@ -247,7 +232,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// existing item if it has certain attribute values. You can return the item's attribute
         /// values in the same operation, using the <c>ReturnValues</c> parameter.
         /// 
-        ///  
         /// <para>
         /// When you add an item, the primary key attributes are the only required attributes.
         /// 
@@ -277,11 +261,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// with Items</a> in the <i>Amazon DynamoDB Developer Guide</i>.
         /// </para>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the PutItem service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the PutItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/PutItem">REST API Reference for PutItem Operation</seealso>
         public virtual Task<PutItemResponse> PutItemAsync(PutItemRequest request, CancellationToken cancellationToken)
@@ -367,11 +346,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// when querying a global secondary index.
         /// </para>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the Query service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the Query service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/Query">REST API Reference for Query Operation</seealso>
         public virtual Task<QueryResponse> QueryAsync(QueryRequest request, CancellationToken cancellationToken)
@@ -402,11 +376,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// operation using the <c>ReturnValues</c> parameter.
         /// </para>
         /// </summary>
-        /// <param name="request">Container for the necessary parameters to execute the UpdateItem service method.</param>
-        /// <param name="cancellationToken">
-        ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
-        /// </param>
-        /// 
         /// <returns>The response from the UpdateItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
         public virtual Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken)

@@ -75,26 +75,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class QueryRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
-        /// Gets and sets the property AttributesToGet. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>ProjectionExpression</c> instead. For more
-        /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.AttributesToGet.html">AttributesToGet</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public List<string>? AttributesToGet { get; set; }
-
-        /// <summary>
-        /// Gets and sets the property ConditionalOperator. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>FilterExpression</c> instead. For more information,
-        /// see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.ConditionalOperator.html">ConditionalOperator</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public ConditionalOperator? ConditionalOperator { get; set; }
-
-        /// <summary>
         /// Gets and sets the property ConsistentRead. 
         /// <para>
         /// Determines the read consistency model: If set to <c>true</c>, then the operation
@@ -380,16 +360,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public string? KeyConditionExpression { get; set; }
 
         /// <summary>
-        /// Gets and sets the property KeyConditions. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>KeyConditionExpression</c> instead. For more
-        /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html">KeyConditions</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public Dictionary<string, Condition>? KeyConditions { get; set; }
-
-        /// <summary>
         /// Gets and sets the property Limit. 
         /// <para>
         /// The maximum number of items to evaluate (not necessarily the number of matching items).
@@ -424,16 +394,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public string? ProjectionExpression { get; set; }
-
-        /// <summary>
-        /// Gets and sets the property QueryFilter. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>FilterExpression</c> instead. For more information,
-        /// see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.QueryFilter.html">QueryFilter</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public Dictionary<string, Condition>? QueryFilter { get; set; }
 
         /// <summary>
         /// Gets and sets the property ScanIndexForward. 

@@ -20,16 +20,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class GetItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
-        /// Gets and sets the property AttributesToGet. 
-        /// <para>
-        /// This is a legacy parameter. Use <c>ProjectionExpression</c> instead. For more
-        /// information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.AttributesToGet.html">AttributesToGet</a>
-        /// in the <i>Amazon DynamoDB Developer Guide</i>.
-        /// </para>
-        /// </summary>
-        public List<string>? AttributesToGet { get; set; }
-
-        /// <summary>
         /// Gets and sets the property ConsistentRead. 
         /// <para>
         /// Determines the read consistency model: If set to <c>true</c>, then the operation
