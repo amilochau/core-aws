@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -8,11 +9,31 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class GetItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
-        /// Gets and sets the property Item. 
+        /// Item
         /// <para>
         /// A map of attribute names to <c>AttributeValue</c> objects, as specified by <c>ProjectionExpression</c>.
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? Item { get; set; }
+    }
+
+    /// <inheritdoc/>
+    public class GetItemResponse<TEntity> : GetItemResponse
+        where TEntity : class, IDynamoDbGettableEntity<TEntity>
+    {
+        /// <inheritdoc/>
+        public GetItemResponse(GetItemResponse response)
+        {
+            ConsumedCapacity = response.ConsumedCapacity;
+            HttpStatusCode = response.HttpStatusCode;
+            ResponseMetadata = response.ResponseMetadata;
+
+            Item = response.Item;
+
+            Entity = response.Item == null ? null : TEntity.ParseFromDynamoDb(response.Item);
+        }
+
+        /// <summary>Parsed entity</summary>
+        public TEntity? Entity { get; private set; }
     }
 }

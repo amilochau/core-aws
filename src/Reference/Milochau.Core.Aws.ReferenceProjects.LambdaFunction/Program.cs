@@ -135,10 +135,10 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             ILambdaContext context,
             CancellationToken cancellationToken)
         {
-            await snsDataAccess.SendEventAsync(requestData, cancellationToken);
+            //await snsDataAccess.SendEventAsync(requestData, cancellationToken);
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
-            //await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
             //await cognitoDataAccess.LoginAsync(cancellationToken);
             //await cognitoDataAccess.UpdateAttributesAsync(cancellationToken);
 

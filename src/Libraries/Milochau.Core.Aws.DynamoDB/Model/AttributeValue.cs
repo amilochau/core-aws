@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
     /// Represents the data for an attribute.
-    /// 
-    ///  
     /// <para>
     /// Each attribute value is described as a name-value pair. The name is the data type,
     /// and the value is the data itself.
-    /// </para>
-    ///  
-    /// <para>
+    /// </para>    /// <para>
     /// For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes">Data
     /// Types</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
@@ -20,75 +17,56 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class AttributeValue
     {
         /// <summary>
-        /// Gets and sets the property B. 
+        /// B
         /// <para>
         /// An attribute of type Binary. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"</c> 
-        /// </para>
+        /// <code>"B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"</code>
         /// </summary>
         public MemoryStream? B { get; set; }
 
         /// <summary>
-        /// Gets and sets the property BOOL. 
+        /// BOOL
         /// <para>
         /// An attribute of type Boolean. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"BOOL": true</c> 
-        /// </para>
+        /// <code>"BOOL": true</code>
         /// </summary>
         public bool? BOOL { get; set; }
 
         /// <summary>
-        /// Gets and sets the property BS. 
+        /// BS
         /// <para>
         /// An attribute of type Binary Set. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]</c> 
-        /// </para>
+        /// <code>"BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]</code>
         /// </summary>
         public List<MemoryStream>? BS { get; set; }
 
         /// <summary>
-        /// Gets and sets the property L. 
+        /// L
         /// <para>
         /// An attribute of type List. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N": "3.14159"}]</c> 
-        /// </para>
+        /// <code>"L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N": "3.14159"}]</code> 
         /// </summary>
         public List<AttributeValue>? L { get; set; }
 
         /// <summary>
-        /// Gets and sets the property M. 
+        /// M
         /// <para>
         /// An attribute of type Map. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</c> 
-        /// </para>
+        /// <code>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</code> 
         /// </summary>
         public Dictionary<string, AttributeValue>? M { get; set; }
 
         /// <summary>
-        /// Gets and sets the property N. 
+        /// N
         /// <para>
         /// An attribute of type Number. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"N": "123.45"</c> 
-        /// </para>
-        ///  
+        /// <code>"N": "123.45"</code> 
         /// <para>
         /// Numbers are sent across the network to DynamoDB as strings, to maximize compatibility
         /// across languages and libraries. However, DynamoDB treats them as number type attributes
@@ -98,15 +76,11 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public string? N { get; set; }
 
         /// <summary>
-        /// Gets and sets the property NS. 
+        /// NS
         /// <para>
         /// An attribute of type Number Set. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"NS": ["42.2", "-19", "7.5", "3.14"]</c> 
-        /// </para>
-        ///  
+        /// <code>"NS": ["42.2", "-19", "7.5", "3.14"]</code> 
         /// <para>
         /// Numbers are sent across the network to DynamoDB as strings, to maximize compatibility
         /// across languages and libraries. However, DynamoDB treats them as number type attributes
@@ -120,35 +94,38 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <para>
         /// An attribute of type Null. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"NULL": true</c> 
-        /// </para>
+        /// <code>"NULL": true</code> 
         /// </summary>
         public bool? NULL { get; set; }
 
         /// <summary>
-        /// Gets and sets the property S. 
+        /// S
         /// <para>
         /// An attribute of type String. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"S": "Hello"</c> 
-        /// </para>
+        /// <code>"S": "Hello"</code>
         /// </summary>
         public string? S { get; set; }
 
         /// <summary>
-        /// Gets and sets the property SS. 
+        /// SS
         /// <para>
         /// An attribute of type String Set. For example:
         /// </para>
-        ///  
-        /// <para>
-        ///  <c>"SS": ["Giraffe", "Hippo" ,"Zebra"]</c> 
-        /// </para>
+        /// <code>"SS": ["Giraffe", "Hippo" ,"Zebra"]</code>
         /// </summary>
         public List<string>? SS { get; set; }
+
+        /// <summary>Whether a value is set</summary>
+        public bool IsSet => B != null || BOOL != null || BS != null || L != null || M != null || N != null || NS != null || NULL != null || S != null || SS != null;
+
+        /// <summary>Implicit conversion</summary>
+        public static implicit operator AttributeValue(Guid? value) => new() { S = value?.ToString("N") };
+        /// <summary>Implicit conversion</summary>
+        public static implicit operator AttributeValue(string? value) => new() { S = value?.Trim() };
+        /// <summary>Implicit conversion</summary>
+        public static implicit operator AttributeValue(long? value) => new() { N = $"{value}" };
+        
+        // @todo Add more implicit operators here
     }
 }

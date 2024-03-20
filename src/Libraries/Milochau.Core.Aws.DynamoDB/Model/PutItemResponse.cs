@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -8,7 +9,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class PutItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
-        /// Gets and sets the property Attributes. 
+        /// Attributes
         /// <para>
         /// The attribute values as they appeared before the <c>PutItem</c> operation, but
         /// only if <c>ReturnValues</c> is specified as <c>ALL_OLD</c> in the request.
@@ -18,38 +19,58 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, AttributeValue>? Attributes { get; set; }
 
         /// <summary>
-        /// Gets and sets the property ItemCollectionMetrics. 
+        /// Item collection metrics
         /// <para>
         /// Information about item collections, if any, that were affected by the <c>PutItem</c>
         /// operation. <c>ItemCollectionMetrics</c> is only returned if the <c>ReturnItemCollectionMetrics</c>
         /// parameter was specified. If the table does not have any local secondary indexes, this
         /// information is not returned in the response.
         /// </para>
-        ///  
         /// <para>
         /// Each <c>ItemCollectionMetrics</c> element consists of:
         /// </para>
-        ///  <ul> <li> 
-        /// <para>
-        ///  <c>ItemCollectionKey</c> - The partition key value of the item collection.
+        /// <list type="table">
+        /// <item><term>ItemCollectionKey</term><description>
+        /// The partition key value of the item collection.
         /// This is the same as the partition key value of the item itself.
-        /// </para>
-        ///  </li> <li> 
+        /// </description></item>
+        /// <item><term>SizeEstimateRangeGB</term><description>
         /// <para>
-        ///  <c>SizeEstimateRangeGB</c> - An estimate of item collection size, in gigabytes.
+        /// An estimate of item collection size, in gigabytes.
         /// This value is a two-element array containing a lower bound and an upper bound for
         /// the estimate. The estimate includes the size of all the items in the table, plus the
         /// size of all attributes projected into all of the local secondary indexes on that table.
         /// Use this estimate to measure whether a local secondary index is approaching its size
         /// limit.
         /// </para>
-        ///  
         /// <para>
         /// The estimate is subject to change over time; therefore, do not rely on the precision
         /// or accuracy of the estimate.
         /// </para>
-        ///  </li> </ul>
+        /// </description></item>
+        /// </list>
         /// </summary>
         public ItemCollectionMetrics? ItemCollectionMetrics { get; set; }
+    }
+
+    /// <inheritdoc/>
+    public class PutItemResponse<TEntity> : PutItemResponse
+        where TEntity: class, IDynamoDbPutableEntity<TEntity>
+    {
+        /// <inheritdoc/>
+        public PutItemResponse(PutItemResponse response)
+        {
+            ConsumedCapacity = response.ConsumedCapacity;
+            HttpStatusCode = response.HttpStatusCode;
+            ResponseMetadata = response.ResponseMetadata;
+
+            Attributes = response.Attributes;
+            ItemCollectionMetrics = response.ItemCollectionMetrics;
+
+            Entity = response.Attributes == null ? null : TEntity.ParseFromDynamoDb(response.Attributes);
+        }
+
+        /// <summary>Parsed old entity</summary>
+        public TEntity? Entity { get; private set; }
     }
 }
