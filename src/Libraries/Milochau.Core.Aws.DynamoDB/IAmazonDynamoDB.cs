@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
-using Milochau.Core.Aws.DynamoDB.Helpers;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model;
 using System;
 using System.Threading;

@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Helpers;
 using System.Collections.Generic;
-using System.Security.Principal;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
