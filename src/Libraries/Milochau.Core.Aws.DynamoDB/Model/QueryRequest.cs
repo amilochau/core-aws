@@ -537,7 +537,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
 
                 TableName = TEntity.TableName,
                 IndexName = TEntity.IndexName,
-                KeyConditionExpression = keyConditionExpression.Build(),
+                KeyConditionExpression = keyConditionExpression.Expression,
                 ConsistentRead = ConsistentRead,
                 ExclusiveStartKey = ExclusiveStartKey,
                 ExpressionAttributeNames = keyConditionExpression.AttributeNames
@@ -547,7 +547,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
                 ExpressionAttributeValues = keyConditionExpression.AttributeValues
                     .Union(Filters?.AttributeValues ?? [])
                     .ToDictionary(),
-                FilterExpression = Filters?.Build(),
+                FilterExpression = Filters?.Expression,
                 Limit = Limit,
                 ProjectionExpression = TEntity.ProjectedAttributes == null ? null : new StringBuilder().AppendJoin(", ", TEntity.ProjectedAttributes.Select(x => $"#{x}")).ToString(),
                 ScanIndexForward = ScanIndexForward,

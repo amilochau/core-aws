@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
 {
@@ -23,51 +20,53 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
         public List<DeleteUpdateExpression>? DeleteExpressions { get; set; }
 
         /// <summary>Build expression</summary>
-        public string Build()
+        public string Expression
         {
-            var expression = new StringBuilder();
-            var setExpression = new StringBuilder();
-            var removeExpression = new StringBuilder();
-            var addExpression = new StringBuilder();
-            var deleteExpression = new StringBuilder();
-            if (SetExpressions != null && SetExpressions.Count > 0)
+            get
             {
-                setExpression.Append("SET ").AppendJoin(", ", SetExpressions.Select(x => x.Build()));
-            }
-            if (RemoveExpressions != null && RemoveExpressions.Count > 0)
-            {
-                removeExpression.Append("REMOVE ").AppendJoin(", ", RemoveExpressions.Select(x => x.Build()));
-            }
-            if (AddExpressions != null && AddExpressions.Count > 0)
-            {
-                addExpression.Append("ADD ").AppendJoin(", ", AddExpressions.Select(x => x.Build()));
-            }
-            if (DeleteExpressions != null && DeleteExpressions.Count > 0)
-            {
-                deleteExpression.Append("DELETE ").AppendJoin(", ", DeleteExpressions.Select(x => x.Build()));
-            }
+                var expression = new StringBuilder();
+                var setExpression = new StringBuilder();
+                var removeExpression = new StringBuilder();
+                var addExpression = new StringBuilder();
+                var deleteExpression = new StringBuilder();
+                if (SetExpressions != null && SetExpressions.Count > 0)
+                {
+                    setExpression.Append("SET ").AppendJoin(", ", SetExpressions.Select(x => x.Expression));
+                }
+                if (RemoveExpressions != null && RemoveExpressions.Count > 0)
+                {
+                    removeExpression.Append("REMOVE ").AppendJoin(", ", RemoveExpressions.Select(x => x.Expression));
+                }
+                if (AddExpressions != null && AddExpressions.Count > 0)
+                {
+                    addExpression.Append("ADD ").AppendJoin(", ", AddExpressions.Select(x => x.Expression));
+                }
+                if (DeleteExpressions != null && DeleteExpressions.Count > 0)
+                {
+                    deleteExpression.Append("DELETE ").AppendJoin(", ", DeleteExpressions.Select(x => x.Expression));
+                }
 
-            expression.AppendJoin(' ', setExpression, removeExpression, addExpression, deleteExpression);
-            return expression.ToString();
+                expression.AppendJoin(' ', setExpression, removeExpression, addExpression, deleteExpression);
+                return expression.ToString();
+            }
         }
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, string>> AttributeNames => [
-                ..SetExpressions?.SelectMany(x => x.AttributeNames).ToList() ?? [],
-                ..RemoveExpressions?.SelectMany(x => x.AttributeNames).ToList() ?? [],
-                ..AddExpressions?.SelectMany(x => x.AttributeNames).ToList() ?? [],
-                ..DeleteExpressions?.SelectMany(x => x.AttributeNames).ToList() ?? [],
+                ..SetExpressions?.SelectMany(x => x.AttributeNames) ?? [],
+                ..RemoveExpressions?.SelectMany(x => x.AttributeNames) ?? [],
+                ..AddExpressions?.SelectMany(x => x.AttributeNames) ?? [],
+                ..DeleteExpressions?.SelectMany(x => x.AttributeNames) ?? [],
             ];
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, AttributeValue>> AttributeValues => [
-                ..SetExpressions?.SelectMany(x => x.AttributeValues).ToList() ?? [],
-                ..RemoveExpressions?.SelectMany(x => x.AttributeValues).ToList() ?? [],
-                ..AddExpressions?.SelectMany(x => x.AttributeValues).ToList() ?? [],
-                ..DeleteExpressions?.SelectMany(x => x.AttributeValues).ToList() ?? [],
+                ..SetExpressions?.SelectMany(x => x.AttributeValues) ?? [],
+                ..RemoveExpressions?.SelectMany(x => x.AttributeValues) ?? [],
+                ..AddExpressions?.SelectMany(x => x.AttributeValues) ?? [],
+                ..DeleteExpressions?.SelectMany(x => x.AttributeValues) ?? [],
             ];
     }
-
 
     /// <summary>
     /// Expression <c>SET path value</c>
@@ -84,19 +83,19 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     /// </list>
     /// </summary>
     /// <remarks><see href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.SET"/></remarks>
-    public class SetUpdateExpression(AttributePath path, AttributeOperand operand) : IUpdateExpression
+    public class SetUpdateExpression(AttributePathOperand path, IUpdateValueOperand operand) : IUpdateExpression
     {
-        private readonly AttributePath path = path;
-        private readonly AttributeOperand operand = operand;
+        private readonly AttributePathOperand path = path;
+        private readonly IUpdateValueOperand operand = operand;
 
         /// <inheritdoc/>
-        public string Build() => $"{path.AttributeName} = {operand.AttributeName ?? path.AttributeValueName}";
+        public string Expression => $"{path.Expression} = {operand.Expression}";
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames, .. operand.AttributeNames];
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, AttributeValue>> AttributeValues => operand.Value == null ? [] : [new(path.AttributeValueName, operand.Value)];
+        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [.. path.AttributeValues, .. operand.AttributeValues];
     }
 
     /// <summary>
@@ -111,18 +110,18 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     /// </list>
     /// </summary>
     /// <remarks><see href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.REMOVE"/></remarks>
-    public class RemoveUpdateExpression(AttributePath path) : IUpdateExpression
+    public class RemoveUpdateExpression(AttributePathOperand path) : IUpdateExpression
     {
-        private readonly AttributePath path = path;
+        private readonly AttributePathOperand path = path;
 
         /// <inheritdoc/>
-        public string Build() => path.AttributeName;
+        public string Expression => path.Expression;
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames];
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [];
+        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [.. path.AttributeValues];
     }
 
     /// <summary>
@@ -140,19 +139,19 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     /// </list>
     /// </summary>
     /// <remarks><see href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.ADD"/></remarks>
-    public class AddUpdateExpression(AttributePath path, AttributeValue value) : IUpdateExpression
+    public class AddUpdateExpression(AttributePathOperand path, AttributeValueOperand value) : IUpdateExpression
     {
-        private readonly AttributePath path = path;
-        private readonly AttributeValue value = value;
+        private readonly AttributePathOperand path = path;
+        private readonly AttributeValueOperand value = value;
 
         /// <inheritdoc/>
-        public string Build() => $"{path.AttributeName} {path.AttributeValueName}";
+        public string Expression => $"{path.Expression} {value.Expression}";
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames];
+        public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames, .. value.AttributeNames];
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [new(path.AttributeValueName, value)];
+        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [.. path.AttributeValues, .. value.AttributeValues];
     }
 
     /// <summary>
@@ -164,18 +163,18 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     /// </list>
     /// </summary>
     /// <remarks><see href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.DELETE"/></remarks>
-    public class DeleteUpdateExpression(AttributePath path, AttributeValue subset) : IUpdateExpression
+    public class DeleteUpdateExpression(AttributePathOperand path, AttributeValueOperand subset) : IUpdateExpression
     {
-        private readonly AttributePath path = path;
-        private readonly AttributeValue subset = subset;
+        private readonly AttributePathOperand path = path;
+        private readonly AttributeValueOperand subset = subset;
 
         /// <inheritdoc/>
-        public string Build() => $"{path.AttributeName} {path.AttributeValueName}";
+        public string Expression => $"{path.Expression} {path.Expression}";
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames];
+        public List<KeyValuePair<string, string>> AttributeNames => [.. path.AttributeNames, .. subset.AttributeNames];
 
         /// <inheritdoc/>
-        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [new(path.AttributeValueName, subset)];
+        public List<KeyValuePair<string, AttributeValue>> AttributeValues => [.. path.AttributeValues, .. subset.AttributeValues];
     }
 }

@@ -306,9 +306,9 @@ namespace Milochau.Core.Aws.DynamoDB.Model
                 ReturnConsumedCapacity = ReturnConsumedCapacity,
 
                 TableName = TEntity.TableName,
-                Item = Entity.FormatForDynamoDb(),
+                Item = Entity.FormatForDynamoDb().Where(x => x.Value.IsSet()).ToDictionary(x => x.Key, x => x.Value),
 
-                ConditionExpression = Conditions?.Build(),
+                ConditionExpression = Conditions?.Expression,
                 ExpressionAttributeNames = Conditions?.AttributeNames.ToDictionary(),
                 ExpressionAttributeValues = Conditions?.AttributeValues.ToDictionary(),
                 ReturnItemCollectionMetrics = ReturnItemCollectionMetrics,

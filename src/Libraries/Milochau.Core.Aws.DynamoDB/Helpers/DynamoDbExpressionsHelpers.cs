@@ -43,7 +43,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         /// <summary>Add expression attribute names from an enumerable of attributes to an existing dictionary</summary>
         public static ICollection<KeyValuePair<string, AttributeValue>> AddExpressionAttributeValues(this ICollection<KeyValuePair<string, AttributeValue>> expressionAttributeValues, params KeyValuePair<string, AttributeValue>[] attributes)
         {
-            foreach (var attribute in attributes.Where(x => x.Value.IsSet))
+            foreach (var attribute in attributes.Where(x => x.Value.IsSet()))
             {
                 expressionAttributeValues.Add(new KeyValuePair<string, AttributeValue>($":v_{attribute.Key}", attribute.Value));
             }

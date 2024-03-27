@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+using Milochau.Core.Aws.DynamoDB.Model.Expressions;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -117,15 +121,155 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public List<string>? SS { get; set; }
 
         /// <summary>Whether a value is set</summary>
-        public bool IsSet => B != null || BOOL != null || BS != null || L != null || M != null || N != null || NS != null || NULL != null || S != null || SS != null;
+        public bool IsSet()
+        {
+            if (B != null)
+            {
+                return true;
+            }
 
-        /// <summary>Implicit conversion</summary>
-        public static implicit operator AttributeValue(Guid? value) => new() { S = value?.ToString("N") };
-        /// <summary>Implicit conversion</summary>
-        public static implicit operator AttributeValue(string? value) => new() { S = value?.Trim() };
-        /// <summary>Implicit conversion</summary>
-        public static implicit operator AttributeValue(long? value) => new() { N = $"{value}" };
-        
+            if (BOOL != null && BOOL.Value)
+            {
+                return true;
+            }
+
+            if (BS != null && BS.Count > 0 && BS.Any(x => x != null))
+            {
+                return true;
+            }
+
+            if (L != null && L.Count > 0 && L.Any(x => x.IsSet()))
+            {
+                return true;
+            }
+
+            if (M != null && M.Count > 0 && M.Any(x => x.Value.IsSet()))
+            {
+                return true;
+            }
+
+            if (N != null && !string.IsNullOrWhiteSpace(N))
+            {
+                return true;
+            }
+
+            if (NS != null && NS.Count > 0 && NS.Any(x => !string.IsNullOrWhiteSpace(x)))
+            {
+                return true;
+            }
+
+            if (NULL != null && NULL.Value)
+            {
+                return true;
+            }
+
+            if (S != null && !string.IsNullOrWhiteSpace(S))
+            {
+                return true;
+            }
+
+            if (SS != null && SS.Count > 0 && SS.Any(x => !string.IsNullOrWhiteSpace(x)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /// <summary>Implicit conversion within <see cref="S"/></summary>
+        public static implicit operator AttributeValue(string? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="S"/></summary>
+        public static implicit operator AttributeValue(Guid? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="L"/></summary>
+        public static implicit operator AttributeValue(List<string>? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="BOOL"/></summary>
+        public static implicit operator AttributeValue(bool? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(double? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(long? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(decimal? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="NS"/></summary>
+        public static implicit operator AttributeValue(List<double?>? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(Enum? value) => new(value);
+
+        // @todo Enum - not null ?
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(DateTimeOffset? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="M"/></summary>
+        public static implicit operator AttributeValue(Dictionary<string, AttributeValue>? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="M"/></summary>
+        public static implicit operator AttributeValue(List<DynamoDbAttribute>? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="L"/></summary>
+        public static implicit operator AttributeValue(List<Dictionary<string, AttributeValue>>? value) => new(value);
+
         // @todo Add more implicit operators here
+
+
+        /// <summary>Constructor</summary>
+        public AttributeValue() { }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(string? value) => S = value?.Trim();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(Guid? value) => S = value?.ToString("N");
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<string>? value) => L = value?.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => new AttributeValue(x)).ToList();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(bool? value) => BOOL = value.HasValue && value.Value ? true : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(double? value) => N = value != null ? $"{value.Value}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(long? value) => N = value != null ? $"{value.Value}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(decimal? value) => N = value != null ? $"{value.Value}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<double?>? value) => NS = value?.Where(x => x != null).Select(x => $"{x}").ToList();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(Enum? value) => N = value != null ? $"{Convert.ToInt32(value)}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(DateTimeOffset? value) => N = value != null ? $"{value.Value.ToUnixTimeSeconds()}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IDynamoDbFormatableEntity? value) : this(value?.FormatForDynamoDb()) { }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value == null || value.Count == 0 ? null : value;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<DynamoDbAttribute>? value) => M = value == null || !value.Any() ? null : value.ToDictionary(x => x.Key, x => x.Value);
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<IDynamoDbFormatableEntity>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary(a => a.Key, a => a.Value))).ToList();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<IEnumerable<DynamoDbAttribute>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
     }
 }

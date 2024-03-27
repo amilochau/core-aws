@@ -347,10 +347,10 @@ namespace Milochau.Core.Aws.DynamoDB.Model
 
 
         /// <summary>The partition key of the item to retrieve</summary>
-        public required KeyValuePair<string, AttributeValue> PartitionKey { get; set; }
+        public required DynamoDbAttribute PartitionKey { get; set; }
 
         /// <summary>The sort key of the item to retrieve</summary>
-        public required KeyValuePair<string, AttributeValue>? SortKey { get; set; }
+        public required DynamoDbAttribute? SortKey { get; set; }
 
 
         /// <summary>
@@ -392,21 +392,21 @@ namespace Milochau.Core.Aws.DynamoDB.Model
 
         internal UpdateItemRequest Build()
         {
-            var key = (SortKey == null ? [
+            IEnumerable<KeyValuePair<string, AttributeValue>> key = SortKey == null ? [
                 PartitionKey,
-            ] : new List<KeyValuePair<string, AttributeValue>?> {
+            ] : [
                 PartitionKey,
                 SortKey,
-            }).Cast<KeyValuePair<string, AttributeValue>>().ToDictionary();
+            ];
 
-            var aa = new UpdateItemRequest(UserId)
+            return new UpdateItemRequest(UserId)
             {
                 ReturnConsumedCapacity = ReturnConsumedCapacity,
 
                 TableName = TEntity.TableName,
-                Key = key,
+                Key = key.Where(x => x.Value.IsSet()).ToDictionary(),
 
-                ConditionExpression = Conditions?.Build(),
+                ConditionExpression = Conditions?.Expression,
                 ExpressionAttributeNames = UpdateExpression.AttributeNames
                     .Union(Conditions?.AttributeNames ?? [])
                     .ToDictionary()
@@ -415,14 +415,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
                     .Union(Conditions?.AttributeValues ?? [])
                     .ToDictionary()
                     .NullIfEmpty(),
-                UpdateExpression = UpdateExpression.Build(),
+                UpdateExpression = UpdateExpression.Expression,
 
                 ReturnItemCollectionMetrics = ReturnItemCollectionMetrics,
                 ReturnValues = ReturnValues,
                 ReturnValuesOnConditionCheckFailure = ReturnValuesOnConditionCheckFailure,
             };
-
-            return aa; // @todo
         }
     }
 }

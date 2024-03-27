@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     {
         /// <summary>Read a value as an object</summary>
         public static TEntity ReadObject<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
-            where TEntity: IDynamoDbEntity<TEntity>
+            where TEntity: IDynamoDbParsableEntity<TEntity>
         {
             return TEntity.ParseFromDynamoDb(ReadObject(attributes, key));
         }
@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
         /// <summary>Read an optional value as an object</summary>
         public static TEntity? ReadObjectOptional<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
-            where TEntity : class, IDynamoDbEntity<TEntity>
+            where TEntity : class, IDynamoDbParsableEntity<TEntity>
         {
             var rawEntity = ReadObjectOptional(attributes, key);
             if (rawEntity == null)
@@ -45,7 +45,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
         /// <summary>Read a value as a list of objects</summary>
         public static List<TEntity> ReadList<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
-            where TEntity: IDynamoDbEntity<TEntity>
+            where TEntity: IDynamoDbParsableEntity<TEntity>
         {
             return attributes[key].L!.Select(x => TEntity.ParseFromDynamoDb(x.M!)).ToList();
         }
@@ -58,7 +58,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
         /// <summary>Read an optional value as a list of objects</summary>
         public static List<TEntity>? ReadListOptional<TEntity>(this Dictionary<string, AttributeValue> attributes, string key)
-            where TEntity : IDynamoDbEntity<TEntity>
+            where TEntity : IDynamoDbParsableEntity<TEntity>
         {
             if (attributes.TryGetValue(key, out var attribute) && attribute != null)
             {

@@ -1,11 +1,39 @@
-﻿using Milochau.Core.Aws.DynamoDB.Model;
+﻿using Microsoft.VisualBasic;
+using Milochau.Core.Aws.DynamoDB.Model;
+using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>DynamoDB entity</summary>
-    public interface IDynamoDbEntity<TEntity> : IDynamoDbFormatableEntity<TEntity>, IDynamoDbParsableEntity<TEntity>
-        where TEntity: IDynamoDbEntity<TEntity>
+    public abstract class DynamoDbEntity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TEntity>
+        where TEntity : DynamoDbEntity<TEntity>
+    {
+        /// <inheritdoc/>
+        public static IEnumerable<string>? GetProjectedAttributes()
+        {
+            var customAttributes = typeof(TEntity)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Select(x => (DynamoDbAttributeAttribute?)x.GetCustomAttribute(typeof(DynamoDbAttributeAttribute)))
+                .Where(x => x != null)
+                .Select(x => x!.Key);
+            return !customAttributes.Any() ? null : customAttributes;
+        }
+
+        /// <inheritdoc/>
+        public Dictionary<string, AttributeValue> FormatForDynamoDb()
+        {
+            return DynamoDbMapper.GetAttributes(typeof(TEntity), this);
+        }
+    }
+
+    /// <summary>DynamoDB entity</summary>
+    public interface IDynamoDbEntity<TEntity> : IDynamoDbFormatableEntity, IDynamoDbParsableEntity<TEntity>
+        where TEntity : IDynamoDbEntity<TEntity>
     {
     }
 
@@ -17,9 +45,8 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         abstract static TEntity ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes);
     }
 
-    /// <summary>DynamoDB parsable entity</summary>
-    public interface IDynamoDbFormatableEntity<TEntity>
-        where TEntity : IDynamoDbFormatableEntity<TEntity>
+    /// <summary>DynamoDB formattable entity</summary>
+    public interface IDynamoDbFormatableEntity
     {
         /// <summary>Format entity for DynamoDB</summary>
         Dictionary<string, AttributeValue> FormatForDynamoDb();
@@ -33,7 +60,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static abstract string TableName { get; }
 
         /// <summary>List of projected attributes</summary>
-        static virtual IEnumerable<string>? ProjectedAttributes { get; }
+        static virtual IEnumerable<string>? GetProjectedAttributes() => null;
     }
 
     /// <summary>DynamoDB queryable entity</summary>
@@ -51,8 +78,8 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB putable entity</summary>
-    public interface IDynamoDbPutableEntity<TEntity> : IDynamoDbFormatableEntity<TEntity>, IDynamoDbParsableEntity<TEntity>
-        where TEntity: IDynamoDbPutableEntity<TEntity>
+    public interface IDynamoDbPutableEntity<TEntity> : IDynamoDbFormatableEntity, IDynamoDbParsableEntity<TEntity>
+        where TEntity : IDynamoDbPutableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
@@ -60,7 +87,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
     /// <summary>DynamoDB deletable entity</summary>
     public interface IDynamoDbDeletableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
-        where TEntity: IDynamoDbDeletableEntity<TEntity>
+        where TEntity : IDynamoDbDeletableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
@@ -68,7 +95,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
     /// <summary>DynamoDB updatable entity</summary>
     public interface IDynamoDbUpdatableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
-        where TEntity: IDynamoDbUpdatableEntity<TEntity>
+        where TEntity : IDynamoDbUpdatableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }

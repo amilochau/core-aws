@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     public interface IExpression
     {
         /// <summary>Build expression</summary>
-        string Build();
+        string Expression { get; }
 
         /// <summary>Attribute names</summary>
         List<KeyValuePair<string, string>> AttributeNames { get; }
@@ -23,7 +23,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     /// <summary>Filter expression</summary>
     /// <remarks>See <see href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html"/></remarks>
     public interface IFilterExpression : IExpression { }
-
 
     /// <summary>Update expression</summary>
     public interface IUpdateExpression : IExpression { }
