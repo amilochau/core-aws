@@ -15,14 +15,14 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     public static class DynamoDbMapper
     {
         /// <summary>Try create an <see cref="AttributeValue"/></summary>
-        public static bool TryCreateAttributeValue(object? value, [NotNullWhen(true)] out AttributeValue? attributeValue)
+        public static bool TryCreateAttributeValue([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object? value, [NotNullWhen(true)] out AttributeValue? attributeValue)
         {
-            attributeValue = CreateAttributeValue(value);
+            attributeValue = CreateAttributeValue(type, value);
             return attributeValue != null;
         }
 
         /// <summary>Create an <see cref="AttributeValue"/> when possible</summary>
-        public static AttributeValue? CreateAttributeValue(object? value)
+        public static AttributeValue? CreateAttributeValue([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object? value)
         {
             if (value == null)
             {
@@ -32,8 +32,6 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             {
                 return null;
             }
-
-            var type = value.GetType();
 
             // @todo Don't add empty/default values
 
@@ -119,7 +117,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                     var dictionaryAttributes = new Dictionary<string, AttributeValue>();
                     foreach (var key in valueAsDictionary.Keys)
                     {
-                        if (TryCreateAttributeValue(valueAsDictionary[key], out var attributeValue))
+                        if (TryCreateAttributeValue(valueAsDictionary[key]!.GetType(), valueAsDictionary[key], out var attributeValue))
                         {
                             dictionaryAttributes.Add((string)key, attributeValue);
                         }
@@ -137,7 +135,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                     var arrayAttributes = new List<AttributeValue>();
                     foreach (var item in valueAsArray)
                     {
-                        if (TryCreateAttributeValue(item, out var attributeValue))
+                        if (TryCreateAttributeValue(item.GetType(), item, out var attributeValue))
                         {
                             arrayAttributes.Add(attributeValue);
                         }
@@ -155,7 +153,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                     var listAttributes = new List<AttributeValue>();
                     foreach (var item in valueAsEnumerable)
                     {
-                        if (TryCreateAttributeValue(item, out var attributeValue))
+                        if (TryCreateAttributeValue(item.GetType(), item, out var attributeValue))
                         {
                             listAttributes.Add(attributeValue);
                         }
@@ -201,7 +199,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                     continue;
                 }
 
-                var dynamoDbAttributeValue = CreateAttributeValue(property.GetValue(value));
+                var dynamoDbAttributeValue = CreateAttributeValue(property.GetType(), property.GetValue(value));
                 if (dynamoDbAttributeValue == null)
                 {
                     continue;
