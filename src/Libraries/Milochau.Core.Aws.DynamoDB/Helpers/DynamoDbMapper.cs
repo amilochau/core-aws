@@ -188,7 +188,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Get DynamoDB attributes</summary>
-        public static Dictionary<string, AttributeValue> GetAttributes([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, object value)
+        public static Dictionary<string, AttributeValue> GetAttributes([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object value)
         {
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var attributes = new Dictionary<string, AttributeValue>();

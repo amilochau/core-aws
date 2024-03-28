@@ -10,7 +10,7 @@ using System.Reflection;
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>DynamoDB entity</summary>
-    public abstract class DynamoDbEntity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TEntity>
+    public abstract class DynamoDbEntity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TEntity>
         where TEntity : DynamoDbEntity<TEntity>
     {
         /// <inheritdoc/>
@@ -25,7 +25,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <inheritdoc/>
-        public Dictionary<string, AttributeValue> FormatForDynamoDb()
+        public virtual Dictionary<string, AttributeValue> FormatForDynamoDb()
         {
             return DynamoDbMapper.GetAttributes(typeof(TEntity), this);
         }
