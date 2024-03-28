@@ -3,16 +3,16 @@
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
-    /// Represents the output of a <code>BatchWriteItem</code> operation.
+    /// Represents the output of a <c>BatchWriteItem</c> operation.
     /// </summary>
     public class BatchWriteItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
         /// Gets and sets the property ItemCollectionMetrics. 
         /// <para>
-        /// A list of tables that were processed by <code>BatchWriteItem</code> and, for each
-        /// table, information about any item collections that were affected by individual <code>DeleteItem</code>
-        /// or <code>PutItem</code> operations.
+        /// A list of tables that were processed by <c>BatchWriteItem</c> and, for each
+        /// table, information about any item collections that were affected by individual <c>DeleteItem</c>
+        /// or <c>PutItem</c> operations.
         /// </para>
         ///  
         /// <para>
@@ -20,12 +20,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>ItemCollectionKey</code> - The partition key value of the item collection.
+        ///  <c>ItemCollectionKey</c> - The partition key value of the item collection.
         /// This is the same as the partition key value of the item.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>SizeEstimateRangeGB</code> - An estimate of item collection size, expressed
+        ///  <c>SizeEstimateRangeGB</c> - An estimate of item collection size, expressed
         /// in GB. This is a two-element array containing a lower bound and an upper bound for
         /// the estimate. The estimate includes the size of all the items in the table, plus the
         /// size of all attributes projected into all of the local secondary indexes on the table.
@@ -44,38 +44,38 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property UnprocessedItems. 
         /// <para>
-        /// A map of tables and requests against those tables that were not processed. The <code>UnprocessedItems</code>
-        /// value is in the same form as <code>RequestItems</code>, so you can provide this value
-        /// directly to a subsequent <code>BatchWriteItem</code> operation. For more information,
-        /// see <code>RequestItems</code> in the Request Parameters section.
+        /// A map of tables and requests against those tables that were not processed. The <c>UnprocessedItems</c>
+        /// value is in the same form as <c>RequestItems</c>, so you can provide this value
+        /// directly to a subsequent <c>BatchWriteItem</c> operation. For more information,
+        /// see <c>RequestItems</c> in the Request Parameters section.
         /// </para>
         ///  
         /// <para>
-        /// Each <code>UnprocessedItems</code> entry consists of a table name and, for that table,
-        /// a list of operations to perform (<code>DeleteRequest</code> or <code>PutRequest</code>).
+        /// Each <c>UnprocessedItems</c> entry consists of a table name and, for that table,
+        /// a list of operations to perform (<c>DeleteRequest</c> or <c>PutRequest</c>).
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>DeleteRequest</code> - Perform a <code>DeleteItem</code> operation on the specified
-        /// item. The item to be deleted is identified by a <code>Key</code> subelement:
+        ///  <c>DeleteRequest</c> - Perform a <c>DeleteItem</c> operation on the specified
+        /// item. The item to be deleted is identified by a <c>Key</c> subelement:
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>Key</code> - A map of primary key attribute values that uniquely identify the
+        ///  <c>Key</c> - A map of primary key attribute values that uniquely identify the
         /// item. Each entry in this map consists of an attribute name and an attribute value.
         /// </para>
         ///  </li> </ul> </li> <li> 
         /// <para>
-        ///  <code>PutRequest</code> - Perform a <code>PutItem</code> operation on the specified
-        /// item. The item to be put is identified by an <code>Item</code> subelement:
+        ///  <c>PutRequest</c> - Perform a <c>PutItem</c> operation on the specified
+        /// item. The item to be put is identified by an <c>Item</c> subelement:
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>Item</code> - A map of attributes and their values. Each entry in this map
+        ///  <c>Item</c> - A map of attributes and their values. Each entry in this map
         /// consists of an attribute name and an attribute value. Attribute values must not be
         /// null; string and binary type attributes must have lengths greater than zero; and set
         /// type attributes must not be empty. Requests that contain empty values will be rejected
-        /// with a <code>ValidationException</code> exception.
+        /// with a <c>ValidationException</c> exception.
         /// </para>
         ///  
         /// <para>
@@ -84,7 +84,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> </ul> </li> </ul> 
         /// <para>
-        /// If there are no unprocessed items remaining, the response contains an empty <code>UnprocessedItems</code>
+        /// If there are no unprocessed items remaining, the response contains an empty <c>UnprocessedItems</c>
         /// map.
         /// </para>
         /// </summary>

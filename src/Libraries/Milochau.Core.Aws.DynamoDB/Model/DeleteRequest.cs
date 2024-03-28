@@ -3,7 +3,7 @@
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
     /// <summary>
-    /// Represents a request to perform a <code>DeleteItem</code> operation on an item.
+    /// Represents a request to perform a <c>DeleteItem</c> operation on an item.
     /// </summary>
     public class DeleteRequest
     {

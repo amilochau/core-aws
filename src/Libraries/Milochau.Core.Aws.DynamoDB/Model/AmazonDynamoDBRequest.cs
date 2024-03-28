@@ -11,7 +11,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property ReturnConsumedCapacity.
         /// </summary>
-        /// <remarks><see cref="DynamoDB.ReturnConsumedCapacity"/></remarks>
-        public string? ReturnConsumedCapacity { get; set; }
+        public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
     }
 }

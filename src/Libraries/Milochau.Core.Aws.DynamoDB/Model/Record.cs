@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// Gets and sets the property AwsRegion. 
         /// <para>
-        /// The region in which the <code>GetRecords</code> request was received.
+        /// The region in which the <c>GetRecords</c> request was received.
         /// </para>
         /// </summary>
         [JsonPropertyName("awsRegion")]
@@ -41,15 +41,15 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>INSERT</code> - a new item was added to the table.
+        ///  <c>INSERT</c> - a new item was added to the table.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>MODIFY</code> - one or more of an existing item's attributes were modified.
+        ///  <c>MODIFY</c> - one or more of an existing item's attributes were modified.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>REMOVE</code> - the item was deleted from the table
+        ///  <c>REMOVE</c> - the item was deleted from the table
         /// </para>
         ///  </li> </ul>
         /// </summary>
@@ -60,7 +60,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// Gets and sets the property EventSource. 
         /// <para>
         /// The Amazon Web Services service from which the stream record originated. For DynamoDB
-        /// Streams, this is <code>aws:dynamodb</code>.
+        /// Streams, this is <c>aws:dynamodb</c>.
         /// </para>
         /// </summary>
         [JsonPropertyName("eventSource")]
@@ -70,12 +70,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// Gets and sets the property EventVersion. 
         /// <para>
         /// The version number of the stream record format. This number is updated whenever the
-        /// structure of <code>Record</code> is modified.
+        /// structure of <c>Record</c> is modified.
         /// </para>
         ///  
         /// <para>
-        /// Client applications must not assume that <code>eventVersion</code> will remain at
-        /// a particular value, as this number is subject to change at any time. In general, <code>eventVersion</code>
+        /// Client applications must not assume that <c>eventVersion</c> will remain at
+        /// a particular value, as this number is subject to change at any time. In general, <c>eventVersion</c>
         /// will only increase as the low-level DynamoDB Streams API evolves.
         /// </para>
         /// </summary>

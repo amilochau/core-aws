@@ -47,7 +47,7 @@ namespace Milochau.Core.Aws.DynamoDB
     }
 
     /// <summary>
-    /// Constants used for properties of type AttributeAction.
+    /// Constants used for properties of type ReturnConsumedCapacity.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<ReturnConsumedCapacity>))]
     public enum ReturnConsumedCapacity
@@ -67,26 +67,6 @@ namespace Milochau.Core.Aws.DynamoDB
     }
 
     /// <summary>
-    /// Constants used for properties of type AttributeAction.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<AttributeAction>))]
-    public enum AttributeAction
-    {
-        /// <summary>
-        /// Constant ADD for AttributeAction
-        /// </summary>
-        ADD,
-        /// <summary>
-        /// Constant DELETE for AttributeAction
-        /// </summary>
-        DELETE,
-        /// <summary>
-        /// Constant PUT for AttributeAction
-        /// </summary>
-        PUT,
-    }
-
-    /// <summary>
     /// Constants used for properties of type ReturnItemCollectionMetrics.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<ReturnItemCollectionMetrics>))]
@@ -100,22 +80,6 @@ namespace Milochau.Core.Aws.DynamoDB
         /// Constant SIZE for ReturnItemCollectionMetrics
         /// </summary>
         SIZE,
-    }
-
-    /// <summary>
-    /// Constants used for properties of type ConditionalOperator.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<ConditionalOperator>))]
-    public enum ConditionalOperator
-    {
-        /// <summary>
-        /// Constant AND for ConditionalOperator
-        /// </summary>
-        AND,
-        /// <summary>
-        /// Constant OR for ConditionalOperator
-        /// </summary>
-        OR,
     }
 
     /// <summary>
@@ -184,65 +148,5 @@ namespace Milochau.Core.Aws.DynamoDB
         /// Constant SPECIFIC_ATTRIBUTES for Select
         /// </summary>
         SPECIFIC_ATTRIBUTES,
-    }
-
-    /// <summary>
-    /// Constants used for properties of type ComparisonOperator.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<ComparisonOperator>))]
-    public enum ComparisonOperator
-    {
-        /// <summary>
-        /// Constant BEGINS_WITH for ComparisonOperator
-        /// </summary>
-        BEGINS_WITH,
-        /// <summary>
-        /// Constant BETWEEN for ComparisonOperator
-        /// </summary>
-        BETWEEN,
-        /// <summary>
-        /// Constant CONTAINS for ComparisonOperator
-        /// </summary>
-        CONTAINS,
-        /// <summary>
-        /// Constant EQ for ComparisonOperator
-        /// </summary>
-        EQ,
-        /// <summary>
-        /// Constant GE for ComparisonOperator
-        /// </summary>
-        GE,
-        /// <summary>
-        /// Constant GT for ComparisonOperator
-        /// </summary>
-        GT,
-        /// <summary>
-        /// Constant IN for ComparisonOperator
-        /// </summary>
-        IN,
-        /// <summary>
-        /// Constant LE for ComparisonOperator
-        /// </summary>
-        LE,
-        /// <summary>
-        /// Constant LT for ComparisonOperator
-        /// </summary>
-        LT,
-        /// <summary>
-        /// Constant NE for ComparisonOperator
-        /// </summary>
-        NE,
-        /// <summary>
-        /// Constant NOT_CONTAINS for ComparisonOperator
-        /// </summary>
-        NOT_CONTAINS,
-        /// <summary>
-        /// Constant NOT_NULL for ComparisonOperator
-        /// </summary>
-        NOT_NULL,
-        /// <summary>
-        /// Constant NULL for ComparisonOperator
-        /// </summary>
-        NULL,
     }
 }
