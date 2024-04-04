@@ -11,6 +11,10 @@ using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Reflection;
+using Milochau.Core.Aws.DynamoDB.Abstractions;
+using Microsoft.VisualBasic;
+using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
+//using Milochau.Core.Aws.DynamoDB.Abstractions;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -107,12 +111,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         }
     }
 
-    public class Map : DynamoDbEntity<Map>, IDynamoDbEntity<Map>, IDynamoDbGettableEntity<Map>, IDynamoDbQueryableEntity<Map>, IDynamoDbPutableEntity<Map>, IDynamoDbDeletableEntity<Map>, IDynamoDbUpdatableEntity<Map>
+    [DynamoDbTable("maps")]
+    public partial class Map : IDynamoDbEntity<Map>, IDynamoDbGettableEntity<Map>, IDynamoDbQueryableEntity<Map>, IDynamoDbPutableEntity<Map>, IDynamoDbDeletableEntity<Map>, IDynamoDbUpdatableEntity<Map>
     {
-        public const string K_Id = "id";
-        public const string K_Creation = "cd";
-        public const string K_Information = "if";
-
         [DynamoDbAttribute("id")]
         public required Guid Id { get; set; }
 
@@ -121,20 +122,9 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         [DynamoDbAttribute("if")]
         public required MapInformationSettings Information { get; set; }
-
-        public static string TableName => $"{EnvironmentVariables.ConventionPrefix}-table-maps";
-
-        public static Map ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
-        {
-            return new Map
-            {
-                Id = attributes.ReadGuid(K_Id),
-                Creation = attributes.ReadDateTimeOffset(K_Creation),
-                Information = attributes.ReadObject<MapInformationSettings>(K_Information),
-            };
-        }
     }
 
+    [DynamoDbNested]
     public class MapInformationSettings : IDynamoDbParsableEntity<MapInformationSettings>
     {
         [Required]
@@ -149,16 +139,6 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         [StringLength(50)]
         [DynamoDbAttribute("c")]
         public string? Color { get; set; }
-
-        public static MapInformationSettings ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
-        {
-            return new MapInformationSettings
-            {
-                Name = attributes.ReadString("n"),
-                Desc = attributes.ReadStringOptional("d"),
-                Color = attributes.ReadStringOptional("c"),
-            };
-        }
     }
 
     public class FakeMap : IDynamoDbParsableEntity<FakeMap>

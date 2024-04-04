@@ -28,28 +28,28 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         {
             IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsTable = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
-                    "SourceGenerator.Abstractions.DynamoDbTableAttribute",
+                    "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbTableAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
                     transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Table))
                  .Where(static m => m is not null);
 
             IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsProjection = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
-                    "SourceGenerator.Abstractions.DynamoDbProjectionAttribute",
+                    "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbProjectionAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
                     transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Projection))
                  .Where(static m => m is not null);
 
             IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsIndex = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
-                    "SourceGenerator.Abstractions.DynamoDbIndexAttribute",
+                    "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbIndexAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
                     transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Index))
                  .Where(static m => m is not null);
 
             IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsNested = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
-                    "SourceGenerator.Abstractions.DynamoDbNestedAttribute",
+                    "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbNestedAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
                     transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Nested))
                  .Where(static m => m is not null);
@@ -196,11 +196,61 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
 
             // Return an equatable value, to be cached
 
+            var @namespace = GetNamespace(context.TargetNode as ClassDeclarationSyntax);
             var isParsable = true;
             var isFormattable = classType == ClassType.Table || classType == ClassType.Nested;
             var isProjectable = classType == ClassType.Projection;
 
-            return new DynamoDbToGenerate(typeSymbol.ContainingNamespace.Name, typeSymbol.Name, tableNameSuffix, indexName, isParsable, isFormattable, isProjectable, dynamoDbAttributes); ;
+            return new DynamoDbToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, isParsable, isFormattable, isProjectable, dynamoDbAttributes); ;
+        }
+
+        static string GetNamespace(BaseTypeDeclarationSyntax? syntax)
+        {
+            // If we don't have a namespace at all we'll return an empty string
+            // This accounts for the "default namespace" case
+            string nameSpace = string.Empty;
+
+            if (syntax == null)
+            {
+                return nameSpace;
+            }
+
+            // Get the containing syntax node for the type declaration
+            // (could be a nested type, for example)
+            SyntaxNode? potentialNamespaceParent = syntax.Parent;
+
+            // Keep moving "out" of nested classes etc until we get to a namespace
+            // or until we run out of parents
+            while (potentialNamespaceParent != null &&
+                    potentialNamespaceParent is not NamespaceDeclarationSyntax
+                    && potentialNamespaceParent is not FileScopedNamespaceDeclarationSyntax)
+            {
+                potentialNamespaceParent = potentialNamespaceParent.Parent;
+            }
+
+            // Build up the final namespace by looping until we no longer have a namespace declaration
+            if (potentialNamespaceParent is BaseNamespaceDeclarationSyntax namespaceParent)
+            {
+                // We have a namespace. Use that as the type
+                nameSpace = namespaceParent.Name.ToString();
+
+                // Keep moving "out" of the namespace declarations until we 
+                // run out of nested namespace declarations
+                while (true)
+                {
+                    if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+                    {
+                        break;
+                    }
+
+                    // Add the outer namespace as a prefix to the final namespace
+                    nameSpace = $"{namespaceParent.Name}.{nameSpace}";
+                    namespaceParent = parent;
+                }
+            }
+
+            // return the final namespace
+            return nameSpace;
         }
     }
 }

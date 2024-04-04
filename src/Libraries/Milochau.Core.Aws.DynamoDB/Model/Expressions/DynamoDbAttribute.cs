@@ -5,20 +5,6 @@ using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
 {
-    /// <summary>Attribute for an DynamoDB attribute</summary>
-    /// <remarks>Constructor</remarks>
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public sealed class DynamoDbAttributeAttribute(string key) : Attribute
-    {
-        /// <summary>DynamoDB key</summary>
-        public string Key { get; } = key;
-    }
-
-    /// <summary>Attribute list for DynamoDB</summary>
-    public class DynamoDbAttributeList : Dictionary<string, AttributeValue>
-    {
-    }
-
     /// <summary>Attribute for DynamoDB</summary>
     public class DynamoDbAttribute(string key, AttributeValue value)
     {

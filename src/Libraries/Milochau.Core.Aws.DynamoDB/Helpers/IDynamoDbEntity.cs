@@ -10,28 +10,6 @@ using System.Reflection;
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>DynamoDB entity</summary>
-    public abstract class DynamoDbEntity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TEntity>
-        where TEntity : DynamoDbEntity<TEntity>
-    {
-        /// <inheritdoc/>
-        public static IEnumerable<string>? GetProjectedAttributes()
-        {
-            var customAttributes = typeof(TEntity)
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Select(x => (DynamoDbAttributeAttribute?)x.GetCustomAttribute(typeof(DynamoDbAttributeAttribute)))
-                .Where(x => x != null)
-                .Select(x => x!.Key);
-            return !customAttributes.Any() ? null : customAttributes;
-        }
-
-        /// <inheritdoc/>
-        public virtual Dictionary<string, AttributeValue> FormatForDynamoDb()
-        {
-            return DynamoDbMapper.GetAttributes(typeof(TEntity), this);
-        }
-    }
-
-    /// <summary>DynamoDB entity</summary>
     public interface IDynamoDbEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbEntity<TEntity>
     {

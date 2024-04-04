@@ -77,16 +77,15 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                         or AttributeType.Int
                         or AttributeType.Decimal
                         or AttributeType.Double
-                        or AttributeType.Boolean
                         or AttributeType.DateTimeOffset
                     when attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name})), {attribute.Name} != null)",
                     AttributeType.Guid
                         or AttributeType.Int
                         or AttributeType.Decimal
                         or AttributeType.Double
-                        or AttributeType.Boolean
                         or AttributeType.DateTimeOffset
                     when !attribute.IsNullable => $".Append(new(\"{attribute.Key}\", new AttributeValue({attribute.Name})))",
+                    AttributeType.Boolean => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name})), {attribute.Name} == true)",
                     AttributeType.Enum when attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue(Convert.ToInt32({attribute.Name}))), {attribute.Name} != null)",
                     AttributeType.Enum when !attribute.IsNullable => $".Append(new(\"{attribute.Key}\", new AttributeValue(Convert.ToInt32({attribute.Name}))))",
                     AttributeType.Object when attribute.IsNullable => $".Append(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}?.FormatForDynamoDb())))",
@@ -161,6 +160,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($@"#nullable enable
+using Milochau.Core.Aws.Core.References;
 using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model;
 using System;
