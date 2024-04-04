@@ -31,6 +31,8 @@
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Cognito\Milochau.Core.Aws.Cognito.csproj" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.SESv2\Milochau.Core.Aws.SESv2.csproj" />

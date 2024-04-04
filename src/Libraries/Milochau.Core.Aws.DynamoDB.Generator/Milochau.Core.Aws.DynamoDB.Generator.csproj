@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <Nullable>enable</Nullable>
+    <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Reference the attributes from the generator to compile against them -->
+  <!-- Ensure we specify PrivateAssets so the NuGet doesn't have any dependencies -->
+  <ItemGroup>
+    <ProjectReference Include="..\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+    <!-- Pack the abstractions dll in the analyzers/dotnet/cs path -->
+    <None Include="$(OutputPath)\Milochau.Core.Aws.DynamoDB.Abstractions.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+    <!-- Pack the abstractions dll in the lib\netstandard2.0 path -->
+    <None Include="$(OutputPath)\Milochau.Core.Aws.DynamoDB.Abstractions.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
+  </ItemGroup>
+
+</Project>
