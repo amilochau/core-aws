@@ -75,7 +75,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
         public DynamoDbAttribute(string key, DateTimeOffset? value) : this(key, new AttributeValue(value)) { }
 
         /// <summary>Constructor</summary>
-        public DynamoDbAttribute(string key, IDynamoDbFormatableEntity? value) : this(key, new AttributeValue(value)) { }
+        public DynamoDbAttribute(string key, IDynamoDbFormattableEntity? value) : this(key, new AttributeValue(value)) { }
 
         /// <summary>Constructor</summary>
         public DynamoDbAttribute(string key, Dictionary<string, AttributeValue>? value) : this(key, new AttributeValue(value)) { }
@@ -84,7 +84,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
         public DynamoDbAttribute(string key, IEnumerable<DynamoDbAttribute>? value) : this(key, new AttributeValue(value)) { }
 
         /// <summary>Constructor</summary>
-        public DynamoDbAttribute(string key, IEnumerable<IDynamoDbFormatableEntity>? value) : this(key, new AttributeValue(value)) { }
+        public DynamoDbAttribute(string key, IEnumerable<IDynamoDbFormattableEntity>? value) : this(key, new AttributeValue(value)) { }
 
         /// <summary>Constructor</summary>
         public DynamoDbAttribute(string key, IEnumerable<Dictionary<string, AttributeValue>>? value) : this(key, new AttributeValue(value)) { }

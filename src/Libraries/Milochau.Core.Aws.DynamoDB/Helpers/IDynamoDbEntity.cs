@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB entity</summary>
-    public interface IDynamoDbEntity<TEntity> : IDynamoDbFormatableEntity, IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbEntity<TEntity>
     {
     }
@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB formattable entity</summary>
-    public interface IDynamoDbFormatableEntity
+    public interface IDynamoDbFormattableEntity
     {
         /// <summary>Format entity for DynamoDB</summary>
         Dictionary<string, AttributeValue> FormatForDynamoDb();
@@ -78,7 +78,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB putable entity</summary>
-    public interface IDynamoDbPutableEntity<TEntity> : IDynamoDbFormatableEntity, IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbPutableEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbPutableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>

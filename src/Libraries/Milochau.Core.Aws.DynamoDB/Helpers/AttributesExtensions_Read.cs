@@ -204,6 +204,13 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             return null;
         }
 
+        /// <summary>Read a value as an enumeration</summary>
+        public static TEnum ReadEnum<TEnum>(this Dictionary<string, AttributeValue> attributes, string key)
+            where TEnum : struct, Enum
+        {
+            return Enum.Parse<TEnum>(attributes[key].N!);
+        }
+
         /// <summary>Read an optional value as an enumeration</summary>
         public static TEnum? ReadEnumOptional<TEnum>(this Dictionary<string, AttributeValue> attributes, string key)
             where TEnum : struct, Enum

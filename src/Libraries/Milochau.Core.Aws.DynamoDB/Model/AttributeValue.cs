@@ -255,7 +255,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(DateTimeOffset? value) => N = value != null ? $"{value.Value.ToUnixTimeSeconds()}" : null;
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IDynamoDbFormatableEntity? value) : this(value?.FormatForDynamoDb()) { }
+        public AttributeValue(IDynamoDbFormattableEntity? value) : this(value?.FormatForDynamoDb()) { }
 
         /// <summary>Constructor</summary>
         public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value == null || value.Count == 0 ? null : value;
@@ -264,12 +264,15 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(IEnumerable<DynamoDbAttribute>? value) => M = value == null || !value.Any() ? null : value.ToDictionary(x => x.Key, x => x.Value);
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<IDynamoDbFormatableEntity>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary(a => a.Key, a => a.Value))).ToList();
+        public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary(a => a.Key, a => a.Value))).ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<IEnumerable<DynamoDbAttribute>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<AttributeValue>? value) => L = value == null || !value.Any() ? null : value.ToList();
     }
 }
