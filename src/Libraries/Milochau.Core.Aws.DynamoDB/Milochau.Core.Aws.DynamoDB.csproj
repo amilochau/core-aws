@@ -10,29 +10,10 @@
     <Nullable>enable</Nullable>
 
     <IsTrimmable>true</IsTrimmable>
-    <NoWarn>NU5128</NoWarn> <!-- To avoid issues with manual package content -->
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
-  </ItemGroup>
-
-  <!-- Reference the attributes from the generator to compile against them -->
-  <!-- Ensure we specify PrivateAssets so the NuGet doesn't have any dependencies -->
-  <ItemGroup>
-    <ProjectReference Include="..\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj" PrivateAssets="All" />
-    <ProjectReference Include="..\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
-    <None Include="$(OutputPath)\Milochau.Core.Aws.DynamoDB.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-
-    <!-- Pack the abstractions dll in the analyzers/dotnet/cs path -->
-    <None Include="$(OutputPath)\Milochau.Core.Aws.DynamoDB.Abstractions.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-
-    <!-- Pack the abstractions dll in the lib\netstandard2.0 path -->
-    <None Include="$(OutputPath)\Milochau.Core.Aws.DynamoDB.Abstractions.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
   </ItemGroup>
 
   <ItemGroup>

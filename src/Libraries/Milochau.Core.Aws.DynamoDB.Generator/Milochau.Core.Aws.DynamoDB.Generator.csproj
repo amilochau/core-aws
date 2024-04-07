@@ -7,9 +7,6 @@
 
     <Nullable>enable</Nullable>
     <LangVersion>Latest</LangVersion>
-
-    <IsPackable>false</IsPackable>
-    <!-- Part of Milochau.Core.Aws.DynamoDB -->
   </PropertyGroup>
 
   <ItemGroup>
