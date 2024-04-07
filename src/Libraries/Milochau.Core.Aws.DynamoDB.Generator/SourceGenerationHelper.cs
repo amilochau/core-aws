@@ -29,6 +29,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String
                         or AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.Boolean
@@ -37,6 +38,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String
                         or AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.Boolean
@@ -54,6 +56,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String
                         or AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.Boolean
@@ -62,6 +65,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String
                         or AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.Boolean
@@ -79,12 +83,14 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name})), !string.IsNullOrWhiteSpace({attribute.Name}))",
                     AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.DateTimeOffset
                     when attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name})), {attribute.Name} != null)",
                     AttributeType.Guid
                         or AttributeType.Int
+                        or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
                         or AttributeType.DateTimeOffset
@@ -109,6 +115,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.S!)).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, System.Guid>(x.Key, System.Guid.Parse(x.Value.S!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, int>(x.Key, int.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
+                    AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, long>(x.Key, long.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Decimal => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, decimal>(x.Key, decimal.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Double => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, double>(x.Key, double.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Boolean => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, bool>(x.Key, x.Value.BOOL!)).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
@@ -125,6 +132,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.S!)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Guid.Parse(x.S!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => int.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                    AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => long.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Decimal => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => decimal.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Double => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => double.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Boolean => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.BOOL!)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
@@ -144,6 +152,8 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.Guid when !attribute.IsNullable => $"{attribute.Name} = System.Guid.Parse(attributes[\"{attribute.Key}\"].S!)",
                     AttributeType.Int when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(int.Parse)",
                     AttributeType.Int when !attribute.IsNullable => $"{attribute.Name} = int.Parse(attributes[\"{attribute.Key}\"].N!)",
+                    AttributeType.Long when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(long.Parse)",
+                    AttributeType.Long when !attribute.IsNullable => $"{attribute.Name} = long.Parse(attributes[\"{attribute.Key}\"].N!)",
                     AttributeType.Decimal when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(decimal.Parse)",
                     AttributeType.Decimal when !attribute.IsNullable => $"{attribute.Name} = decimal.Parse(attributes[\"{attribute.Key}\"].N!)",
                     AttributeType.Double when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(double.Parse)",

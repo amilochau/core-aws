@@ -5,6 +5,7 @@
         String,
         Guid,
         Int,
+        Long,
         Decimal,
         Double,
         Enum,

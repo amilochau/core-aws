@@ -84,15 +84,15 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         {
             return typeName switch
             {
-                "String" => AttributeType.String,
-                "Guid" => AttributeType.Guid,
-                "Int32" => AttributeType.Int,
-                "Int64" => AttributeType.Int,
-                "Decimal" => AttributeType.Decimal,
-                "Double" => AttributeType.Double,
-                "Boolean" => AttributeType.Boolean,
-                "DateTimeOffset" => AttributeType.DateTimeOffset,
-                "DateTime" => AttributeType.DateTime,
+                "string" => AttributeType.String,
+                "System.Guid" => AttributeType.Guid,
+                "int" => AttributeType.Int,
+                "long" => AttributeType.Long, // @todo
+                "decimal" => AttributeType.Decimal,
+                "double" => AttributeType.Double,
+                "bool" => AttributeType.Boolean,
+                "System.DateTimeOffset" => AttributeType.DateTimeOffset,
+                "System.DateTime" => AttributeType.DateTime,
                 _ => AttributeType.Object,
             };
         }
@@ -138,9 +138,9 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 var propertyMemberType_NotNullable_Named = propertyMemberType_NotNullable as INamedTypeSymbol;
 
 
-                var type = propertyMemberType_NotNullable.Name;
+                var type = propertyMemberType_NotNullable.OriginalDefinition.ToString();
                 var attributeKey = memberAttribute.ConstructorArguments[0].Value!.ToString();
-                var attributeType = GetAttributeType(propertyMemberType_NotNullable.Name);
+                var attributeType = GetAttributeType(type);
                 var isNullable = propertyMemberNamedType.NullableAnnotation == NullableAnnotation.Annotated;
                 var isList = false;
                 var isDictionary = false;
@@ -157,8 +157,8 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     isDictionary = true;
                     if (propertyMemberType_NotNullable_Named != null)
                     {
-                        type = propertyMemberType_NotNullable_Named.TypeArguments[1].Name;
-                        attributeType = GetAttributeType(propertyMemberType_NotNullable_Named.TypeArguments[1].Name);
+                        type = propertyMemberType_NotNullable_Named.TypeArguments[1].OriginalDefinition.ToString();
+                        attributeType = GetAttributeType(type);
                     }
                 }
                 else if (attributeType == AttributeType.Object && propertyMemberType_NotNullable.Interfaces.Any(x => x.Name == "IEnumerable"))
@@ -166,8 +166,8 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     isList = true;
                     if (propertyMemberType_NotNullable_Named != null)
                     {
-                        type = propertyMemberType_NotNullable_Named.TypeArguments[0].Name;
-                        attributeType = GetAttributeType(propertyMemberType_NotNullable_Named.TypeArguments[0].Name);
+                        type = propertyMemberType_NotNullable_Named.TypeArguments[0].OriginalDefinition.ToString();
+                        attributeType = GetAttributeType(type);
                     }
                 }
 
