@@ -1,6 +1,6 @@
-﻿namespace Milochau.Core.Aws.DynamoDB.Generator
+﻿namespace Milochau.Core.Aws.DynamoDB.Generator.Models
 {
-    public readonly record struct DynamoDbAttributeToGenerate
+    internal readonly record struct DynamoDbAttributeToGenerate
     {
         public readonly string Type;
         public readonly string Name;

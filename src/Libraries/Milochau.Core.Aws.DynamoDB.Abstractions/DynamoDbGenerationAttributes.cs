@@ -41,10 +41,20 @@ namespace Milochau.Core.Aws.DynamoDB.Abstractions
     }
 
     /// <summary>Attribute used to generate code for a DynamoDB attribute</summary>
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public sealed class DynamoDbAttributeAttribute(string key) : Attribute
+    [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+    public class DynamoDbAttributeAttribute(string key) : Attribute
     {
         /// <summary>Attribute key</summary>
         public string Key { get; } = key;
+    }
+
+    /// <summary>Attribute used to generate code for a DynamoDB Partition Key attribute</summary>
+    public sealed class DynamoDbPartitionKeyAttributeAttribute(string key) : DynamoDbAttributeAttribute(key)
+    {
+    }
+
+    /// <summary>Attribute used to generate code for a DynamoDB Sort Key attribute</summary>
+    public sealed class DynamoDbSortKeyAttributeAttribute(string key) : DynamoDbAttributeAttribute(key)
+    {
     }
 }

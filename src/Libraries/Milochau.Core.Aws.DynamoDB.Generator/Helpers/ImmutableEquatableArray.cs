@@ -33,12 +33,13 @@ namespace Milochau.Core.Aws.DynamoDB.Generator.Helpers
 
         public override int GetHashCode()
         {
-            HashCode hashCode = default;
+            int hash = 0;
             foreach (T value in _values)
             {
-                hashCode.Add(value);
+                hash = HashHelpers.Combine(hash, value is null ? 0 : value.GetHashCode());
             }
-            return hashCode.ToHashCode();
+
+            return hash;
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IEnumerable<T>)_values).GetEnumerator();

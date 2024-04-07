@@ -1,6 +1,6 @@
-﻿namespace Milochau.Core.Aws.DynamoDB.Generator
+﻿namespace Milochau.Core.Aws.DynamoDB.Generator.Models
 {
-    public enum AttributeType
+    internal enum AttributeType
     {
         String,
         Guid,

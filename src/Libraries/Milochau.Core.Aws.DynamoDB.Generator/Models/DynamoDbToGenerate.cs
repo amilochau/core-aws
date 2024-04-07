@@ -1,9 +1,9 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Generator.Helpers;
 using System.Collections.Generic;
 
-namespace Milochau.Core.Aws.DynamoDB.Generator
+namespace Milochau.Core.Aws.DynamoDB.Generator.Models
 {
-    public readonly record struct DynamoDbToGenerate
+    internal readonly record struct DynamoDbToGenerate
     {
         public readonly string Namespace;
         public readonly string Class;
@@ -14,8 +14,9 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         public readonly bool IsProjectable;
 
         public readonly ImmutableEquatableArray<DynamoDbAttributeToGenerate> DynamoDbAttributes;
+        public readonly ImmutableEquatableArray<DiagnosticInfo> Diagnostics;
 
-        public DynamoDbToGenerate(string @namespace, string @class, string? tableNameSuffix, string? indexName, bool isParsable, bool isFormattable, bool isProjectable, List<DynamoDbAttributeToGenerate> dynamoDbAttributes)
+        public DynamoDbToGenerate(string @namespace, string @class, string? tableNameSuffix, string? indexName, bool isParsable, bool isFormattable, bool isProjectable, List<DynamoDbAttributeToGenerate> dynamoDbAttributes, List<DiagnosticInfo> diagnostics)
         {
             Namespace = @namespace;
             Class = @class;
@@ -25,6 +26,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             IsFormattable = isFormattable;
             IsProjectable = isProjectable;
             DynamoDbAttributes = new(dynamoDbAttributes);
+            Diagnostics = new(diagnostics);
         }
     }
 }

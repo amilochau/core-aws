@@ -6,6 +6,7 @@ using System.Text;
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>Helpers with DynamoDB expressions</summary>
+    [System.Obsolete]
     public static class DynamoDbExpressionsHelpers
     {
         /// <summary>Build a projection expression from an enumerable of attributes</summary>

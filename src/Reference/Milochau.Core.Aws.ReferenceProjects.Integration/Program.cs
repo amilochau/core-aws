@@ -42,8 +42,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
             {
                 var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
-                var credentials = new Aws.Integration.AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
-                var lambdaFunction = new LambdaFunction.Function(credentials);
+                var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
+                var lambdaFunction = new Function(credentials);
                 var proxyResponse = await lambdaFunction.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
                 return ApiGatewayHelpers.BuildResult(proxyResponse);
             })
@@ -54,8 +54,8 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             app.MapPost("/dynamodb", async (HttpContext httpContext, CancellationToken cancellationToken) =>
             {
                 var proxyRequest = await JsonSerializer.DeserializeAsync(httpContext.Request.Body, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent);
-                var credentials = new Aws.Integration.AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
-                var lambdaFunction = new LambdaFunction.Function(credentials);
+                var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
+                var lambdaFunction = new Function(credentials);
                 await lambdaFunction.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
             })
             .Produces(204)

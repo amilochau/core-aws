@@ -210,7 +210,7 @@ namespace Milochau.Core.Aws.Cognito
         /// 
         /// <returns>The response from the GetUser service method, as returned by CognitoIdentityProvider.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
-        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken)
         {
             var options = new InvokeOptions
             {

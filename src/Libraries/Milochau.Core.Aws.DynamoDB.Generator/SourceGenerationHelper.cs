@@ -1,20 +1,24 @@
 ﻿using Microsoft.CodeAnalysis;
+using Milochau.Core.Aws.DynamoDB.Abstractions;
+using Milochau.Core.Aws.DynamoDB.Generator.Models;
 using System.Linq;
 using System.Text;
 
 namespace Milochau.Core.Aws.DynamoDB.Generator
 {
-    public static class SourceGenerationHelper
+    internal static class SourceGenerationHelper
     {
-        public const string DynamoDbTableAttributeName = "DynamoDbTableAttribute";
-        public const string DynamoDbProjectionAttributeName = "DynamoDbProjectionAttribute";
-        public const string DynamoDbIndexAttributeName = "DynamoDbIndexAttribute";
-        public const string DynamoDbNestedAttributeName = "DynamoDbNestedAttribute";
+        public const string DynamoDbTableAttributeName = nameof(DynamoDbTableAttribute);
+        public const string DynamoDbProjectionAttributeName = nameof(DynamoDbProjectionAttribute);
+        public const string DynamoDbIndexAttributeName = nameof(DynamoDbIndexAttribute);
+        public const string DynamoDbNestedAttributeName = nameof(DynamoDbNestedAttribute);
 
         public const string DynamoDbAttribute_TableNameSuffix = "TableNameSuffix";
         public const string DynamoDbAttribute_IndexName = "IndexName";
 
-        public const string DynamoDbAttributeAttributeName = "DynamoDbAttributeAttribute";
+        public const string DynamoDbAttributeAttributeName = nameof(DynamoDbAttributeAttribute);
+        public const string DynamoDbAttributeAttributeName_PartitionKey = nameof(DynamoDbPartitionKeyAttributeAttribute);
+        public const string DynamoDbAttributeAttributeName_SortKey = nameof(DynamoDbSortKeyAttributeAttribute);
 
         private static string? GetFormatLine(DynamoDbAttributeToGenerate attribute)
         {
@@ -185,6 +189,11 @@ namespace {dynamoDbTableToGenerate.Namespace}
                 var projectedAttributes = dynamoDbTableToGenerate.DynamoDbAttributes.Aggregate("", (acc, newItem) => acc + ", " + $"\"{newItem}\"") ?? "";
 
                 stringBuilder.AppendLine($@"        public static IEnumerable<string>? ProjectedAttributes => [{projectedAttributes}];");
+            }
+
+            foreach (var attribute in dynamoDbTableToGenerate.DynamoDbAttributes)
+            {
+                stringBuilder.AppendLine($@"        public const string K_{attribute.Name} = ""{attribute.Key}"";");
             }
 
             if (dynamoDbTableToGenerate.IsFormattable)

@@ -3,17 +3,11 @@ using System.Threading.Tasks;
 using System.Threading;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.DynamoDB.Model;
-using System.Linq;
 using Milochau.Core.Aws.DynamoDB.Helpers;
-using Milochau.Core.Aws.Core.References;
 using System;
 using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
-using System.Reflection;
 using Milochau.Core.Aws.DynamoDB.Abstractions;
-using Microsoft.VisualBasic;
-using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 //using Milochau.Core.Aws.DynamoDB.Abstractions;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
@@ -114,7 +108,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
     [DynamoDbTable("maps")]
     public partial class Map : IDynamoDbEntity<Map>, IDynamoDbGettableEntity<Map>, IDynamoDbQueryableEntity<Map>, IDynamoDbPutableEntity<Map>, IDynamoDbDeletableEntity<Map>, IDynamoDbUpdatableEntity<Map>
     {
-        [DynamoDbAttribute("id")]
+        [DynamoDbPartitionKeyAttribute("id")]
         public required Guid Id { get; set; }
 
         [DynamoDbAttribute("cd")]
@@ -125,7 +119,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
     }
 
     [DynamoDbNested]
-    public class MapInformationSettings : IDynamoDbParsableEntity<MapInformationSettings>
+    public partial class MapInformationSettings : IDynamoDbParsableEntity<MapInformationSettings>
     {
         [Required]
         [StringLength(100)]
@@ -139,39 +133,5 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         [StringLength(50)]
         [DynamoDbAttribute("c")]
         public string? Color { get; set; }
-    }
-
-    public class FakeMap : IDynamoDbParsableEntity<FakeMap>
-    {
-        public required string Title { get; set; }
-        public required MapIcon FirstIcon { get; set; }
-        public MapIcon? SecondIcon { get; set; }
-        public required List<MapIcon> MoreIcons { get; set; }
-        public List<MapIcon>? MoreOptionalIcons { get; set; }
-
-        public static FakeMap ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
-        {
-            return new FakeMap
-            {
-                Title = attributes.ReadString("title"),
-                FirstIcon = attributes.ReadObject<MapIcon>("first_icon"),
-                SecondIcon = attributes.ReadObjectOptional<MapIcon>("second_icon"),
-                MoreIcons = attributes.ReadList<MapIcon>("more_icons"),
-                MoreOptionalIcons = attributes.ReadListOptional<MapIcon>("more_icons"),
-            };
-        }
-    }
-
-    public class MapIcon : IDynamoDbParsableEntity<MapIcon>
-    {
-        public required string Mdi { get; set; }
-
-        public static MapIcon ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
-        {
-            return new MapIcon
-            {
-                Mdi = attributes.ReadString("mdi"),
-            };
-        }
     }
 }
