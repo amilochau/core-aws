@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Milochau.Core.Aws.Core\Milochau.Core.Aws.Core.csproj" />
+    <ProjectReference Include="..\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
