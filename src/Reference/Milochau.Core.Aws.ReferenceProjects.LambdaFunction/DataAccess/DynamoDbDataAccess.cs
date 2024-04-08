@@ -75,15 +75,15 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                     UpdateExpression = new UpdateExpression
                     {
                         RemoveExpressions = [
-                            new RemoveUpdateExpression($"{Map.K_Information}.c"),
+                            new RemoveUpdateExpression($"{Map.Keys.Information}.c"),
                         ],
                         AddExpressions = [
                             new AddUpdateExpression("cd", new AttributeValueOperand(10)),
                         ],
                         SetExpressions = [
                             new SetUpdateExpression("ooo", new AttributeValueOperand("hey hey")),
-                            new SetUpdateExpression("ooofromcd", new AttributePathOperand(Map.K_Creation)),
-                            new SetUpdateExpression("sum", new AttributePathOperand(Map.K_Creation) + new AttributeValueOperand(100)),
+                            new SetUpdateExpression("ooofromcd", new AttributePathOperand(Map.Keys.Creation)),
+                            new SetUpdateExpression("sum", new AttributePathOperand(Map.Keys.Creation) + new AttributeValueOperand(100)),
                         ]
                     }
 

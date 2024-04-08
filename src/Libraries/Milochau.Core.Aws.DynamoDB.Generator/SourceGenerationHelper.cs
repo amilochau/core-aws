@@ -234,11 +234,24 @@ namespace {dynamoDbClassToGenerate.Namespace}
             }
 
             // Attribute key constants
+            stringBuilder.AppendLine($@"
+        public static class Keys
+        {{
+");
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
             {
-                stringBuilder.AppendLine($@"        public const string K_{attribute.Name} = ""{attribute.Key}"";");
+                stringBuilder.AppendLine($@"        public const string {attribute.Name} = ""{attribute.Key}"";");
+            }
+            stringBuilder.AppendLine($@"
+        }}
+");
+
+            foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
+            {
+                stringBuilder.AppendLine($@"        [System.Obsolete] public const string K_{attribute.Name} = ""{attribute.Key}"";");
             }
 
+            // Format & Parse methods
             if (dynamoDbClassToGenerate.Type == ClassType.Table || dynamoDbClassToGenerate.Type == ClassType.Nested)
             {
                 stringBuilder.Append($@"
