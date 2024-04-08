@@ -140,23 +140,25 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <inheritdoc cref="AmazonDynamoDBRequest.ReturnConsumedCapacity"/>
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
 
-        /// <summary>The partition key of the item to retrieve</summary>
-        public required DynamoDbAttribute PartitionKey { get; set; }
+        /// <summary>The value of the partition key of the item to retrieve</summary>
+        public required AttributeValue PartitionKey { get; set; }
 
-        /// <summary>The sort key of the item to retrieve</summary>
-        public required DynamoDbAttribute? SortKey { get; set; }
+        /// <summary>The value of the sort key of the item to retrieve</summary>
+        public required AttributeValue? SortKey { get; set; }
 
         /// <inheritdoc cref="GetItemRequest.ConsistentRead"/>
         public bool ConsistentRead { get; set; }
 
         internal GetItemRequest Build()
         {
-            IEnumerable<KeyValuePair<string, AttributeValue>> key = SortKey == null ? [
-                PartitionKey,
-            ] : [
-                PartitionKey,
-                SortKey,
+            List<KeyValuePair<string, AttributeValue>> key = [
+                new KeyValuePair<string, AttributeValue>(TEntity.PartitionKey, PartitionKey), // Partition key
             ];
+
+            if (TEntity.SortKey != null && SortKey != null && SortKey.IsSet())
+            {
+                key.Add(new KeyValuePair<string, AttributeValue>(TEntity.SortKey, PartitionKey)); // Sort key
+            }
 
             var projectedAttributes = TEntity.ProjectedAttributes;
 
@@ -165,7 +167,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
                 ReturnConsumedCapacity = ReturnConsumedCapacity,
 
                 TableName = TEntity.TableName,
-                Key = key.Where(x => x.Value.IsSet()).ToDictionary(),
+                Key = key.ToDictionary(),
                 ConsistentRead = ConsistentRead,
                 ProjectionExpression = projectedAttributes == null ? null : new StringBuilder().AppendJoin(", ", projectedAttributes.Select(x => $"#{x}")).ToString(),
                 ExpressionAttributeNames = projectedAttributes?.Select(x => new KeyValuePair<string, string>($"#{x}", x)).ToDictionary(),

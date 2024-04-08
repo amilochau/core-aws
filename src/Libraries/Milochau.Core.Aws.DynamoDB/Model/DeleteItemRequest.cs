@@ -232,11 +232,11 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
 
 
-        /// <summary>The partition key of the item to retrieve</summary>
-        public required DynamoDbAttribute PartitionKey { get; set; }
+        /// <summary>The value of the partition key of the item to delete</summary>
+        public required AttributeValue PartitionKey { get; set; }
 
-        /// <summary>The sort key of the item to retrieve</summary>
-        public required DynamoDbAttribute? SortKey { get; set; }
+        /// <summary>The value of the sort key of the item to delete</summary>
+        public required AttributeValue? SortKey { get; set; }
 
 
         /// <summary>
@@ -275,19 +275,21 @@ namespace Milochau.Core.Aws.DynamoDB.Model
 
         internal DeleteItemRequest Build()
         {
-            IEnumerable<KeyValuePair<string, AttributeValue>> key = SortKey == null ? [
-                PartitionKey,
-            ] : [
-                PartitionKey,
-                SortKey,
+            List<KeyValuePair<string, AttributeValue>> key = [
+                new KeyValuePair<string, AttributeValue>(TEntity.PartitionKey, PartitionKey), // Partition key
             ];
+
+            if (TEntity.SortKey != null && SortKey != null && SortKey.IsSet())
+            {
+                key.Add(new KeyValuePair<string, AttributeValue>(TEntity.SortKey, PartitionKey)); // Sort key
+            }
 
             return new DeleteItemRequest(UserId)
             {
                 ReturnConsumedCapacity = ReturnConsumedCapacity,
 
                 TableName = TEntity.TableName,
-                Key = key.Where(x => x.Value.IsSet()).ToDictionary(),
+                Key = key.ToDictionary(),
 
                 ConditionExpression = Conditions?.Expression,
                 ExpressionAttributeNames = Conditions?.AttributeNames.ToDictionary(),

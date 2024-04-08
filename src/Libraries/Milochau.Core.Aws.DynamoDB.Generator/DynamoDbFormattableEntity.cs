@@ -179,6 +179,12 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 {
                     continue;
                 }
+                var attributeCategory = memberAttribute.AttributeClass!.Name switch
+                {
+                    SourceGenerationHelper.DynamoDbAttributeAttributeName_PartitionKey => AttributeCategory.Partition,
+                    SourceGenerationHelper.DynamoDbAttributeAttributeName_SortKey => AttributeCategory.Sort,
+                    _ => AttributeCategory.Regular,
+                };
 
                 if (propertyMember.Type is not INamedTypeSymbol propertyMemberNamedType)
                 {
@@ -222,7 +228,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     }
                 }
 
-                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, isNullable, isList, isDictionary));
+                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, attributeCategory, isNullable, isList, isDictionary));
             }
             return dynamoDbAttributes;
         }

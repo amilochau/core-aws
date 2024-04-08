@@ -33,7 +33,13 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static abstract string TableName { get; }
 
         /// <summary>List of projected attributes</summary>
-        static virtual IEnumerable<string>? ProjectedAttributes => null;
+        static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
+
+        /// <summary>Partition key</summary>
+        static abstract string PartitionKey { get; }
+
+        /// <summary>Sort key</summary>
+        static virtual string? SortKey { get; } = null;
     }
 
     /// <summary>DynamoDB queryable entity</summary>
@@ -47,7 +53,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static virtual string? IndexName { get; }
 
         /// <summary>List of projected attributes</summary>
-        static virtual IEnumerable<string>? ProjectedAttributes => null;
+        static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
     }
 
     /// <summary>DynamoDB putable entity</summary>
@@ -64,6 +70,12 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
+
+        /// <summary>Partition key</summary>
+        static abstract string PartitionKey { get; }
+
+        /// <summary>Sort key</summary>
+        static virtual string? SortKey { get; } = null;
     }
 
     /// <summary>DynamoDB updatable entity</summary>
@@ -72,5 +84,11 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
+
+        /// <summary>Partition key</summary>
+        static abstract string PartitionKey { get; }
+
+        /// <summary>Sort key</summary>
+        static virtual string? SortKey { get; } = null;
     }
 }

@@ -46,14 +46,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             var getItemResponse = await amazonDynamoDB.GetItemAsync(new GetItemRequest<Map>
             {
                 UserId = null,
-                PartitionKey = new(Map.K_Id, newMapId),
+                PartitionKey = newMapId,
                 SortKey = null,
             }, cancellationToken);
 
             var queryResponse = await amazonDynamoDB.QueryAsync(new QueryRequest<Map>
             {
                 UserId = null,
-                PartitionKeyCondition = new EqualValueExpression(Map.K_Id, newMapId),
+                PartitionKeyCondition = new EqualValueExpression(Map.PartitionKey, newMapId),
                 //Filters = new EqualExpression($"{Map.K_Information}.n", new AttributePath($"{Map.K_Information}.c")),
                 //Filters = new InExpression($"{Map.K_Information}.n", new AttributePath($"{Map.K_Information}.d"), new AttributePath($"{Map.K_Information}.c")),
                 /*Filters = new AndExpression(
@@ -70,7 +70,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 var updateResponse = await amazonDynamoDB.UpdateItemAsync(new UpdateItemRequest<Map>
                 {
                     UserId = null,
-                    PartitionKey = new(Map.K_Id, newMapId),
+                    PartitionKey = newMapId,
                     SortKey = null,
                     UpdateExpression = new UpdateExpression
                     {
@@ -97,7 +97,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             var deleteResponse = await amazonDynamoDB.DeleteItemAsync(new DeleteItemRequest<Map>
             {
                 UserId = null,
-                PartitionKey = new(Map.K_Id, newMapId),
+                PartitionKey = newMapId,
                 SortKey = null,
                 ReturnValues = ReturnValue.ALL_OLD,
             }, cancellationToken);

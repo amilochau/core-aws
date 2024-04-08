@@ -179,6 +179,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 ClassType.Index => $"IDynamoDbQueryableEntity<{c}>",
                 ClassType.Projection when string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>",
                 ClassType.Projection when !string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>",
+                ClassType.Nested => $"IDynamoDbParsableEntity<{c}>, IDynamoDbFormattableEntity",
                 _ => null
             };
         }
@@ -202,19 +203,37 @@ namespace {dynamoDbClassToGenerate.Namespace}
 ");
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.TableNameSuffix))
             {
-                stringBuilder.AppendLine($@"        public static string TableName => $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
+                stringBuilder.AppendLine($@"        public static string TableName {{ get; }} = $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
             }
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName))
             {
-                stringBuilder.AppendLine($@"        public static string IndexName => $""{dynamoDbClassToGenerate.IndexName}"";");
+                stringBuilder.AppendLine($@"        public static string IndexName {{ get; }} = $""{dynamoDbClassToGenerate.IndexName}"";");
             }
+
+            // Projection helpers
             if (dynamoDbClassToGenerate.Type == ClassType.Projection)
             {
                 var projectedAttributes = dynamoDbClassToGenerate.DynamoDbAttributes.Aggregate("", (acc, newItem) => acc + ", " + $"\"{newItem}\"") ?? "";
 
-                stringBuilder.AppendLine($@"        public static IEnumerable<string>? ProjectedAttributes => [{projectedAttributes}];");
+                stringBuilder.AppendLine($@"        public static IEnumerable<string>? ProjectedAttributes {{ get; }} = [{projectedAttributes}];");
             }
 
+            // Partition and Sort key helpers
+            if (dynamoDbClassToGenerate.Type == ClassType.Table || dynamoDbClassToGenerate.Type == ClassType.Index || dynamoDbClassToGenerate.Type == ClassType.Projection)
+            {
+                var partitionKey = dynamoDbClassToGenerate.DynamoDbAttributes.FirstOrDefault(x => x.AttributeCategory == AttributeCategory.Partition);
+                if (partitionKey != default)
+                {
+                    stringBuilder.AppendLine($@"        public static string PartitionKey {{ get; }} = ""{partitionKey.Key}"";");
+                }
+                var sortKey = dynamoDbClassToGenerate.DynamoDbAttributes.FirstOrDefault(x => x.AttributeCategory == AttributeCategory.Sort);
+                if (sortKey != default)
+                {
+                    stringBuilder.AppendLine($@"        public static string? SortKey {{ get; }} = ""{sortKey.Key}"";");
+                }
+            }
+
+            // Attribute key constants
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
             {
                 stringBuilder.AppendLine($@"        public const string K_{attribute.Name} = ""{attribute.Key}"";");

@@ -120,63 +120,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </summary>
         public List<string>? SS { get; set; }
 
-        /// <summary>Whether a value is set</summary>
-        // @todo [Obsolete]
-        public bool IsSet()
-        {
-            if (B != null)
-            {
-                return true;
-            }
-
-            if (BOOL != null && BOOL.Value)
-            {
-                return true;
-            }
-
-            if (BS != null && BS.Count > 0 && BS.Any(x => x != null))
-            {
-                return true;
-            }
-
-            if (L != null && L.Count > 0 && L.Any(x => x.IsSet()))
-            {
-                return true;
-            }
-
-            if (M != null && M.Count > 0 && M.Any(x => x.Value.IsSet()))
-            {
-                return true;
-            }
-
-            if (N != null && !string.IsNullOrWhiteSpace(N))
-            {
-                return true;
-            }
-
-            if (NS != null && NS.Count > 0 && NS.Any(x => !string.IsNullOrWhiteSpace(x)))
-            {
-                return true;
-            }
-
-            if (NULL != null && NULL.Value)
-            {
-                return true;
-            }
-
-            if (S != null && !string.IsNullOrWhiteSpace(S))
-            {
-                return true;
-            }
-
-            if (SS != null && SS.Count > 0 && SS.Any(x => !string.IsNullOrWhiteSpace(x)))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
 
         /// <summary>Implicit conversion within <see cref="S"/></summary>
         public static implicit operator AttributeValue(string? value) => new(value);
