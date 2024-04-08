@@ -32,6 +32,7 @@ namespace Milochau.Core.Aws.DynamoDB
     /// </summary>
     public partial interface IAmazonDynamoDB
     {
+        // @todo Improve the following method with new, generic method
         /// <summary>
         /// The <c>BatchWriteItem</c> operation puts or deletes multiple items in one or
         /// more tables. A single call to <c>BatchWriteItem</c> can transmit up to 16MB

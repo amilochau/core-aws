@@ -12,7 +12,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// <para>
     /// Each attribute value is described as a name-value pair. The name is the data type,
     /// and the value is the data itself.
-    /// </para>    /// <para>
+    /// </para>
+    /// <para>
     /// For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html#HowItWorks.DataTypes">Data
     /// Types</a> in the <i>Amazon DynamoDB Developer Guide</i>.
     /// </para>
@@ -120,6 +121,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public List<string>? SS { get; set; }
 
         /// <summary>Whether a value is set</summary>
+        // @todo [Obsolete]
         public bool IsSet()
         {
             if (B != null)

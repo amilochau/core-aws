@@ -170,8 +170,22 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             }
         }
 
-        public static string GeneratePartialClass(DynamoDbToGenerate dynamoDbTableToGenerate)
+        private static string? GetPartialClassInterfaces(DynamoDbClassToGenerate dynamoDbClassToGenerate)
         {
+            var c = dynamoDbClassToGenerate.Class;
+            return dynamoDbClassToGenerate.Type switch
+            {
+                ClassType.Table => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>, IDynamoDbPutableEntity<{c}>, IDynamoDbDeletableEntity<{c}>, IDynamoDbUpdatableEntity<{c}>",
+                ClassType.Index => $"IDynamoDbQueryableEntity<{c}>",
+                ClassType.Projection when string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>",
+                ClassType.Projection when !string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>",
+                _ => null
+            };
+        }
+
+        public static string GeneratePartialClass(DynamoDbClassToGenerate dynamoDbClassToGenerate)
+        {
+            var interfaces = GetPartialClassInterfaces(dynamoDbClassToGenerate);
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($@"#nullable enable
 using Milochau.Core.Aws.Core.References;
@@ -181,39 +195,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace {dynamoDbTableToGenerate.Namespace}
+namespace {dynamoDbClassToGenerate.Namespace}
 {{
-    public partial class {dynamoDbTableToGenerate.Class}
+    public partial class {dynamoDbClassToGenerate.Class}{(interfaces != null ? $" : {interfaces}" : "")}
     {{
 ");
-            if (!string.IsNullOrEmpty(dynamoDbTableToGenerate.TableNameSuffix))
+            if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.TableNameSuffix))
             {
-                stringBuilder.AppendLine($@"        public static string TableName => $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbTableToGenerate.TableNameSuffix}"";");
+                stringBuilder.AppendLine($@"        public static string TableName => $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
             }
-            if (!string.IsNullOrEmpty(dynamoDbTableToGenerate.IndexName))
+            if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName))
             {
-                stringBuilder.AppendLine($@"        public static string IndexName => $""{dynamoDbTableToGenerate.IndexName}"";");
+                stringBuilder.AppendLine($@"        public static string IndexName => $""{dynamoDbClassToGenerate.IndexName}"";");
             }
-            if (dynamoDbTableToGenerate.IsProjectable)
+            if (dynamoDbClassToGenerate.Type == ClassType.Projection)
             {
-                var projectedAttributes = dynamoDbTableToGenerate.DynamoDbAttributes.Aggregate("", (acc, newItem) => acc + ", " + $"\"{newItem}\"") ?? "";
+                var projectedAttributes = dynamoDbClassToGenerate.DynamoDbAttributes.Aggregate("", (acc, newItem) => acc + ", " + $"\"{newItem}\"") ?? "";
 
                 stringBuilder.AppendLine($@"        public static IEnumerable<string>? ProjectedAttributes => [{projectedAttributes}];");
             }
 
-            foreach (var attribute in dynamoDbTableToGenerate.DynamoDbAttributes)
+            foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
             {
                 stringBuilder.AppendLine($@"        public const string K_{attribute.Name} = ""{attribute.Key}"";");
             }
 
-            if (dynamoDbTableToGenerate.IsFormattable)
+            if (dynamoDbClassToGenerate.Type == ClassType.Table || dynamoDbClassToGenerate.Type == ClassType.Nested)
             {
                 stringBuilder.Append($@"
         public Dictionary<string, AttributeValue> FormatForDynamoDb()
         {{
             return new Dictionary<string, AttributeValue>()
 ");
-                foreach (var formatLine in dynamoDbTableToGenerate.DynamoDbAttributes.Select(GetFormatLine).Where(x => x != null))
+                foreach (var formatLine in dynamoDbClassToGenerate.DynamoDbAttributes.Select(GetFormatLine).Where(x => x != null))
                 {
                     stringBuilder.AppendLine($"                {formatLine}");
                 }
@@ -223,15 +237,13 @@ namespace {dynamoDbTableToGenerate.Namespace}
 ");
             }
 
-            if (dynamoDbTableToGenerate.IsParsable)
-            {
-                stringBuilder.Append($@"
-        public static {dynamoDbTableToGenerate.Class} ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
+            stringBuilder.Append($@"
+        public static {dynamoDbClassToGenerate.Class} ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
         {{
-            return new {dynamoDbTableToGenerate.Class}
+            return new {dynamoDbClassToGenerate.Class}
             {{
 ");
-                foreach (var parseLine in dynamoDbTableToGenerate.DynamoDbAttributes.Select(GetParseLine).Where(x => x != null))
+                foreach (var parseLine in dynamoDbClassToGenerate.DynamoDbAttributes.Select(GetParseLine).Where(x => x != null))
                 {
                     stringBuilder.AppendLine($"                {parseLine},");
                 }
@@ -239,7 +251,6 @@ namespace {dynamoDbTableToGenerate.Namespace}
             }};
         }}
 ");
-            }
 
             stringBuilder.Append($@"
     }}

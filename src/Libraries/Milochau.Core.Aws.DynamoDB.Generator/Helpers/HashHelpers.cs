@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Milochau.Core.Aws.DynamoDB.Generator.Helpers
+﻿namespace Milochau.Core.Aws.DynamoDB.Generator.Helpers
 {
     internal static class HashHelpers
     {

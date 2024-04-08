@@ -158,7 +158,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
                 SortKey,
             ];
 
-            var projectedAttributes = TEntity.GetProjectedAttributes();
+            var projectedAttributes = TEntity.ProjectedAttributes;
 
             return new GetItemRequest(UserId)
             {

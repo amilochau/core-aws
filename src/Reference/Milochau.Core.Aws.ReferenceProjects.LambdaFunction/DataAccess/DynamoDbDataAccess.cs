@@ -3,13 +3,11 @@ using System.Threading.Tasks;
 using System.Threading;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.DynamoDB.Model;
-using Milochau.Core.Aws.DynamoDB.Helpers;
 using System;
 using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.ComponentModel.DataAnnotations;
 using Milochau.Core.Aws.DynamoDB.Abstractions;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess.Nested;
-//using Milochau.Core.Aws.DynamoDB.Abstractions;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -107,7 +105,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
     }
 
     [DynamoDbTable("maps")]
-    public partial class Map : IDynamoDbEntity<Map>, IDynamoDbGettableEntity<Map>, IDynamoDbQueryableEntity<Map>, IDynamoDbPutableEntity<Map>, IDynamoDbDeletableEntity<Map>, IDynamoDbUpdatableEntity<Map>
+    public partial class Map
     {
         [DynamoDbPartitionKeyAttribute("id")]
         public required Guid Id { get; set; }
@@ -225,7 +223,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess.Nested
 {
     [DynamoDbNested]
-    public partial class MapInformationSettings : IDynamoDbParsableEntity<MapInformationSettings>
+    public partial class MapInformationSettings
     {
         [Required]
         [StringLength(100)]

@@ -3,12 +3,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Milochau.Core.Aws.DynamoDB.Generator.Models;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading;
 
 namespace Milochau.Core.Aws.DynamoDB.Generator
 {
@@ -18,6 +15,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         public DynamoDbFormattableEntity()
         {
 #if DEBUG
+            // Uncomment the following lines to debug code generation - you should then select a VS instance
             /*
             if (!System.Diagnostics.Debugger.IsAttached)
             {
@@ -29,32 +27,32 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsTable = context.SyntaxProvider
+            IncrementalValuesProvider<DynamoDbClassToGenerate?> contextGenerationSpecsTable = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
                     "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbTableAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Table))
+                    transform: static (context, _) => GetDynamoDbClassToGenerate(context, ClassType.Table))
                  .Where(static m => m is not null);
 
-            IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsProjection = context.SyntaxProvider
+            IncrementalValuesProvider<DynamoDbClassToGenerate?> contextGenerationSpecsProjection = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
                     "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbProjectionAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Projection))
+                    transform: static (context, _) => GetDynamoDbClassToGenerate(context, ClassType.Projection))
                  .Where(static m => m is not null);
 
-            IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsIndex = context.SyntaxProvider
+            IncrementalValuesProvider<DynamoDbClassToGenerate?> contextGenerationSpecsIndex = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
                     "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbIndexAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Index))
+                    transform: static (context, _) => GetDynamoDbClassToGenerate(context, ClassType.Index))
                  .Where(static m => m is not null);
 
-            IncrementalValuesProvider<DynamoDbToGenerate?> contextGenerationSpecsNested = context.SyntaxProvider
+            IncrementalValuesProvider<DynamoDbClassToGenerate?> contextGenerationSpecsNested = context.SyntaxProvider
                 .ForAttributeWithMetadataName(
                     "Milochau.Core.Aws.DynamoDB.Abstractions.DynamoDbNestedAttribute",
                     predicate: static (node, _) => node is ClassDeclarationSyntax,
-                    transform: static (context, _) => GetDynamoDbTableToGenerate(context, ClassType.Nested))
+                    transform: static (context, _) => GetDynamoDbClassToGenerate(context, ClassType.Nested))
                  .Where(static m => m is not null);
 
             context.RegisterSourceOutput(contextGenerationSpecsTable, Execute);
@@ -63,7 +61,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             context.RegisterSourceOutput(contextGenerationSpecsNested, Execute);
         }
 
-        private static void Execute(SourceProductionContext context, DynamoDbToGenerate? dynamoDbTableToGenerate)
+        private static void Execute(SourceProductionContext context, DynamoDbClassToGenerate? dynamoDbTableToGenerate)
         {
             if (dynamoDbTableToGenerate is { } value)
             {
@@ -80,17 +78,70 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             }
         }
 
+        private static DynamoDbClassToGenerate? GetDynamoDbClassToGenerate(GeneratorAttributeSyntaxContext context, ClassType classType)
+        {
+            var diagnostics = new List<DiagnosticInfo>();
+
+            if (context.TargetNode is not ClassDeclarationSyntax cds)
+            {
+                return null; // Something went wrong
+            }
+
+            INamedTypeSymbol? contextTypeSymbol = context.SemanticModel.GetDeclaredSymbol(cds);
+            if (contextTypeSymbol == null)
+            {
+                return null; // Something went wrong
+            }
+
+            var _contextClassLocation = contextTypeSymbol.Locations.FirstOrDefault();
+            if (_contextClassLocation == null)
+            {
+                return null; // Something went wrong
+            }
+
+            if (!IsPartialType(cds))
+            {
+                diagnostics.Add(new DiagnosticInfo(DiagnosticDescriptors.ContextClassesMustBePartial, _contextClassLocation, contextTypeSymbol.Name));
+            }
+
+            if (context.SemanticModel.GetDeclaredSymbol(context.TargetNode) is not INamedTypeSymbol typeSymbol)
+            {
+                return null; // Something went wrong
+            }
+
+            string? expectedClassAttributeName = classType switch
+            {
+                ClassType.Table => SourceGenerationHelper.DynamoDbTableAttributeName,
+                ClassType.Projection => SourceGenerationHelper.DynamoDbProjectionAttributeName,
+                ClassType.Index => SourceGenerationHelper.DynamoDbIndexAttributeName,
+                ClassType.Nested => SourceGenerationHelper.DynamoDbNestedAttributeName,
+                _ => null,
+            };
+
+            var dynamoDbTableAttribute = context.Attributes.FirstOrDefault(x => x.AttributeClass?.Name == expectedClassAttributeName);
+            if (dynamoDbTableAttribute == null)
+            {
+                return null; // Something went wrong
+            }
+
+            var @namespace = GetNamespace(cds);
+            (string? tableNameSuffix, string? indexName) = GetClassSettings(dynamoDbTableAttribute, classType);
+            var dynamoDbAttributes = GetClassProperties(typeSymbol);
+
+            return new DynamoDbClassToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, classType, dynamoDbAttributes, diagnostics); ;
+        }
+
         private static AttributeType GetAttributeType(string typeName)
         {
             return typeName switch
             {
                 "string" => AttributeType.String,
-                "System.Guid" => AttributeType.Guid,
                 "int" => AttributeType.Int,
-                "long" => AttributeType.Long, // @todo
+                "long" => AttributeType.Long,
                 "decimal" => AttributeType.Decimal,
                 "double" => AttributeType.Double,
                 "bool" => AttributeType.Boolean,
+                "System.Guid" => AttributeType.Guid,
                 "System.DateTimeOffset" => AttributeType.DateTimeOffset,
                 "System.DateTime" => AttributeType.DateTime,
                 _ => AttributeType.Object,
@@ -176,7 +227,6 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             return dynamoDbAttributes;
         }
 
-
         private static bool IsPartialType(ClassDeclarationSyntax contextClassSyntax)
         {
             for (TypeDeclarationSyntax? currentType = contextClassSyntax; currentType != null; currentType = currentType.Parent as TypeDeclarationSyntax)
@@ -195,70 +245,6 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             }
 
             return true;
-        }
-
-        private static DynamoDbToGenerate? GetDynamoDbTableToGenerate(GeneratorAttributeSyntaxContext context, ClassType classType)
-        {
-            var diagnostics = new List<DiagnosticInfo>();
-
-            if (context.TargetNode is not ClassDeclarationSyntax cds)
-            {
-                return null; // Something went wrong
-            }
-
-            INamedTypeSymbol? contextTypeSymbol = context.SemanticModel.GetDeclaredSymbol(cds);
-            if (contextTypeSymbol == null)
-            {
-                return null; // Something went wrong
-            }
-
-            var _contextClassLocation = contextTypeSymbol.Locations.FirstOrDefault();
-            if (_contextClassLocation == null)
-            {
-                return null; // Something went wrong
-            }
-
-            if (!IsPartialType(cds))
-            {
-                diagnostics.Add(new DiagnosticInfo(DiagnosticDescriptors.ContextClassesMustBePartial, _contextClassLocation, contextTypeSymbol.Name));
-            }
-
-            if (context.SemanticModel.GetDeclaredSymbol(context.TargetNode) is not INamedTypeSymbol typeSymbol)
-            {
-                return null; // Something went wrong
-            }
-
-            string? expectedClassAttributeName = classType switch
-            {
-                ClassType.Table => SourceGenerationHelper.DynamoDbTableAttributeName,
-                ClassType.Projection => SourceGenerationHelper.DynamoDbProjectionAttributeName,
-                ClassType.Index => SourceGenerationHelper.DynamoDbIndexAttributeName,
-                ClassType.Nested => SourceGenerationHelper.DynamoDbNestedAttributeName,
-                _ => null,
-            };
-
-            var dynamoDbTableAttribute = context.Attributes.FirstOrDefault(x => x.AttributeClass?.Name == expectedClassAttributeName);
-            if (dynamoDbTableAttribute == null)
-            {
-                return null; // Something went wrong
-            }
-
-            // 1. Get data for class
-
-            (string? tableNameSuffix, string? indexName) = GetClassSettings(dynamoDbTableAttribute, classType);
-
-            // 2. Get data for DynamoDB attributes
-
-            var dynamoDbAttributes = GetClassProperties(typeSymbol);
-
-            // Return an equatable value, to be cached
-
-            var @namespace = GetNamespace(cds);
-            var isParsable = true;
-            var isFormattable = classType == ClassType.Table || classType == ClassType.Nested;
-            var isProjectable = classType == ClassType.Projection;
-
-            return new DynamoDbToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, isParsable, isFormattable, isProjectable, dynamoDbAttributes, diagnostics); ;
         }
 
         static string GetNamespace(BaseTypeDeclarationSyntax syntax)

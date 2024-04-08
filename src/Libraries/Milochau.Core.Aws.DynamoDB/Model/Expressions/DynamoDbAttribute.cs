@@ -1,11 +1,11 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Helpers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
 {
     /// <summary>Attribute for DynamoDB</summary>
+    // @todo [Obsolete]
     public class DynamoDbAttribute(string key, AttributeValue value)
     {
         /// <summary>Implicit convertor</summary>

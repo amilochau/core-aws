@@ -1,9 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Milochau.Core.Aws.DynamoDB.Generator.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Milochau.Core.Aws.DynamoDB.Generator.Models
 {
@@ -19,7 +17,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator.Models
 
             Descriptor = descriptor;
             Location = trimmedLocation;
-            MessageArgs = messageArgs ?? Array.Empty<object?>();
+            MessageArgs = messageArgs ?? [];
 
             // Creates a copy of the Location instance that does not capture a reference to Compilation.
             static Location GetTrimmedLocation(Location location)

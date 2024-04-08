@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>DynamoDB entity</summary>
+    [System.Obsolete]
     public interface IDynamoDbEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbEntity<TEntity>
     {
@@ -32,7 +33,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static abstract string TableName { get; }
 
         /// <summary>List of projected attributes</summary>
-        static virtual IEnumerable<string>? GetProjectedAttributes() => null;
+        static virtual IEnumerable<string>? ProjectedAttributes => null;
     }
 
     /// <summary>DynamoDB queryable entity</summary>
@@ -46,7 +47,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static virtual string? IndexName { get; }
 
         /// <summary>List of projected attributes</summary>
-        static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
+        static virtual IEnumerable<string>? ProjectedAttributes => null;
     }
 
     /// <summary>DynamoDB putable entity</summary>
