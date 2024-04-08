@@ -156,9 +156,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>Implicit conversion within <see cref="M"/></summary>
         public static implicit operator AttributeValue(Dictionary<string, AttributeValue>? value) => new(value);
 
-        /// <summary>Implicit conversion within <see cref="M"/></summary>
-        public static implicit operator AttributeValue(List<DynamoDbAttribute>? value) => new(value);
-
         /// <summary>Implicit conversion within <see cref="L"/></summary>
         public static implicit operator AttributeValue(List<Dictionary<string, AttributeValue>>? value) => new(value);
 
@@ -205,16 +202,10 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value == null || value.Count == 0 ? null : value;
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<DynamoDbAttribute>? value) => M = value == null || !value.Any() ? null : value.ToDictionary(x => x.Key, x => x.Value);
-
-        /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary(a => a.Key, a => a.Value))).ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
-
-        /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<IEnumerable<DynamoDbAttribute>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<AttributeValue>? value) => L = value == null || !value.Any() ? null : value.ToList();

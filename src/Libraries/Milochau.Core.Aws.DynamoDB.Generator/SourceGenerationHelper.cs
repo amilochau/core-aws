@@ -236,14 +236,12 @@ namespace {dynamoDbClassToGenerate.Namespace}
             // Attribute key constants
             stringBuilder.AppendLine($@"
         public static class Keys
-        {{
-");
+        {{");
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
             {
-                stringBuilder.AppendLine($@"        public const string {attribute.Name} = ""{attribute.Key}"";");
+                stringBuilder.AppendLine($@"            public const string {attribute.Name} = ""{attribute.Key}"";");
             }
-            stringBuilder.AppendLine($@"
-        }}
+            stringBuilder.AppendLine($@"        }}
 ");
 
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
@@ -263,8 +261,7 @@ namespace {dynamoDbClassToGenerate.Namespace}
                 {
                     stringBuilder.AppendLine($"                {formatLine}");
                 }
-                stringBuilder.Append($@"
-                .ToDictionary();
+                stringBuilder.Append($@"                .ToDictionary();
         }}
 ");
             }
@@ -279,8 +276,7 @@ namespace {dynamoDbClassToGenerate.Namespace}
                 {
                     stringBuilder.AppendLine($"                {parseLine},");
                 }
-                stringBuilder.Append($@"
-            }};
+                stringBuilder.Append($@"            }};
         }}
 ");
 
