@@ -8,8 +8,8 @@ namespace Milochau.Core.Aws.Lambda.Model
     /// <summary>
     /// Container for the parameters to the Invoke operation.
     /// Invokes a Lambda function. You can invoke a function synchronously (and wait for the
-    /// response), or asynchronously. To invoke a function asynchronously, set <code>InvocationType</code>
-    /// to <code>Event</code>.
+    /// response), or asynchronously. To invoke a function asynchronously, set <c>InvocationType</c>
+    /// to <c>Event</c>.
     /// 
     ///  
     /// <para>
@@ -43,9 +43,9 @@ namespace Milochau.Core.Aws.Lambda.Model
     /// reserved for errors that prevent your function from executing, such as permissions
     /// errors, <a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html">quota</a>
     /// errors, or issues with your function's code and configuration. For example, Lambda
-    /// returns <code>TooManyRequestsException</code> if running the function would cause
-    /// you to exceed a concurrency limit at either the account level (<code>ConcurrentInvocationLimitExceeded</code>)
-    /// or function level (<code>ReservedFunctionConcurrentInvocationLimitExceeded</code>).
+    /// returns <c>TooManyRequestsException</c> if running the function would cause
+    /// you to exceed a concurrency limit at either the account level (<c>ConcurrentInvocationLimitExceeded</c>)
+    /// or function level (<c>ReservedFunctionConcurrentInvocationLimitExceeded</c>).
     /// </para>
     ///  
     /// <para>
@@ -84,16 +84,16 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <b>Function name</b> – <code>my-function</code> (name-only), <code>my-function:v1</code>
+        ///  <b>Function name</b> – <c>my-function</c> (name-only), <c>my-function:v1</c>
         /// (with alias).
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <b>Function ARN</b> – <code>arn:aws:lambda:us-west-2:123456789012:function:my-function</code>.
+        ///  <b>Function ARN</b> – <c>arn:aws:lambda:us-west-2:123456789012:function:my-function</c>.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <b>Partial ARN</b> – <code>123456789012:function:my-function</code>.
+        ///  <b>Partial ARN</b> – <c>123456789012:function:my-function</c>.
         /// </para>
         ///  </li> </ul> 
         /// <para>
@@ -111,19 +111,19 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         ///  <ul> <li> 
         /// <para>
-        ///  <code>RequestResponse</code> (default) – Invoke the function synchronously. Keep
+        ///  <c>RequestResponse</c> (default) – Invoke the function synchronously. Keep
         /// the connection open until the function returns a response or times out. The API response
         /// includes the function response and additional data.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>Event</code> – Invoke the function asynchronously. Send events that fail multiple
+        ///  <c>Event</c> – Invoke the function asynchronously. Send events that fail multiple
         /// times to the function's dead-letter queue (if one is configured). The API response
         /// only includes a status code.
         /// </para>
         ///  </li> <li> 
         /// <para>
-        ///  <code>DryRun</code> – Validate parameter values and verify that the user or role
+        ///  <c>DryRun</c> – Validate parameter values and verify that the user or role
         /// has permission to invoke the function.
         /// </para>
         ///  </li> </ul>
@@ -137,8 +137,8 @@ namespace Milochau.Core.Aws.Lambda.Model
         /// </para>
         ///  
         /// <para>
-        /// You can enter the JSON directly. For example, <code>--payload '{ "key": "value" }'</code>.
-        /// You can also specify a file path. For example, <code>--payload file://payload.json</code>.
+        /// You can enter the JSON directly. For example, <c>--payload '{ "key": "value" }'</c>.
+        /// You can also specify a file path. For example, <c>--payload file://payload.json</c>.
         /// </para>
         /// </summary>
         public MemoryStream? PayloadStream { get; set; }

@@ -5,6 +5,7 @@ using System.Text;
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
     /// <summary>Update expression builder for DynamoDB</summary>
+    [System.Obsolete]
     public class DynamoDbUpdateExpressionBuilder
     {
         /// <summary>Set update expressions</summary>

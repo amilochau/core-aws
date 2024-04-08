@@ -10,6 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     {
         /// <summary>Append a string value</summary>
         /// <remarks>Trims the value</remarks>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, string? value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -20,6 +21,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append a GUID value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Guid? value)
         {
             if (value == null)
@@ -31,6 +33,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an enumerable value of strings</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<string>? value, bool preserveOrder = false)
         {
             if (value == null)
@@ -53,6 +56,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append a boolean value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, bool? value)
         {
             if (!value.HasValue || !value.Value)
@@ -63,6 +67,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append a double value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, double? value)
         {
             if (!value.HasValue)
@@ -73,6 +78,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an enumerable value of doubles</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<double?>? value)
         {
             if (value == null)
@@ -88,18 +94,21 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append a long value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, long value)
         {
             return attributes.Append(new(key, new AttributeValue { N = $"{value}" }));
         }
 
         /// <summary>Append a long value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, decimal value)
         {
             return attributes.Append(new(key, new AttributeValue { N = $"{value}" }));
         }
 
         /// <summary>Append an enum value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEnum>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, TEnum value)
             where TEnum : Enum
         {
@@ -108,6 +117,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an enum value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEnum>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, TEnum? value)
             where TEnum : struct, Enum
         {
@@ -120,12 +130,14 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append a date time offset value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, DateTimeOffset value)
         {
             return attributes.Append(new(key, new AttributeValue { N = $"{value.ToUnixTimeSeconds()}" }));
         }
 
         /// <summary>Append a date time offset value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, DateTimeOffset? value)
         {
             if (value == null)
@@ -136,6 +148,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an object value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEntity>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IDynamoDbEntity<TEntity>? value)
             where TEntity: IDynamoDbEntity<TEntity>
         {
@@ -143,6 +156,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an object value</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, Dictionary<string, AttributeValue>? value)
         {
             if (value == null || value.Count == 0)
@@ -153,6 +167,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an enumerable value of objects</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append<TEntity>(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<TEntity>? value)
             where TEntity : IDynamoDbEntity<TEntity>
         {
@@ -164,6 +179,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         }
 
         /// <summary>Append an enumerable value of objects</summary>
+        [Obsolete]
         public static IEnumerable<KeyValuePair<string, AttributeValue>> Append(this IEnumerable<KeyValuePair<string, AttributeValue>> attributes, string key, IEnumerable<Dictionary<string, AttributeValue>>? value)
         {
             if (value == null || !value.Any())

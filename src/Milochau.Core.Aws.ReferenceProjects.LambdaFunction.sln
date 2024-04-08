@@ -32,6 +32,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SNS", "Libraries\Milochau.Core.Aws.SNS\Milochau.Core.Aws.SNS.csproj", "{81DEB473-14A7-4A83-94F8-A62CFF446985}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Abstractions", "Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj", "{70782D05-6FF4-49A0-9BFF-516E7F92C9A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Generator", "Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj", "{132BB716-7147-449B-97DD-BF69D5066AFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +82,14 @@ Global
 		{81DEB473-14A7-4A83-94F8-A62CFF446985}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DEB473-14A7-4A83-94F8-A62CFF446985}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DEB473-14A7-4A83-94F8-A62CFF446985}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70782D05-6FF4-49A0-9BFF-516E7F92C9A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70782D05-6FF4-49A0-9BFF-516E7F92C9A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70782D05-6FF4-49A0-9BFF-516E7F92C9A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70782D05-6FF4-49A0-9BFF-516E7F92C9A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132BB716-7147-449B-97DD-BF69D5066AFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132BB716-7147-449B-97DD-BF69D5066AFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132BB716-7147-449B-97DD-BF69D5066AFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132BB716-7147-449B-97DD-BF69D5066AFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +105,8 @@ Global
 		{5B7486D1-1593-4364-B2F1-B2622D2863BA} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{C4792CE5-6B2E-4242-B121-E9999AF6DB19} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{81DEB473-14A7-4A83-94F8-A62CFF446985} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{70782D05-6FF4-49A0-9BFF-516E7F92C9A0} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{132BB716-7147-449B-97DD-BF69D5066AFC} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}

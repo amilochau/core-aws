@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.Cognito
     /// </para>
     ///  
     /// <para>
-    /// You can also start reading about the <code>CognitoIdentityProvider</code> client in
+    /// You can also start reading about the <c>CognitoIdentityProvider</c> client in
     /// the following SDK guides.
     /// </para>
     ///  <ul> <li> 
@@ -138,7 +138,7 @@ namespace Milochau.Core.Aws.Cognito
         /// </para>
         ///  
         /// <para>
-        /// For custom attributes, you must prepend the <code>custom:</code> prefix to the attribute
+        /// For custom attributes, you must prepend the <c>custom:</c> prefix to the attribute
         /// name.
         /// </para>
         ///  
@@ -210,7 +210,7 @@ namespace Milochau.Core.Aws.Cognito
         /// 
         /// <returns>The response from the GetUser service method, as returned by CognitoIdentityProvider.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
-        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken)
         {
             var options = new InvokeOptions
             {
@@ -227,7 +227,7 @@ namespace Milochau.Core.Aws.Cognito
 
         /// <summary>
         /// Initiates sign-in for a user in the Amazon Cognito user directory. You can't sign
-        /// in a user with a federated IdP with <code>InitiateAuth</code>. For more information,
+        /// in a user with a federated IdP with <c>InitiateAuth</c>. For more information,
         /// see <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html">
         /// Adding user pool sign-in through a third party</a>.
         /// 

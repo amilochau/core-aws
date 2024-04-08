@@ -4,8 +4,6 @@ using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Web;
 
 namespace Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations
