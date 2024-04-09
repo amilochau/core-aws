@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+﻿using Milochau.Core.Aws.Core.Helpers;
+using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System;
 using System.Collections.Generic;
@@ -20,57 +21,30 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// </summary>
     public class AttributeValue
     {
-        /// <summary>
-        /// B
-        /// <para>
-        /// An attribute of type Binary. For example:
-        /// </para>
-        /// <code>"B": "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk"</code>
-        /// </summary>
-        public MemoryStream? B { get; set; }
+        private bool? @bool;
+        private List<AttributeValue>? l;
+        private Dictionary<string, AttributeValue>? m;
+        private List<string>? ns;
+        private string? s;
+        private List<string>? ss;
 
         /// <summary>
-        /// BOOL
-        /// <para>
-        /// An attribute of type Boolean. For example:
-        /// </para>
-        /// <code>"BOOL": true</code>
+        /// <para>An attribute of type Boolean. For example: <c>"BOOL": true</c></para>
         /// </summary>
-        public bool? BOOL { get; set; }
+        public bool? BOOL { get => @bool; set => @bool = value.HasValue && value.Value ? value : null; }
 
         /// <summary>
-        /// BS
-        /// <para>
-        /// An attribute of type Binary Set. For example:
-        /// </para>
-        /// <code>"BS": ["U3Vubnk=", "UmFpbnk=", "U25vd3k="]</code>
+        /// <para>An attribute of type List. For example: <c>"L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N": "3.14159"}]</c></para>
         /// </summary>
-        public List<MemoryStream>? BS { get; set; }
+        public List<AttributeValue>? L { get => l; set => l = value?.Where(x => x.IsSet())?.NullIfEmpty()?.ToList(); }
 
         /// <summary>
-        /// L
-        /// <para>
-        /// An attribute of type List. For example:
-        /// </para>
-        /// <code>"L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N": "3.14159"}]</code> 
+        /// <para>An attribute of type Map. For example: <c>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</c></para>
         /// </summary>
-        public List<AttributeValue>? L { get; set; }
+        public Dictionary<string, AttributeValue>? M { get => m; set => m = value.NullIfEmpty(); }
 
         /// <summary>
-        /// M
-        /// <para>
-        /// An attribute of type Map. For example:
-        /// </para>
-        /// <code>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</code> 
-        /// </summary>
-        public Dictionary<string, AttributeValue>? M { get; set; }
-
-        /// <summary>
-        /// N
-        /// <para>
-        /// An attribute of type Number. For example:
-        /// </para>
-        /// <code>"N": "123.45"</code> 
+        /// <para>An attribute of type Number. For example: <c>"N": "123.45"</c></para>
         /// <para>
         /// Numbers are sent across the network to DynamoDB as strings, to maximize compatibility
         /// across languages and libraries. However, DynamoDB treats them as number type attributes
@@ -80,45 +54,24 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public string? N { get; set; }
 
         /// <summary>
-        /// NS
-        /// <para>
-        /// An attribute of type Number Set. For example:
-        /// </para>
-        /// <code>"NS": ["42.2", "-19", "7.5", "3.14"]</code> 
+        /// <para>An attribute of type Number Set. For example: <c>"NS": ["42.2", "-19", "7.5", "3.14"]</c></para>
         /// <para>
         /// Numbers are sent across the network to DynamoDB as strings, to maximize compatibility
         /// across languages and libraries. However, DynamoDB treats them as number type attributes
         /// for mathematical operations.
         /// </para>
         /// </summary>
-        public List<string>? NS { get; set; }
+        public List<string>? NS { get => ns; set => ns = value?.NullIfEmpty(); }
 
         /// <summary>
-        /// Gets and sets the property NULL. 
-        /// <para>
-        /// An attribute of type Null. For example:
-        /// </para>
-        /// <code>"NULL": true</code> 
+        /// <para>An attribute of type String. For example: <c>"S": "Hello"</c></para>
         /// </summary>
-        public bool? NULL { get; set; }
+        public string? S { get => s; set => s = !string.IsNullOrWhiteSpace(value) ? value.Trim() : null; }
 
         /// <summary>
-        /// S
-        /// <para>
-        /// An attribute of type String. For example:
-        /// </para>
-        /// <code>"S": "Hello"</code>
+        /// <para>An attribute of type String Set. For example: <c>"SS": ["Giraffe", "Hippo" ,"Zebra"]</c></para>
         /// </summary>
-        public string? S { get; set; }
-
-        /// <summary>
-        /// SS
-        /// <para>
-        /// An attribute of type String Set. For example:
-        /// </para>
-        /// <code>"SS": ["Giraffe", "Hippo" ,"Zebra"]</code>
-        /// </summary>
-        public List<string>? SS { get; set; }
+        public List<string>? SS { get => ss; set => ss = value.NullIfEmpty(); }
 
 
         /// <summary>Implicit conversion within <see cref="S"/></summary>
@@ -166,16 +119,16 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue() { }
 
         /// <summary>Constructor</summary>
-        public AttributeValue(string? value) => S = value?.Trim();
+        public AttributeValue(string? value) => S = value;
 
         /// <summary>Constructor</summary>
         public AttributeValue(Guid? value) => S = value?.ToString("N");
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<string>? value) => L = value?.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => new AttributeValue(x)).ToList();
+        public AttributeValue(IEnumerable<string>? value) => L = value?.Where(x => !string.IsNullOrEmpty(x)).Select(x => new AttributeValue(x)).ToList();
 
         /// <summary>Constructor</summary>
-        public AttributeValue(bool? value) => BOOL = value.HasValue && value.Value ? true : null;
+        public AttributeValue(bool? value) => BOOL = value;
 
         /// <summary>Constructor</summary>
         public AttributeValue(double? value) => N = value != null ? $"{value.Value}" : null;
@@ -199,15 +152,15 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(IDynamoDbFormattableEntity? value) : this(value?.FormatForDynamoDb()) { }
 
         /// <summary>Constructor</summary>
-        public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value == null || value.Count == 0 ? null : value;
+        public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value;
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary(a => a.Key, a => a.Value))).ToList();
+        public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value?.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary()))?.ToList();
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value == null || !value.Any() ? null : value.Select(x => new AttributeValue(x)).ToList();
+        public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value?.Select(x => new AttributeValue(x))?.ToList();
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<AttributeValue>? value) => L = value == null || !value.Any() ? null : value.ToList();
+        public AttributeValue(IEnumerable<AttributeValue>? value) => L = value?.ToList();
     }
 }

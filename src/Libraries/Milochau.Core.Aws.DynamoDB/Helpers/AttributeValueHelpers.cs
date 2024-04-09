@@ -7,17 +7,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     {
         public static bool IsSet(this AttributeValue attributeValue)
         {
-            if (attributeValue.B != null)
-            {
-                return true;
-            }
-
             if (attributeValue.BOOL != null && attributeValue.BOOL.Value)
-            {
-                return true;
-            }
-
-            if (attributeValue.BS != null && attributeValue.BS.Count > 0 && attributeValue.BS.Any(x => x != null))
             {
                 return true;
             }
@@ -38,11 +28,6 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             }
 
             if (attributeValue.NS != null && attributeValue.NS.Count > 0 && attributeValue.NS.Any(x => !string.IsNullOrWhiteSpace(x)))
-            {
-                return true;
-            }
-
-            if (attributeValue.NULL != null && attributeValue.NULL.Value)
             {
                 return true;
             }

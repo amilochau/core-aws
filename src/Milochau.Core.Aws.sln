@@ -40,9 +40,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.Cognito",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.SNS", "Libraries\Milochau.Core.Aws.SNS\Milochau.Core.Aws.SNS.csproj", "{8F13ED95-7DF0-44A1-813C-4D3113DD1C20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milochau.Core.Aws.DynamoDB.Abstractions", "Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj", "{FF15F47A-341A-4AA6-ACC8-89256058F669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Abstractions", "Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj", "{FF15F47A-341A-4AA6-ACC8-89256058F669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milochau.Core.Aws.DynamoDB.Generator", "Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj", "{C8749B51-5672-4944-89FB-D551E6F34CBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Generator", "Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj", "{C8749B51-5672-4944-89FB-D551E6F34CBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Tests", "Libraries\Milochau.Core.Aws.DynamoDB.Tests\Milochau.Core.Aws.DynamoDB.Tests.csproj", "{42FA1763-3278-4577-9BF0-A34FB323D365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +108,10 @@ Global
 		{C8749B51-5672-4944-89FB-D551E6F34CBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8749B51-5672-4944-89FB-D551E6F34CBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8749B51-5672-4944-89FB-D551E6F34CBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FA1763-3278-4577-9BF0-A34FB323D365}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FA1763-3278-4577-9BF0-A34FB323D365}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FA1763-3278-4577-9BF0-A34FB323D365}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FA1763-3278-4577-9BF0-A34FB323D365}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +132,7 @@ Global
 		{8F13ED95-7DF0-44A1-813C-4D3113DD1C20} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{FF15F47A-341A-4AA6-ACC8-89256058F669} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{C8749B51-5672-4944-89FB-D551E6F34CBF} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
+		{42FA1763-3278-4577-9BF0-A34FB323D365} = {21DD2CF3-EFB0-4867-BE50-FD873F3C0D27}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}
