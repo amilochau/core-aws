@@ -128,7 +128,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             (string? tableNameSuffix, string? indexName) = GetClassSettings(dynamoDbTableAttribute, classType);
             var dynamoDbAttributes = GetClassProperties(typeSymbol);
 
-            return new DynamoDbClassToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, classType, dynamoDbAttributes, diagnostics); ;
+            return new DynamoDbClassToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, classType, dynamoDbAttributes, diagnostics);
         }
 
         private static AttributeType GetAttributeType(string typeName)
