@@ -44,6 +44,9 @@ namespace Milochau.Core.Aws.DynamoDB.Abstractions
     {
         /// <summary>Attribute key</summary>
         public string Key { get; } = key;
+
+        /// <summary>Use default initializer in case of missing key from DynamoDB</summary>
+        public bool UseDefaultInitializer { get; set; } = false;
     }
 
     /// <summary>Attribute used to generate code for a DynamoDB Partition Key attribute</summary>

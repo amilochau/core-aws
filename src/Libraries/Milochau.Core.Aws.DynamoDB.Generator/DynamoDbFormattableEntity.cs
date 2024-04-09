@@ -199,6 +199,10 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 var attributeKey = memberAttribute.ConstructorArguments[0].Value!.ToString();
                 var attributeType = GetAttributeType(type);
                 var isNullable = propertyMemberNamedType.NullableAnnotation == NullableAnnotation.Annotated;
+                if (!bool.TryParse(memberAttribute.NamedArguments.SingleOrDefault(x => x.Key == SourceGenerationHelper.DynamoDbAttributeAttribute_UseDefaultInitializer).Value.Value?.ToString(), out bool useDefaultInitializer))
+                {
+                    useDefaultInitializer = false;
+                }
                 var isList = false;
                 var isDictionary = false;
 
@@ -228,7 +232,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     }
                 }
 
-                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, attributeCategory, isNullable, isList, isDictionary));
+                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, attributeCategory, isNullable, useDefaultInitializer, isList, isDictionary));
             }
             return dynamoDbAttributes;
         }

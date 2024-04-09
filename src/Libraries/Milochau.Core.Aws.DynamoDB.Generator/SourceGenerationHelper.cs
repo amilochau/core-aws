@@ -20,6 +20,8 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         public const string DynamoDbAttributeAttributeName_PartitionKey = nameof(DynamoDbPartitionKeyAttributeAttribute);
         public const string DynamoDbAttributeAttributeName_SortKey = nameof(DynamoDbSortKeyAttributeAttribute);
 
+        public const string DynamoDbAttributeAttribute_UseDefaultInitializer = "UseDefaultInitializer";
+
         private static string? GetFormatLine(DynamoDbAttributeToGenerate attribute)
         {
             if (attribute.IsDictionary)
@@ -112,7 +114,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             {
                 return attribute.AttributeType switch
                 {
-                    AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.S!)).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
+                    AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.S ?? string.Empty)).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, System.Guid>(x.Key, System.Guid.Parse(x.Value.S!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, int>(x.Key, int.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.Select(x => new KeyValuePair<string, long>(x.Key, long.Parse(x.Value.N!))).ToDictionary()" + (attribute.IsNullable ? "" : " ?? []"),
@@ -129,7 +131,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             {
                 return attribute.AttributeType switch
                 {
-                    AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.S!)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                    AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.S ?? string.Empty)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Guid.Parse(x.S!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => int.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
                     AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => long.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
@@ -147,7 +149,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 return attribute.AttributeType switch
                 {
                     AttributeType.String when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.S",
-                    AttributeType.String when !attribute.IsNullable => $"{attribute.Name} = attributes[\"{attribute.Key}\"].S!",
+                    AttributeType.String when !attribute.IsNullable => $"{attribute.Name} = attributes[\"{attribute.Key}\"].S ?? string.Empty",
                     AttributeType.Guid when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.S?.ApplyOrDefault(System.Guid.Parse)",
                     AttributeType.Guid when !attribute.IsNullable => $"{attribute.Name} = System.Guid.Parse(attributes[\"{attribute.Key}\"].S!)",
                     AttributeType.Int when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(int.Parse)",
@@ -163,8 +165,12 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     AttributeType.DateTimeOffset when !attribute.IsNullable => $"{attribute.Name} = DateTimeOffset.FromUnixTimeSeconds(long.Parse(attributes[\"{attribute.Key}\"].N!))",
                     AttributeType.Enum when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(System.Enum.Parse<{attribute.Type}>)",
                     AttributeType.Enum when !attribute.IsNullable => $"{attribute.Name} = System.Enum.Parse<{attribute.Type}>(attributes[\"{attribute.Key}\"].N!)",
-                    AttributeType.Object when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.ApplyOrDefault({attribute.Type}.ParseFromDynamoDb)",
-                    AttributeType.Object when !attribute.IsNullable => $"{attribute.Name} = {attribute.Type}.ParseFromDynamoDb(attributes[\"{attribute.Key}\"].M!)",
+                    AttributeType.Object when attribute.IsNullable
+                        => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.ApplyOrDefault({attribute.Type}.ParseFromDynamoDb)",
+                    AttributeType.Object when !attribute.IsNullable && attribute.UseDefaultInitializer
+                        => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.M?.ApplyOrDefault({attribute.Type}.ParseFromDynamoDb) ?? new()",
+                    AttributeType.Object when !attribute.IsNullable && !attribute.UseDefaultInitializer
+                        => $"{attribute.Name} = {attribute.Type}.ParseFromDynamoDb(attributes[\"{attribute.Key}\"].M!)",
                     _ => $"// Missing: {attribute.Name}",
                 };
             }
@@ -199,15 +205,18 @@ using System.Linq;
 namespace {dynamoDbClassToGenerate.Namespace}
 {{
     public partial class {dynamoDbClassToGenerate.Class}{(interfaces != null ? $" : {interfaces}" : "")}
-    {{
-");
+    {{");
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.TableNameSuffix))
             {
-                stringBuilder.AppendLine($@"        public static string TableName {{ get; }} = $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
+                stringBuilder.AppendLine($@"
+        /// <summary>Table name (ending with <c>{dynamoDbClassToGenerate.TableNameSuffix}</c>)</summary>
+        public static string TableName {{ get; }} = $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
             }
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName))
             {
-                stringBuilder.AppendLine($@"        public static string IndexName {{ get; }} = $""{dynamoDbClassToGenerate.IndexName}"";");
+                stringBuilder.AppendLine($@"
+        /// <summary>Index name (as <c>{dynamoDbClassToGenerate.IndexName}</c>)</summary>
+        public static string IndexName {{ get; }} = $""{dynamoDbClassToGenerate.IndexName}"";");
             }
 
             // Projection helpers
@@ -215,7 +224,9 @@ namespace {dynamoDbClassToGenerate.Namespace}
             {
                 var projectedAttributes = dynamoDbClassToGenerate.DynamoDbAttributes.Aggregate("", (acc, newItem) => acc + ", " + $"\"{newItem}\"") ?? "";
 
-                stringBuilder.AppendLine($@"        public static IEnumerable<string>? ProjectedAttributes {{ get; }} = [{projectedAttributes}];");
+                stringBuilder.AppendLine($@"
+        /// <summary>Projected attributes</summary>
+        public static IEnumerable<string>? ProjectedAttributes {{ get; }} = [{projectedAttributes}];");
             }
 
             // Partition and Sort key helpers
@@ -224,24 +235,32 @@ namespace {dynamoDbClassToGenerate.Namespace}
                 var partitionKey = dynamoDbClassToGenerate.DynamoDbAttributes.FirstOrDefault(x => x.AttributeCategory == AttributeCategory.Partition);
                 if (partitionKey != default)
                 {
-                    stringBuilder.AppendLine($@"        public static string PartitionKey {{ get; }} = ""{partitionKey.Key}"";");
+                    stringBuilder.AppendLine($@"
+        /// <summary>Partition key (as <c>{partitionKey.Key}</c>)</summary>
+        public static string PartitionKey {{ get; }} = ""{partitionKey.Key}"";");
                 }
                 var sortKey = dynamoDbClassToGenerate.DynamoDbAttributes.FirstOrDefault(x => x.AttributeCategory == AttributeCategory.Sort);
                 if (sortKey != default)
                 {
-                    stringBuilder.AppendLine($@"        public static string? SortKey {{ get; }} = ""{sortKey.Key}"";");
+                    stringBuilder.AppendLine($@"
+        /// <summary>Sort key (as <c>{sortKey.Key}</c>)</summary>
+        public static string? SortKey {{ get; }} = ""{sortKey.Key}"";");
                 }
             }
 
             // Attribute key constants
-            stringBuilder.AppendLine($@"
+            stringBuilder.Append($@"
+        /// <summary>Attribute keys</summary>
         public static class Keys
         {{");
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
             {
-                stringBuilder.AppendLine($@"            public const string {attribute.Name} = ""{attribute.Key}"";");
+                stringBuilder.Append($@"
+            /// <summary>Key for <c>{attribute.Name}</c> (as <c>{attribute.Key}</c>)</summary>
+            public const string {attribute.Name} = ""{attribute.Key}"";");
             }
-            stringBuilder.AppendLine($@"        }}
+            stringBuilder.AppendLine($@"
+        }}
 ");
 
             foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
@@ -253,6 +272,7 @@ namespace {dynamoDbClassToGenerate.Namespace}
             if (dynamoDbClassToGenerate.Type == ClassType.Table || dynamoDbClassToGenerate.Type == ClassType.Nested)
             {
                 stringBuilder.Append($@"
+        /// <summary>Format entity for DynamoDB, written as a dictionary of <see cref=""AttributeValue""/></summary>
         public Dictionary<string, AttributeValue> FormatForDynamoDb()
         {{
             return new Dictionary<string, AttributeValue>()
@@ -267,6 +287,7 @@ namespace {dynamoDbClassToGenerate.Namespace}
             }
 
             stringBuilder.Append($@"
+        /// <summary>Parse entity from DynamoDB, read from a dictionary of <see cref=""AttributeValue""/></summary>
         public static {dynamoDbClassToGenerate.Class} ParseFromDynamoDb(Dictionary<string, AttributeValue> attributes)
         {{
             return new {dynamoDbClassToGenerate.Class}
