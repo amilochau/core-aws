@@ -4,6 +4,7 @@ using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model;
 using Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +31,28 @@ namespace Milochau.Core.Aws.DynamoDB
         #endregion
 
         #region  BatchWriteItem
+
+        /// <inheritdoc/>
+        public async Task<List<BatchWriteItemResponse<TEntity>>> BatchWriteItemAsync<TEntity>(BatchWriteItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbBatchWritableEntity<TEntity>
+        {
+            var response = new List<BatchWriteItemResponse<TEntity>>();
+
+            foreach (var singleRequest in request.Build())
+            {
+                try
+                {
+                    var singleResponse = await BatchWriteItemAsync(singleRequest, cancellationToken);
+                    response.Add(new BatchWriteItemResponse<TEntity>(singleResponse));
+                }
+                catch (System.Exception)
+                {
+                    // Continue
+                }
+            }
+
+            return response;
+        }
 
         /// <inheritdoc/>
         public Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken)

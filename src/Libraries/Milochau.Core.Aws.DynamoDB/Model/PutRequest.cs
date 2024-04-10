@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -8,7 +9,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class PutRequest
     {
         /// <summary>
-        /// Gets and sets the property Item. 
+        /// Item
         /// <para>
         /// A map of attribute name to attribute values, representing the primary key of an item
         /// to be processed by <c>PutItem</c>. All of the table's primary key attributes
@@ -18,5 +19,24 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, AttributeValue>? Item { get; set; }
+    }
+
+    /// <inheritdoc cref="PutRequest"/>
+    public class PutRequest<TEntity> : WriteRequest<TEntity>
+        where TEntity : IDynamoDbFormattableEntity
+    {
+        /// <summary>Entity to put</summary>
+        public required TEntity Entity { get; set; }
+
+        internal override WriteRequest Build()
+        {
+            return new WriteRequest
+            {
+                PutRequest = new PutRequest
+                {
+                    Item = Entity.FormatForDynamoDb(),
+                },
+            };
+        }
     }
 }

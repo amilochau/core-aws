@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Milochau.Core.Aws.DynamoDB.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -8,7 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class BatchWriteItemResponse : AmazonDynamoDBResponse
     {
         /// <summary>
-        /// Gets and sets the property ItemCollectionMetrics. 
+        /// ItemCollectionMetrics
         /// <para>
         /// A list of tables that were processed by <c>BatchWriteItem</c> and, for each
         /// table, information about any item collections that were affected by individual <c>DeleteItem</c>
@@ -42,7 +44,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, List<ItemCollectionMetrics>>? ItemCollectionMetrics { get; set; }
 
         /// <summary>
-        /// Gets and sets the property UnprocessedItems. 
+        /// UnprocessedItems
         /// <para>
         /// A map of tables and requests against those tables that were not processed. The <c>UnprocessedItems</c>
         /// value is in the same form as <c>RequestItems</c>, so you can provide this value
@@ -89,5 +91,49 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public Dictionary<string, List<WriteRequest>>? UnprocessedItems { get; set; }
+    }
+
+    /// <inheritdoc/>
+    public class BatchWriteItemResponse<TEntity> : BatchWriteItemResponse
+        where TEntity : class, IDynamoDbBatchWritableEntity<TEntity>
+    {
+        /// <inheritdoc/>
+        public BatchWriteItemResponse(BatchWriteItemResponse response)
+        {
+            ConsumedCapacity = response.ConsumedCapacity;
+            HttpStatusCode = response.HttpStatusCode;
+            ResponseMetadata = response.ResponseMetadata;
+
+            ItemCollectionMetrics = response.ItemCollectionMetrics;
+            UnprocessedItems = response.UnprocessedItems;
+
+            if (response.UnprocessedItems != null)
+            {
+                UnprocessedPutRequests = response.UnprocessedItems[TEntity.TableName]
+                    .Select(x => x.PutRequest?.Item != null ? TEntity.ParseFromDynamoDb(x.PutRequest.Item) : null)
+                    .Where(x => x != null)
+                    .Select(x => new PutRequest<TEntity>
+                    {
+                        Entity = x!,
+                    })
+                    .ToList();
+
+                UnprocessedDeleteRequests = response.UnprocessedItems[TEntity.TableName]
+                    .Select(x => x.DeleteRequest?.Key)
+                    .Where(x => x != null)
+                    .Select(x => new DeleteRequest<TEntity>
+                    {
+                        PartitionKey = x![TEntity.PartitionKey],
+                        SortKey = x!.GetValueOrDefault(TEntity.SortKey),
+                    })
+                    .ToList();
+            }
+        }
+
+        /// <summary>Unprocessed Put requests</summary>
+        public List<PutRequest<TEntity>>? UnprocessedPutRequests { get; set; }
+
+        /// <summary>Unprocessed Delete requests</summary>
+        public List<DeleteRequest<TEntity>>? UnprocessedDeleteRequests { get; set; }
     }
 }

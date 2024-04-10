@@ -20,4 +20,18 @@
     <ProjectReference Include="..\Milochau.Core.Aws.DynamoDB\Milochau.Core.Aws.DynamoDB.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Reference the source generator project -->
+    <!-- Don't reference the generator dll -->
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+
+    <!-- Reference the abstractions project "treat as an analyzer"-->
+    <!-- We DO reference the attributes dll -->
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="true" />
+  </ItemGroup>
+  
 </Project>

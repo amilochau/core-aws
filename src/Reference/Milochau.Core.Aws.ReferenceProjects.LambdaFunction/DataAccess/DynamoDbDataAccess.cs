@@ -27,20 +27,22 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
         public async Task GetTestItemAsync(CancellationToken cancellationToken)
         {
-
             var newMapId = Guid.NewGuid();
+
+            var entity = new Map
+            {
+                Id = newMapId,
+                Creation = DateTimeOffset.Now,
+                Information = new MapInformationSettings
+                {
+                    Name = "TO DELETE - map from test in Milochau.Core.Aws",
+                }
+            };
+
             var putResponse = await amazonDynamoDB.PutItemAsync(new PutItemRequest<Map>
             {
                 UserId = null,
-                Entity = new Map
-                {
-                    Id = newMapId,
-                    Creation = DateTimeOffset.Now,
-                    Information = new MapInformationSettings
-                    {
-                        Name = "TO DELETE - map from test in Milochau.Core.Aws",
-                    }
-                },
+                Entity = entity,
             }, cancellationToken);
 
             var getItemResponse = await amazonDynamoDB.GetItemAsync(new GetItemRequest<Map>
@@ -100,6 +102,29 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 PartitionKey = newMapId,
                 SortKey = null,
                 ReturnValues = ReturnValue.ALL_OLD,
+            }, cancellationToken);
+
+            var batchResponse = await amazonDynamoDB.BatchWriteItemAsync(new BatchWriteItemRequest<Map>
+            {
+                UserId = null,
+                RequestEntities = [
+                    new PutRequest<Map>
+                    {
+                        Entity = entity,
+                    }
+                ]
+            }, cancellationToken);
+
+            var batchResponse2 = await amazonDynamoDB.BatchWriteItemAsync(new BatchWriteItemRequest<Map>
+            {
+                UserId = null,
+                RequestEntities = [
+                    new DeleteRequest<Map>
+                    {
+                        PartitionKey = entity.Id,
+                        SortKey = null,
+                    }
+                ]
             }, cancellationToken);
         }
     }

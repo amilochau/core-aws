@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.DynamoDB.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Milochau.Core.Aws.DynamoDB.Model
 {
@@ -13,14 +16,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     /// for the API call. For more details on this distinction, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html">Naming
     /// Rules and Data Types</a>.
     /// 
-    ///  <note> 
     /// <para>
     ///  <c>BatchWriteItem</c> cannot update items. If you perform a <c>BatchWriteItem</c>
     /// operation on an existing item, that item's values will be overwritten by the operation
     /// and it will appear like it was updated. To update items, we recommend you use the
     /// <c>UpdateItem</c> action.
     /// </para>
-    ///  </note> 
     /// <para>
     /// The individual <c>PutItem</c> and <c>DeleteItem</c> operations specified
     /// in <c>BatchWriteItem</c> are atomic; however <c>BatchWriteItem</c> as
@@ -115,7 +116,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class BatchWriteItemRequest(Guid? userId) : AmazonDynamoDBRequest(userId)
     {
         /// <summary>
-        /// Gets and sets the property RequestItems. 
+        /// RequestItems
         /// <para>
         /// A map of one or more table names and, for each table, a list of operations to be performed
         /// (<c>DeleteRequest</c> or <c>PutRequest</c>). Each element in the map consists
@@ -158,7 +159,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, List<WriteRequest>>? RequestItems { get; set; }
 
         /// <summary>
-        /// Gets and sets the property ReturnItemCollectionMetrics. 
+        /// ReturnItemCollectionMetrics
         /// <para>
         /// Determines whether item collection metrics are returned. If set to <c>SIZE</c>,
         /// the response includes statistics about item collections, if any, that were modified
@@ -167,5 +168,46 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
+    }
+
+    /// <inheritdoc cref="BatchWriteItemRequest"/>
+    public class BatchWriteItemRequest<TEntity>
+        where TEntity : class, IDynamoDbBatchWritableEntity<TEntity>
+    {
+        /// <inheritdoc cref="AmazonWebServiceRequest.UserId"/>
+        public required Guid? UserId { get; set; }
+
+        /// <inheritdoc cref="AmazonDynamoDBRequest.ReturnConsumedCapacity"/>
+        public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
+
+
+        /// <summary>Request entities</summary>
+        public required List<WriteRequest<TEntity>> RequestEntities { get; set; }
+
+
+        /// <inheritdoc cref="BatchWriteItemRequest.ReturnItemCollectionMetrics"/>
+        public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
+
+        internal IEnumerable<BatchWriteItemRequest> Build()
+        {
+            var requests = RequestEntities.Select(x => x.Build()).ToList();
+            var maxBatchItems = 25;
+
+            for (var i = 0; i < requests.Count; i += maxBatchItems)
+            {
+                var items = requests.Skip(i).Take(maxBatchItems).ToList();
+                var requestItems = new Dictionary<string, List<WriteRequest>>
+                {
+                    [TEntity.TableName] = items,
+                };
+
+                yield return new BatchWriteItemRequest(UserId)
+                {
+                    ReturnConsumedCapacity = ReturnConsumedCapacity,
+                    ReturnItemCollectionMetrics = ReturnItemCollectionMetrics,
+                    RequestItems = requestItems,
+                };
+            }
+        }
     }
 }

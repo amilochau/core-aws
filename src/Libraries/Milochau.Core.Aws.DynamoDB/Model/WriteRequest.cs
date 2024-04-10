@@ -24,4 +24,10 @@
         /// </summary>
         public PutRequest? PutRequest { get; set; }
     }
+
+    /// <inheritdoc cref="WriteRequest"/>
+    public abstract class WriteRequest<TEntity>
+    {
+        internal abstract WriteRequest Build();
+    }
 }

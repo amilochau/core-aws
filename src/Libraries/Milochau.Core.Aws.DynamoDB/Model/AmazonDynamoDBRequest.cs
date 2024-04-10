@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class AmazonDynamoDBRequest(Guid? userId) : AmazonWebServiceRequest(userId)
     {
         /// <summary>
-        /// Gets and sets the property ReturnConsumedCapacity.
+        /// ReturnConsumedCapacity
         /// </summary>
         public ReturnConsumedCapacity? ReturnConsumedCapacity { get; set; }
     }

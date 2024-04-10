@@ -1,6 +1,7 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +33,10 @@ namespace Milochau.Core.Aws.DynamoDB
     /// </summary>
     public partial interface IAmazonDynamoDB
     {
-        // @todo Improve the following method with new, generic method
+        /// <inheritdoc cref="BatchWriteItemAsync(BatchWriteItemRequest, CancellationToken)"/>
+        Task<List<BatchWriteItemResponse<TEntity>>> BatchWriteItemAsync<TEntity>(BatchWriteItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity: class, IDynamoDbBatchWritableEntity<TEntity>;
+
         /// <summary>
         /// The <c>BatchWriteItem</c> operation puts or deletes multiple items in one or
         /// more tables. A single call to <c>BatchWriteItem</c> can transmit up to 16MB
@@ -135,6 +139,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the BatchWriteItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/BatchWriteItem">REST API Reference for BatchWriteItem Operation</seealso>
+        [Obsolete("Use generic method instead")]
         Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken);
 
 

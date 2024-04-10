@@ -91,4 +91,18 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         /// <summary>Sort key</summary>
         static virtual string? SortKey { get; } = null;
     }
+
+    /// <summary>DynamoDB batch writable entity</summary>
+    public interface IDynamoDbBatchWritableEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
+        where TEntity : IDynamoDbBatchWritableEntity<TEntity>
+    {
+        /// <summary>Name of the DynamoDB table</summary>
+        static abstract string TableName { get; }
+
+        /// <summary>Partition key</summary>
+        static abstract string PartitionKey { get; }
+
+        /// <summary>Sort key</summary>
+        static virtual string? SortKey { get; } = null;
+    }
 }

@@ -181,7 +181,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             var c = dynamoDbClassToGenerate.Class;
             return dynamoDbClassToGenerate.Type switch
             {
-                ClassType.Table => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>, IDynamoDbPutableEntity<{c}>, IDynamoDbDeletableEntity<{c}>, IDynamoDbUpdatableEntity<{c}>",
+                ClassType.Table => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>, IDynamoDbPutableEntity<{c}>, IDynamoDbDeletableEntity<{c}>, IDynamoDbUpdatableEntity<{c}>, IDynamoDbBatchWritableEntity<{c}>",
                 ClassType.Index => $"IDynamoDbQueryableEntity<{c}>",
                 ClassType.Projection when string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>",
                 ClassType.Projection when !string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>",

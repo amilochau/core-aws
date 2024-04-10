@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class ItemCollectionMetrics
     {
         /// <summary>
-        /// Gets and sets the property ItemCollectionKey. 
+        /// ItemCollectionKey
         /// <para>
         /// The partition key value of the item collection. This value is the same as the partition
         /// key value of the item.
@@ -19,7 +19,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public Dictionary<string, AttributeValue>? ItemCollectionKey { get; set; }
 
         /// <summary>
-        /// Gets and sets the property SizeEstimateRangeGB. 
+        /// SizeEstimateRangeGB
         /// <para>
         /// An estimate of item collection size, in gigabytes. This value is a two-element array
         /// containing a lower bound and an upper bound for the estimate. The estimate includes

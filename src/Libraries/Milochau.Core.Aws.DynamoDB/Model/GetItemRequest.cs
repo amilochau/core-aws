@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.DynamoDB.Helpers;
-using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
