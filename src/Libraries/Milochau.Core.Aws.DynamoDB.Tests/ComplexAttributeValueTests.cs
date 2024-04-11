@@ -28,6 +28,7 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
                 Settings = new MapSettings
                 {
                     Tags = [],
+                    MoreTags = [],
                 },
             };
 
@@ -47,6 +48,10 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
                     [
                         new MapTag()
                     ],
+                    MoreTags = new Dictionary<string, MapTag>
+                    {
+                        ["aa"] = new MapTag(),
+                    },
                 },
             };
 
@@ -69,6 +74,13 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
                             Value = "  ",
                         },
                     ],
+                    MoreTags = new Dictionary<string, MapTag>
+                    {
+                        ["aa"] = new MapTag
+                        {
+                            Value = "  ",
+                        },
+                    },
                 },
             };
 
@@ -91,6 +103,13 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
                             Value = "tag",
                         },
                     ],
+                    MoreTags = new Dictionary<string, MapTag>
+                    {
+                        ["aa"] = new MapTag
+                        {
+                            Value = "tag",
+                        },
+                    },
                 },
             };
 
@@ -108,6 +127,9 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
 
         [DynamoDbAttribute("settings")]
         public MapSettings? Settings { get; set; }
+
+        [DynamoDbAttribute("empty")]
+        public Dictionary<string, MapTag>? MoreTags { get; set; }
     }
 
     [DynamoDbNested]
@@ -115,6 +137,9 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
     {
         [DynamoDbAttribute("tags")]
         public List<MapTag>? Tags { get; set; }
+
+        [DynamoDbAttribute("moretags")]
+        public Dictionary<string, MapTag>? MoreTags { get; set; }
     }
 
     [DynamoDbNested]

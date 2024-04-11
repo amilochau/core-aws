@@ -34,12 +34,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// <para>An attribute of type List. For example: <c>"L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"N": "3.14159"}]</c></para>
         /// </summary>
-        public List<AttributeValue>? L { get => l; set => l = value?.Where(x => x.IsSet())?.NullIfEmpty()?.ToList(); }
+        public List<AttributeValue>? L { get => l; set => l = value?.Sanitize()?.NullIfEmpty()?.ToList(); }
 
         /// <summary>
         /// <para>An attribute of type Map. For example: <c>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</c></para>
         /// </summary>
-        public Dictionary<string, AttributeValue>? M { get => m; set => m = value.NullIfEmpty(); }
+        public Dictionary<string, AttributeValue>? M { get => m; set => m = value?.Sanitize().NullIfEmpty(); }
 
         /// <summary>
         /// <para>An attribute of type Number. For example: <c>"N": "123.45"</c></para>
@@ -123,7 +123,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(Guid? value) => S = value?.ToString("N");
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<string>? value) => L = value?.Where(x => !string.IsNullOrEmpty(x)).Select(x => new AttributeValue(x)).ToList();
+        public AttributeValue(IEnumerable<string>? value) => L = value?.Select(x => new AttributeValue(x)).ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(bool? value) => BOOL = value;
@@ -153,7 +153,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(Dictionary<string, AttributeValue>? value) => M = value;
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value?.Select(x => new AttributeValue(x.FormatForDynamoDb().ToDictionary()))?.ToList();
+        public AttributeValue(IEnumerable<IDynamoDbFormattableEntity>? value) => L = value?.Select(x => new AttributeValue(x.FormatForDynamoDb()))?.ToList();
 
         /// <summary>Constructor</summary>
         public AttributeValue(IEnumerable<Dictionary<string, AttributeValue>>? value) => L = value?.Select(x => new AttributeValue(x))?.ToList();

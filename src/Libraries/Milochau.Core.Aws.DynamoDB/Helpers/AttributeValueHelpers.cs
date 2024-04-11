@@ -1,4 +1,5 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Model;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Milochau.Core.Aws.DynamoDB.Helpers
@@ -43,6 +44,16 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             }
 
             return false;
+        }
+
+        public static Dictionary<string, AttributeValue> Sanitize(this Dictionary<string, AttributeValue> dictionary)
+        {
+            return dictionary.Where(x => x.Value.IsSet()).ToDictionary();
+        }
+
+        public static List<AttributeValue> Sanitize(this List<AttributeValue> list)
+        {
+            return list.Where(x => x.IsSet()).ToList();
         }
     }
 }
