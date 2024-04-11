@@ -149,7 +149,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 return attribute.AttributeType switch
                 {
                     AttributeType.String when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.S",
-                    AttributeType.String when !attribute.IsNullable => $"{attribute.Name} = attributes[\"{attribute.Key}\"].S ?? string.Empty",
+                    AttributeType.String when !attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.S ?? string.Empty",
                     AttributeType.Guid when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.S?.ApplyOrDefault(System.Guid.Parse)",
                     AttributeType.Guid when !attribute.IsNullable => $"{attribute.Name} = System.Guid.Parse(attributes[\"{attribute.Key}\"].S!)",
                     AttributeType.Int when attribute.IsNullable => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.N?.ApplyOrDefault(int.Parse)",

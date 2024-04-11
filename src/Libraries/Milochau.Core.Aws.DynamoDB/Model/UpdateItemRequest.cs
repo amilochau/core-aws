@@ -398,7 +398,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
 
             if (TEntity.SortKey != null && SortKey != null && SortKey.IsSet())
             {
-                key.Add(new KeyValuePair<string, AttributeValue>(TEntity.SortKey, PartitionKey)); // Sort key
+                key.Add(new KeyValuePair<string, AttributeValue>(TEntity.SortKey, SortKey)); // Sort key
             }
 
             return new UpdateItemRequest(UserId)
