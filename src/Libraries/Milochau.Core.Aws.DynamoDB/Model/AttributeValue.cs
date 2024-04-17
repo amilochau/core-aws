@@ -39,7 +39,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// <para>An attribute of type Map. For example: <c>"M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}</c></para>
         /// </summary>
-        public Dictionary<string, AttributeValue>? M { get => m; set => m = value?.Sanitize().NullIfEmpty(); }
+        public Dictionary<string, AttributeValue>? M { get => m; set => m = value?.Sanitize()?.NullIfEmpty(); }
 
         /// <summary>
         /// <para>An attribute of type Number. For example: <c>"N": "123.45"</c></para>
@@ -69,7 +69,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>
         /// <para>An attribute of type String Set. For example: <c>"SS": ["Giraffe", "Hippo" ,"Zebra"]</c></para>
         /// </summary>
-        public List<string>? SS { get => ss; set => ss = value.NullIfEmpty(); }
+        public List<string>? SS { get => ss; set => ss = value?.NullIfEmpty(); }
 
 
         /// <summary>Implicit conversion within <see cref="S"/></summary>
@@ -78,9 +78,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>Implicit conversion within <see cref="S"/></summary>
         public static implicit operator AttributeValue(Guid? value) => new(value);
 
-        /// <summary>Implicit conversion within <see cref="L"/></summary>
-        public static implicit operator AttributeValue(List<string>? value) => new(value);
-
         /// <summary>Implicit conversion within <see cref="BOOL"/></summary>
         public static implicit operator AttributeValue(bool? value) => new(value);
 
@@ -88,13 +85,13 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public static implicit operator AttributeValue(double? value) => new(value);
 
         /// <summary>Implicit conversion within <see cref="N"/></summary>
+        public static implicit operator AttributeValue(int? value) => new(value);
+
+        /// <summary>Implicit conversion within <see cref="N"/></summary>
         public static implicit operator AttributeValue(long? value) => new(value);
 
         /// <summary>Implicit conversion within <see cref="N"/></summary>
         public static implicit operator AttributeValue(decimal? value) => new(value);
-
-        /// <summary>Implicit conversion within <see cref="NS"/></summary>
-        public static implicit operator AttributeValue(List<double?>? value) => new(value);
 
         /// <summary>Implicit conversion within <see cref="N"/></summary>
         public static implicit operator AttributeValue(Enum? value) => new(value);
@@ -110,8 +107,6 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// <summary>Implicit conversion within <see cref="L"/></summary>
         public static implicit operator AttributeValue(List<Dictionary<string, AttributeValue>>? value) => new(value);
 
-        // @todo Add more implicit operators here
-
 
         /// <summary>Constructor</summary>
         public AttributeValue() { }
@@ -123,13 +118,13 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(Guid? value) => S = value?.ToString("N");
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<string>? value) => L = value?.Select(x => new AttributeValue(x)).ToList();
-
-        /// <summary>Constructor</summary>
         public AttributeValue(bool? value) => BOOL = value;
 
         /// <summary>Constructor</summary>
         public AttributeValue(double? value) => N = value != null ? $"{value.Value}" : null;
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(int? value) => N = value != null ? $"{value.Value}" : null;
 
         /// <summary>Constructor</summary>
         public AttributeValue(long? value) => N = value != null ? $"{value.Value}" : null;
@@ -138,7 +133,82 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         public AttributeValue(decimal? value) => N = value != null ? $"{value.Value}" : null;
 
         /// <summary>Constructor</summary>
-        public AttributeValue(IEnumerable<double?>? value) => NS = value?.Where(x => x != null).Select(x => $"{x}").ToList();
+        public AttributeValue(IEnumerable<string>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                SS = value?.Select(x => x.Trim()).ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<Guid>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                SS = value?.Select(x => x.ToString("N")).ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<double>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                NS = value?.Select(x => $"{x}").ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<int>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                NS = value?.Select(x => $"{x}").ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<long>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                NS = value?.Select(x => $"{x}").ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
+
+        /// <summary>Constructor</summary>
+        public AttributeValue(IEnumerable<decimal>? value, bool useSet)
+        {
+            if (useSet)
+            {
+                NS = value?.Select(x => $"{x}").ToList();
+            }
+            else
+            {
+                L = value?.Select(x => new AttributeValue(x)).ToList();
+            }
+        }
 
         /// <summary>Constructor</summary>
         public AttributeValue(Enum? value) => N = value != null ? $"{Convert.ToInt32(value)}" : null;

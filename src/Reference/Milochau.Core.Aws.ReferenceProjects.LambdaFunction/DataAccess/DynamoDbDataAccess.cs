@@ -32,11 +32,13 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             var entity = new Map
             {
                 Id = newMapId,
+                /*
                 Creation = DateTimeOffset.Now,
                 Information = new MapInformationSettings
                 {
                     Name = "TO DELETE - map from test in Milochau.Core.Aws",
                 }
+                */
             };
 
             var putResponse = await amazonDynamoDB.PutItemAsync(new PutItemRequest<Map>
@@ -67,6 +69,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 Limit = 1,
             }, cancellationToken);
 
+            /*
             try
             {
                 var updateResponse = await amazonDynamoDB.UpdateItemAsync(new UpdateItemRequest<Map>
@@ -95,6 +98,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             catch (Exception)
             {
             }
+            */
 
             var deleteResponse = await amazonDynamoDB.DeleteItemAsync(new DeleteItemRequest<Map>
             {
@@ -104,6 +108,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 ReturnValues = ReturnValue.ALL_OLD,
             }, cancellationToken);
 
+            /*
             var batchResponse = await amazonDynamoDB.BatchWriteItemAsync(new BatchWriteItemRequest<Map>
             {
                 UserId = null,
@@ -126,6 +131,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                     }
                 ]
             }, cancellationToken);
+            */
         }
     }
 
@@ -135,6 +141,22 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         [DynamoDbPartitionKeyAttribute("id")]
         public required Guid Id { get; set; }
 
+        [DynamoDbAttribute("ListKey")]
+        public List<string> List { get; set; } = ["hey"];
+        [DynamoDbAttribute("NullListKey")]
+        public List<string>? NullList { get; set; }
+
+        [DynamoDbAttribute("SetKey", UseSet = true)]
+        public List<string> Set { get; set; } = ["a", "c", "b"];
+        [DynamoDbAttribute("NullSetKey", UseSet = true)]
+        public List<string>? NullSet { get; set; }
+
+        [DynamoDbAttribute("DoubleSetKey", UseSet = true)]
+        public List<double> DoubleSet { get; set; } = [1, 3, 2];
+        [DynamoDbAttribute("NullDoubleSetKey", UseSet = true)]
+        public List<double>? NullDoubleSet { get; set; }
+
+        /*
         [DynamoDbAttribute("cd")]
         public required DateTimeOffset Creation { get; set; }
 
@@ -237,6 +259,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         {
             ["first"] = 10m,
         };
+        */
     }
     public enum MapType
     {

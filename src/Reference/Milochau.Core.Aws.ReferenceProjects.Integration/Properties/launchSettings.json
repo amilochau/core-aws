@@ -12,9 +12,9 @@
         "CONVENTION__APPLICATION": "maps",
         "CONVENTION__HOST": "dev",
         "CONVENTION__PREFIX": "mil-maps-dev",
-        "ACCOUNT_ID": "381492034295",
+        "ACCOUNT_ID": "339712953809",
         "AWS_REGION": "eu-west-3",
-        "AWS_ROLE_ARN": "arn:aws:iam::381492034295:role/administrator-access"
+        "AWS_ROLE_ARN": "arn:aws:iam::339712953809:role/administrator-access"
       }
     }
   }

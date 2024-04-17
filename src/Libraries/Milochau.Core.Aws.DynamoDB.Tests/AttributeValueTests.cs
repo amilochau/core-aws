@@ -75,10 +75,11 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
         {
             List<string>? list = null;
 
-            var attributeValue = new AttributeValue(list);
+            var attributeValue = new AttributeValue(list, useSet: false);
 
             Assert.AreEqual(false, attributeValue.IsSet());
             Assert.AreEqual(null, attributeValue.L);
+            Assert.AreEqual(null, attributeValue.SS);
         }
 
         [TestMethod]
@@ -86,10 +87,11 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
         {
             List<string>? list = [];
 
-            var attributeValue = new AttributeValue(list);
+            var attributeValue = new AttributeValue(list, useSet: false);
 
             Assert.AreEqual(false, attributeValue.IsSet());
             Assert.AreEqual(null, attributeValue.L);
+            Assert.AreEqual(null, attributeValue.SS);
         }
 
         [TestMethod]
@@ -97,10 +99,11 @@ namespace Milochau.Core.Aws.DynamoDB.Tests
         {
             List<string>? list = [""];
 
-            var attributeValue = new AttributeValue(list);
+            var attributeValue = new AttributeValue(list, useSet: false);
 
             Assert.AreEqual(false, attributeValue.IsSet());
             Assert.AreEqual(null, attributeValue.L);
+            Assert.AreEqual(null, attributeValue.SS);
         }
 
         [TestMethod]

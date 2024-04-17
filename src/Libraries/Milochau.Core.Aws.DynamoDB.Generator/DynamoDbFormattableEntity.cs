@@ -203,6 +203,10 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 {
                     useDefaultInitializer = false;
                 }
+                if (!bool.TryParse(memberAttribute.NamedArguments.SingleOrDefault(x => x.Key == SourceGenerationHelper.DynamoDbAttributeAttribute_UseSet).Value.Value?.ToString(), out bool useSet))
+                {
+                    useSet = false;
+                }
                 var isList = false;
                 var isDictionary = false;
 
@@ -232,7 +236,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                     }
                 }
 
-                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, attributeCategory, isNullable, useDefaultInitializer, isList, isDictionary));
+                dynamoDbAttributes.Add(new DynamoDbAttributeToGenerate(type, propertyMember.Name, attributeKey, attributeType, attributeCategory, isNullable, useDefaultInitializer, useSet, isList, isDictionary));
             }
             return dynamoDbAttributes;
         }

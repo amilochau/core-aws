@@ -21,6 +21,7 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
         public const string DynamoDbAttributeAttributeName_SortKey = nameof(DynamoDbSortKeyAttributeAttribute);
 
         public const string DynamoDbAttributeAttribute_UseDefaultInitializer = "UseDefaultInitializer";
+        public const string DynamoDbAttributeAttribute_UseSet = "UseSet";
 
         private static string? GetFormatLine(DynamoDbAttributeToGenerate attribute)
         {
@@ -57,13 +58,12 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                 {
                     AttributeType.String
                         or AttributeType.Guid
-                        or AttributeType.Int
+                        when attribute.UseSet => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}, useSet: true)), x => x.Value.SS != null)",
+                    AttributeType.Int
                         or AttributeType.Long
                         or AttributeType.Decimal
                         or AttributeType.Double
-                        or AttributeType.Boolean
-                        or AttributeType.DateTimeOffset
-                    when attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}?.Select(x => new AttributeValue(x)))), x => x.Value.L != null)",
+                        when attribute.UseSet => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}, useSet: true)), x => x.Value.NS != null)",
                     AttributeType.String
                         or AttributeType.Guid
                         or AttributeType.Int
@@ -72,7 +72,16 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
                         or AttributeType.Double
                         or AttributeType.Boolean
                         or AttributeType.DateTimeOffset
-                    when !attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}.Select(x => new AttributeValue(x)))), x => x.Value.L != null)",
+                    when !attribute.UseSet && attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}?.Select(x => new AttributeValue(x)))), x => x.Value.L != null)",
+                    AttributeType.String
+                        or AttributeType.Guid
+                        or AttributeType.Int
+                        or AttributeType.Long
+                        or AttributeType.Decimal
+                        or AttributeType.Double
+                        or AttributeType.Boolean
+                        or AttributeType.DateTimeOffset
+                    when !attribute.UseSet && !attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}.Select(x => new AttributeValue(x)))), x => x.Value.L != null)",
                     AttributeType.Object when attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}?.Select(x => x.FormatForDynamoDb()))), x => x.Value.L != null)",
                     AttributeType.Object when !attribute.IsNullable => $".AppendIf(new(\"{attribute.Key}\", new AttributeValue({attribute.Name}.Select(x => x.FormatForDynamoDb()))), x => x.Value.L != null)",
                     _ => $"// Missing: {attribute.Name}",
@@ -129,20 +138,36 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             }
             else if (attribute.IsList)
             {
-                return attribute.AttributeType switch
+                if (attribute.UseSet)
                 {
-                    AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.S ?? string.Empty)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Guid.Parse(x.S!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => int.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => long.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Decimal => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => decimal.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Double => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => double.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Boolean => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.BOOL!)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.DateTimeOffset => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => DateTimeOffset.FromUnixTimeSeconds(long.Parse(x.N!)))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Enum => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Enum.Parse<{attribute.Type}>(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    AttributeType.Object => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => {attribute.Type}.ParseFromDynamoDb(x.M!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
-                    _ => $"// Missing: {attribute.Name}",
-                };
+                    return attribute.AttributeType switch
+                    {
+                        AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.SS" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.SS?.Select(x => System.Guid.Parse(x))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.NS?.Select(x => int.Parse(x))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.NS.Select(x => long.Parse(x))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Decimal => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.NS?.Select(x => decimal.Parse(x))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Double => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.NS?.Select(x => double.Parse(x))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        _ => $"// Missing: {attribute.Name}",
+                    };
+                }
+                else
+                {
+                    return attribute.AttributeType switch
+                    {
+                        AttributeType.String => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.S ?? string.Empty)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Guid => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Guid.Parse(x.S!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Int => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => int.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Long => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => long.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Decimal => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => decimal.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Double => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => double.Parse(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Boolean => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => x.BOOL!)?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.DateTimeOffset => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => DateTimeOffset.FromUnixTimeSeconds(long.Parse(x.N!)))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Enum => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => System.Enum.Parse<{attribute.Type}>(x.N!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        AttributeType.Object => $"{attribute.Name} = attributes.GetValueOrDefault(\"{attribute.Key}\")?.L?.Select(x => {attribute.Type}.ParseFromDynamoDb(x.M!))?.ToList()" + (attribute.IsNullable ? "" : " ?? []"),
+                        _ => $"// Missing: {attribute.Name}",
+                    };
+                }
             }
             else
             {
