@@ -14,7 +14,24 @@
         "CONVENTION__PREFIX": "mil-maps-dev",
         "ACCOUNT_ID": "339712953809",
         "AWS_REGION": "eu-west-3",
-        "AWS_ROLE_ARN": "arn:aws:iam::339712953809:role/administrator-access"
+        "AWS_ROLE_ARN": "arn:aws:iam::339712953809:role/administrator-access",
+        "USER_ID": "65a133d934f948f7b27eb55c803e2ea5"
+      }
+    },
+    "Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:4000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONVENTION__ORGANIZATION": "mil",
+        "CONVENTION__APPLICATION": "maps",
+        "CONVENTION__HOST": "prd",
+        "CONVENTION__PREFIX": "mil-maps-prd",
+        "ACCOUNT_ID": "533267057265",
+        "AWS_REGION": "eu-west-3",
+        "AWS_ROLE_ARN": "arn:aws:iam::533267057265:role/administrator-access",
+        "USER_ID": "65a133d934f948f7b27eb55c803e2ea5"
       }
     }
   }
