@@ -9,9 +9,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CONVENTION__ORGANIZATION": "mil",
-        "CONVENTION__APPLICATION": "maps",
+        "CONVENTION__APPLICATION": "operations",
         "CONVENTION__HOST": "dev",
-        "CONVENTION__PREFIX": "mil-maps-dev",
+        "CONVENTION__PREFIX": "mil-operations-dev",
         "ACCOUNT_ID": "339712953809",
         "AWS_REGION": "eu-west-3",
         "AWS_ROLE_ARN": "arn:aws:iam::339712953809:role/administrator-access",
@@ -21,13 +21,14 @@
     "Production": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchBrowser": true,
       "applicationUrl": "http://localhost:4000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CONVENTION__ORGANIZATION": "mil",
-        "CONVENTION__APPLICATION": "maps",
+        "CONVENTION__APPLICATION": "operations",
         "CONVENTION__HOST": "prd",
-        "CONVENTION__PREFIX": "mil-maps-prd",
+        "CONVENTION__PREFIX": "mil-operations-prd",
         "ACCOUNT_ID": "533267057265",
         "AWS_REGION": "eu-west-3",
         "AWS_ROLE_ARN": "arn:aws:iam::533267057265:role/administrator-access",
