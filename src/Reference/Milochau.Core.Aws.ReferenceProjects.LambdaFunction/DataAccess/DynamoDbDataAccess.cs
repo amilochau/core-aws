@@ -8,12 +8,16 @@ using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.ComponentModel.DataAnnotations;
 using Milochau.Core.Aws.DynamoDB.Abstractions;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess.Nested;
+using System.Diagnostics;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using Milochau.Core.Aws.DynamoDB.Helpers;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
     public interface IDynamoDbDataAccess
     {
-        Task GetTestItemAsync(CancellationToken cancellationToken);
+        Task UpdateAsync(CancellationToken cancellationToken);
+        //Task GetTestItemAsync(CancellationToken cancellationToken);
     }
 
     public class DynamoDbDataAccess : IDynamoDbDataAccess
@@ -23,6 +27,66 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         public DynamoDbDataAccess(IAmazonDynamoDB amazonDynamoDB)
         {
             this.amazonDynamoDB = amazonDynamoDB;
+        }
+
+
+        public async Task UpdateAsync(CancellationToken cancellationToken)
+        {
+            List<Guid> listIds =
+            [
+                Guid.Parse("a6e60c59204947fbaba7d7305222cfe1"),
+                Guid.Parse("a5e7d105032f40d08d2f2f0f000beb10"),
+            ];
+
+            var tableName = Item.TableName;
+
+            foreach (var listId in listIds)
+            {
+                var response = await amazonDynamoDB.QueryAsync(new QueryRequest<Item>
+                {
+                    UserId = null,
+                    PartitionKeyCondition = new EqualValueExpression(Item.PartitionKey, listId),
+                }, cancellationToken);
+
+                if (response.Items == null)
+                {
+                    Debugger.Break();
+                    continue;
+                }
+
+                foreach (var item in response.Items)
+                {
+                    var rawSourceUserId = item.GetValueOrDefault(Item.Keys.SourceUserId)?.S;
+                    var itemId = item.GetValueOrDefault(Item.Keys.Id)?.S?.ApplyOrDefault(Guid.Parse);
+                    if (rawSourceUserId == null || itemId == null)
+                    {
+                        Debugger.Break();
+                        continue;
+                    }
+                    var sourceUserId = Guid.Parse(rawSourceUserId);
+                    var formattedSourceUserId = sourceUserId.ToString("N");
+                    if (rawSourceUserId != formattedSourceUserId)
+                    {
+                        var updateResponse = await amazonDynamoDB.UpdateItemAsync(new UpdateItemRequest<Item>
+                        {
+                            UserId = null,
+                            PartitionKey = listId,
+                            SortKey = itemId,
+                            UpdateExpression = new UpdateExpression
+                            {
+                                SetExpressions = [
+                                    new SetUpdateExpression(Item.Keys.SourceUserId, new AttributeValueOperand(new(sourceUserId))),
+                            ],
+                            },
+                        }, cancellationToken);
+
+                        if (updateResponse.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+                }
+            }
         }
 
         public async Task GetTestItemAsync(CancellationToken cancellationToken)
@@ -133,6 +197,19 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             }, cancellationToken);
             */
         }
+    }
+
+    [DynamoDbTable("items")]
+    public partial class Item
+    {
+        [DynamoDbPartitionKeyAttribute("list_id")]
+        public Guid ListId { get; set; }
+
+        [DynamoDbSortKeyAttribute("id")]
+        public Guid Id { get; set; }
+
+        [DynamoDbAttribute("sui")]
+        public Guid SourceUserId { get; set; }
     }
 
     [DynamoDbTable("maps")]

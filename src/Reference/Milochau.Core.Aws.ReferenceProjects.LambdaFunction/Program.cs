@@ -138,7 +138,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             //await snsDataAccess.SendEventAsync(requestData, cancellationToken);
             //await sesDataAccess.SendEmailAsync(new(), cancellationToken);
             //await emailsLambdaDataAccess.SendSummaryAsync(cancellationToken);
-            await dynamoDbDataAccess.GetTestItemAsync(cancellationToken);
+            //await dynamoDbDataAccess.UpdateAsync(cancellationToken);
             //await cognitoDataAccess.LoginAsync(cancellationToken);
             //await cognitoDataAccess.UpdateAttributesAsync(cancellationToken);
 
