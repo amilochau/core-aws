@@ -3,13 +3,6 @@ using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
-    /// <summary>DynamoDB entity</summary>
-    [System.Obsolete]
-    public interface IDynamoDbEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
-        where TEntity : IDynamoDbEntity<TEntity>
-    {
-    }
-
     /// <summary>DynamoDB parsable entity</summary>
     public interface IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbParsableEntity<TEntity>

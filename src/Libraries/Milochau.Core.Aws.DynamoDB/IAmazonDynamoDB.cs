@@ -33,10 +33,6 @@ namespace Milochau.Core.Aws.DynamoDB
     /// </summary>
     public partial interface IAmazonDynamoDB
     {
-        /// <inheritdoc cref="BatchWriteItemAsync(BatchWriteItemRequest, CancellationToken)"/>
-        Task<List<BatchWriteItemResponse<TEntity>>> BatchWriteItemAsync<TEntity>(BatchWriteItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity: class, IDynamoDbBatchWritableEntity<TEntity>;
-
         /// <summary>
         /// The <c>BatchWriteItem</c> operation puts or deletes multiple items in one or
         /// more tables. A single call to <c>BatchWriteItem</c> can transmit up to 16MB
@@ -139,13 +135,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the BatchWriteItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/BatchWriteItem">REST API Reference for BatchWriteItem Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken);
+        Task<List<BatchWriteItemResponse<TEntity>>> BatchWriteItemAsync<TEntity>(BatchWriteItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity: class, IDynamoDbBatchWritableEntity<TEntity>;
 
-
-        /// <inheritdoc cref="DeleteItemAsync(DeleteItemRequest, CancellationToken)"/>
-        Task<DeleteItemResponse<TEntity>> DeleteItemAsync<TEntity>(DeleteItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbDeletableEntity<TEntity>;
 
         /// <summary>
         /// Deletes a single item in a table by primary key. You can perform a conditional delete
@@ -167,13 +159,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the DeleteItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/DeleteItem">REST API Reference for DeleteItem Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken);
+        Task<DeleteItemResponse<TEntity>> DeleteItemAsync<TEntity>(DeleteItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbDeletableEntity<TEntity>;
 
-
-        /// <inheritdoc cref="GetItemAsync(GetItemRequest, CancellationToken)"/>
-        Task<GetItemResponse<TEntity>> GetItemAsync<TEntity>(GetItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbGettableEntity<TEntity>;
 
         /// <summary>
         /// The <c>GetItem</c> operation returns a set of attributes for the item with the
@@ -188,13 +176,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the GetItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/GetItem">REST API Reference for GetItem Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<GetItemResponse> GetItemAsync(GetItemRequest request, CancellationToken cancellationToken);
+        Task<GetItemResponse<TEntity>> GetItemAsync<TEntity>(GetItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbGettableEntity<TEntity>;
 
-
-        /// <inheritdoc cref="PutItemAsync(PutItemRequest, CancellationToken)"/>
-        Task<PutItemResponse<TEntity>> PutItemAsync<TEntity>(PutItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbPutableEntity<TEntity>;
 
         /// <summary>
         /// Creates a new item, or replaces an old item with a new item. If an item that has the
@@ -229,13 +213,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the PutItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/PutItem">REST API Reference for PutItem Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<PutItemResponse> PutItemAsync(PutItemRequest request, CancellationToken cancellationToken);
+        Task<PutItemResponse<TEntity>> PutItemAsync<TEntity>(PutItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbPutableEntity<TEntity>;
 
-
-        /// <inheritdoc cref="QueryAsync(QueryRequest, CancellationToken)"/>
-        Task<QueryResponse<TEntity>> QueryAsync<TEntity>(QueryRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbQueryableEntity<TEntity>;
 
         /// <summary>
         /// You must provide the name of the partition key attribute and a single value for that
@@ -297,13 +277,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the Query service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/Query">REST API Reference for Query Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<QueryResponse> QueryAsync(QueryRequest request, CancellationToken cancellationToken);
+        Task<QueryResponse<TEntity>> QueryAsync<TEntity>(QueryRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbQueryableEntity<TEntity>;
 
-
-        /// <inheritdoc cref="UpdateItemAsync(UpdateItemRequest, CancellationToken)"/>
-        Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>;
 
         /// <summary>
         /// Edits an existing item's attributes, or adds a new item to the table if it does not
@@ -318,7 +294,7 @@ namespace Milochau.Core.Aws.DynamoDB
         /// </summary>
         /// <returns>The response from the UpdateItem service method, as returned by DynamoDB.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
-        [Obsolete("Use generic method instead")]
-        Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken);
+        Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>;
     }
 }

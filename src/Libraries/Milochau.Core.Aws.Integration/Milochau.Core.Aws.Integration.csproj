@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.71" />
-    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.70" />
-    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.65" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.80" />
+    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.79" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.74" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>

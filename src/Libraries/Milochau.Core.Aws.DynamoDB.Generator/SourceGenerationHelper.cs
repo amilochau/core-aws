@@ -284,14 +284,9 @@ namespace {dynamoDbClassToGenerate.Namespace}
             /// <summary>Key for <c>{attribute.Name}</c> (as <c>{attribute.Key}</c>)</summary>
             public const string {attribute.Name} = ""{attribute.Key}"";");
             }
-            stringBuilder.AppendLine($@"
+            stringBuilder.Append($@"
         }}
 ");
-
-            foreach (var attribute in dynamoDbClassToGenerate.DynamoDbAttributes)
-            {
-                stringBuilder.AppendLine($@"        [System.Obsolete] public const string K_{attribute.Name} = ""{attribute.Key}"";");
-            }
 
             // Format & Parse methods
             if (dynamoDbClassToGenerate.Type == ClassType.Table || dynamoDbClassToGenerate.Type == ClassType.Nested)
@@ -326,8 +321,7 @@ namespace {dynamoDbClassToGenerate.Namespace}
         }}
 ");
 
-            stringBuilder.Append($@"
-    }}
+            stringBuilder.Append($@"    }}
 }}
 ");
 
