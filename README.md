@@ -25,7 +25,7 @@
 ## Main features
 
 - API Gateway: authentication checks, request validations
-- DynamoDB: document attribute mapping, key conditions and expressions helpers
+- DynamoDB: document attribute mapping, expressions based on code generation
 - Integration: multi-lambda integration application baseline
 
 ## Usage
@@ -45,6 +45,7 @@ dotnet add package Milochau.Core.Aws.DynamoDB
 dotnet add package Milochau.Core.Aws.Integration
 dotnet add package Milochau.Core.Aws.Lambda
 dotnet add package Milochau.Core.Aws.SESv2
+dotnet add package Milochau.Core.Aws.SNS
 ```
 
 2. Use the packages
