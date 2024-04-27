@@ -36,6 +36,14 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal
 
     /// <summary>JSON serialization context</summary>
     [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSerializable(typeof(UpdateItemRequest))]
+    [JsonSerializable(typeof(UpdateItemResponse))]
+    internal partial class UpdateItemJsonSerializerContext : JsonSerializerContext
+    {
+    }
+
+    /// <summary>JSON serialization context</summary>
+    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(QueryRequest))]
     [JsonSerializable(typeof(QueryResponse))]
     internal partial class QueryJsonSerializerContext : JsonSerializerContext
@@ -44,9 +52,9 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal
 
     /// <summary>JSON serialization context</summary>
     [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonSerializable(typeof(UpdateItemRequest))]
-    [JsonSerializable(typeof(UpdateItemResponse))]
-    internal partial class UpdateItemJsonSerializerContext : JsonSerializerContext
+    [JsonSerializable(typeof(ScanRequest))]
+    [JsonSerializable(typeof(ScanResponse))]
+    internal partial class ScanJsonSerializerContext : JsonSerializerContext
     {
     }
 }

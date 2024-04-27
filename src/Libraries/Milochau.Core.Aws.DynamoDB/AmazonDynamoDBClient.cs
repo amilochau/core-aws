@@ -140,6 +140,30 @@ namespace Milochau.Core.Aws.DynamoDB
         }
 
         #endregion
+        #region  UpdateItem
+
+        /// <inheritdoc/>
+        public async Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>
+        {
+            var response = await UpdateItemAsync(request.Build(), cancellationToken);
+            return new UpdateItemResponse<TEntity>(response);
+        }
+
+        /// <inheritdoc/>
+        public Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken)
+        {
+            var options = new InvokeOptions
+            {
+                HttpRequestMessageMarshaller = UpdateItemRequestMarshaller.Instance,
+                ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "UpdateItem",
+            };
+
+            return InvokeAsync<UpdateItemResponse>(request, options, cancellationToken);
+        }
+
+        #endregion
         #region  Query
 
         /// <inheritdoc/>
@@ -165,27 +189,28 @@ namespace Milochau.Core.Aws.DynamoDB
         }
 
         #endregion
-        #region  UpdateItem
+        #region Scan
 
         /// <inheritdoc/>
-        public async Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>
+        public async Task<ScanResponse<TEntity>> ScanAsync<TEntity>(ScanRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbScanableEntity<TEntity>
         {
-            var response = await UpdateItemAsync(request.Build(), cancellationToken);
-            return new UpdateItemResponse<TEntity>(response);
+            var response = await ScanAsync(request.Build(), cancellationToken);
+
+            return new ScanResponse<TEntity>(response);
         }
 
         /// <inheritdoc/>
-        public Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken)
+        public Task<ScanResponse> ScanAsync(ScanRequest request, CancellationToken cancellationToken)
         {
             var options = new InvokeOptions
             {
-                HttpRequestMessageMarshaller = UpdateItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "UpdateItem",
+                HttpRequestMessageMarshaller = ScanRequestMarshaller.Instance,
+                ResponseUnmarshaller = ScanResponseUnmarshaller.Instance,
+                MonitoringOriginalRequestName = "Scan",
             };
 
-            return InvokeAsync<UpdateItemResponse>(request, options, cancellationToken);
+            return InvokeAsync<ScanResponse>(request, options, cancellationToken);
         }
 
         #endregion
