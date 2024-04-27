@@ -206,10 +206,10 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             var c = dynamoDbClassToGenerate.Class;
             return dynamoDbClassToGenerate.Type switch
             {
-                ClassType.Table => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>, IDynamoDbPutableEntity<{c}>, IDynamoDbDeletableEntity<{c}>, IDynamoDbUpdatableEntity<{c}>, IDynamoDbBatchWritableEntity<{c}>",
-                ClassType.Index => $"IDynamoDbQueryableEntity<{c}>",
-                ClassType.Projection when string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbGettableEntity<{c}>",
-                ClassType.Projection when !string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>",
+                ClassType.Table => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbScanableEntity<{c}>, IDynamoDbGettableEntity<{c}>, IDynamoDbPutableEntity<{c}>, IDynamoDbDeletableEntity<{c}>, IDynamoDbUpdatableEntity<{c}>, IDynamoDbBatchWritableEntity<{c}>",
+                ClassType.Index => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbScanableEntity<{c}>",
+                ClassType.Projection when string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbScanableEntity<{c}>, IDynamoDbGettableEntity<{c}>",
+                ClassType.Projection when !string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName) => $"IDynamoDbQueryableEntity<{c}>, IDynamoDbScanableEntity<{c}>",
                 ClassType.Nested => $"IDynamoDbParsableEntity<{c}>, IDynamoDbFormattableEntity",
                 _ => null
             };

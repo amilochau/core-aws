@@ -197,7 +197,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// you will receive a <c>ValidationException</c>.
         /// </para>
         /// </summary>
-        public bool ConsistentRead { get; set; }
+        public bool? ConsistentRead { get; set; }
 
         /// <summary>
         /// Exclusive start key

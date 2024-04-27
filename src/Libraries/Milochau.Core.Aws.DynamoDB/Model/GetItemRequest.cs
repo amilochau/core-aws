@@ -51,7 +51,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// reads.
         /// </para>
         /// </summary>
-        public bool ConsistentRead { get; set; }
+        public bool? ConsistentRead { get; set; }
 
         /// <summary>
         /// Expression attribute names

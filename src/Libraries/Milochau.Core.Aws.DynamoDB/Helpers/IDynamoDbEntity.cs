@@ -49,6 +49,20 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
         static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
     }
 
+    /// <summary>DynamoDB scanable entity</summary>
+    public interface IDynamoDbScanableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+        where TEntity : IDynamoDbScanableEntity<TEntity>
+    {
+        /// <summary>Name of the DynamoDB table</summary>
+        static abstract string TableName { get; }
+
+        /// <summary>Name of the DynamoDB index</summary>
+        static virtual string? IndexName { get; }
+
+        /// <summary>List of projected attributes</summary>
+        static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
+    }
+
     /// <summary>DynamoDB putable entity</summary>
     public interface IDynamoDbPutableEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbPutableEntity<TEntity>

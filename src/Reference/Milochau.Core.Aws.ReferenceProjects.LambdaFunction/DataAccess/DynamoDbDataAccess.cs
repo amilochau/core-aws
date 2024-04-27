@@ -7,15 +7,14 @@ using System;
 using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System.ComponentModel.DataAnnotations;
 using Milochau.Core.Aws.DynamoDB.Abstractions;
-using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess.Nested;
 using System.Diagnostics;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.DynamoDB.Helpers;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
     public interface IDynamoDbDataAccess
     {
+        Task ScanAsync(CancellationToken cancellationToken);
         Task UpdateAsync(CancellationToken cancellationToken);
         //Task GetTestItemAsync(CancellationToken cancellationToken);
     }
@@ -27,6 +26,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         public DynamoDbDataAccess(IAmazonDynamoDB amazonDynamoDB)
         {
             this.amazonDynamoDB = amazonDynamoDB;
+        }
+
+        public async Task ScanAsync(CancellationToken cancellationToken)
+        {
+            var response = await amazonDynamoDB.ScanAsync(new ScanRequest<Map>
+            {
+                UserId = null
+            }, cancellationToken);
         }
 
 

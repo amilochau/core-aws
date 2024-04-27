@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Helpers;
 using Milochau.Core.Aws.DynamoDB.Model;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -217,6 +216,24 @@ namespace Milochau.Core.Aws.DynamoDB
             where TEntity : class, IDynamoDbPutableEntity<TEntity>;
 
 
+
+        /// <summary>
+        /// Edits an existing item's attributes, or adds a new item to the table if it does not
+        /// already exist. You can put, delete, or add attribute values. You can also perform
+        /// a conditional update on an existing item (insert a new attribute name-value pair if
+        /// it doesn't exist, or replace an existing name-value pair if it has certain expected
+        /// attribute values).
+        /// <para>
+        /// You can also return the item's attribute values in the same <c>UpdateItem</c>
+        /// operation using the <c>ReturnValues</c> parameter.
+        /// </para>
+        /// </summary>
+        /// <returns>The response from the UpdateItem service method, as returned by DynamoDB.</returns>
+        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
+        Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>;
+
+
         /// <summary>
         /// You must provide the name of the partition key attribute and a single value for that
         /// attribute. <c>Query</c> returns all items with that partition key value. Optionally,
@@ -282,19 +299,57 @@ namespace Milochau.Core.Aws.DynamoDB
 
 
         /// <summary>
-        /// Edits an existing item's attributes, or adds a new item to the table if it does not
-        /// already exist. You can put, delete, or add attribute values. You can also perform
-        /// a conditional update on an existing item (insert a new attribute name-value pair if
-        /// it doesn't exist, or replace an existing name-value pair if it has certain expected
-        /// attribute values).
+        /// The <c>Scan</c> operation returns one or more items and item attributes by accessing
+        /// every item in a table or a secondary index. To have DynamoDB return fewer items, you
+        /// can provide a <c>FilterExpression</c> operation.
         /// <para>
-        /// You can also return the item's attribute values in the same <c>UpdateItem</c>
-        /// operation using the <c>ReturnValues</c> parameter.
+        /// If the total size of scanned items exceeds the maximum dataset size limit of 1 MB,
+        /// the scan completes and results are returned to the user. The <c>LastEvaluatedKey</c>
+        /// value is also returned and the requestor can use the <c>LastEvaluatedKey</c> to continue
+        /// the scan in a subsequent operation. Each scan response also includes number of items
+        /// that were scanned (ScannedCount) as part of the request. If using a <c>FilterExpression</c>,
+        /// a scan result can result in no items meeting the criteria and the <c>Count</c> will
+        /// result in zero. If you did not use a <c>FilterExpression</c> in the scan request,
+        /// then <c>Count</c> is the same as <c>ScannedCount</c>.
+        /// </para>
+        /// <para>
+        ///  <c>Count</c> and <c>ScannedCount</c> only return the count of items specific to a
+        /// single scan request and, unless the table is less than 1MB, do not represent the total
+        /// number of items in the table. 
+        /// </para>
+        /// <para>
+        /// A single <c>Scan</c> operation first reads up to the maximum number of items set (if
+        /// using the <c>Limit</c> parameter) or a maximum of 1 MB of data and then applies any
+        /// filtering to the results if a <c>FilterExpression</c> is provided. If <c>LastEvaluatedKey</c>
+        /// is present in the response, pagination is required to complete the full table scan.
+        /// For more information, see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.Pagination">Paginating
+        /// the Results</a> in the <i>Amazon DynamoDB Developer Guide</i>.
+        /// </para>
+        /// <para>
+        ///  <c>Scan</c> operations proceed sequentially; however, for faster performance on a
+        /// large table or secondary index, applications can request a parallel <c>Scan</c> operation
+        /// by providing the <c>Segment</c> and <c>TotalSegments</c> parameters. For more information,
+        /// see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.ParallelScan">Parallel
+        /// Scan</a> in the <i>Amazon DynamoDB Developer Guide</i>.
+        /// </para>
+        /// <para>
+        /// By default, a <c>Scan</c> uses eventually consistent reads when accessing the items
+        /// in a table. Therefore, the results from an eventually consistent <c>Scan</c> may not
+        /// include the latest item changes at the time the scan iterates through each item in
+        /// the table. If you require a strongly consistent read of each item as the scan iterates
+        /// through the items in the table, you can set the <c>ConsistentRead</c> parameter to
+        /// true. Strong consistency only relates to the consistency of the read at the item level.
+        /// </para>
+        /// <para>
+        ///  DynamoDB does not provide snapshot isolation for a scan operation when the <c>ConsistentRead</c>
+        /// parameter is set to true. Thus, a DynamoDB scan operation does not guarantee that
+        /// all reads in a scan see a consistent snapshot of the table when the scan operation
+        /// was requested. 
         /// </para>
         /// </summary>
-        /// <returns>The response from the UpdateItem service method, as returned by DynamoDB.</returns>
-        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
-        Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbUpdatableEntity<TEntity>;
+        /// <returns>The response from the Scan service method, as returned by DynamoDB.</returns>
+        /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/Scan">REST API Reference for Scan Operation</seealso>
+        Task<ScanResponse<TEntity>> ScanAsync<TEntity>(ScanRequest<TEntity> request, CancellationToken cancellationToken)
+            where TEntity : class, IDynamoDbScanableEntity<TEntity>;
     }
 }
