@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
             {
                 PutRequest = new PutRequest
                 {
-                    Item = Entity.FormatForDynamoDb(),
+                    Item = Entity.FormatForDynamoDb().Sanitize(),
                 },
             };
         }
