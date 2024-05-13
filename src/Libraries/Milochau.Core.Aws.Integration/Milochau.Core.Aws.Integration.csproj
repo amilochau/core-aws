@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.80" />
-    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.79" />
-    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.74" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.90" />
+    <PackageReference Include="AWSSDK.SSO" Version="3.7.300.89" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.302" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
   </ItemGroup>
 
