@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,15 +24,11 @@
   <ItemGroup>
     <!-- Reference the source generator project -->
     <!-- Don't reference the generator dll -->
-    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Generator\Milochau.Core.Aws.DynamoDB.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 
     <!-- Reference the abstractions project "treat as an analyzer"-->
     <!-- We DO reference the attributes dll -->
-    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.DynamoDB.Abstractions\Milochau.Core.Aws.DynamoDB.Abstractions.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
   
 </Project>
