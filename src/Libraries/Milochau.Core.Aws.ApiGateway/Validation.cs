@@ -54,10 +54,7 @@ namespace Milochau.Core.Aws.ApiGateway
         /// <summary>Constructor</summary>
         public ValidationProblemDetails(ReadOnlyDictionary<string, Collection<string>> modelState)
         {
-            if (modelState == null)
-            {
-                throw new ArgumentNullException(nameof(modelState));
-            }
+            ArgumentNullException.ThrowIfNull(modelState);
 
             foreach (KeyValuePair<string, Collection<string>> item in modelState)
             {

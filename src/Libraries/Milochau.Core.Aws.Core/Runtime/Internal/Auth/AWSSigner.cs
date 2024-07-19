@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// the resource path as a query string or in the Parameters collection must not have been
         /// uri encoded. If they have, use the SignRequest method to obtain a signature.
         /// </summary>
-        public async Task SignAsync(IRequestContext requestContext, ImmutableCredentials immutableCredentials)
+        public static async Task SignAsync(IRequestContext requestContext, ImmutableCredentials immutableCredentials)
         {
             var signingResult = await SignRequestAsync(requestContext, immutableCredentials.AccessKey, immutableCredentials.SecretKey);
             requestContext.HttpRequestMessage.Headers.TryAddWithoutValidation(HeaderKeys.AuthorizationHeader, signingResult.ForAuthorizationHeader);
@@ -255,7 +255,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// Computes and returns the canonical request
         /// </summary>
         /// <returns>Canonicalised request as a string</returns>
-        private static string CanonicalizeRequest(IDictionary<string, string> sortedHeaders,
+        private static string CanonicalizeRequest(SortedDictionary<string, string> sortedHeaders,
                                                     string? precomputedBodyHash,
                                                     HttpRequestMessage httpRequestMessage)
         {
@@ -286,7 +286,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// <param name="requestHeaders">The set of proposed headers for the request</param>
         /// <returns>List of headers that must be included in the signature</returns>
         /// <remarks>For AWS4 signing, all headers are considered viable for inclusion</remarks>
-        private static IDictionary<string, string> SortAndPruneHeaders(HttpRequestHeaders requestHeaders)
+        private static SortedDictionary<string, string> SortAndPruneHeaders(HttpRequestHeaders requestHeaders)
         {
             // Refer https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html. (Step #4: "Build the canonical headers list by sorting the (lowercase) headers by character code"). StringComparer.OrdinalIgnoreCase incorrectly places '_' after lowercase chracters.
             var sortedHeaders = new SortedDictionary<string, string>(StringComparer.Ordinal);

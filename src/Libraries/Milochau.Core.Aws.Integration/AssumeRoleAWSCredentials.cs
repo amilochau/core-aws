@@ -49,12 +49,7 @@ namespace Milochau.Core.Aws.Integration
 
             var immutableCredentials = await credentials.GetCredentialsAsync();
 
-            return new Core.Runtime.Credentials.ImmutableCredentials
-            {
-                AccessKey = immutableCredentials.AccessKey,
-                SecretKey = immutableCredentials.SecretKey,
-                Token = immutableCredentials.Token,
-            };
+            return new Core.Runtime.Credentials.ImmutableCredentials(immutableCredentials.AccessKey, immutableCredentials.SecretKey, immutableCredentials.Token);
         }
     }
 }

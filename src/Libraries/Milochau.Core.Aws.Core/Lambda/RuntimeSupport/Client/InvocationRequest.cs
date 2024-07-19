@@ -8,15 +8,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// <summary>
     /// Class that contains all the information necessary to handle an invocation of an AWS Lambda function.
     /// </summary>
-    internal class InvocationRequest : IDisposable
+    internal class InvocationRequest(HttpResponseMessage response) : IDisposable
     {
-        private readonly HttpResponseMessage response;
         private bool disposedValue;
-
-        public InvocationRequest(HttpResponseMessage response)
-        {
-            this.response = response;
-        }
 
         /// <summary>
         /// Input to the function invocation.

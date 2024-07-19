@@ -17,18 +17,10 @@ using Milochau.Core.Aws.Core.Runtime.Credentials;
 namespace Milochau.Core.Aws.Core.Runtime
 {
     /// <summary>Amazon service client</summary>
-    public abstract class AmazonServiceClient
+    /// <remarks>Constructor</remarks>
+    public abstract class AmazonServiceClient(IAWSCredentials credentials, ClientConfig config)
     {
-        private readonly IAWSCredentials credentials;
-        private readonly IClientConfig config;
-        private readonly AWSSigner signer = new AWSSigner();
-
-        /// <summary>Constructor</summary>
-        protected AmazonServiceClient(IAWSCredentials credentials, ClientConfig config)
-        {
-            this.credentials = credentials;
-            this.config = config;
-        }
+        private readonly IClientConfig config = config;
 
         /// <summary>Invoke</summary>
         protected async Task<TResponse> InvokeAsync<TResponse>(
@@ -101,7 +93,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// Signs the request.
         /// </summary>
         /// <param name="requestContext">The request context.</param>
-        private async Task SignRequestAsync(IRequestContext requestContext)
+        private static async Task SignRequestAsync(IRequestContext requestContext)
         {
             var immutableCredentials = requestContext.ImmutableCredentials;
 
@@ -110,7 +102,7 @@ namespace Milochau.Core.Aws.Core.Runtime
                 requestContext.HttpRequestMessage.Headers.Add(HeaderKeys.XAmzSecurityTokenHeader, immutableCredentials.Token);
             }
 
-            await signer.SignAsync(requestContext, immutableCredentials);
+            await AWSSigner.SignAsync(requestContext, immutableCredentials);
         }
 
         /// <summary>

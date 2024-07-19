@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.ApiGateway
     public class ListResponse<TListModel, TKey>
     {
         /// <summary>Collection of items</summary>
-        public ICollection<TListModel> Items { get; set; } = new List<TListModel>();
+        public ICollection<TListModel> Items { get; set; } = [];
 
         /// <summary>Whether the end of the list is reached</summary>
         public bool EndReached { get; set; }

@@ -42,7 +42,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
             else
             {
-                return Array.Empty<byte>();
+                return [];
             }
         }
 

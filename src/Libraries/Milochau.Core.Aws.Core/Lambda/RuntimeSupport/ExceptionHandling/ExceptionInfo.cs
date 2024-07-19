@@ -21,8 +21,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
 
         public ExceptionInfo(Exception exception, bool isNestedException = false)
         {
-            if (exception == null)
-                throw new ArgumentNullException(nameof(exception));
+            ArgumentNullException.ThrowIfNull(exception);
 
             ErrorType = exception.GetType().Name;
             ErrorMessage = exception.Message;

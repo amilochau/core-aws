@@ -22,7 +22,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
         }
 
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(GetItemRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(GetItemRequest publicRequest)
         {
             var serializedRequest = JsonSerializer.Serialize(publicRequest, GetItemJsonSerializerContext.Default.GetItemRequest);
 

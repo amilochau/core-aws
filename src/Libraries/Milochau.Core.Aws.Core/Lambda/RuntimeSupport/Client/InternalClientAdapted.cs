@@ -9,30 +9,11 @@ using System.IO;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
-    internal interface IInternalRuntimeApiClient
-    {
-        /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
-        /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
-        /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        Task<HttpResponseMessage> NextAsync(CancellationToken cancellationToken);
-
-        /// <summary>Runtime makes this request in order to submit a response.</summary>
-        /// <returns>Accepted</returns>
-        /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
-        Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Runtime makes this request in order to submit an error response. It can be either a function error, or a runtime error. Error will be served in response to the invoke.
-        /// </summary>
-        Task ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, CancellationToken cancellationToken);
-    }
-
-    internal class InternalRuntimeApiClient : IInternalRuntimeApiClient
+    internal class InternalRuntimeApiClient
     {
         private const int MAX_HEADER_SIZE_BYTES = 1024 * 1024;
 
         private const string ErrorContentType = "application/vnd.aws.lambda.error+json";
-
 
         public string BaseUrl { get; } = "http://" + EnvironmentVariables.RuntimeServerHostAndPort + "/2018-06-01";
 
@@ -70,8 +51,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         public async Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
-            if (awsRequestId == null)
-                throw new ArgumentNullException(nameof(awsRequestId));
+            ArgumentNullException.ThrowIfNull(awsRequestId);
 
             using var content = new StreamContent(outputStream);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
@@ -107,8 +87,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// </summary>
         public async Task ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, CancellationToken cancellationToken)
         {
-            if (awsRequestId == null)
-                throw new ArgumentNullException(nameof(awsRequestId));
+            ArgumentNullException.ThrowIfNull(awsRequestId);
 
             using var content = new StringContent(errorJson);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse(ErrorContentType);
@@ -160,15 +139,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         }
     }
 
-    internal class RuntimeApiClientException : Exception
+    internal class RuntimeApiClientException(string message, int statusCode, string response, Exception? innerException) : Exception(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
     {
-        public string Response { get; private set; }
-
-        public RuntimeApiClientException(string message, int statusCode, string response, Exception? innerException)
-            : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
-        {
-            Response = response;
-        }
+        public string Response { get; } = response;
 
         public override string ToString()
         {

@@ -13,10 +13,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
 
         public MeteredStringBuilder(Encoding encoding, int maxSize)
         {
-            if (maxSize <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(maxSize));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxSize);
 
             _stringBuilder = new StringBuilder();
             SizeInBytes = 0;

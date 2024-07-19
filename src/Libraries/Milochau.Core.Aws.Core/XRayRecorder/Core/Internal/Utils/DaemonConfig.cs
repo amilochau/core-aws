@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <summary>
         /// Default UDP and TCP endpoint.
         /// </summary>
-        public static readonly IPEndPoint DefaultEndpoint = new IPEndPoint(_defaultDaemonAddress, _defaultDaemonPort);
+        public static readonly IPEndPoint DefaultEndpoint = new(_defaultDaemonAddress, _defaultDaemonPort);
 
         /// <summary>
         /// Gets or sets UDP endpoint.
@@ -59,14 +59,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <returns></returns>
         public static DaemonConfig GetEndPoint()
         {
-            if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress, out var daemonAddress))
-            {
-                return ParsEndpoint(daemonAddress);
-            }
-            else
-            {
-                return ParsEndpoint(null);
-            }
+            return EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress, out var daemonAddress)
+                ? ParsEndpoint(daemonAddress)
+                : ParsEndpoint(null);
         }
     }
 }

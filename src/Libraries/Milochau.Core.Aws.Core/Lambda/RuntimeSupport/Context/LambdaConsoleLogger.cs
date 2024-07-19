@@ -5,15 +5,8 @@ using System.IO;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
-    internal class LambdaConsoleLogger : ILambdaLogger
+    internal class LambdaConsoleLogger(string? currentAwsRequestId) : ILambdaLogger
     {
-        private readonly string? currentAwsRequestId;
-
-        public LambdaConsoleLogger(string? currentAwsRequestId)
-        {
-            this.currentAwsRequestId = currentAwsRequestId;
-        }
-
         public void Log(string message)
         {
             Console.Out.Write(message);

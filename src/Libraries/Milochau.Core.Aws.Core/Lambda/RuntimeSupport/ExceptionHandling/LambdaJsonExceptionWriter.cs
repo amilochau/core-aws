@@ -25,8 +25,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.ExceptionHandling
         /// <returns>The serialized JSON string.</returns>
         public static string WriteJson(ExceptionInfo ex)
         {
-            if (ex == null)
-                throw new ArgumentNullException(nameof(ex));
+            ArgumentNullException.ThrowIfNull(ex);
 
             MeteredStringBuilder jsonBuilder = new MeteredStringBuilder(TEXT_ENCODING, MAX_PAYLOAD_SIZE);
             string? json = AppendJson(ex, 0, false, MAX_PAYLOAD_SIZE - jsonBuilder.SizeInBytes);

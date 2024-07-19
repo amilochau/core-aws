@@ -37,12 +37,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Credentials
 
             string? sessionToken = EnvironmentVariables.Token;
 
-            return new ImmutableCredentials
-            {
-                AccessKey = accessKeyId,
-                SecretKey = secretKey,
-                Token = sessionToken
-            };
+            return new ImmutableCredentials(accessKeyId, secretKey, sessionToken);
         }
 
         /// <summary>

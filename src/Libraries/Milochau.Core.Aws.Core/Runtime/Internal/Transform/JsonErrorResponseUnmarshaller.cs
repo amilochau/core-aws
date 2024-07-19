@@ -50,7 +50,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
                 {
                     // The error type can contain additional information, with ":" as a delimiter
                     // We are only interested in the initial part which is the error type
-                    var index = errorType.IndexOf(":", StringComparison.Ordinal);
+                    var index = errorType.IndexOf(':');
                     if(index != -1)
                     {
                         errorType = errorType.Substring(0, index);
@@ -76,7 +76,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
             }
 
             // strip extra data from type, leaving only the exception type name
-            internalException.Type = internalException.Type?.Substring(internalException.Type.LastIndexOf("#", StringComparison.Ordinal) + 1);
+            internalException.Type = internalException.Type?.Substring(internalException.Type.LastIndexOf('#') + 1);
 
             // if no message was found create a generic message
             if (string.IsNullOrEmpty(internalException.Message))

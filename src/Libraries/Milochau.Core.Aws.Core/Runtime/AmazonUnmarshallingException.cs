@@ -35,15 +35,13 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                 AppendFormat(sb, "Request ID: {0}", RequestId);
                 AppendFormat(sb, "Response Body: {0}", ResponseBody);
                 AppendFormat(sb, "HTTP Status Code: {0}", (int)StatusCode + " " + StatusCode.ToString());
 
-                var partialMessage = sb.ToString();
-
-                return base.Message + " " + partialMessage;
+                return base.Message + " " + sb.ToString();
             }
         }
 

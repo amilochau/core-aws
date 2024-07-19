@@ -8,15 +8,10 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
     /// Validation attribute to assert dictionary values property, field or parameter does not exceed a maximum length
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class DictionaryStringLengthAttribute<TKey> : ValidationAttribute
+    public class DictionaryStringLengthAttribute<TKey>(int maximumLength) : ValidationAttribute
     {
-        public DictionaryStringLengthAttribute(int maximumLength)
-        {
-            MaximumLength = maximumLength;
-        }
-
         /// <summary>Gets the maximum acceptable length of the dictionary values</summary>
-        public int MaximumLength { get; }
+        public int MaximumLength { get; } = maximumLength;
 
         /// <summary>Gets or sets the minimum acceptable length of the dictionary values</summary>
         public int MinimumLength { get; set; }
