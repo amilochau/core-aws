@@ -42,7 +42,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             // Get a 96 bit random number
             string randomNumber = ThreadSafeRandom.GenerateHexNumber(RandomNumberHexDigits);
 
-            string[] arr = { Version.ToString(CultureInfo.InvariantCulture), epoch.ToString("x", CultureInfo.InvariantCulture), randomNumber };
+            string[] arr = [Version.ToString(CultureInfo.InvariantCulture), epoch.ToString("x", CultureInfo.InvariantCulture), randomNumber];
 
             // Concatenate elements with dash
             return string.Join(Delimiter.ToString(), arr);
@@ -56,59 +56,26 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public static bool IsIdValid(string traceId)
         {
             // Is the input valid?
-            if (string.IsNullOrWhiteSpace(traceId))
-            {
-                return false;
-            }
-
             // Is the total length valid?
-            if (traceId.Length != TotalLength)
+            if (string.IsNullOrWhiteSpace(traceId)
+                || traceId.Length != TotalLength)
             {
                 return false;
             }
 
             string[] elements = traceId.Split(Delimiter);
-
-            // Is the number of elements valid?
-            if (elements.Length != ElementsCount)
-            {
-                return false;
-            }
-
-            // Is the version a valid integer?
-            if (!int.TryParse(elements[0], out int idVersion))
-            {
-                return false;
-            }
-
-            // Is the version supportted?
-            if (Version != idVersion)
-            {
-                return false;
-            }
- 
             var idEpoch = elements[1];
             var idRand = elements[2];
 
             // Is the size of epoch and random number valid?
-            if (idEpoch.Length != EpochHexDigits || idRand.Length != RandomNumberHexDigits)
-            {
-                return false;
-            }
-
             // Is the epoch a valid 32bit hex number?
-            if (!int.TryParse(idEpoch, NumberStyles.HexNumber, null, out _))
-            {
-                return false;
-            }
-
             // Is the random number a valid hex number?
-            if (!BigInteger.TryParse(idRand, NumberStyles.HexNumber, null, out _))
-            {
-                return false;
-            }
-
-            return true;
+            return elements.Length == ElementsCount
+                && int.TryParse(elements[0], out int idVersion)
+                && Version == idVersion
+                && idEpoch.Length == EpochHexDigits && idRand.Length == RandomNumberHexDigits
+                && int.TryParse(idEpoch, NumberStyles.HexNumber, null, out _)
+                && BigInteger.TryParse(idRand, NumberStyles.HexNumber, null, out _);
         }
     }
 }

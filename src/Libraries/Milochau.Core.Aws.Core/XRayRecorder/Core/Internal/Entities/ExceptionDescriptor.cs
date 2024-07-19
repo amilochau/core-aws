@@ -18,7 +18,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <summary>
     /// AWS X-Ray Descriptor of Exception
     /// </summary>
-    public class ExceptionDescriptor
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ExceptionDescriptor"/> class.
+    /// </remarks>
+    public class ExceptionDescriptor(string message, string type)
     {
         /// <summary>
         /// The exception descriptor identifier length
@@ -26,32 +29,22 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public const int ExceptionDescriptorIdLength = 16;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionDescriptor"/> class.
-        /// </summary>
-        public ExceptionDescriptor(string message, string type)
-        {
-            Id = ThreadSafeRandom.GenerateHexNumber(ExceptionDescriptorIdLength);
-            Message = message;
-            Type = type;
-        }
-
-        /// <summary>
         /// Gets or sets the id of the descriptor.
         /// </summary>
         [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        public string? Id { get; set; } = ThreadSafeRandom.GenerateHexNumber(ExceptionDescriptorIdLength);
 
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
         [JsonPropertyName("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = message;
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = type;
 
         /// <summary>
         /// Gets or sets the stack.

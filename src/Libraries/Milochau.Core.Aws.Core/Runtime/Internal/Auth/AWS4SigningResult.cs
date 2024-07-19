@@ -9,62 +9,42 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
     /// or authorization query parameters for the final request as well as hold ongoing
     /// signature computations for subsequent calls related to the initial signing.
     /// </summary>
-    public class AWS4SigningResult
+    /// <remarks>
+    /// Constructs a new signing result instance for a computed signature
+    /// </remarks>
+    /// <param name="awsAccessKeyId">The access key that was included in the signature</param>
+    /// <param name="signedHeaders">The collection of headers names that were included in the signature</param>
+    /// <param name="scope">Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)</param>
+    /// <param name="signature">Computed signature</param>
+    public class AWS4SigningResult(string awsAccessKeyId,
+                             string signedHeaders,
+                             string scope,
+                             byte[] signature)
     {
-        private readonly string awsAccessKeyId;
-        private readonly byte[] signature;
-
-        /// <summary>
-        /// Constructs a new signing result instance for a computed signature
-        /// </summary>
-        /// <param name="awsAccessKeyId">The access key that was included in the signature</param>
-        /// <param name="signedHeaders">The collection of headers names that were included in the signature</param>
-        /// <param name="scope">Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)</param>
-        /// <param name="signature">Computed signature</param>
-        public AWS4SigningResult(string awsAccessKeyId,
-                                 string signedHeaders,
-                                 string scope,
-                                 byte[] signature)
-        {
-            this.signature = signature;
-            this.awsAccessKeyId = awsAccessKeyId;
-            SignedHeaders = signedHeaders;
-            Scope = scope;
-        }
 
         /// <summary>
         /// The ;-delimited collection of header names that were included in the signature computation
         /// </summary>
-        public string SignedHeaders { get; }
+        public string SignedHeaders { get; } = signedHeaders;
 
         /// <summary>
         /// Formatted 'scope' value for signing (YYYYMMDD/region/service/aws4_request)
         /// </summary>
-        public string Scope { get; }
+        public string Scope { get; } = scope;
 
         /// <summary>
         /// Returns the hex string representing the signature
         /// </summary>
-        public string Signature
-        {
-            get { return AWSSDKUtils.ToHex(signature, true); }
-        }
+        public string Signature => AWSSDKUtils.ToHex(signature, true);
 
         /// <summary>
         /// Returns the signature in a form usable as an 'Authorization' header value.
         /// </summary>
-        public string ForAuthorizationHeader
-        {
-            get
-            {
-                var authorizationHeader = new StringBuilder()
-                    .Append(AWSSigner.AWS4AlgorithmTag)
-                    .AppendFormat(" {0}={1}/{2},", AWSSigner.Credential, awsAccessKeyId, Scope)
-                    .AppendFormat(" {0}={1},", AWSSigner.SignedHeaders, SignedHeaders)
-                    .AppendFormat(" {0}={1}", AWSSigner.Signature, Signature);
-
-                return authorizationHeader.ToString();
-            }
-        }
+        public string ForAuthorizationHeader => new StringBuilder()
+            .Append(AWSSigner.AWS4AlgorithmTag)
+            .AppendFormat(" {0}={1}/{2},", AWSSigner.Credential, awsAccessKeyId, Scope)
+            .AppendFormat(" {0}={1},", AWSSigner.SignedHeaders, SignedHeaders)
+            .AppendFormat(" {0}={1}", AWSSigner.Signature, Signature)
+            .ToString();
     }
 }

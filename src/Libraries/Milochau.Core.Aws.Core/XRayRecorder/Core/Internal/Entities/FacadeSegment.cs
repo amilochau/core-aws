@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     {
         /// <summary>Gets a readonly copy of the subsegment list.</summary>
         [JsonPropertyName("subsegments")]
-        public List<Subsegment> Subsegments { get; } = new List<Subsegment>();
+        public List<Subsegment> Subsegments { get; } = [];
 
         /// <summary>Constructor</summary>
         public FacadeSegment() : base("Facade")

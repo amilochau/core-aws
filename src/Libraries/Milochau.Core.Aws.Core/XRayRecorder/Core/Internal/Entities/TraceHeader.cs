@@ -22,7 +22,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         private const string ParentKey = "Parent";
         private const string SampledKey = "Sampled";
 
-        private static readonly char[] _validSeparators = { ';' };
+        private static readonly char[] _validSeparators = [';'];
 
         /// <summary>
         /// Gets or sets the trace id
@@ -51,12 +51,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public static bool TryParseAll(string? rawHeader, out TraceHeader traceHeader)
         {
             traceHeader = FromString(rawHeader);
-
-            if (string.IsNullOrEmpty(rawHeader) || string.IsNullOrEmpty(traceHeader.RootTraceId) || string.IsNullOrEmpty(traceHeader.ParentId) || traceHeader.Sampled == SampleDecision.Unknown)
-            {
-                return false;
-            }
-            return true;
+            return !string.IsNullOrEmpty(rawHeader) && !string.IsNullOrEmpty(traceHeader.RootTraceId) && !string.IsNullOrEmpty(traceHeader.ParentId) && traceHeader.Sampled != SampleDecision.Unknown;
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// It only extracts non-null and valid values.</returns>
         public static TraceHeader FromString(string? rawHeader)
         {
-            TraceHeader result = new TraceHeader();
+            var result = new TraceHeader();
             try
             {
                 if (string.IsNullOrEmpty(rawHeader))

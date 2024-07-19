@@ -13,38 +13,30 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// Internally resolves and caches an ip for the hostname.
     /// The ip is cached to keep the normal path speedy and non-blocking.
     /// </summary>
-    public class HostEndPoint
-	{
-		private readonly int _cacheTtl;	//Seconds to consider a cached dns response valid
-		private IPEndPoint? _ipCache;
+    /// <remarks>
+    /// Create a HostEndPoint.
+    /// </remarks>
+    public class HostEndPoint(string host, int port, int cacheTtl = 60)
+    {
+        private IPEndPoint? _ipCache;
 		private DateTime? _timestampOfLastIPCacheUpdate;
-		private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim cacheLock = new();
 
-		/// <summary>
-		/// Create a HostEndPoint.
-		/// </summary>
-		public HostEndPoint(string host, int port, int cacheTtl = 60)
-		{
-			Host = host;
-			Port = port;
-			_cacheTtl = cacheTtl;
-		}
-		
-		/// <summary>
-		/// Get the hostname that identifies the endpoint.
-		/// </summary>
-		public string Host { get; }
-		/// <summary>
-		/// Get the port of the endpoint.
-		/// </summary>
-		public int Port { get; }
+        /// <summary>
+        /// Get the hostname that identifies the endpoint.
+        /// </summary>
+        public string Host { get; } = host;
+        /// <summary>
+        /// Get the port of the endpoint.
+        /// </summary>
+        public int Port { get; } = port;
 
-		/// <summary>
-		/// Check to see if the cache is valid.
-		/// A lock with at least read access MUST be held when calling this method!
-		/// </summary>
-		/// <returns>true if the cache is valid, false otherwise.</returns>
-		private CacheState IPCacheIsValid()
+        /// <summary>
+        /// Check to see if the cache is valid.
+        /// A lock with at least read access MUST be held when calling this method!
+        /// </summary>
+        /// <returns>true if the cache is valid, false otherwise.</returns>
+        private CacheState IPCacheIsValid()
 		{
 			if (_ipCache == null)
 			{
@@ -56,7 +48,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 				return CacheState.Invalid;
 			}
 			
-			if (DateTime.Now.Subtract(lastTimestamp).TotalSeconds < _cacheTtl)
+			if (DateTime.Now.Subtract(lastTimestamp).TotalSeconds < cacheTtl)
 			{
 				return CacheState.Valid;
 			}

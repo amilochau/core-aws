@@ -9,15 +9,10 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
     /// Validation attribute to assert an enumerable property, field or parameter does not exceed a maximum length
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class EnumerableLengthAttribute<TValue> : ValidationAttribute
+    public class EnumerableLengthAttribute<TValue>(int maximumLength) : ValidationAttribute
     {
-        public EnumerableLengthAttribute(int maximumLength)
-        {
-            MaximumLength = maximumLength;
-        }
-
         /// <summary>Gets the maximum acceptable length of the enumerable</summary>
-        public int MaximumLength { get; }
+        public int MaximumLength { get; } = maximumLength;
 
         /// <summary>Gets or sets the minimum acceptable length of the enumerable</summary>
         public int MinimumLength { get; set; }

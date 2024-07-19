@@ -10,8 +10,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// </summary>
     public static class ThreadSafeRandom
     {
-        private static readonly Random _global = new Random();
-        private static readonly ThreadLocal<Random> _local = new ThreadLocal<Random>(() =>
+        private static readonly Random _global = new();
+        private static readonly ThreadLocal<Random> _local = new(() =>
         {
             int seed;
             lock (_global)

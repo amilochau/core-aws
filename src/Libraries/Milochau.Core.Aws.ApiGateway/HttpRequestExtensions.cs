@@ -70,11 +70,12 @@ namespace Milochau.Core.Aws.ApiGateway
         {
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
-                if (!modelStateDictionary.ContainsKey(key))
+                if (!modelStateDictionary.TryGetValue(key, out Collection<string>? value))
                 {
-                    modelStateDictionary.Add(key, new Collection<string>());
+                    value = ([]);
+                    modelStateDictionary.Add(key, value);
                 }
-                modelStateDictionary[key].Add(errorMessage);
+                value.Add(errorMessage);
             }
 
             return modelStateDictionary;

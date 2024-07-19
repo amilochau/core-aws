@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     public class Subsegment : Entity
     {
         /// <summary>Defines exception serialization stategy to process recorded exceptions.</summary>
-        private static readonly IExceptionSerializationStrategy exceptionSerializationStrategy = new DefaultExceptionSerializationStrategy();
+        private static readonly DefaultExceptionSerializationStrategy exceptionSerializationStrategy = new();
 
         /// <summary>Emitter used to send Traces.</summary>
         private static readonly ISegmentEmitter emitter = new UdpSegmentEmitter();

@@ -82,7 +82,7 @@ namespace Milochau.Core.Aws.Core.Util
         /// <returns>String version of the data</returns>
         public static string ToHex(byte[] data, bool lowercase)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -97,8 +97,8 @@ namespace Milochau.Core.Aws.Core.Util
         /// </summary>
         public static MemoryStream GenerateMemoryStreamFromString(string s)
         {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
             writer.Write(s);
             writer.Flush();
             stream.Position = 0;
@@ -118,12 +118,9 @@ namespace Milochau.Core.Aws.Core.Util
         /// </summary>
         public static void CopyStream(Stream source, Stream destination, int bufferSize)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(destination);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
             byte[] array = new byte[bufferSize];
             int count;
@@ -141,14 +138,14 @@ namespace Milochau.Core.Aws.Core.Util
         /// <returns>The encoded string</returns>
         private static string UrlEncode(string data)
         {
-            StringBuilder encoded = new StringBuilder(data.Length * 2);
+            var encoded = new StringBuilder(data.Length * 2);
 
             var validUrlCharacters = ValidUrlCharacters;
             string unreservedChars = string.Concat(validUrlCharacters, "");
 
             foreach (char symbol in Encoding.UTF8.GetBytes(data).Select(v => (char)v))
             {
-                if (unreservedChars.IndexOf(symbol) != -1)
+                if (unreservedChars.Contains(symbol))
                 {
                     encoded.Append(symbol);
                 }
@@ -191,7 +188,7 @@ namespace Milochau.Core.Aws.Core.Util
             var encoded = new StringBuilder(value.Length * 2);
             foreach (char symbol in Encoding.UTF8.GetBytes(value).Select(v => (char)v))
             {
-                if (ValidTraceIdHeaderValueCharacters.IndexOf(symbol) != -1)
+                if (ValidTraceIdHeaderValueCharacters.Contains(symbol))
                 {
                     encoded.Append(symbol);
                 }

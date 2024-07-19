@@ -3,27 +3,27 @@
     /// <summary>
     /// Immutable representation of AWS credentials.
     /// </summary>
-    public class ImmutableCredentials
+    public class ImmutableCredentials(string accessKey, string secretKey, string? token)
     {
         /// <summary>
         /// Gets the AccessKey property for the current credentials.
         /// </summary>
-        public required string AccessKey { get; set; }
+        public string AccessKey { get; } = accessKey;
 
         /// <summary>
         /// Gets the SecretKey property for the current credentials.
         /// </summary>
-        public required string SecretKey { get; set; }
+        public string SecretKey { get; } = secretKey;
 
         /// <summary>
         /// Gets the Token property for the current credentials.
         /// </summary>
-        public string? Token { get; set; }
+        public string? Token { get; } = token;
 
         /// <summary>
         /// Gets the UseToken property for the current credentials.
         /// Specifies if Token property is non-empty.
         /// </summary>
-        public bool UseToken { get { return !string.IsNullOrEmpty(Token); } }
+        public bool UseToken => !string.IsNullOrEmpty(Token);
     }
 }

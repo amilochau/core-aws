@@ -11,7 +11,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
     /// Defines default startegy for recording exception. By default <see cref="AmazonServiceException"/> class exeptions are marked as remote. 
     /// </summary>
     [Serializable]
-    public class DefaultExceptionSerializationStrategy : IExceptionSerializationStrategy
+    public class DefaultExceptionSerializationStrategy
     {
         /// <summary>
         /// Default stack frame size for the recorded <see cref="Exception"/>.

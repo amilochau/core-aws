@@ -3,19 +3,13 @@ using System.Net.Http.Headers;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
-    internal class RuntimeApiHeaders
+    internal class RuntimeApiHeaders(HttpHeaders headers)
     {
         internal const string HeaderAwsRequestId = "Lambda-Runtime-Aws-Request-Id";
         internal const string HeaderTraceId = "Lambda-Runtime-Trace-Id";
 
-        public RuntimeApiHeaders(HttpHeaders headers)
-        {
-            AwsRequestId = GetHeaderValueRequired(headers, HeaderAwsRequestId);
-            TraceId = GetHeaderValueOrNull(headers, HeaderTraceId);
-        }
-
-        public string AwsRequestId { get; private set; }
-        public string? TraceId { get; private set; }
+        public string AwsRequestId { get; } = GetHeaderValueRequired(headers, HeaderAwsRequestId);
+        public string? TraceId { get; } = GetHeaderValueOrNull(headers, HeaderTraceId);
 
         private static string GetHeaderValueRequired(HttpHeaders headers, string header)
         {

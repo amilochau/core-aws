@@ -23,7 +23,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal
         /// <summary>Get response parameters for XRay</summary>
         public virtual Dictionary<string, object?> GetXRayResponseParameters()
         {
-            return new Dictionary<string, object?>();
+            return [];
         }
     }
 }

@@ -8,23 +8,18 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
     /// <summary>
     /// A wrapper stream.
     /// </summary>
-    public class WrapperStream : Stream
+    /// <remarks>
+    /// Initializes WrapperStream with a base stream.
+    /// </remarks>
+    /// <param name="baseStream"></param>
+    public class WrapperStream(Stream baseStream) : Stream
     {
         /// <summary>
         /// Base stream.
         /// </summary>
-        protected Stream BaseStream { get; private set; }
+        protected Stream BaseStream { get; private set; } = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
 
-        /// <summary>
-        /// Initializes WrapperStream with a base stream.
-        /// </summary>
-        /// <param name="baseStream"></param>
-        public WrapperStream(Stream baseStream)
-        {
-            BaseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
-        }
-
-#region Stream overrides
+        #region Stream overrides
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports reading.
@@ -241,6 +236,16 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         }
 
         /// <summary>
+        /// Asynchronously reads a sequence of bytes from the current stream, advances
+        /// the position within the stream by the number of bytes read, and monitors
+        /// cancellation requests.
+        /// </summary>
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            return BaseStream.ReadAsync(buffer, cancellationToken);
+        }
+
+        /// <summary>
         /// Asynchronously writes a sequence of bytes to the current stream and advances the
         /// current position within this stream by the number of bytes written.
         /// </summary>
@@ -262,6 +267,15 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
             return BaseStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
-#endregion
+        /// <summary>
+        /// Asynchronously writes a sequence of bytes to the current stream and advances the
+        /// current position within this stream by the number of bytes written.
+        /// </summary>
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            return BaseStream.WriteAsync(buffer, cancellationToken);
+        }
+
+        #endregion
     }
 }

@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.ApiGateway
         /// <summary>Bad Request - 400</summary>
         public static APIGatewayHttpApiV2ProxyResponse BadRequest()
         {
-            return BadRequest(new Dictionary<string, Collection<string>>());
+            return BadRequest([]);
         }
 
         /// <summary>Bad Request - 400</summary>

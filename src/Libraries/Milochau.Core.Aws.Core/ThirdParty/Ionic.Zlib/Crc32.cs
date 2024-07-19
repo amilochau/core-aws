@@ -96,33 +96,19 @@ namespace ThirdParty.Ionic.Zlib
     /// </para>
     /// <para>This class is intended primarily for use internally by the DotNetZip library.</para>
     /// </remarks>
-    public class CrcCalculatorStream : System.IO.Stream
+    /// <remarks>
+    /// The constructor.
+    /// </remarks>
+    /// <param name="stream">The underlying stream</param>
+    /// <param name="length">The length of the stream to slurp</param>
+    public class CrcCalculatorStream(System.IO.Stream stream, long length) : System.IO.Stream()
     {
-        private readonly System.IO.Stream _InnerStream;
-        private readonly CRC32 _Crc32;
-        private readonly long _length = 0;
-
-        /// <summary>
-        /// The constructor.
-        /// </summary>
-        /// <param name="stream">The underlying stream</param>
-        /// <param name="length">The length of the stream to slurp</param>
-        public CrcCalculatorStream(System.IO.Stream stream, long length)
-            : base()
-        {
-            _InnerStream = stream;
-            _Crc32 = new CRC32();
-            _length = length;
-        }
+        private readonly CRC32 _Crc32 = new();
 
         /// <summary>
         /// Provides the current CRC for all blocks slurped in.
         /// </summary>
-        public int Crc32
-        {
-            get { return _Crc32.Crc32Result; }
-        }
-
+        public int Crc32 => _Crc32.Crc32Result;
 
         /// <summary>
         /// Read from the stream
@@ -142,13 +128,13 @@ namespace ThirdParty.Ionic.Zlib
             // calling ReadToEnd() on it, We can "over-read" the zip data and get a corrupt string.  
             // The length limits that, prevents that problem. 
 
-            if (_length != 0)
+            if (length != 0)
             {
-                if (_Crc32.TotalBytesRead >= _length) return 0; // EOF
-                long bytesRemaining = _length - _Crc32.TotalBytesRead;
+                if (_Crc32.TotalBytesRead >= length) return 0; // EOF
+                long bytesRemaining = length - _Crc32.TotalBytesRead;
                 if (bytesRemaining < count) bytesToRead = (int)bytesRemaining;
             }
-            int n = _InnerStream.Read(buffer, offset, bytesToRead);
+            int n = stream.Read(buffer, offset, bytesToRead);
             if (n > 0) _Crc32.SlurpBlock(buffer, offset, n);
             return n;
         }
@@ -162,39 +148,30 @@ namespace ThirdParty.Ionic.Zlib
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (count > 0) _Crc32.SlurpBlock(buffer, offset, count);
-            _InnerStream.Write(buffer, offset, count);
+            stream.Write(buffer, offset, count);
         }
 
         /// <summary>
         /// Indicates whether the stream supports reading. 
         /// </summary>
-        public override bool CanRead
-        {
-            get { return _InnerStream.CanRead; }
-        }
+        public override bool CanRead => stream.CanRead;
 
         /// <summary>
         /// Indicates whether the stream supports seeking. 
         /// </summary>
-        public override bool CanSeek
-        {
-            get { return _InnerStream.CanSeek; }
-        }
+        public override bool CanSeek => stream.CanSeek;
 
         /// <summary>
         /// Indicates whether the stream supports writing. 
         /// </summary>
-        public override bool CanWrite
-        {
-            get { return _InnerStream.CanWrite; }
-        }
+        public override bool CanWrite => stream.CanWrite;
 
         /// <summary>
         /// Flush the stream.
         /// </summary>
         public override void Flush()
         {
-            _InnerStream.Flush();
+            stream.Flush();
         }
 
         /// <summary>
@@ -204,8 +181,7 @@ namespace ThirdParty.Ionic.Zlib
         {
             get
             {
-                if (_length == 0) throw new NotImplementedException();
-                else return _length;
+                return length == 0 ? throw new NotImplementedException() : length;
             }
         }
 

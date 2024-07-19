@@ -11,9 +11,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     /// <summary>
     /// Client to call the AWS Lambda Runtime API.
     /// </summary>
-    internal class RuntimeApiClient : IRuntimeApiClient
+    internal class RuntimeApiClient
     {
-        private readonly IInternalRuntimeApiClient internalClient;
+        private readonly InternalRuntimeApiClient internalClient;
 
         internal RuntimeApiClient()
         {
@@ -48,8 +48,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <returns>A Task representing the asynchronous operation.</returns>
         public Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken)
         {
-            if (awsRequestId == null)
-                throw new ArgumentNullException(nameof(awsRequestId));
+            ArgumentNullException.ThrowIfNull(awsRequestId);
 
             var exceptionInfo = ExceptionInfo.GetExceptionInfo(exception);
 

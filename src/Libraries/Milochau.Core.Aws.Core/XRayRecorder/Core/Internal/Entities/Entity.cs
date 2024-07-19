@@ -9,7 +9,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <summary>
     /// Represents the common part for both Segment and Subsegment.
     /// </summary>
-    public abstract class Entity
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Entity"/> class.
+    /// </remarks>
+    /// <param name="name">The name.</param>
+    public abstract class Entity(string name)
     {
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
 
@@ -19,23 +23,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         protected const char ProtocolDelimiter = '\n';
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        public Entity(string name)
-        {
-            Id = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
-            Name = name;
-        }
-
-        /// <summary>
         /// Gets or sets the unique id of segment.
         /// </summary>
         /// <value>
         /// The unique for Entity.
         /// </value>
         [JsonPropertyName("id")]
-        public string? Id { get; set; }
+        public string? Id { get; set; } = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
 
         /// <summary>
         /// Gets or sets the unique id for the trace.
@@ -59,31 +53,31 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// The name.
         /// </value>
         [JsonPropertyName("name")]
-        public string Name { get; }
+        public string Name { get; } = name;
 
         /// <summary>
         /// Gets aws information
         /// </summary>
         [JsonPropertyName("aws")]
-        public IDictionary<string, object?> Aws { get; set; } = new Dictionary<string, object?>();
+        public Dictionary<string, object?> Aws { get; set; } = [];
 
         /// <summary>
         /// Gets the http attribute
         /// </summary>
         [JsonPropertyName("http")]
-        public IDictionary<string, Dictionary<string, object>> Http { get; set; } = new Dictionary<string, Dictionary<string, object>>();
+        public Dictionary<string, Dictionary<string, object>> Http { get; set; } = [];
 
         /// <summary>
         /// Gets annotations, indexed
         /// </summary>
         [JsonPropertyName("annotations")]
-        public IDictionary<string, object> Annotations { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Annotations { get; set; } = [];
 
         /// <summary>
         /// Gets metadata, not indexed
         /// </summary>
         [JsonPropertyName("metadata")]
-        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Metadata { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the sample decision

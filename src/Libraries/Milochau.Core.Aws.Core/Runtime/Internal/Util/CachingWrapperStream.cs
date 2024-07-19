@@ -10,7 +10,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
     /// <summary>
     /// A stream which caches the contents of the underlying stream as it reads it.
     /// </summary>
-    public class CachingWrapperStream : WrapperStream
+    /// <remarks>
+    /// Initializes the CachingWrapperStream with a base stream.
+    /// </remarks>
+    /// <param name="baseStream">The stream to be wrapped.</param>
+    public class CachingWrapperStream(Stream baseStream) : WrapperStream(baseStream)
     {
         // Default limit for response logging is 1 KB.
         public static readonly int DefaultLogResponsesSizeLimit = 1024;
@@ -20,26 +24,12 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
         /// <summary>
         /// All the bytes read by the stream.
         /// </summary>
-        public List<byte> AllReadBytes { get; private set; } = new List<byte>();
+        public List<byte> AllReadBytes { get; private set; } = [];
 
         /// <summary>
         /// All the bytes read by the stream constrained with _cacheLimit
         /// </summary>
-        public List<byte> LoggableReadBytes { 
-            get
-            {
-                return AllReadBytes.Take(DefaultLogResponsesSizeLimit).ToList();
-            }
-        }
-
-        /// <summary>
-        /// Initializes the CachingWrapperStream with a base stream.
-        /// </summary>
-        /// <param name="baseStream">The stream to be wrapped.</param>
-        /// <param name="cacheLimit">Maximum number of bytes to be cached.</param>
-        public CachingWrapperStream(Stream baseStream) : base(baseStream)
-        {
-        }
+        public List<byte> LoggableReadBytes => AllReadBytes.Take(DefaultLogResponsesSizeLimit).ToList();
 
         /// <summary>
         /// Reads a sequence of bytes from the current stream and advances the position
@@ -71,7 +61,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Util
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            var numberOfBytesRead = await base.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+            var numberOfBytesRead = await base.ReadAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
             UpdateCacheAfterReading(buffer, offset, numberOfBytesRead);
             return numberOfBytesRead;
         }

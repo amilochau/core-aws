@@ -26,20 +26,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline
 
 namespace Amazon.Runtime.Internal
 {
-    public class RequestContext : IRequestContext
+    public class RequestContext(IClientConfig clientConfig, AmazonWebServiceRequest originalRequest, string monitoringOriginalRequestName) : IRequestContext
     {
-        public RequestContext(IClientConfig clientConfig,
-            AmazonWebServiceRequest originalRequest,
-            string monitoringOriginalRequestName)
-        {
-            ClientConfig = clientConfig;
-            OriginalRequest = originalRequest;
-            MonitoringOriginalRequestName = monitoringOriginalRequestName;
-        }
-
-        public IClientConfig ClientConfig { get; }
-        public AmazonWebServiceRequest OriginalRequest { get; }
-        public string MonitoringOriginalRequestName { get; }
+        public IClientConfig ClientConfig { get; } = clientConfig;
+        public AmazonWebServiceRequest OriginalRequest { get; } = originalRequest;
+        public string MonitoringOriginalRequestName { get; } = monitoringOriginalRequestName;
 
         public required HttpRequestMessage HttpRequestMessage { get; set; }
 
@@ -48,7 +39,7 @@ namespace Amazon.Runtime.Internal
 
     public class ResponseContext : IResponseContext
     {
-        public AmazonWebServiceResponse? Response { get; set; }        
+        public AmazonWebServiceResponse? Response { get; set; }
         public HttpResponseMessage? HttpResponse { get; set; }
     }
 }
