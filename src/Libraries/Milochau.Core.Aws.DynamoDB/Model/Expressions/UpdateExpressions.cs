@@ -8,16 +8,16 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
     public class UpdateExpression : IExpression
     {
         /// <summary>Set expressions</summary>
-        public List<SetUpdateExpression>? SetExpressions { get; set; }
+        public List<SetUpdateExpression> SetExpressions { get; set; } = [];
 
         /// <summary>Remove expressions</summary>
-        public List<RemoveUpdateExpression>? RemoveExpressions { get; set; }
+        public List<RemoveUpdateExpression> RemoveExpressions { get; set; } = [];
 
         /// <summary>Add expressions</summary>
-        public List<AddUpdateExpression>? AddExpressions { get; set; }
+        public List<AddUpdateExpression> AddExpressions { get; set; } = [];
 
         /// <summary>Delete expressions</summary>
-        public List<DeleteUpdateExpression>? DeleteExpressions { get; set; }
+        public List<DeleteUpdateExpression> DeleteExpressions { get; set; } = [];
 
         /// <summary>Build expression</summary>
         public string Expression
@@ -29,19 +29,19 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
                 var removeExpression = new StringBuilder();
                 var addExpression = new StringBuilder();
                 var deleteExpression = new StringBuilder();
-                if (SetExpressions != null && SetExpressions.Count > 0)
+                if (SetExpressions.Count > 0)
                 {
                     setExpression.Append("SET ").AppendJoin(", ", SetExpressions.Select(x => x.Expression));
                 }
-                if (RemoveExpressions != null && RemoveExpressions.Count > 0)
+                if (RemoveExpressions.Count > 0)
                 {
                     removeExpression.Append("REMOVE ").AppendJoin(", ", RemoveExpressions.Select(x => x.Expression));
                 }
-                if (AddExpressions != null && AddExpressions.Count > 0)
+                if (AddExpressions.Count > 0)
                 {
                     addExpression.Append("ADD ").AppendJoin(", ", AddExpressions.Select(x => x.Expression));
                 }
-                if (DeleteExpressions != null && DeleteExpressions.Count > 0)
+                if (DeleteExpressions.Count > 0)
                 {
                     deleteExpression.Append("DELETE ").AppendJoin(", ", DeleteExpressions.Select(x => x.Expression));
                 }
@@ -53,18 +53,18 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Expressions
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, string>> AttributeNames => [
-                ..SetExpressions?.SelectMany(x => x.AttributeNames) ?? [],
-                ..RemoveExpressions?.SelectMany(x => x.AttributeNames) ?? [],
-                ..AddExpressions?.SelectMany(x => x.AttributeNames) ?? [],
-                ..DeleteExpressions?.SelectMany(x => x.AttributeNames) ?? [],
+                ..SetExpressions.SelectMany(x => x.AttributeNames),
+                ..RemoveExpressions.SelectMany(x => x.AttributeNames),
+                ..AddExpressions.SelectMany(x => x.AttributeNames),
+                ..DeleteExpressions.SelectMany(x => x.AttributeNames),
             ];
 
         /// <inheritdoc/>
         public List<KeyValuePair<string, AttributeValue>> AttributeValues => [
-                ..SetExpressions?.SelectMany(x => x.AttributeValues) ?? [],
-                ..RemoveExpressions?.SelectMany(x => x.AttributeValues) ?? [],
-                ..AddExpressions?.SelectMany(x => x.AttributeValues) ?? [],
-                ..DeleteExpressions?.SelectMany(x => x.AttributeValues) ?? [],
+                ..SetExpressions.SelectMany(x => x.AttributeValues),
+                ..RemoveExpressions.SelectMany(x => x.AttributeValues),
+                ..AddExpressions.SelectMany(x => x.AttributeValues),
+                ..DeleteExpressions.SelectMany(x => x.AttributeValues),
             ];
     }
 
