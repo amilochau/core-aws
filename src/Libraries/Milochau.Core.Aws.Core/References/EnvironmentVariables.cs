@@ -10,7 +10,8 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_TraceId = "_X_AMZN_TRACE_ID";
         internal const string Key_AccessKeyId = "AWS_ACCESS_KEY_ID";
         internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
-        internal const string Key_FunctionMemorySize = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE";
+        internal const string Key_LambdaFunctionMemorySize = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE";
+        internal const string Key_LambdaLogLevel = "AWS_LAMBDA_LOG_LEVEL";
         internal const string Key_LambdaRuntimeApi = "AWS_LAMBDA_RUNTIME_API";
         internal const string Key_Region = "AWS_REGION";
         internal const string Key_SecretAccessKey = "AWS_SECRET_ACCESS_KEY";
@@ -97,7 +98,10 @@ namespace Milochau.Core.Aws.Core.References
         public static string AccountId { get; } = GetEnvironmentVariable(Key_AccountId)!;
 
         /// <summary>Lambda Function memory size, in MB</summary>
-        public static string FunctionMemorySize { get; } = GetEnvironmentVariable(Key_FunctionMemorySize)!;
+        internal static string FunctionMemorySize { get; } = GetEnvironmentVariable(Key_LambdaFunctionMemorySize)!;
+
+        /// <summary>Lambda log level</summary>
+        internal static string LogLevel { get; } = GetEnvironmentVariable(Key_LambdaLogLevel)!;
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
     }
