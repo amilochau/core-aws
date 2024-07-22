@@ -11,6 +11,7 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_AccessKeyId = "AWS_ACCESS_KEY_ID";
         internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
         internal const string Key_LambdaFunctionMemorySize = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE";
+        internal const string Key_LambdaFunctionName = "AWS_LAMBDA_FUNCTION_NAME";
         internal const string Key_LambdaLogLevel = "AWS_LAMBDA_LOG_LEVEL";
         internal const string Key_LambdaRuntimeApi = "AWS_LAMBDA_RUNTIME_API";
         internal const string Key_Region = "AWS_REGION";
@@ -99,6 +100,8 @@ namespace Milochau.Core.Aws.Core.References
 
         /// <summary>Lambda Function memory size, in MB</summary>
         internal static string FunctionMemorySize { get; } = GetEnvironmentVariable(Key_LambdaFunctionMemorySize)!;
+
+        internal static string FunctionName { get; } = GetEnvironmentVariable(Key_LambdaFunctionName)!;
 
         /// <summary>Lambda log level</summary>
         internal static string LogLevel { get; } = GetEnvironmentVariable(Key_LambdaLogLevel)!;

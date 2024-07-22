@@ -78,6 +78,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         public string Level { get; } = logLevel;
         public string Message { get; } = message;
         public string RequestId { get; } = requestId;
+        public string FunctionName { get; } = EnvironmentVariables.FunctionName;
     }
 
     [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
