@@ -7,15 +7,16 @@ namespace Milochau.Core.Aws.Core.References
     /// <summary>In-memory cache for environment variables</summary>
     public static class EnvironmentVariables
     {
-        internal const string Key_DaemonAddress = "AWS_XRAY_DAEMON_ADDRESS";
         internal const string Key_TraceId = "_X_AMZN_TRACE_ID";
         internal const string Key_AccessKeyId = "AWS_ACCESS_KEY_ID";
-        internal const string Key_SecretAccessKey = "AWS_SECRET_ACCESS_KEY";
-        internal const string Key_SessionToken = "AWS_SESSION_TOKEN";
+        internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
+        internal const string Key_FunctionMemorySize = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE";
         internal const string Key_LambdaRuntimeApi = "AWS_LAMBDA_RUNTIME_API";
         internal const string Key_Region = "AWS_REGION";
-        internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
+        internal const string Key_SecretAccessKey = "AWS_SECRET_ACCESS_KEY";
+        internal const string Key_SessionToken = "AWS_SESSION_TOKEN";
         internal const string Key_XRayContextMissing = "AWS_XRAY_CONTEXT_MISSING";
+        internal const string Key_DaemonAddress = "AWS_XRAY_DAEMON_ADDRESS";
         internal const string Key_ConventionPrefix = "CONVENTION__PREFIX";
         internal const string Key_ConventionOrganization = "CONVENTION__ORGANIZATION";
         internal const string Key_ConventionApplication = "CONVENTION__APPLICATION";
@@ -94,6 +95,9 @@ namespace Milochau.Core.Aws.Core.References
 
         /// <summary>Account id</summary>
         public static string AccountId { get; } = GetEnvironmentVariable(Key_AccountId)!;
+
+        /// <summary>Lambda Function memory size, in MB</summary>
+        public static string FunctionMemorySize { get; } = GetEnvironmentVariable(Key_FunctionMemorySize)!;
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
     }
