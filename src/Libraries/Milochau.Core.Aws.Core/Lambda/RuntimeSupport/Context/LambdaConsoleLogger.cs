@@ -46,7 +46,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             var displayLevel = ConvertLogLevelToLabel(logLevel);
 
             // We assume that we always want to use JSON log format
-            var formattedLine = new LogLine(logLevel, message, currentAwsRequestId);
+            var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId);
             var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
 
             textWriter.WriteLine(stringifiedLine);
@@ -72,15 +72,15 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         }
     }
 
-    internal class LogLine(LogLevel logLevel, string message, string requestId)
+    internal class LogLine(string logLevel, string message, string requestId)
     {
         public DateTime Timestamp { get; } = DateTime.UtcNow;
-        public LogLevel LogLevel { get; } = logLevel;
+        public string Level { get; } = logLevel;
         public string Message { get; } = message;
         public string RequestId { get; } = requestId;
     }
 
-    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(LogLine))]
     internal partial class LoggerJsonSerializerContext : JsonSerializerContext
     {
