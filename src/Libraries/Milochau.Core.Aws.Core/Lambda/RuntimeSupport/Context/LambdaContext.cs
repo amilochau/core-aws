@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         {
 
             this.runtimeApiHeaders = runtimeApiHeaders;
-            Logger = new LambdaConsoleLogger(this.runtimeApiHeaders.TraceId);
+            Logger = new LambdaConsoleLogger(this.runtimeApiHeaders.AwsRequestId);
 
             // set environment variable so that if the function uses the XRay client it will work correctly
             EnvironmentVariables.SetEnvironmentVariable(EnvironmentVariables.Key_TraceId, this.runtimeApiHeaders.TraceId!);
