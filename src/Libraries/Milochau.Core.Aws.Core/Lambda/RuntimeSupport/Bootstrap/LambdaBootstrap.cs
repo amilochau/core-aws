@@ -1,5 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
+using Milochau.Core.Aws.Core.References;
 using System;
 using System.IO;
 using System.Text.Json.Serialization.Metadata;
@@ -62,6 +63,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// </summary>
         private async static Task RunAsync(LambdaBootstrapHandler handler)
         {
+            AdjustMemorySettings();
+
             var runtimeApiClient = new RuntimeApiClient();
             while (true)
             {
@@ -97,6 +100,30 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
                 {
                     response.OutputStream?.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        /// The .NET runtime does not recognize the memory limits placed by Lambda via Lambda's cgroups. This method is run during startup to inform the
+        /// .NET runtime the max memory configured for Lambda function. The max memory can be determined using the AWS_LAMBDA_FUNCTION_MEMORY_SIZE environment variable
+        /// which has the memory in MB.
+        /// 
+        /// For additional context on setting the heap size refer to this GitHub issue:
+        /// https://github.com/dotnet/runtime/issues/70601
+        /// </summary>
+        private static void AdjustMemorySettings()
+        {
+            try
+            {
+                if (int.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariables.FunctionMemorySize), out var lambdaMemoryInMb))
+                {
+                    ulong memoryInBytes = (ulong)lambdaMemoryInMb * 1024 * 1024;
+                    AppContext.SetData("GCHeapHardLimit", memoryInBytes);
+                    GC.RefreshMemoryLimit();
+                }
+            }
+            catch (Exception)
+            {
             }
         }
     }
