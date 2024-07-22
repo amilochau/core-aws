@@ -1,12 +1,26 @@
 ﻿using Microsoft.Extensions.Logging;
 using Milochau.Core.Aws.Core.Lambda.Core;
+using Milochau.Core.Aws.Core.References;
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
-    internal class LambdaConsoleLogger(string? currentAwsRequestId) : ILambdaLogger
+    internal class LambdaConsoleLogger(string currentAwsRequestId) : ILambdaLogger
     {
+        private static readonly LogLevel minimumLogLevel = EnvironmentVariables.LogLevel switch
+        {
+            "TRACE" => LogLevel.Trace,
+            "DEBUG" => LogLevel.Debug,
+            "INFO" => LogLevel.Information,
+            "WARN" => LogLevel.Warning,
+            "ERROR" => LogLevel.Error,
+            "FATAL" => LogLevel.Critical,
+            _ => LogLevel.Information,
+        };
+
         public void Log(string message)
         {
             Console.Out.Write(message);
@@ -24,13 +38,18 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 
         private void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
         {
-            if (logLevel < LogLevel.Information)
+            if (logLevel < minimumLogLevel || logLevel == LogLevel.None)
+            {
                 return;
+            }
 
             var displayLevel = ConvertLogLevelToLabel(logLevel);
-            var line = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss.fffZ}\t{currentAwsRequestId}\t{displayLevel}\t{message ?? string.Empty}";
 
-            textWriter.WriteLine(line);
+            // We assume that we always want to use JSON log format
+            var formattedLine = new LogLine(logLevel, message, currentAwsRequestId);
+            var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
+
+            textWriter.WriteLine(stringifiedLine);
         }
 
         /// <summary>
@@ -42,14 +61,28 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         {
             return level switch
             {
-                LogLevel.Trace => "trce",
-                LogLevel.Debug => "dbug",
-                LogLevel.Information => "info",
-                LogLevel.Warning => "warn",
-                LogLevel.Error => "fail",
-                LogLevel.Critical => "crit",
+                LogLevel.Trace => "TRACE",
+                LogLevel.Debug => "DEBUG",
+                LogLevel.Information => "INFO",
+                LogLevel.Warning => "WARN",
+                LogLevel.Error => "ERROR",
+                LogLevel.Critical => "FATAL",
                 _ => level.ToString(),
             };
         }
+    }
+
+    internal class LogLine(LogLevel logLevel, string message, string requestId)
+    {
+        public DateTime Timestamp { get; } = DateTime.UtcNow;
+        public LogLevel LogLevel { get; } = logLevel;
+        public string Message { get; } = message;
+        public string RequestId { get; } = requestId;
+    }
+
+    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSerializable(typeof(LogLine))]
+    internal partial class LoggerJsonSerializerContext : JsonSerializerContext
+    {
     }
 }
