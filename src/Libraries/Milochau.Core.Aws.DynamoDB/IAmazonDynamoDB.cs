@@ -137,6 +137,9 @@ namespace Milochau.Core.Aws.DynamoDB
         Task<List<BatchWriteItemResponse<TEntity>>> BatchWriteItemAsync<TEntity>(BatchWriteItemRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity: class, IDynamoDbBatchWritableEntity<TEntity>;
 
+        /// <summary>Unmanaged <c>BatchWriteItemAsync</c> operation.</summary>
+        Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken);
+
 
         /// <summary>
         /// Deletes a single item in a table by primary key. You can perform a conditional delete
@@ -161,6 +164,9 @@ namespace Milochau.Core.Aws.DynamoDB
         Task<DeleteItemResponse<TEntity>> DeleteItemAsync<TEntity>(DeleteItemRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbDeletableEntity<TEntity>;
 
+        /// <summary>Unmanaged <c>DeleteItemAsync</c> operation.</summary>
+        Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken);
+
 
         /// <summary>
         /// The <c>GetItem</c> operation returns a set of attributes for the item with the
@@ -177,6 +183,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/GetItem">REST API Reference for GetItem Operation</seealso>
         Task<GetItemResponse<TEntity>> GetItemAsync<TEntity>(GetItemRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbGettableEntity<TEntity>;
+
+        /// <summary>Unmanaged <c>GetItemAsync</c> operation.</summary>
+        Task<GetItemResponse> GetItemAsync(GetItemRequest request, CancellationToken cancellationToken);
 
 
         /// <summary>
@@ -215,6 +224,8 @@ namespace Milochau.Core.Aws.DynamoDB
         Task<PutItemResponse<TEntity>> PutItemAsync<TEntity>(PutItemRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbPutableEntity<TEntity>;
 
+        /// <summary>Unmanaged <c>PutItemAsync</c> operation.</summary>
+        Task<PutItemResponse> PutItemAsync(PutItemRequest request, CancellationToken cancellationToken);
 
 
         /// <summary>
@@ -232,6 +243,9 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/UpdateItem">REST API Reference for UpdateItem Operation</seealso>
         Task<UpdateItemResponse<TEntity>> UpdateItemAsync<TEntity>(UpdateItemRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbUpdatableEntity<TEntity>;
+
+        /// <summary>Unmanaged <c>UpdateItemAsync</c> operation.</summary>
+        Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken);
 
 
         /// <summary>
@@ -297,6 +311,9 @@ namespace Milochau.Core.Aws.DynamoDB
         Task<QueryResponse<TEntity>> QueryAsync<TEntity>(QueryRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbQueryableEntity<TEntity>;
 
+        /// <summary>Unmanaged <c>QueryAsync</c> operation.</summary>
+        Task<QueryResponse> QueryAsync(QueryRequest request, CancellationToken cancellationToken);
+
 
         /// <summary>
         /// The <c>Scan</c> operation returns one or more items and item attributes by accessing
@@ -351,5 +368,8 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/dynamodb-2012-08-10/Scan">REST API Reference for Scan Operation</seealso>
         Task<ScanResponse<TEntity>> ScanAsync<TEntity>(ScanRequest<TEntity> request, CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbScanableEntity<TEntity>;
+
+        /// <summary>Unmanaged <c>ScanAsync</c> operation.</summary>
+        Task<ScanResponse> ScanAsync(ScanRequest request, CancellationToken cancellationToken);
     }
 }
