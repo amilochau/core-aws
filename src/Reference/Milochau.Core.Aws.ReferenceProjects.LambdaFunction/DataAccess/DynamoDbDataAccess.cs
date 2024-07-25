@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using Milochau.Core.Aws.DynamoDB.Abstractions;
 using System.Diagnostics;
 using Milochau.Core.Aws.DynamoDB.Helpers;
+using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess.Nested;
 
 namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 {
@@ -140,6 +141,27 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
                 Limit = 1,
             }, cancellationToken);
 
+
+            await amazonDynamoDB.UpdateAllAsync<Access__Gsi_By_MapId_ThenBy_Creation, Access>(
+                userId: null,
+                partitionKeyCondition: new EqualValueExpression(Access__Gsi_By_MapId_ThenBy_Creation.PartitionKey, "map_id"),
+                sortKeyCondition: null,
+                filterExpression: null,
+                updateItemRequestFunction: entity => new UpdateItemRequest<Access>
+                {
+                    UserId = null,
+                    PartitionKey = entity.UserId,
+                    SortKey = entity.MapId,
+                    UpdateExpression = new UpdateExpression
+                    {
+                        AddExpressions = [
+                            new AddUpdateExpression("a", new(entity.Creation))
+                        ],
+                    },
+                },
+                cancellationToken: cancellationToken);
+
+
             /*
             try
             {
@@ -218,6 +240,40 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         [DynamoDbAttribute("sui")]
         public Guid SourceUserId { get; set; }
     }
+
+    [DynamoDbTable("accesses")]
+    public partial class Access
+    {
+        [DynamoDbPartitionKeyAttribute("user_id")]
+        public required Guid UserId { get; set; }
+        [DynamoDbSortKeyAttribute("map_id")]
+        public required Guid MapId { get; set; }
+
+        [DynamoDbAttribute("cd")]
+        public DateTimeOffset Creation { get; set; }
+
+        [DynamoDbAttribute("lv")]
+        public DateTimeOffset LastVisit { get; set; }
+
+        [DynamoDbAttribute("n_s")]
+        public required string NSearch { get; set; }
+
+        [DynamoDbAttribute("mp")]
+        public required MapInformationSettings Map { get; set; }
+    }
+
+    [DynamoDbIndex("accesses", "by_map_id_thenby_cd")]
+    public partial class Access__Gsi_By_MapId_ThenBy_Creation
+    {
+        [DynamoDbPartitionKeyAttribute("map_id")]
+        public required Guid MapId { get; set; }
+        [DynamoDbSortKeyAttribute("cd")]
+        public DateTimeOffset Creation { get; set; }
+
+        [DynamoDbAttribute("user_id")]
+        public required Guid UserId { get; set; } // Automatically projected, as it is part of key attributes
+    }
+
 
     [DynamoDbTable("maps")]
     public partial class Map
