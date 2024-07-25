@@ -3,6 +3,22 @@ using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
+    /// <summary>DynamoDB keyable entity</summary>
+    public interface IDynamoDbKeyableEntity
+    {
+        /// <summary>Partition key</summary>
+        static abstract string PartitionKey { get; }
+
+        /// <summary>Sort key</summary>
+        static virtual string? SortKey { get; } = null;
+
+        /// <summary>Partition key value</summary>
+        abstract AttributeValue PartitionKeyValue { get; }
+
+        /// <summary>Sort key value</summary>
+        abstract AttributeValue? SortKeyValue { get; }
+    }
+
     /// <summary>DynamoDB parsable entity</summary>
     public interface IDynamoDbParsableEntity<TEntity>
         where TEntity : IDynamoDbParsableEntity<TEntity>
@@ -19,7 +35,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB gettable entity</summary>
-    public interface IDynamoDbGettableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbGettableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : class, IDynamoDbGettableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
@@ -27,16 +43,10 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
         /// <summary>List of projected attributes</summary>
         static virtual IEnumerable<string>? ProjectedAttributes { get; } = null;
-
-        /// <summary>Partition key</summary>
-        static abstract string PartitionKey { get; }
-
-        /// <summary>Sort key</summary>
-        static virtual string? SortKey { get; } = null;
     }
 
     /// <summary>DynamoDB queryable entity</summary>
-    public interface IDynamoDbQueryableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbQueryableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : IDynamoDbQueryableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
@@ -50,7 +60,7 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB scanable entity</summary>
-    public interface IDynamoDbScanableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbScanableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : IDynamoDbScanableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
@@ -72,44 +82,26 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     }
 
     /// <summary>DynamoDB deletable entity</summary>
-    public interface IDynamoDbDeletableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbDeletableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : IDynamoDbDeletableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
-
-        /// <summary>Partition key</summary>
-        static abstract string PartitionKey { get; }
-
-        /// <summary>Sort key</summary>
-        static virtual string? SortKey { get; } = null;
     }
 
     /// <summary>DynamoDB updatable entity</summary>
-    public interface IDynamoDbUpdatableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbUpdatableEntity<TEntity> : IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : IDynamoDbUpdatableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
-
-        /// <summary>Partition key</summary>
-        static abstract string PartitionKey { get; }
-
-        /// <summary>Sort key</summary>
-        static virtual string? SortKey { get; } = null;
     }
 
     /// <summary>DynamoDB batch writable entity</summary>
-    public interface IDynamoDbBatchWritableEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>
+    public interface IDynamoDbBatchWritableEntity<TEntity> : IDynamoDbFormattableEntity, IDynamoDbParsableEntity<TEntity>, IDynamoDbKeyableEntity
         where TEntity : IDynamoDbBatchWritableEntity<TEntity>
     {
         /// <summary>Name of the DynamoDB table</summary>
         static abstract string TableName { get; }
-
-        /// <summary>Partition key</summary>
-        static abstract string PartitionKey { get; }
-
-        /// <summary>Sort key</summary>
-        static virtual string? SortKey { get; } = null;
     }
 }

@@ -263,13 +263,25 @@ namespace {dynamoDbClassToGenerate.Namespace}
                     stringBuilder.AppendLine($@"
         /// <summary>Partition key (as <c>{partitionKey.Key}</c>)</summary>
         public static string PartitionKey {{ get; }} = ""{partitionKey.Key}"";");
+
+                    stringBuilder.AppendLine($@"
+        public AttributeValue PartitionKeyValue => {partitionKey.Name};");
                 }
+
                 var sortKey = dynamoDbClassToGenerate.DynamoDbAttributes.FirstOrDefault(x => x.AttributeCategory == AttributeCategory.Sort);
                 if (sortKey != default)
                 {
                     stringBuilder.AppendLine($@"
         /// <summary>Sort key (as <c>{sortKey.Key}</c>)</summary>
         public static string? SortKey {{ get; }} = ""{sortKey.Key}"";");
+
+                    stringBuilder.AppendLine($@"
+        public AttributeValue? SortKeyValue => {sortKey.Name};");
+                }
+                else
+                {
+                    stringBuilder.AppendLine($@"
+        public AttributeValue? SortKeyValue => null;");
                 }
             }
 
