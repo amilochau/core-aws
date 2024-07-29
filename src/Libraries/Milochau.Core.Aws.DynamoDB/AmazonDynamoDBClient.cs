@@ -57,14 +57,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<BatchWriteItemResponse> BatchWriteItemAsync(BatchWriteItemRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<BatchWriteItemRequest, BatchWriteItemResponse>
             {
-                HttpRequestMessageMarshaller = BatchWriteItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = BatchWriteItemResponseUnmarshaller.Instance,
+                RequestMarshaller = BatchWriteItemRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = BatchWriteItemResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = BatchWriteItemResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "BatchWriteItem",
             };
 
-            return InvokeAsync<BatchWriteItemResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -81,14 +82,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<DeleteItemResponse> DeleteItemAsync(DeleteItemRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<DeleteItemRequest, DeleteItemResponse>
             {
-                HttpRequestMessageMarshaller = DeleteItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = DeleteItemResponseUnmarshaller.Instance,
+                RequestMarshaller = DeleteItemRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = DeleteItemResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = DeleteItemResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "DeleteItem",
             };
 
-            return InvokeAsync<DeleteItemResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -105,14 +107,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<GetItemResponse> GetItemAsync(GetItemRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<GetItemRequest, GetItemResponse>
             {
-                HttpRequestMessageMarshaller = GetItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = GetItemResponseUnmarshaller.Instance,
+                RequestMarshaller = GetItemRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = GetItemResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = GetItemResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "GetItem",
             };
 
-            return InvokeAsync<GetItemResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -129,14 +132,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<PutItemResponse> PutItemAsync(PutItemRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<PutItemRequest, PutItemResponse>
             {
-                HttpRequestMessageMarshaller = PutItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = PutItemResponseUnmarshaller.Instance,
+                RequestMarshaller = PutItemRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = PutItemResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = PutItemResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "PutItem",
             };
 
-            return InvokeAsync<PutItemResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -153,14 +157,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<UpdateItemResponse> UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<UpdateItemRequest, UpdateItemResponse>
             {
-                HttpRequestMessageMarshaller = UpdateItemRequestMarshaller.Instance,
-                ResponseUnmarshaller = UpdateItemResponseUnmarshaller.Instance,
+                RequestMarshaller = UpdateItemRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = UpdateItemResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = UpdateItemResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "UpdateItem",
             };
 
-            return InvokeAsync<UpdateItemResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -178,14 +183,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<QueryResponse> QueryAsync(QueryRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<QueryRequest, QueryResponse>
             {
-                HttpRequestMessageMarshaller = QueryRequestMarshaller.Instance,
-                ResponseUnmarshaller = QueryResponseUnmarshaller.Instance,
+                RequestMarshaller = QueryRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = QueryResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = QueryResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "Query",
             };
 
-            return InvokeAsync<QueryResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -203,14 +209,15 @@ namespace Milochau.Core.Aws.DynamoDB
         /// <inheritdoc/>
         public Task<ScanResponse> ScanAsync(ScanRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<ScanRequest, ScanResponse>
             {
-                HttpRequestMessageMarshaller = ScanRequestMarshaller.Instance,
-                ResponseUnmarshaller = ScanResponseUnmarshaller.Instance,
+                RequestMarshaller = ScanRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = ScanResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = ScanResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "Scan",
             };
 
-            return InvokeAsync<ScanResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion

@@ -99,14 +99,15 @@ namespace Milochau.Core.Aws.SNS
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sns-2010-03-31/Publish">REST API Reference for Publish Operation</seealso>
         public virtual Task<PublishResponse> PublishAsync(PublishRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<PublishRequest, PublishResponse>
             {
-                HttpRequestMessageMarshaller = PublishRequestMarshaller.Instance,
-                ResponseUnmarshaller = PublishResponseUnmarshaller.Instance,
+                RequestMarshaller = PublishRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = PublishResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = PublishResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "Publish",
             };
 
-            return InvokeAsync<PublishResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion

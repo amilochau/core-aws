@@ -1,11 +1,8 @@
-﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
-using Milochau.Core.Aws.DynamoDB.Model;
+﻿using Milochau.Core.Aws.DynamoDB.Model;
 using Milochau.Core.Aws.DynamoDB.Model.Expressions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

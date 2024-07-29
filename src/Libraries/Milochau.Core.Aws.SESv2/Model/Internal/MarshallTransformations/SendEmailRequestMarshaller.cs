@@ -1,6 +1,4 @@
 using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Net.Http;
@@ -13,16 +11,10 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
     /// <summary>
     /// SendEmail Request Marshaller
     /// </summary>       
-    public class SendEmailRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class SendEmailRequestMarshaller
     {
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((SendEmailRequest)input);
-        }
-
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(SendEmailRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(SendEmailRequest publicRequest)
         {
             var serializedRequest = JsonSerializer.Serialize(publicRequest, SendEmailJsonSerializerContext.Default.SendEmailRequest);
 
@@ -36,10 +28,5 @@ namespace Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>  
-        public static SendEmailRequestMarshaller Instance { get; } = new SendEmailRequestMarshaller();
     }
 }

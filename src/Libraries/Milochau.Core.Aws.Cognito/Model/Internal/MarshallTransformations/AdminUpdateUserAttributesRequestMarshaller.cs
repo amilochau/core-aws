@@ -1,6 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Net.Http.Headers;
@@ -13,16 +11,10 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
     /// <summary>
     /// AdminUpdateUserAttributes Request Marshaller
     /// </summary>       
-    public class AdminUpdateUserAttributesRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class AdminUpdateUserAttributesRequestMarshaller
     {
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((AdminUpdateUserAttributesRequest)input);
-        }
-
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AdminUpdateUserAttributesRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(AdminUpdateUserAttributesRequest publicRequest)
         {
             var serializedRequest = JsonSerializer.Serialize(publicRequest, AdminUpdateUserAttributesJsonSerializerContext.Default.AdminUpdateUserAttributesRequest);
 
@@ -37,10 +29,5 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>
-        public static AdminUpdateUserAttributesRequestMarshaller Instance { get; } = new AdminUpdateUserAttributesRequestMarshaller();
     }
 }

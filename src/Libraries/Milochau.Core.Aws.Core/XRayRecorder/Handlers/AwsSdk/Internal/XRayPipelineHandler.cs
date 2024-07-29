@@ -2,9 +2,9 @@
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using System.Linq;
 using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.References;
+using Amazon.Runtime.Internal;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
 {
@@ -15,7 +15,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
     public class XRayPipelineHandler
     {
         /// <summary>Processes Begin request by starting subsegment.</summary>
-        public static Subsegment ProcessBeginRequest(FacadeSegment facadeSegment, IRequestContext requestContext)
+        public static Subsegment ProcessBeginRequest(FacadeSegment facadeSegment, RequestContext requestContext)
         {
             // Create subsegment
             var subsegment = new Subsegment(requestContext.ClientConfig.MonitoringServiceName, facadeSegment)
@@ -44,7 +44,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
         }
 
         /// <summary>Processes End request by ending subsegment.</summary>
-        public static void ProcessEndRequest(Subsegment subsegment, IRequestContext requestContext, IResponseContext responseContext)
+        public static void ProcessEndRequest(Subsegment subsegment, RequestContext requestContext, ResponseContext responseContext)
         {
             subsegment.Aws["region"] = EnvironmentVariables.RegionName;
             subsegment.Aws["operation"] = requestContext.MonitoringOriginalRequestName;

@@ -1,6 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Net.Http.Headers;
@@ -13,16 +11,10 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
     /// <summary>
     /// GetUser Request Marshaller
     /// </summary>       
-    public class GetUserRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class GetUserRequestMarshaller
     {
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((GetUserRequest)input);
-        }
-
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(GetUserRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(GetUserRequest publicRequest)
         {
             var serializedRequest = JsonSerializer.Serialize(publicRequest, GetUserJsonSerializerContext.Default.GetUserRequest);
 
@@ -37,10 +29,5 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>
-        public static GetUserRequestMarshaller Instance { get; } = new GetUserRequestMarshaller();
     }
 }

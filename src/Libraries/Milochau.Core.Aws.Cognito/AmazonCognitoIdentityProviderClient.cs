@@ -177,14 +177,15 @@ namespace Milochau.Core.Aws.Cognito
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/AdminUpdateUserAttributes">REST API Reference for AdminUpdateUserAttributes Operation</seealso>
         public virtual Task<AdminUpdateUserAttributesResponse> AdminUpdateUserAttributesAsync(AdminUpdateUserAttributesRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<AdminUpdateUserAttributesRequest, AdminUpdateUserAttributesResponse>
             {
-                HttpRequestMessageMarshaller = AdminUpdateUserAttributesRequestMarshaller.Instance,
-                ResponseUnmarshaller = AdminUpdateUserAttributesResponseUnmarshaller.Instance,
+                RequestMarshaller = AdminUpdateUserAttributesRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = AdminUpdateUserAttributesResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = AdminUpdateUserAttributesResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "AdminUpdateUserAttributes",
             };
 
-            return InvokeAsync<AdminUpdateUserAttributesResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -212,14 +213,15 @@ namespace Milochau.Core.Aws.Cognito
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
         public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<GetUserRequest, GetUserResponse>
             {
-                HttpRequestMessageMarshaller = GetUserRequestMarshaller.Instance,
-                ResponseUnmarshaller = GetUserResponseUnmarshaller.Instance,
+                RequestMarshaller = GetUserRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = GetUserResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = GetUserResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "GetUser",
             };
 
-            return InvokeAsync<GetUserResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion
@@ -269,14 +271,15 @@ namespace Milochau.Core.Aws.Cognito
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/InitiateAuth">REST API Reference for InitiateAuth Operation</seealso>
         public virtual Task<InitiateAuthResponse> InitiateAuthAsync(InitiateAuthRequest request, CancellationToken cancellationToken)
         {
-            var options = new InvokeOptions
+            var options = new InvokeOptions<InitiateAuthRequest, InitiateAuthResponse>
             {
-                HttpRequestMessageMarshaller = InitiateAuthRequestMarshaller.Instance,
-                ResponseUnmarshaller = InitiateAuthResponseUnmarshaller.Instance,
+                RequestMarshaller = InitiateAuthRequestMarshaller.CreateHttpRequestMessage,
+                ResponseUnmarshaller = InitiateAuthResponseUnmarshaller.UnmarshallResponse,
+                ExceptionUnmarshaller = InitiateAuthResponseUnmarshaller.UnmarshallException,
                 MonitoringOriginalRequestName = "InitiateAuth",
             };
 
-            return InvokeAsync<InitiateAuthResponse>(request, options, cancellationToken);
+            return InvokeAsync(request, options, cancellationToken);
         }
 
         #endregion

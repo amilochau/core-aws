@@ -1,6 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,16 +9,10 @@ namespace Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations
     /// <summary>
     /// Publish Request Marshaller
     /// </summary>
-    public class PublishRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class PublishRequestMarshaller
     {
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((PublishRequest)input);
-        }
-
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(PublishRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(PublishRequest publicRequest)
         {
             var uriBuilder = new UriBuilder($"https://sns.{EnvironmentVariables.RegionName}.amazonaws.com"); //Action=Publish&Version=2010-03-31");
 
@@ -86,10 +78,5 @@ namespace Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>  
-        public static PublishRequestMarshaller Instance { get; } = new PublishRequestMarshaller();
     }
 }

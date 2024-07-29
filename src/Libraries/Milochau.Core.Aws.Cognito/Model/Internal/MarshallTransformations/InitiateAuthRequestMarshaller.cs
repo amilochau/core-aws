@@ -1,6 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
-using Milochau.Core.Aws.Core.Runtime.Internal;
-using System;
+﻿using System;
 using System.Text;
 using System.Net.Http;
 using Milochau.Core.Aws.Core.References;
@@ -13,16 +11,10 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
     /// <summary>
     /// InitiateAuth Request Marshaller
     /// </summary>       
-    public class InitiateAuthRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class InitiateAuthRequestMarshaller
     {
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((InitiateAuthRequest)input);
-        }
-
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(InitiateAuthRequest publicRequest)
+        public static HttpRequestMessage CreateHttpRequestMessage(InitiateAuthRequest publicRequest)
         {
             var serializedRequest = JsonSerializer.Serialize(publicRequest, InitiateAuthJsonSerializerContext.Default.InitiateAuthRequest);
 
@@ -37,10 +29,5 @@ namespace Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>
-        public static InitiateAuthRequestMarshaller Instance { get; } = new InitiateAuthRequestMarshaller();
     }
 }

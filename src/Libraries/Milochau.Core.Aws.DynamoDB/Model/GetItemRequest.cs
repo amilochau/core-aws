@@ -151,12 +151,12 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         internal GetItemRequest Build()
         {
             List<KeyValuePair<string, AttributeValue>> key = [
-                new KeyValuePair<string, AttributeValue>(TEntity.PartitionKey, PartitionKey), // Partition key
+                new(TEntity.PartitionKey, PartitionKey), // Partition key
             ];
 
             if (TEntity.SortKey != null && SortKey != null && SortKey.IsSet())
             {
-                key.Add(new KeyValuePair<string, AttributeValue>(TEntity.SortKey, SortKey)); // Sort key
+                key.Add(new(TEntity.SortKey, SortKey)); // Sort key
             }
 
             var projectedAttributes = TEntity.ProjectedAttributes;

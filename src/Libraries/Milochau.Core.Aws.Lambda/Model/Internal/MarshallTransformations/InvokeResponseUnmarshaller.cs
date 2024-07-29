@@ -1,5 +1,4 @@
 using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System.IO;
@@ -11,14 +10,14 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
     /// <summary>
     /// Response Unmarshaller for Invoke operation
     /// </summary>  
-    public class InvokeResponseUnmarshaller : JsonResponseUnmarshaller
+    public static class InvokeResponseUnmarshaller
     {
         /// <summary>
         /// Unmarshaller the response from the service to the response class.
-        /// </summary>  
-        public override AmazonWebServiceResponse Unmarshall(JsonUnmarshallerContext context)
+        /// </summary>
+        public static InvokeResponse UnmarshallResponse(JsonUnmarshallerContext context)
         {
-            InvokeResponse response = new InvokeResponse();
+            var response = new InvokeResponse();
 
             var ms = new MemoryStream();
             AWSSDKUtils.CopyStream(context.Stream, ms);
@@ -35,18 +34,13 @@ namespace Milochau.Core.Aws.Lambda.Model.MarshallTransformations
 
         /// <summary>
         /// Unmarshaller error response to exception.
-        /// </summary>  
-        public override AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
+        /// </summary>
+        public static AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
         {
-            var errorResponse = JsonErrorResponseUnmarshaller.Instance.Unmarshall(context);
+            var errorResponse = JsonErrorResponseUnmarshaller.Instance.UnmarshallResponse(context);
             errorResponse.StatusCode = statusCode;
 
             return new AmazonLambdaException(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>  
-        public static InvokeResponseUnmarshaller Instance { get; } = new InvokeResponseUnmarshaller();
     }
 }

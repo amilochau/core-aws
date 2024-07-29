@@ -4,7 +4,7 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// This class is the base class of all the configurations settings to connect
     /// to a service.
     /// </summary>
-    public class ClientConfig : IClientConfig
+    public class ClientConfig
     {
         /// <summary>Name of the service</summary>
         /// <remarks>Used to sign requests. See AmazonCognitoIdentityProviderConfig.AuthenticationServiceName in official SDK</remarks>

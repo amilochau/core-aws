@@ -1,6 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System.Net.Http.Headers;
 using System.Net.Http;
@@ -13,14 +11,8 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
     /// <summary>
     /// Query Request Marshaller
     /// </summary>
-    public class QueryRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    public static class QueryRequestMarshaller
     {
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((QueryRequest)input);
-        }
-
         /// <summary>Creates an HTTP request message to call the service</summary>
         public static HttpRequestMessage CreateHttpRequestMessage(QueryRequest publicRequest)
         {
@@ -37,10 +29,5 @@ namespace Milochau.Core.Aws.DynamoDB.Model.Internal.MarshallTransformations
 
             return httpRequestMessage;
         }
-
-        /// <summary>
-        /// Gets the singleton.
-        /// </summary>
-        public static QueryRequestMarshaller Instance { get; } = new QueryRequestMarshaller();
     }
 }
