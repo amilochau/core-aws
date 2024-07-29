@@ -27,7 +27,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             // Add trace headers to request headers
             if (TraceHeader.TryParse(facadeSegment, out TraceHeader? traceHeader))
             {
-                requestContext.HttpRequestMessage!.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
+                requestContext.HttpRequestMessage.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
             }
             return subsegment;
         }

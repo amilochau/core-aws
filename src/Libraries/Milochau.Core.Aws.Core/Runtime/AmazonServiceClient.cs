@@ -41,7 +41,7 @@ namespace Milochau.Core.Aws.Core.Runtime
             var facadeSegment = new FacadeSegment();
             var subsegment = XRayPipelineHandler.ProcessBeginRequest(facadeSegment, requestContext);
 
-            TResponse? response = null;
+            TResponse response;
             try
             {
                 // 2. Sign request
