@@ -34,8 +34,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
             {
                 var packet = segment.Marshall()!;
                 var data = Encoding.ASCII.GetBytes(packet);
-                var ip = daemonConfig.UDPEndpoint; //Need local var to ensure ip do not 
+                var ip = daemonConfig.UDPEndpoint; //Need local var to ensure ip do not
                 udpClient.Send(data, data.Length, ip);
+                udpClient.BeginSend(data, data.Length, ip, null, null);
             }
             catch (SocketException)
             {
