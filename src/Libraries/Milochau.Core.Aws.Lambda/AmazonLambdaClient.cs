@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Lambda.Model;
 using Milochau.Core.Aws.Lambda.Model.MarshallTransformations;
 
@@ -47,67 +46,6 @@ namespace Milochau.Core.Aws.Lambda
     /// a signature. Lambda supports signature version 4. For more information, see <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Signature
     /// Version 4 signing process</a> in the <i>Amazon Web Services General Reference.</i>.
     /// 
-    /// </para>
-    ///  
-    /// <para>
-    ///  <b>CA certificates</b> 
-    /// </para>
-    ///  
-    /// <para>
-    /// Because Amazon Web Services SDKs use the CA certificates from your computer, changes
-    /// to the certificates on the Amazon Web Services servers can cause connection failures
-    /// when you attempt to use an SDK. You can prevent these failures by keeping your computer's
-    /// CA certificates and operating system up-to-date. If you encounter this issue in a
-    /// corporate environment and do not manage your own computer, you might need to ask an
-    /// administrator to assist with the update process. The following list shows minimum
-    /// operating system and Java versions:
-    /// </para>
-    ///  <ul> <li> 
-    /// <para>
-    /// Microsoft Windows versions that have updates from January 2005 or later installed
-    /// contain at least one of the required CAs in their trust list. 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    /// Mac OS X 10.4 with Java for Mac OS X 10.4 Release 5 (February 2007), Mac OS X 10.5
-    /// (October 2007), and later versions contain at least one of the required CAs in their
-    /// trust list. 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    /// Red Hat Enterprise Linux 5 (March 2007), 6, and 7 and CentOS 5, 6, and 7 all contain
-    /// at least one of the required CAs in their default trusted CA list. 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    /// Java 1.4.2_12 (May 2006), 5 Update 2 (March 2005), and all later versions, including
-    /// Java 6 (December 2006), 7, and 8, contain at least one of the required CAs in their
-    /// default trusted CA list. 
-    /// </para>
-    ///  </li> </ul> 
-    /// <para>
-    /// When accessing the Lambda management console or Lambda API endpoints, whether through
-    /// browsers or programmatically, you will need to ensure your client machines support
-    /// any of the following CAs: 
-    /// </para>
-    ///  <ul> <li> 
-    /// <para>
-    /// Amazon Root CA 1
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    /// Starfield Services Root Certificate Authority - G2
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    /// Starfield Class 2 Certification Authority
-    /// </para>
-    ///  </li> </ul> 
-    /// <para>
-    /// Root certificates from the first two authorities are available from <a href="https://www.amazontrust.com/repository/">Amazon
-    /// trust services</a>, but keeping your computer up-to-date is the more straightforward
-    /// solution. To learn more about ACM-provided certificates, see <a href="http://aws.amazon.com/certificate-manager/faqs/#certificates">Amazon
-    /// Web Services Certificate Manager FAQs.</a> 
     /// </para>
     /// </summary>
     public partial class AmazonLambdaClient : AmazonServiceClient, IAmazonLambda
@@ -193,17 +131,6 @@ namespace Milochau.Core.Aws.Lambda
         /// Ar error occurred.
         /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/lambda-2015-03-31/Invoke">REST API Reference for Invoke Operation</seealso>
-        public virtual Task<InvokeResponse> InvokeAsync(InvokeRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions<InvokeRequest, InvokeResponse>
-            {
-                RequestMarshaller = InvokeRequestMarshaller.CreateHttpRequestMessage,
-                ResponseUnmarshaller = InvokeResponseUnmarshaller.UnmarshallResponse,
-                ExceptionUnmarshaller = InvokeResponseUnmarshaller.UnmarshallException,
-                MonitoringOriginalRequestName = "Invoke",
-            };
-
-            return InvokeAsync(request, options, cancellationToken);
-        }
+        public virtual Task<InvokeResponse> InvokeAsync(InvokeRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new InvokeInvokeOptions(), cancellationToken);
     }
 }
