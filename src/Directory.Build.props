@@ -16,7 +16,7 @@
     <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     
-    <Version>0.2.17-beta.1</Version>
+    <Version>0.2.17-beta.2</Version>
     <InformationalVersion Condition="('$(GITHUB_ACTION)' != '') And ('$(GITHUB_SHA)' != '')">$(Version)+$(GITHUB_ACTION)-$(GITHUB_SHA)</InformationalVersion>
     <InformationalVersion Condition="('$(GITHUB_ACTION)' == '') Or ('$(GITHUB_SHA)' == '')">$(Version)+local</InformationalVersion>
   </PropertyGroup>
