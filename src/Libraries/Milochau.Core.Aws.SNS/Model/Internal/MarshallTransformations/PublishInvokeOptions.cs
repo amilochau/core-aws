@@ -1,26 +1,26 @@
 ﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+using Milochau.Core.Aws.Core.Runtime;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web;
+using Milochau.Core.Aws.Core.Runtime.Internal;
 
 namespace Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations
 {
     /// <summary>
     /// Publish Request Marshaller
     /// </summary>
-    public class PublishRequestMarshaller : IHttpRequestMessageMarshaller<AmazonWebServiceRequest>
+    internal class PublishInvokeOptions : IInvokeOptions<PublishRequest, PublishResponse>
     {
-        /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(AmazonWebServiceRequest input)
-        {
-            return CreateHttpRequestMessage((PublishRequest)input);
-        }
+        public string MonitoringOriginalRequestName { get; } = "Publish";
 
         /// <summary>Creates an HTTP request message to call the service</summary>
-        public HttpRequestMessage CreateHttpRequestMessage(PublishRequest publicRequest)
+        public HttpRequestMessage MarshallRequest(PublishRequest publicRequest)
         {
             var uriBuilder = new UriBuilder($"https://sns.{EnvironmentVariables.RegionName}.amazonaws.com"); //Action=Publish&Version=2010-03-31");
 
@@ -88,8 +88,39 @@ namespace Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations
         }
 
         /// <summary>
-        /// Gets the singleton.
-        /// </summary>  
-        public static PublishRequestMarshaller Instance { get; } = new PublishRequestMarshaller();
+        /// Unmarshaller the response from the service to the response class.
+        /// </summary>
+        public PublishResponse UnmarshallResponse(JsonUnmarshallerContext context)
+        {
+            var response = new PublishResponse();
+
+            using var streamReader = new StreamReader(context.Stream);
+            var content = streamReader.ReadToEnd();
+
+            var messageIdRegexMatch = Regex.Match(content, "<MessageId>([0-9a-f-]*)<\\/MessageId>");
+            if (messageIdRegexMatch.Success)
+            {
+                response.MessageId = messageIdRegexMatch.Groups[1].Value;
+            }
+
+            var sequenceNumberRegexMatch = Regex.Match(content, "<SequenceNumber>([0-9a-f-]*)<\\/MessageId>");
+            if (sequenceNumberRegexMatch.Success)
+            {
+                response.SequenceNumber = sequenceNumberRegexMatch.Groups[1].Value;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Unmarshaller error response to exception.
+        /// </summary>
+        public AmazonServiceException UnmarshallException(JsonUnmarshallerContext context, HttpStatusCode statusCode)
+        {
+            var errorResponse = JsonErrorResponseUnmarshaller.Instance.UnmarshallResponse(context);
+            errorResponse.StatusCode = statusCode;
+
+            return new AmazonSimpleNotificationServiceException(errorResponse.Message, errorResponse.Type, errorResponse.Code, errorResponse.RequestId, errorResponse.StatusCode);
+        }
     }
 }

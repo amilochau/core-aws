@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.SESv2.Model;
 using Milochau.Core.Aws.SESv2.Model.Internal.MarshallTransformations;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
 
@@ -77,16 +76,6 @@ namespace Milochau.Core.Aws.SESv2
         /// restricted.
         /// </exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sesv2-2019-09-27/SendEmail">REST API Reference for SendEmail Operation</seealso>
-        public virtual Task<SendEmailResponse> SendEmailAsync(SendEmailRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions
-            {
-                HttpRequestMessageMarshaller = SendEmailRequestMarshaller.Instance,
-                ResponseUnmarshaller = SendEmailResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "SendEmail",
-            };
-
-            return InvokeAsync<SendEmailResponse>(request, options, cancellationToken);
-        }
+        public virtual Task<SendEmailResponse> SendEmailAsync(SendEmailRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new SendEmailInvokeOptions(), cancellationToken);
     }
 }

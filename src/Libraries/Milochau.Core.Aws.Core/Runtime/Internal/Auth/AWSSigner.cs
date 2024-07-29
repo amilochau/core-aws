@@ -5,11 +5,11 @@ using System.Text;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Util;
 using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Amazon.Runtime.Internal;
 
 namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
 {
@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// the resource path as a query string or in the Parameters collection must not have been
         /// uri encoded. If they have, use the SignRequest method to obtain a signature.
         /// </summary>
-        public static async Task SignAsync(IRequestContext requestContext, ImmutableCredentials immutableCredentials)
+        public static async Task SignAsync(RequestContext requestContext, ImmutableCredentials immutableCredentials)
         {
             var signingResult = await SignRequestAsync(requestContext, immutableCredentials.AccessKey, immutableCredentials.SecretKey);
             requestContext.HttpRequestMessage.Headers.TryAddWithoutValidation(HeaderKeys.AuthorizationHeader, signingResult.ForAuthorizationHeader);
@@ -64,7 +64,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// be not be encoded; encoding will be done for these parameters as part of the 
         /// construction of the canonical request.
         /// </remarks>
-        private static async Task<AWS4SigningResult> SignRequestAsync(IRequestContext requestContext,
+        private static async Task<AWS4SigningResult> SignRequestAsync(RequestContext requestContext,
                                              string awsAccessKeyId,
                                              string awsSecretAccessKey)
         {
@@ -198,7 +198,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Auth
         /// The computed hash, whether already set in headers or computed here. Null
         /// if we were not able to compute a hash.
         /// </returns>
-        private static async Task<string> SetRequestBodyHashAsync(IRequestContext requestContext)
+        private static async Task<string> SetRequestBodyHashAsync(RequestContext requestContext)
         {
             // Calculate the hash and set it in the headers before returning
             byte[] payloadBytes = [];

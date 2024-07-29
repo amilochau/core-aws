@@ -1,8 +1,10 @@
-﻿using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
+﻿using Milochau.Core.Aws.Core.Runtime.Internal;
+using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using Milochau.Core.Aws.Core.Util;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 {
@@ -19,7 +21,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
         /// should be rethrown.
         /// This method can also throw a new exception to replace the original exception.
         /// </returns>
-        public static async System.Threading.Tasks.Task<Exception> HandleAsync(HttpResponseMessage httpResponseMessage, JsonResponseUnmarshaller unmarshaller)
+        public static async Task<Exception> HandleAsync(HttpResponseMessage httpResponseMessage, IInvokeOptions invokeOptions)
         {
             var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
@@ -33,11 +35,11 @@ namespace Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler
 
             try
             {
-                errorResponseException = unmarshaller.UnmarshallException(errorContext, httpResponseMessage.StatusCode);
+                errorResponseException = invokeOptions.UnmarshallException(errorContext, httpResponseMessage.StatusCode);
             }
             catch (AmazonServiceException e)
             {
-                // Rethrow Amazon service exceptions
+                // Rethrow Amazon service exception
                 return e;
             }
             catch (Exception e)

@@ -1,6 +1,5 @@
 ﻿using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.SNS.Model;
 using Milochau.Core.Aws.SNS.Model.Internal.MarshallTransformations;
 using System.Threading;
@@ -97,17 +96,7 @@ namespace Milochau.Core.Aws.SNS
         /// <returns>The response from the Publish service method, as returned by SimpleNotificationService.</returns>
         /// <exception cref="AmazonSimpleNotificationServiceException"></exception>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/sns-2010-03-31/Publish">REST API Reference for Publish Operation</seealso>
-        public virtual Task<PublishResponse> PublishAsync(PublishRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions
-            {
-                HttpRequestMessageMarshaller = PublishRequestMarshaller.Instance,
-                ResponseUnmarshaller = PublishResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "Publish",
-            };
-
-            return InvokeAsync<PublishResponse>(request, options, cancellationToken);
-        }
+        public virtual Task<PublishResponse> PublishAsync(PublishRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new PublishInvokeOptions(), cancellationToken);
 
         #endregion
     }

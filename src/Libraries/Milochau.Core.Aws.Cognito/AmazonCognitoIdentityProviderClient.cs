@@ -2,7 +2,6 @@
 using Milochau.Core.Aws.Cognito.Model.Internal.MarshallTransformations;
 using Milochau.Core.Aws.Core.Runtime;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
-using Milochau.Core.Aws.Core.Runtime.Internal;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,41 +45,6 @@ namespace Milochau.Core.Aws.Cognito
     /// <para>
     ///  <a href="https://docs.aws.amazon.com/sdkfornet/v3/apidocs/items/CognitoIdentityProvider/TCognitoIdentityProviderClient.html">Amazon
     /// Web Services SDK for .NET</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://sdk.amazonaws.com/cpp/api/LATEST/aws-cpp-sdk-cognito-idp/html/class_aws_1_1_cognito_identity_provider_1_1_cognito_identity_provider_client.html">Amazon
-    /// Web Services SDK for C++</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://docs.aws.amazon.com/sdk-for-go/api/service/cognitoidentityprovider/#CognitoIdentityProvider">Amazon
-    /// Web Services SDK for Go</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/services/cognitoidentityprovider/CognitoIdentityProviderClient.html">Amazon
-    /// Web Services SDK for Java V2</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html">Amazon
-    /// Web Services SDK for JavaScript</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-cognito-idp-2016-04-18.html">Amazon
-    /// Web Services SDK for PHP V3</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cognito-idp.html">Amazon
-    /// Web Services SDK for Python</a> 
-    /// </para>
-    ///  </li> <li> 
-    /// <para>
-    ///  <a href="https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/CognitoIdentityProvider/Client.html">Amazon
-    /// Web Services SDK for Ruby V3</a> 
     /// </para>
     ///  </li> </ul> 
     /// <para>
@@ -175,17 +139,7 @@ namespace Milochau.Core.Aws.Cognito
         /// 
         /// <returns>The response from the AdminUpdateUserAttributes service method, as returned by CognitoIdentityProvider.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/AdminUpdateUserAttributes">REST API Reference for AdminUpdateUserAttributes Operation</seealso>
-        public virtual Task<AdminUpdateUserAttributesResponse> AdminUpdateUserAttributesAsync(AdminUpdateUserAttributesRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions
-            {
-                HttpRequestMessageMarshaller = AdminUpdateUserAttributesRequestMarshaller.Instance,
-                ResponseUnmarshaller = AdminUpdateUserAttributesResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "AdminUpdateUserAttributes",
-            };
-
-            return InvokeAsync<AdminUpdateUserAttributesResponse>(request, options, cancellationToken);
-        }
+        public virtual Task<AdminUpdateUserAttributesResponse> AdminUpdateUserAttributesAsync(AdminUpdateUserAttributesRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new AdminUpdateUserAttributesInvokeOptions(), cancellationToken);
 
         #endregion
         #region  GetUser
@@ -210,17 +164,7 @@ namespace Milochau.Core.Aws.Cognito
         /// 
         /// <returns>The response from the GetUser service method, as returned by CognitoIdentityProvider.</returns>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/GetUser">REST API Reference for GetUser Operation</seealso>
-        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions
-            {
-                HttpRequestMessageMarshaller = GetUserRequestMarshaller.Instance,
-                ResponseUnmarshaller = GetUserResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "GetUser",
-            };
-
-            return InvokeAsync<GetUserResponse>(request, options, cancellationToken);
-        }
+        public virtual Task<GetUserResponse> GetUserAsync(GetUserRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new GetUserInvokeOptions(), cancellationToken);
 
         #endregion
         #region InitiateAuth
@@ -267,17 +211,7 @@ namespace Milochau.Core.Aws.Cognito
         ///     A cancellation token that can be used by other objects or threads to receive notice of cancellation.
         /// </param>
         /// <seealso href="http://docs.aws.amazon.com/goto/WebAPI/cognito-idp-2016-04-18/InitiateAuth">REST API Reference for InitiateAuth Operation</seealso>
-        public virtual Task<InitiateAuthResponse> InitiateAuthAsync(InitiateAuthRequest request, CancellationToken cancellationToken)
-        {
-            var options = new InvokeOptions
-            {
-                HttpRequestMessageMarshaller = InitiateAuthRequestMarshaller.Instance,
-                ResponseUnmarshaller = InitiateAuthResponseUnmarshaller.Instance,
-                MonitoringOriginalRequestName = "InitiateAuth",
-            };
-
-            return InvokeAsync<InitiateAuthResponse>(request, options, cancellationToken);
-        }
+        public virtual Task<InitiateAuthResponse> InitiateAuthAsync(InitiateAuthRequest request, CancellationToken cancellationToken) => InvokeAsync(request, new InitiateAuthInvokeOptions(), cancellationToken);
 
         #endregion
     }

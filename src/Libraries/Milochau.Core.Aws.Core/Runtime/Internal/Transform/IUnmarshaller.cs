@@ -16,6 +16,6 @@
         /// </summary>
         /// <param name="input">The XML parsing context</param>
         /// <returns>An object of type T populated with data from the XML stream.</returns>
-        T Unmarshall(R input);
+        T UnmarshallResponse(R input);
     }
 }

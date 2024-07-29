@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -36,7 +35,7 @@ namespace Milochau.Core.Aws.Core.Runtime.Internal.Transform
         /// <param name="context">The json parsing context. 
         /// Usually an <c>Amazon.Runtime.Internal.JsonUnmarshallerContext</c>.</param>
         /// <returns>An <c>ErrorResponse</c> object.</returns>
-        public ErrorResponse Unmarshall(JsonUnmarshallerContext context)
+        public ErrorResponse UnmarshallResponse(JsonUnmarshallerContext context)
         {
             string? requestId = null;
             GetValuesFromJsonIfPossible(context, out InternalException internalException);

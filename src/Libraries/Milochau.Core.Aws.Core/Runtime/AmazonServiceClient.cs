@@ -1,6 +1,5 @@
 ﻿using System;
 using Amazon.Runtime.Internal;
-using Milochau.Core.Aws.Core.Runtime.Pipeline;
 using Milochau.Core.Aws.Core.Runtime.Pipeline.ErrorHandler;
 using Milochau.Core.Aws.Core.Runtime.Internal;
 using Milochau.Core.Aws.Core.Runtime.Internal.Auth;
@@ -20,22 +19,23 @@ namespace Milochau.Core.Aws.Core.Runtime
     /// <remarks>Constructor</remarks>
     public abstract class AmazonServiceClient(IAWSCredentials credentials, ClientConfig config)
     {
-        private readonly IClientConfig config = config;
+        private readonly ClientConfig config = config;
 
         /// <summary>Invoke</summary>
-        protected async Task<TResponse> InvokeAsync<TResponse>(
-            AmazonWebServiceRequest request,
-            InvokeOptions options,
+        protected async Task<TResponse> InvokeAsync<TRequest, TResponse>(
+            TRequest request,
+            IInvokeOptions<TRequest, TResponse> invokeOptions,
             CancellationToken cancellationToken)
+            where TRequest : AmazonWebServiceRequest
             where TResponse : AmazonWebServiceResponse, new()
         {
             // 0. Create and marshall request
-            var requestContext = new RequestContext(config, request, options.MonitoringOriginalRequestName)
+            var requestContext = new RequestContext(config, request, invokeOptions.MonitoringOriginalRequestName)
             {
-                HttpRequestMessage = MarshallRequest(options.HttpRequestMessageMarshaller, request),
+                HttpRequestMessage = MarshallRequest(invokeOptions, request),
                 ImmutableCredentials = await credentials.GetCredentialsAsync(),
             };
-            IResponseContext responseContext = new ResponseContext();
+            var responseContext = new ResponseContext();
 
             // 1. Start request monitoring
             var facadeSegment = new FacadeSegment();
@@ -56,12 +56,12 @@ namespace Milochau.Core.Aws.Core.Runtime
                 // 4.1 Handle errors
                 if (!responseContext.HttpResponse.IsSuccessStatusCode)
                 {
-                    throw await HttpErrorResponseExceptionHandler.HandleAsync(responseContext.HttpResponse, options.ResponseUnmarshaller).ConfigureAwait(false); // HttpResponseMessage.Content.ReadAsStreamAsync
+                    throw await HttpErrorResponseExceptionHandler.HandleAsync(responseContext.HttpResponse, invokeOptions).ConfigureAwait(false); // HttpResponseMessage.Content.ReadAsStreamAsync
                 }
 
                 // 4.2 Manage response
-                responseContext.Response = await UnmarshallResponseAsync(responseContext.HttpResponse, options.ResponseUnmarshaller).ConfigureAwait(false);
-                response = (TResponse)responseContext.Response;
+                response = await UnmarshallResponseAsync(responseContext.HttpResponse, invokeOptions).ConfigureAwait(false);
+                responseContext.Response = response;
             }
             catch (Exception e)
             {
@@ -93,7 +93,7 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// Signs the request.
         /// </summary>
         /// <param name="requestContext">The request context.</param>
-        private static async Task SignRequestAsync(IRequestContext requestContext)
+        private static async Task SignRequestAsync(RequestContext requestContext)
         {
             var immutableCredentials = requestContext.ImmutableCredentials;
 
@@ -108,9 +108,11 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// Marshalls the request before calling invoking the next handler.
         /// </summary>
-        private static HttpRequestMessage MarshallRequest(IHttpRequestMessageMarshaller<AmazonWebServiceRequest> marshaller, AmazonWebServiceRequest originalRequest)
+        private static HttpRequestMessage MarshallRequest<TRequest, TResponse>(IInvokeOptions<TRequest, TResponse> invokeOptions, TRequest originalRequest)
+            where TRequest : AmazonWebServiceRequest
+            where TResponse : AmazonWebServiceResponse, new()
         {
-            var httpRequestMessage = marshaller.CreateHttpRequestMessage(originalRequest);
+            var httpRequestMessage = invokeOptions.MarshallRequest(originalRequest);
 
             if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_TraceId, out string? amznTraceId))
             {
@@ -123,7 +125,9 @@ namespace Milochau.Core.Aws.Core.Runtime
         /// <summary>
         /// Unmarshalls the HTTP response.
         /// </summary>
-        private static async Task<AmazonWebServiceResponse> UnmarshallResponseAsync(HttpResponseMessage httpResponseMessage, JsonResponseUnmarshaller unmarshaller)
+        private static async Task<TResponse> UnmarshallResponseAsync<TRequest, TResponse>(HttpResponseMessage httpResponseMessage, IInvokeOptions<TRequest, TResponse> invokeOptions)
+            where TRequest : AmazonWebServiceRequest
+            where TResponse : AmazonWebServiceResponse, new()
         {
             var responseStream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
             var context = new JsonUnmarshallerContext(responseStream,
@@ -131,7 +135,8 @@ namespace Milochau.Core.Aws.Core.Runtime
                 httpResponseMessage,
                 isException: false);
 
-            var response = unmarshaller.UnmarshallResponse(context);
+            var response = invokeOptions.UnmarshallResponse(context);
+            response.HttpStatusCode = context.ResponseData.StatusCode;
             context.ValidateCRC32IfAvailable();
 
             return response;
