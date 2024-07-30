@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <NuGetAudit>true</NuGetAudit>
     <OutputType>exe</OutputType>
     <AWSProjectType>Lambda</AWSProjectType>
     <AssemblyName Condition=" '$(BuildSource)' == 'AwsCmd' ">bootstrap</AssemblyName>
