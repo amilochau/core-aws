@@ -233,9 +233,18 @@ namespace {dynamoDbClassToGenerate.Namespace}
     {{");
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.TableNameSuffix))
             {
-                stringBuilder.AppendLine($@"
+                if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.ApplicationName))
+                {
+                    stringBuilder.AppendLine($@"
+        /// <summary>Table name (ending with <c>{dynamoDbClassToGenerate.TableNameSuffix}</c>)</summary>
+        public static string TableName {{ get; }} = $""{{EnvironmentVariables.ConventionOrganization}}-{dynamoDbClassToGenerate.ApplicationName}-{{EnvironmentVariables.ConventionHost}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
+                }
+                else
+                {
+                    stringBuilder.AppendLine($@"
         /// <summary>Table name (ending with <c>{dynamoDbClassToGenerate.TableNameSuffix}</c>)</summary>
         public static string TableName {{ get; }} = $""{{EnvironmentVariables.ConventionPrefix}}-table-{dynamoDbClassToGenerate.TableNameSuffix}"";");
+                }
             }
             if (!string.IsNullOrEmpty(dynamoDbClassToGenerate.IndexName))
             {

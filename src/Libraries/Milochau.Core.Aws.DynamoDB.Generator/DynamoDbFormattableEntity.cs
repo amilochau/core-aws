@@ -125,10 +125,10 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             }
 
             var @namespace = GetNamespace(cds);
-            (string? tableNameSuffix, string? indexName) = GetClassSettings(dynamoDbTableAttribute, classType);
+            (string? tableNameSuffix, string? applicationName, string? indexName) = GetClassSettings(dynamoDbTableAttribute, classType);
             var dynamoDbAttributes = GetClassProperties(typeSymbol);
 
-            return new DynamoDbClassToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, indexName, classType, dynamoDbAttributes, diagnostics);
+            return new DynamoDbClassToGenerate(@namespace, typeSymbol.Name, tableNameSuffix, applicationName, indexName, classType, dynamoDbAttributes, diagnostics);
         }
 
         private static AttributeType GetAttributeType(string typeName)
@@ -148,15 +148,25 @@ namespace Milochau.Core.Aws.DynamoDB.Generator
             };
         }
 
-        private static (string? tableNameSuffix, string? indexName) GetClassSettings(AttributeData attributeData, ClassType classType)
+        private static (string? tableNameSuffix, string? applicationName, string? indexName) GetClassSettings(AttributeData attributeData, ClassType classType)
         {
+
             return classType switch
             {
-                ClassType.Table => (attributeData.ConstructorArguments[0].Value!.ToString(), null),
-                ClassType.Projection => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.NamedArguments.SingleOrDefault(x => x.Key == SourceGenerationHelper.DynamoDbAttribute_IndexName).Value.Value?.ToString()),
-                ClassType.Index => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[1].Value!.ToString()),
-                _ => (null, null),
+                ClassType.Table => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[1].Value?.ToString(), null),
+                ClassType.Projection => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[1].Value?.ToString(), attributeData.NamedArguments.SingleOrDefault(x => x.Key == SourceGenerationHelper.DynamoDbAttribute_IndexName).Value.Value?.ToString()),
+                ClassType.Index => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[2].Value?.ToString(), attributeData.ConstructorArguments[1].Value!.ToString()),
+                _ => (null, null, null),
             };
+            /*
+            return classType switch
+            {
+                ClassType.Table => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[1].Value?.ToString(), null),
+                ClassType.Projection => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[1].Value?.ToString(), attributeData.NamedArguments.SingleOrDefault(x => x.Key == SourceGenerationHelper.DynamoDbAttribute_IndexName).Value.Value?.ToString()),
+                ClassType.Index => (attributeData.ConstructorArguments[0].Value!.ToString(), attributeData.ConstructorArguments[2].Value!.ToString(), attributeData.ConstructorArguments[1].Value?.ToString()),
+                _ => (null, null, null),
+            };
+            */
         }
 
         private static List<DynamoDbAttributeToGenerate> GetClassProperties(INamedTypeSymbol typeSymbol)
