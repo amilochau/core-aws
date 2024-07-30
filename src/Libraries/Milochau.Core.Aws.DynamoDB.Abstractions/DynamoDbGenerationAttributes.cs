@@ -4,18 +4,24 @@ namespace Milochau.Core.Aws.DynamoDB.Abstractions
 {
     /// <summary>Attribute used to generate code for a DynamoDB table</summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class DynamoDbTableAttribute(string tableNameSuffix) : Attribute
+    public sealed class DynamoDbTableAttribute(string tableNameSuffix, string? applicationName = null) : Attribute
     {
         /// <summary>Table name suffix</summary>
         public string TableNameSuffix { get; } = tableNameSuffix;
+
+        /// <summary>Application name</summary>
+        public string? ApplicationName { get; } = applicationName;
     }
 
     /// <summary>Attribute used to generate code for a DynamoDB projection</summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class DynamoDbProjectionAttribute(string tableNameSuffix) : Attribute
+    public sealed class DynamoDbProjectionAttribute(string tableNameSuffix, string? applicationName = null) : Attribute
     {
         /// <summary>Table name suffix</summary>
         public string TableNameSuffix { get; } = tableNameSuffix;
+
+        /// <summary>Application name</summary>
+        public string? ApplicationName { get; } = applicationName;
 
         /// <summary>Index name</summary>
         public string? IndexName { get; set; }
@@ -23,10 +29,13 @@ namespace Milochau.Core.Aws.DynamoDB.Abstractions
 
     /// <summary>Attribute used to generate code for a DynamoDB index</summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class DynamoDbIndexAttribute(string tableNameSuffix, string indexName) : Attribute
+    public sealed class DynamoDbIndexAttribute(string tableNameSuffix, string indexName, string? applicationName = null) : Attribute
     {
         /// <summary>Table name suffix</summary>
         public string TableNameSuffix { get; } = tableNameSuffix;
+
+        /// <summary>Application name</summary>
+        public string? ApplicationName { get; } = applicationName;
 
         /// <summary>Index name</summary>
         public string IndexName { get; } = indexName;
