@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
     /// Validation attribute to assert a dictionary property, field or parameter has all its values as part of a list of allowed values
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class DictionaryAllowedValuesAttribute(params object[] allowedValues) : ValidationAttribute
+    public class DictionaryAllowedValuesAttribute<TKey, TValue>(params object[] allowedValues) : ValidationAttribute
     {
         public object[] AllowedValues { get; } = allowedValues;
 
@@ -21,7 +21,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            return ((IDictionary<object?, object?>)value).All(x => x.Value is null || AllowedValues.Contains(x.Value));
+            return ((IDictionary<TKey, TValue>)value).All(x => x.Value is null || AllowedValues.Contains(x.Value));
         }
     }
 }

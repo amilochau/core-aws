@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
     /// Validation attribute to assert an enumerable property, field or parameter has all its values as part of a list of allowed values
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class EnumerableAllowedValuesAttribute(params object[] allowedValues) : ValidationAttribute
+    public class EnumerableAllowedValuesAttribute<TValue>(params object[] allowedValues) : ValidationAttribute
     {
         public object[] AllowedValues { get; } = allowedValues;
 
@@ -21,7 +21,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            return ((IEnumerable<object?>)value).All(x => x is null || AllowedValues.Contains(x));
+            return ((IEnumerable<TValue>)value).All(x => x is null || AllowedValues.Contains(x));
         }
     }
 }
