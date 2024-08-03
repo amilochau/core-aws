@@ -26,6 +26,9 @@ namespace Milochau.Core.Aws.Integration
         public bool AnonymousRequest { get; set; }
 
         /// <summary>Path parameters</summary>
-        public Dictionary<string, string> PathParameters { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> PathParameters { get; set; } = [];
+
+        /// <summary>Query string parameters</summary>
+        public Dictionary<string, string> QueryStringParameters { get; set; } = [];
     }
 }
