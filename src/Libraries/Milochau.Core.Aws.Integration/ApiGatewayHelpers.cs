@@ -52,7 +52,7 @@ namespace Milochau.Core.Aws.Integration
             }
 
             // Query string parameters
-            proxyRequest.QueryStringParameters = new Dictionary<string, string>();
+            proxyRequest.QueryStringParameters = options.QueryStringParameters;
             foreach (var queryParameter in httpContext.Request.Query)
             {
                 proxyRequest.QueryStringParameters.Add(queryParameter.Key, queryParameter.Value.ToString());
