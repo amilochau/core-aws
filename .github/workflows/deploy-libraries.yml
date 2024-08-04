@@ -7,8 +7,8 @@ on:
 concurrency: deploy_libraries
 
 env:
-  PROJECTS_BUILD: './src/Milochau.Core.Aws.Sdk.sln'
-  PROJECTS_LIBRARIES: './src/Milochau.Core.Aws.Sdk.sln'
+  PROJECTS_BUILD: './src/Milochau.Core.Aws.sln'
+  PROJECTS_LIBRARIES: './src/Milochau.Core.Aws.sln'
   VERSION_FILE: './src/Directory.Build.props'
   DOTNET_VERSION: 8.0.x
 

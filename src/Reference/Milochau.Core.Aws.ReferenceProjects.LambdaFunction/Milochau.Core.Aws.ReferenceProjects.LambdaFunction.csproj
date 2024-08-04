@@ -2,13 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <NuGetAudit>true</NuGetAudit>
     <OutputType>exe</OutputType>
     <AWSProjectType>Lambda</AWSProjectType>
     <AssemblyName Condition=" '$(BuildSource)' == 'AwsCmd' ">bootstrap</AssemblyName>
-
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Nullable>enable</Nullable>
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PublishAot>true</PublishAot>

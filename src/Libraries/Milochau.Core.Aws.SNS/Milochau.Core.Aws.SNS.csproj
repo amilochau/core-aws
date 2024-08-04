@@ -2,14 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <NuGetAudit>true</NuGetAudit>
+    <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>Milochau.Core.Aws.SNS contains SNS helpers as part of the Milochau.Core.Aws framework for applications.</Description>
     
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Nullable>enable</Nullable>
-
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 

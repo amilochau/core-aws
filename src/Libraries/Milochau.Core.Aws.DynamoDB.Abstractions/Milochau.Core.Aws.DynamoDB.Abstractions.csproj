@@ -2,13 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NuGetAudit>true</NuGetAudit>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Milochau.Core.Aws.DynamoDB.Abstractions contains DynamoDB abstractions for code generation as part of the Milochau.Core.Aws framework for applications.</Description>
 
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Nullable>enable</Nullable>
-    
     <LangVersion>Latest</LangVersion>
 
     <IsPackable>false</IsPackable><!-- Part of Milochau.Core.Aws.DynamoDB.Generator -->
