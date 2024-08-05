@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build libraries
-        uses: amilochau/github-actions/build/netcore@v4
+        uses: amilochau/github-actions/build/netcore@amilochau/support-github-packages
         with:
           dotnetVersion: ${{ env.DOTNET_VERSION }}
           projectsToBuild: ${{ env.PROJECT_API_BUILD }}
