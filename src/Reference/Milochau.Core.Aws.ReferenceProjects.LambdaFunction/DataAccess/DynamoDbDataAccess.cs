@@ -143,20 +143,23 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
 
 
             await amazonDynamoDB.QueryAndUpdateAllAsync<Access__Gsi_By_MapId_ThenBy_Creation, Access>(
-                userId: null,
-                partitionKeyCondition: new EqualValueExpression(Access__Gsi_By_MapId_ThenBy_Creation.PartitionKey, "map_id"),
-                sortKeyCondition: null,
-                filterExpression: null,
-                updateItemRequestFunction: entity => new UpdateItemRequest<Access>
+                new QueryAndUpdateAllRequest<Access__Gsi_By_MapId_ThenBy_Creation, Access>
                 {
                     UserId = null,
-                    PartitionKey = entity.UserId,
-                    SortKey = entity.MapId,
-                    UpdateExpression = new UpdateExpression
+                    PartitionKeyCondition = new EqualValueExpression(Access__Gsi_By_MapId_ThenBy_Creation.PartitionKey, "map_id"),
+                    SortKeyCondition = null,
+                    Filters = null,
+                    UpdateItemRequestFunction = entity => new UpdateItemRequest<Access>
                     {
-                        AddExpressions = [
+                        UserId = null,
+                        PartitionKey = entity.UserId,
+                        SortKey = entity.MapId,
+                        UpdateExpression = new UpdateExpression
+                        {
+                            AddExpressions = [
                             new AddUpdateExpression("a", new(entity.Creation))
                         ],
+                        },
                     },
                 },
                 cancellationToken: cancellationToken);
