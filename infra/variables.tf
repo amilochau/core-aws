@@ -37,7 +37,6 @@ variable "lambda_settings" {
         method      = string
         route       = string
         anonymous   = optional(bool, false)
-        enable_cors = optional(bool, false)
       })), [])
       sns_triggers = optional(list(object({
         description = optional(string, null)

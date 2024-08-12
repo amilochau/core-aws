@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert dictionary values property, field or parameter does not exceed a maximum length
+    /// Validation attribute to assert an enumerable property, field or parameter does not exceed a maximum length
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class DictionaryStringLengthAttribute<TKey>(int maximumLength) : ValidationAttribute
+    public class EnumerableLengthAttribute<TValue>() : ValidationAttribute
     {
-        /// <summary>Gets the maximum acceptable length of the dictionary values</summary>
-        public int MaximumLength { get; } = maximumLength;
+        /// <summary>Gets the maximum acceptable length of the enumerable</summary>
+        public int MaximumLength { get; set; } = int.MaxValue;
 
-        /// <summary>Gets or sets the minimum acceptable length of the dictionary values</summary>
+        /// <summary>Gets or sets the minimum acceptable length of the enumerable</summary>
         public int MinimumLength { get; set; }
 
         public override bool IsValid(object? value)
@@ -27,21 +28,8 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            var dictionary = (IDictionary<TKey, string>)value;
-            foreach (var keyValue in dictionary)
-            {
-                if (keyValue.Value is null)
-                {
-                    continue;
-                }
-
-                if (keyValue.Value.Length < MinimumLength || keyValue.Value.Length > MaximumLength)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            int length = ((IEnumerable<TValue>)value).Count();
+            return length >= MinimumLength && length <= MaximumLength;
         }
 
         /// <summary>

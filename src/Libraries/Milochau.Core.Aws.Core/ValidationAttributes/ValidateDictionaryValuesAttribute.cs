@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
     /// Validation attribute to assert a dictionary property, field or parameter has valid values

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert a dictionary property, field or parameter does not exceed a maximum length
+    /// Validation attribute to assert dictionary values property, field or parameter does not exceed a maximum length
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class DictionaryLengthAttribute<TKey, TValue>(int maximumLength) : ValidationAttribute
+    public class DictionaryStringLengthAttribute<TKey>(int maximumLength) : ValidationAttribute
     {
-        /// <summary>Gets the maximum acceptable length of the dictionary</summary>
+        /// <summary>Gets the maximum acceptable length of the dictionary values</summary>
         public int MaximumLength { get; } = maximumLength;
 
-        /// <summary>Gets or sets the minimum acceptable length of the dictionary</summary>
+        /// <summary>Gets or sets the minimum acceptable length of the dictionary values</summary>
         public int MinimumLength { get; set; }
 
         public override bool IsValid(object? value)
@@ -27,8 +27,21 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            int length = ((IDictionary<TKey, TValue>)value).Count;
-            return length >= MinimumLength && length <= MaximumLength;
+            var dictionary = (IDictionary<TKey, string>)value;
+            foreach (var keyValue in dictionary)
+            {
+                if (keyValue.Value is null)
+                {
+                    continue;
+                }
+
+                if (keyValue.Value.Length < MinimumLength || keyValue.Value.Length > MaximumLength)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

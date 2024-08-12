@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert a string property, field or parameter is an URI
+    /// Validation attribute to assert an enumerable property, field or parameter does not include null or whitespace value
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class StringTypeUriAttribute : ValidationAttribute
-    {
-        public UriKind UriKind { get; set; } = UriKind.Absolute;
 
+    public class EnumerableRequiredAttribute<TValue> : ValidationAttribute
+    {
         public override bool IsValid(object? value)
         {
             // Automatically pass if value is null. RequiredAttribute should be used to assert a value is not null.
@@ -19,12 +20,9 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            if (value is not string stringValue)
-            {
-                return false;
-            }
+            var dictionary = (IEnumerable<TValue>)value;
 
-            return Uri.TryCreate(stringValue, UriKind, out _);
+            return dictionary.All(x => x is not null && (x is not string value || !string.IsNullOrWhiteSpace(value)));
         }
     }
 }

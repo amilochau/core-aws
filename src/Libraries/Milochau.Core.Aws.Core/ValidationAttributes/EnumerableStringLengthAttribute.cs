@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
     /// Validation attribute to assert enumerable values property, field or parameter does not exceed a maximum length
