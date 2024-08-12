@@ -7,28 +7,28 @@ using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.DynamoDB.Helpers
 {
-    /// <summary>Extension methods for the <c>Query</c> operation</summary>
-    public static class QueryExtensions
+    /// <summary>Extension methods for the <c>Scan</c> operation</summary>
+    public static class ScanExtensions
     {
-        /// <summary>Query all entities from a DynamoDB table, under a single partition</summary>
-        public static async IAsyncEnumerable<TEntity> QueryAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
-            QueryAllRequest<TEntity> request,
+        /// <summary>Scan all entities from a DynamoDB table, under all partitions</summary>
+        public static async IAsyncEnumerable<TEntity> ScanAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
+            ScanAllRequest<TEntity> request,
             [EnumeratorCancellation] CancellationToken cancellationToken)
-            where TEntity : class, IDynamoDbQueryableEntity<TEntity>
+            where TEntity : class, IDynamoDbScanableEntity<TEntity>
         {
-            var queryRequest = new QueryRequest<TEntity>
+            var scanRequest = new ScanRequest<TEntity>
             {
                 UserId = request.UserId,
                 ReturnConsumedCapacity = request.ReturnConsumedCapacity,
-                PartitionKeyCondition = request.PartitionKeyCondition,
-                SortKeyCondition = request.SortKeyCondition,
                 Filters = request.Filters,
                 ConsistentRead = request.ConsistentRead,
+                Segment = request.Segment,
+                TotalSegments = request.TotalSegments,
             };
 
             do
             {
-                var response = await amazonDynamoDB.QueryAsync(queryRequest, cancellationToken);
+                var response = await amazonDynamoDB.ScanAsync(scanRequest, cancellationToken);
                 if (response.Entities == null || response.Entities.Count == 0)
                 {
                     break;
@@ -37,20 +37,20 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 {
                     yield return entity;
                 }
-                queryRequest.ExclusiveStartKey = response.LastEvaluatedKey;
-            } while (queryRequest.ExclusiveStartKey != null);
+                scanRequest.ExclusiveStartKey = response.LastEvaluatedKey;
+            } while (scanRequest.ExclusiveStartKey != null);
         }
 
-        /// <summary>Update all entities from a DynamoDB table, under a single partition</summary>
-        public static async Task QueryAndUpdateAllAsync<TQueryableEntity, TUpdatableEntity>(this IAmazonDynamoDB amazonDynamoDB,
-            QueryAndUpdateAllRequest<TQueryableEntity, TUpdatableEntity> request,
+        /// <summary>Update all entities from a DynamoDB table, under all partitions</summary>
+        public static async Task ScanAndUpdateAllAsync<TScanableEntity, TUpdatableEntity>(this IAmazonDynamoDB amazonDynamoDB,
+            ScanAndUpdateAllRequest<TScanableEntity, TUpdatableEntity> request,
             CancellationToken cancellationToken)
-            where TQueryableEntity : class, IDynamoDbQueryableEntity<TQueryableEntity>
+            where TScanableEntity : class, IDynamoDbScanableEntity<TScanableEntity>
             where TUpdatableEntity : class, IDynamoDbUpdatableEntity<TUpdatableEntity>
         {
-            var entities = amazonDynamoDB.QueryAllAsync(request, cancellationToken);
+            var entities = amazonDynamoDB.ScanAllAsync(request, cancellationToken);
 
-            await foreach (TQueryableEntity entity in entities)
+            await foreach (TScanableEntity entity in entities)
             {
                 try // We can't use BatchWriteItem to update items
                 {
@@ -63,17 +63,17 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             }
         }
 
-        /// <summary>Write all entities from a DynamoDB table, under a single partition</summary>
-        public static async Task QueryAndWriteAllAsync<TQueryableEntity, TWritableEntity>(this IAmazonDynamoDB amazonDynamoDB,
-            QueryAndWriteAllRequest<TQueryableEntity, TWritableEntity> request,
+        /// <summary>Write all entities from a DynamoDB table, under all partitions</summary>
+        public static async Task ScanAndWriteAllAsync<TScanableEntity, TWritableEntity>(this IAmazonDynamoDB amazonDynamoDB,
+            ScanAndWriteAllRequest<TScanableEntity, TWritableEntity> request,
             CancellationToken cancellationToken)
-            where TQueryableEntity : class, IDynamoDbQueryableEntity<TQueryableEntity>
+            where TScanableEntity : class, IDynamoDbScanableEntity<TScanableEntity>
             where TWritableEntity : class, IDynamoDbBatchWritableEntity<TWritableEntity>
         {
-            var entities = amazonDynamoDB.QueryAllAsync(request, cancellationToken);
+            var entities = amazonDynamoDB.ScanAllAsync(request, cancellationToken);
 
             List<WriteRequest<TWritableEntity>> writeRequests = [];
-            await foreach (TQueryableEntity entity in entities)
+            await foreach (TScanableEntity entity in entities)
             {
                 writeRequests.Add(request.WriteRequestFunction(entity));
             }

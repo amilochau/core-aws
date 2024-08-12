@@ -142,7 +142,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
             }, cancellationToken);
 
 
-            await amazonDynamoDB.UpdateAllAsync<Access__Gsi_By_MapId_ThenBy_Creation, Access>(
+            await amazonDynamoDB.QueryAndUpdateAllAsync<Access__Gsi_By_MapId_ThenBy_Creation, Access>(
                 userId: null,
                 partitionKeyCondition: new EqualValueExpression(Access__Gsi_By_MapId_ThenBy_Creation.PartitionKey, "map_id"),
                 sortKeyCondition: null,
