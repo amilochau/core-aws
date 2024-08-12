@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert an enumerable property, field or parameter does not exceed a maximum length
+    /// Validation attribute to assert a dictionary property, field or parameter does not exceed a maximum length
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class EnumerableLengthAttribute<TValue>(int maximumLength) : ValidationAttribute
+    public class DictionaryLengthAttribute<TKey, TValue>(int maximumLength) : ValidationAttribute
     {
-        /// <summary>Gets the maximum acceptable length of the enumerable</summary>
+        /// <summary>Gets the maximum acceptable length of the dictionary</summary>
         public int MaximumLength { get; } = maximumLength;
 
-        /// <summary>Gets or sets the minimum acceptable length of the enumerable</summary>
+        /// <summary>Gets or sets the minimum acceptable length of the dictionary</summary>
         public int MinimumLength { get; set; }
 
         public override bool IsValid(object? value)
@@ -28,7 +27,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return true;
             }
 
-            int length = ((IEnumerable<TValue>)value).Count();
+            int length = ((IDictionary<TKey, TValue>)value).Count;
             return length >= MinimumLength && length <= MaximumLength;
         }
 

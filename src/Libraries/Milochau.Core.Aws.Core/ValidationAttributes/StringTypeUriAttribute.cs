@@ -1,15 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert a string property, field or parameter is a GUID
+    /// Validation attribute to assert a string property, field or parameter is an URI
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class StringTypeGuidAttribute : ValidationAttribute
+    public class StringTypeUriAttribute : ValidationAttribute
     {
-        public string GuidFormat { get; set; } = "D";
+        public UriKind UriKind { get; set; } = UriKind.Absolute;
 
         public override bool IsValid(object? value)
         {
@@ -24,7 +24,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return false;
             }
 
-            return Guid.TryParseExact(stringValue, GuidFormat, out _);
+            return Uri.TryCreate(stringValue, UriKind, out _);
         }
     }
 }

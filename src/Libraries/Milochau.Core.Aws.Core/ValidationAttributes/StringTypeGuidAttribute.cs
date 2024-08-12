@@ -1,16 +1,15 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 
-namespace Milochau.Core.Aws.Core.ValidationExtensions
+namespace Milochau.Core.Aws.Core.ValidationAttributes
 {
     /// <summary>
-    /// Validation attribute to assert a string property, field or parameter is a date
+    /// Validation attribute to assert a string property, field or parameter is a GUID
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class StringTypeDateAttribute : ValidationAttribute
+    public class StringTypeGuidAttribute : ValidationAttribute
     {
-        public string DateFormat { get; set; } = "yyyy-MM-dd";
+        public string GuidFormat { get; set; } = "D";
 
         public override bool IsValid(object? value)
         {
@@ -25,7 +24,7 @@ namespace Milochau.Core.Aws.Core.ValidationExtensions
                 return false;
             }
 
-            return DateTime.TryParseExact(stringValue, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
+            return Guid.TryParseExact(stringValue, GuidFormat, out _);
         }
     }
 }
