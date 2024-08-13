@@ -134,7 +134,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
                 return false;
             }
 
-            user = new IdentityUser(userSub, userEmail, userName, userId);
+            user = new IdentityUser(userSub, userName, userEmail, userId);
             return true;
         }
 

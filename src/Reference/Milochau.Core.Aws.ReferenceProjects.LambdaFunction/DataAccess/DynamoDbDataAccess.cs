@@ -255,9 +255,6 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess
         [DynamoDbAttribute("cd")]
         public DateTimeOffset Creation { get; set; }
 
-        [DynamoDbAttribute("lv")]
-        public DateTimeOffset LastVisit { get; set; }
-
         [DynamoDbAttribute("n_s")]
         public required string NSearch { get; set; }
 
