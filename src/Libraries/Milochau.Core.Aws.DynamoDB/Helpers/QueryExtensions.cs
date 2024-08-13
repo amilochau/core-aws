@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Model;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     public static class QueryExtensions
     {
         /// <summary>Query all entities from a DynamoDB table, under a single partition</summary>
-        public static async IAsyncEnumerable<TEntity> QueryAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
+        public static async Task<QueryAllResponse<TEntity>> QueryAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
             QueryAllRequest<TEntity> request,
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbQueryableEntity<TEntity>
         {
             var queryRequest = new QueryRequest<TEntity>
@@ -26,19 +25,24 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 ConsistentRead = request.ConsistentRead,
             };
 
+            var response = new QueryAllResponse<TEntity>();
             do
             {
-                var response = await amazonDynamoDB.QueryAsync(queryRequest, cancellationToken);
-                if (response.Entities == null || response.Entities.Count == 0)
+                var queryResponse = await amazonDynamoDB.QueryAsync(queryRequest, cancellationToken);
+                if (queryResponse.Items == null || queryResponse.Entities == null || queryResponse.Entities.Count == 0)
                 {
                     break;
                 }
-                foreach (var entity in response.Entities)
-                {
-                    yield return entity;
-                }
-                queryRequest.ExclusiveStartKey = response.LastEvaluatedKey;
+
+                response.Entities.AddRange(queryResponse.Entities);
+                response.Items.AddRange(queryResponse.Items);
+                response.Count += queryResponse.Count ?? 0;
+                response.ScannedCount += queryResponse.ScannedCount ?? 0;
+
+                queryRequest.ExclusiveStartKey = queryResponse.LastEvaluatedKey;
             } while (queryRequest.ExclusiveStartKey != null);
+
+            return response;
         }
 
         /// <summary>Update all entities from a DynamoDB table, under a single partition</summary>
@@ -48,9 +52,9 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             where TQueryableEntity : class, IDynamoDbQueryableEntity<TQueryableEntity>
             where TUpdatableEntity : class, IDynamoDbUpdatableEntity<TUpdatableEntity>
         {
-            var entities = amazonDynamoDB.QueryAllAsync(request, cancellationToken);
+            var queryAllResponse = await amazonDynamoDB.QueryAllAsync(request, cancellationToken);
 
-            await foreach (TQueryableEntity entity in entities)
+            foreach (TQueryableEntity entity in queryAllResponse.Entities)
             {
                 try // We can't use BatchWriteItem to update items
                 {
@@ -70,20 +74,14 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             where TQueryableEntity : class, IDynamoDbQueryableEntity<TQueryableEntity>
             where TWritableEntity : class, IDynamoDbBatchWritableEntity<TWritableEntity>
         {
-            var entities = amazonDynamoDB.QueryAllAsync(request, cancellationToken);
-
-            List<WriteRequest<TWritableEntity>> writeRequests = [];
-            await foreach (TQueryableEntity entity in entities)
-            {
-                writeRequests.Add(request.WriteRequestFunction(entity));
-            }
+            var queryAllResponse = await amazonDynamoDB.QueryAllAsync(request, cancellationToken);
 
             try
             {
                 await amazonDynamoDB.BatchWriteItemAsync(new BatchWriteItemRequest<TWritableEntity>
                 {
                     UserId = request.UserId,
-                    RequestEntities = writeRequests,
+                    RequestEntities = queryAllResponse.Entities.Select(request.WriteRequestFunction).ToList(),
                     ReturnConsumedCapacity = request.ReturnConsumedCapacity,
                     ReturnItemCollectionMetrics = request.ReturnItemCollectionMetrics,
                 }, cancellationToken);

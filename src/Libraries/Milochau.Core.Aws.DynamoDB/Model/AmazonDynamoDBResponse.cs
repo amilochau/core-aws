@@ -9,7 +9,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
     public class AmazonDynamoDBResponse : AmazonWebServiceResponse
     {
         /// <summary>
-        /// Gets and sets the property ConsumedCapacity. 
+        /// Consumed capacity
         /// <para>
         /// The capacity units consumed by the entire <c>BatchWriteItem</c> operation.
         /// </para>
