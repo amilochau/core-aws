@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.DynamoDB.Model;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
     public static class ScanExtensions
     {
         /// <summary>Scan all entities from a DynamoDB table, under all partitions</summary>
-        public static async IAsyncEnumerable<TEntity> ScanAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
+        public static async Task<ScanAllResponse<TEntity>> ScanAllAsync<TEntity>(this IAmazonDynamoDB amazonDynamoDB,
             ScanAllRequest<TEntity> request,
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
             where TEntity : class, IDynamoDbScanableEntity<TEntity>
         {
             var scanRequest = new ScanRequest<TEntity>
@@ -26,19 +25,24 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
                 TotalSegments = request.TotalSegments,
             };
 
+            var response = new ScanAllResponse<TEntity>();
             do
             {
-                var response = await amazonDynamoDB.ScanAsync(scanRequest, cancellationToken);
-                if (response.Entities == null || response.Entities.Count == 0)
+                var scanResponse = await amazonDynamoDB.ScanAsync(scanRequest, cancellationToken);
+                if (scanResponse.Items == null || scanResponse.Entities == null || scanResponse.Entities.Count == 0)
                 {
                     break;
                 }
-                foreach (var entity in response.Entities)
-                {
-                    yield return entity;
-                }
-                scanRequest.ExclusiveStartKey = response.LastEvaluatedKey;
+
+                response.Entities.AddRange(scanResponse.Entities);
+                response.Items.AddRange(scanResponse.Items);
+                response.Count += scanResponse.Count ?? 0;
+                response.ScannedCount += scanResponse.ScannedCount ?? 0;
+
+                scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
             } while (scanRequest.ExclusiveStartKey != null);
+
+            return response;
         }
 
         /// <summary>Update all entities from a DynamoDB table, under all partitions</summary>
@@ -48,13 +52,13 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             where TScanableEntity : class, IDynamoDbScanableEntity<TScanableEntity>
             where TUpdatableEntity : class, IDynamoDbUpdatableEntity<TUpdatableEntity>
         {
-            var entities = amazonDynamoDB.ScanAllAsync(request, cancellationToken);
+            var scanAllResponse = await amazonDynamoDB.ScanAllAsync(request, cancellationToken);
 
-            await foreach (TScanableEntity entity in entities)
+            foreach (TScanableEntity entity in scanAllResponse.Entities)
             {
                 try // We can't use BatchWriteItem to update items
                 {
-                    await amazonDynamoDB.UpdateItemAsync(request.UpdateItemRequestFunction(entity), cancellationToken);
+                    var updateItemResponse = await amazonDynamoDB.UpdateItemAsync(request.UpdateItemRequestFunction(entity), cancellationToken);
                 }
                 catch (Exception)
                 {
@@ -70,20 +74,14 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             where TScanableEntity : class, IDynamoDbScanableEntity<TScanableEntity>
             where TWritableEntity : class, IDynamoDbBatchWritableEntity<TWritableEntity>
         {
-            var entities = amazonDynamoDB.ScanAllAsync(request, cancellationToken);
-
-            List<WriteRequest<TWritableEntity>> writeRequests = [];
-            await foreach (TScanableEntity entity in entities)
-            {
-                writeRequests.Add(request.WriteRequestFunction(entity));
-            }
+            var scanAllResponse = await amazonDynamoDB.ScanAllAsync(request, cancellationToken);
 
             try
             {
                 await amazonDynamoDB.BatchWriteItemAsync(new BatchWriteItemRequest<TWritableEntity>
                 {
                     UserId = request.UserId,
-                    RequestEntities = writeRequests,
+                    RequestEntities = scanAllResponse.Entities.Select(request.WriteRequestFunction).ToList(),
                     ReturnConsumedCapacity = request.ReturnConsumedCapacity,
                     ReturnItemCollectionMetrics = request.ReturnItemCollectionMetrics,
                 }, cancellationToken);
