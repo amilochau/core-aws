@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
                 builder.AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
-                    .WithOrigins("http://localhost:3000");
+                    .WithOrigins("http://localhost:3000", "http://localhost:4173");
             });
             app.MapGet("/", () =>
             {
