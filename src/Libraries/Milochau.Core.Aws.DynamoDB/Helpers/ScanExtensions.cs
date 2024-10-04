@@ -29,10 +29,6 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             do
             {
                 var scanResponse = await amazonDynamoDB.ScanAsync(scanRequest, cancellationToken);
-                if (scanResponse.LastEvaluatedKey == null || scanResponse.LastEvaluatedKey.Count == 0)
-                {
-                    break;
-                }
 
                 if (scanResponse.Items != null && scanResponse.Entities != null)
                 {
@@ -42,9 +38,8 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
                 response.Count += scanResponse.Count ?? 0;
                 response.ScannedCount += scanResponse.ScannedCount ?? 0;
-
                 scanRequest.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
-            } while (scanRequest.ExclusiveStartKey != null);
+            } while (scanRequest.ExclusiveStartKey != null && scanRequest.ExclusiveStartKey.Count > 0);
 
             return response;
         }
