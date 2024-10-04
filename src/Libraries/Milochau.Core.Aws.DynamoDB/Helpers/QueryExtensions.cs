@@ -29,13 +29,17 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             do
             {
                 var queryResponse = await amazonDynamoDB.QueryAsync(queryRequest, cancellationToken);
-                if (queryResponse.Items == null || queryResponse.Entities == null || queryResponse.Entities.Count == 0)
+                if (queryResponse.LastEvaluatedKey == null || queryResponse.LastEvaluatedKey.Count == 0)
                 {
                     break;
                 }
 
-                response.Entities.AddRange(queryResponse.Entities);
-                response.Items.AddRange(queryResponse.Items);
+                if (queryResponse.Items != null && queryResponse.Entities != null)
+                {
+                    response.Entities.AddRange(queryResponse.Entities);
+                    response.Items.AddRange(queryResponse.Items);
+                }
+
                 response.Count += queryResponse.Count ?? 0;
                 response.ScannedCount += queryResponse.ScannedCount ?? 0;
 
