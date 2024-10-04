@@ -29,10 +29,6 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
             do
             {
                 var queryResponse = await amazonDynamoDB.QueryAsync(queryRequest, cancellationToken);
-                if (queryResponse.LastEvaluatedKey == null || queryResponse.LastEvaluatedKey.Count == 0)
-                {
-                    break;
-                }
 
                 if (queryResponse.Items != null && queryResponse.Entities != null)
                 {
@@ -42,9 +38,8 @@ namespace Milochau.Core.Aws.DynamoDB.Helpers
 
                 response.Count += queryResponse.Count ?? 0;
                 response.ScannedCount += queryResponse.ScannedCount ?? 0;
-
                 queryRequest.ExclusiveStartKey = queryResponse.LastEvaluatedKey;
-            } while (queryRequest.ExclusiveStartKey != null);
+            } while (queryRequest.ExclusiveStartKey != null && queryRequest.ExclusiveStartKey.Count > 0);
 
             return response;
         }
