@@ -21,6 +21,9 @@
     <Version>0.3.0</Version>
     <InformationalVersion Condition="('$(GITHUB_ACTION)' != '') And ('$(GITHUB_SHA)' != '')">$(Version)+$(GITHUB_ACTION)-$(GITHUB_SHA)</InformationalVersion>
     <InformationalVersion Condition="('$(GITHUB_ACTION)' == '') Or ('$(GITHUB_SHA)' == '')">$(Version)+local</InformationalVersion>
+
+    <!-- See https://github.com/NuGet/Home/issues/10735 -->
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
 
   <!-- Ensure InternalsVisibleTo for tests inside business assemblies only -->
