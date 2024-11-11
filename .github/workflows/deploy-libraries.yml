@@ -10,7 +10,7 @@ env:
   PROJECTS_BUILD: './src/Milochau.Core.Aws.sln'
   PROJECTS_LIBRARIES: './src/Milochau.Core.Aws.sln'
   VERSION_FILE: './src/Directory.Build.props'
-  DOTNET_VERSION: 8.0.x
+  DOTNET_VERSION: 9.0.x
 
 jobs:
   deploy:
