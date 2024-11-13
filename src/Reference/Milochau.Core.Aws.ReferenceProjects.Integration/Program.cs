@@ -1,13 +1,10 @@
 ﻿using Milochau.Core.Aws.Integration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
-using System.Text.Json;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
-using Milochau.Core.Aws.DynamoDB.Events;
-using Milochau.Core.Aws.Core.References.Serialization;
 using System;
+using Milochau.Core.Aws.DynamoDB.Events;
 
 namespace Milochau.Core.Aws.ReferenceProjects.Integration
 {
@@ -16,28 +13,13 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.CustomSchemaIds(type => type.FullName);
-            });
-            builder.Services.AddCors();
+            builder.Services.AddMilochauServices();
 
             var app = builder.Build();
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-            app.UseCors(builder =>
+            app.UseMilochauServices(new()
             {
-                builder.AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .WithOrigins("http://localhost:3000", "http://localhost:4173");
+                CorsOrigins = ["http://localhost:3000", "http://localhost:4173"],
             });
-            app.MapGet("/", () =>
-            {
-                return Results.Redirect("/swagger");
-            }).ExcludeFromDescription();
 
             app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
             {
@@ -48,20 +30,16 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
                 return ApiGatewayHelpers.BuildResult(proxyResponse);
             })
             .Produces(204)
-            .WithTags("Http trigger")
-            .WithOpenApi();
+            .WithTags("Http trigger");
 
-            app.MapPost("/dynamodb", async (HttpContext httpContext, CancellationToken cancellationToken) =>
+            app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken cancellationToken) =>
             {
-                var proxyRequest = await JsonSerializer.DeserializeAsync(httpContext.Request.Body, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent);
                 var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
                 var lambdaFunction = new Function(credentials);
                 await lambdaFunction.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
             })
-            .Produces(204)
-            .Accepts<DynamoDBEvent>("application/json")
-            .WithTags("DynamoDB Stream trigger")
-            .WithOpenApi();
+            .Produces(200)
+            .WithTags("DynamoDB Stream trigger");
 
             app.Run();
         }
