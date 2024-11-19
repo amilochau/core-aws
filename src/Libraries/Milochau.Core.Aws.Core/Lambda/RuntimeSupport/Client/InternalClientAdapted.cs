@@ -12,7 +12,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     internal class InternalRuntimeApiClient
     {
         private const int MAX_HEADER_SIZE_BYTES = 1024 * 1024;
-        private const string ErrorContentType = "application/vnd.aws.lambda.error+json";
         private readonly string baseUrl = $"http://{EnvironmentVariables.RuntimeServerHostAndPort}/2018-06-01";
 
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
@@ -33,10 +32,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             {
                 return response;
             }
-            else
-            {
-                throw new Exception($"Status: {response.StatusCode}");
-            }
+
+            throw new Exception($"Status: {response.StatusCode}");
         }
 
         /// <summary>Runtime makes this request in order to submit a response.</summary>
@@ -44,8 +41,6 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         public async Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(awsRequestId);
-
             using var content = new StreamContent(outputStream);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
@@ -62,10 +57,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             {
                 return;
             }
-            else
-            {
-                throw new Exception($"Status: {response.StatusCode}");
-            }
+
+            throw new Exception($"Status: {response.StatusCode}");
         }
 
         /// <summary>
@@ -73,10 +66,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// </summary>
         public async Task ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(awsRequestId);
-
             using var content = new StringContent(errorJson);
-            content.Headers.ContentType = MediaTypeHeaderValue.Parse(ErrorContentType);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/vnd.aws.lambda.error+json");
 
             using var request = new HttpRequestMessage
             {
@@ -112,10 +103,8 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             {
                 return;
             }
-            else
-            {
-                throw new Exception($"Status: {response.StatusCode}");
-            }
+
+            throw new Exception($"Status: {response.StatusCode}");
         }
     }
 }
