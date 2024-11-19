@@ -21,41 +21,25 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task> handler)
-        {
-            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
-            return RunAsync(handlerWrapper.Handler);
-        }
+        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task> handler) => RunAsync(HandlerWrapper.BuildHandler(handler));
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task<Stream>> handler)
-        {
-            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler);
-            return RunAsync(handlerWrapper.Handler);
-        }
+        public static Task RunAsync<TRequest>(Func<TRequest, ILambdaContext, CancellationToken, Task> handler, JsonTypeInfo<TRequest> requestInfo) => RunAsync(HandlerWrapper.BuildHandler(handler, requestInfo));
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync<TRequest>(Func<TRequest, ILambdaContext, CancellationToken, Task> handler, JsonTypeInfo<TRequest> requestInfo)
-        {
-            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo);
-            return RunAsync(handlerWrapper.Handler);
-        }
+        public static Task RunAsync(Func<Stream, ILambdaContext, CancellationToken, Task<Stream>> handler) => RunAsync(HandlerWrapper.BuildHandler(handler));
 
         /// <summary>
         /// Run the initialization Func if provided.
         /// Then run the invoke loop, calling the handler for each invocation.
         /// </summary>
-        public static Task RunAsync<TRequest, TResponse>(Func<TRequest, ILambdaContext, CancellationToken, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo)
-        {
-            var handlerWrapper = HandlerWrapper.GetHandlerWrapper(handler, requestInfo, responseInfo);
-            return RunAsync(handlerWrapper.Handler);
-        }
+        public static Task RunAsync<TRequest, TResponse>(Func<TRequest, ILambdaContext, CancellationToken, Task<TResponse>> handler, JsonTypeInfo<TRequest> requestInfo, JsonTypeInfo<TResponse> responseInfo) => RunAsync(HandlerWrapper.BuildHandler(handler, requestInfo, responseInfo));
 
         /// <summary>
         /// Run the initialization Func if provided.
@@ -115,7 +99,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
         {
             try
             {
-                if (int.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariables.FunctionMemorySize), out var lambdaMemoryInMb))
+                if (int.TryParse(EnvironmentVariables.FunctionMemorySize, out var lambdaMemoryInMb))
                 {
                     ulong memoryInBytes = (ulong)lambdaMemoryInMb * 1024 * 1024;
                     AppContext.SetData("GCHeapHardLimit", memoryInBytes);
