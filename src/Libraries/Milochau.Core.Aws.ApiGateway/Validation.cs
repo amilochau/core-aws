@@ -7,14 +7,23 @@ using System.Linq;
 
 namespace Milochau.Core.Aws.ApiGateway
 {
-    /// <summary>Parsable and validatable request</summary>
-    public interface IParsableAndValidatable<TSelf>
+    /// <summary>Parsable request</summary>
+    public interface IParsable<TSelf>
     {
         /// <summary>Try parse an API Gateway request</summary>
         abstract static bool TryParse(APIGatewayHttpApiV2ProxyRequest request, [NotNullWhen(true)] out TSelf? result);
+    }
 
+    /// <summary>Validatable request</summary>
+    public interface IValidatable<TSelf>
+    {
         /// <summary>Validate the class</summary>
         void Validate(Dictionary<string, Collection<string>> modelStateDictionary);
+    }
+
+    /// <summary>Parsable and validatable request</summary>
+    public interface IParsableAndValidatable<TSelf> : IParsable<TSelf>, IValidatable<TSelf>
+    {
     }
 
     /// <summary>Validation options</summary>
