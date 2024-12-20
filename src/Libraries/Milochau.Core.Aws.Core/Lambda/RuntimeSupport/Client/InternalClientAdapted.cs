@@ -12,10 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
     internal class InternalRuntimeApiClient
     {
         private const int MAX_HEADER_SIZE_BYTES = 1024 * 1024;
-
-        private const string ErrorContentType = "application/vnd.aws.lambda.error+json";
-
-        public string BaseUrl { get; } = "http://" + EnvironmentVariables.RuntimeServerHostAndPort + "/2018-06-01";
+        private readonly string baseUrl = $"http://{EnvironmentVariables.RuntimeServerHostAndPort}/2018-06-01";
 
         /// <summary>Runtime makes this HTTP request when it is ready to receive and process a new invoke.</summary>
         /// <returns>This is an iterator-style blocking API call. Response contains event JSON document, specific to the invoking service.</returns>
@@ -26,7 +23,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
             using var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(BaseUrl + "/runtime/invocation/next", UriKind.Absolute),
+                RequestUri = new Uri($"{baseUrl}/runtime/invocation/next", UriKind.Absolute),
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -36,14 +33,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                 return response;
             }
 
-            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var message = response.StatusCode switch
-            {
-                HttpStatusCode.Forbidden => "Forbidden",
-                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
-                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
-            };
-            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
+            throw new Exception($"Status: {response.StatusCode}");
         }
 
         /// <summary>Runtime makes this request in order to submit a response.</summary>
@@ -51,15 +41,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <exception cref="RuntimeApiClientException">A server side error occurred.</exception>
         public async Task ResponseAsync(string awsRequestId, Stream outputStream, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(awsRequestId);
-
             using var content = new StreamContent(outputStream);
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
             var request = new HttpRequestMessage
             {
-                RequestUri = new Uri($"{BaseUrl}/runtime/invocation/{awsRequestId}/response", UriKind.RelativeOrAbsolute),
                 Method = HttpMethod.Post,
+                RequestUri = new Uri($"{baseUrl}/runtime/invocation/{awsRequestId}/response", UriKind.RelativeOrAbsolute),
                 Content = content,
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -70,16 +58,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                 return;
             }
 
-            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var message = response.StatusCode switch
-            {
-                HttpStatusCode.BadRequest => "Bad Request",
-                HttpStatusCode.Forbidden => "Forbidden",
-                HttpStatusCode.RequestEntityTooLarge => "Payload Too Large",
-                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
-                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
-            };
-            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
+            throw new Exception($"Status: {response.StatusCode}");
         }
 
         /// <summary>
@@ -87,15 +66,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// </summary>
         public async Task ErrorWithXRayCauseAsync(string awsRequestId, string lambda_Runtime_Function_Error_Type, string errorJson, string xrayCause, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(awsRequestId);
-
             using var content = new StringContent(errorJson);
-            content.Headers.ContentType = MediaTypeHeaderValue.Parse(ErrorContentType);
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/vnd.aws.lambda.error+json");
 
             using var request = new HttpRequestMessage
             {
-                RequestUri = new Uri($"{BaseUrl}/runtime/invocation/{Uri.EscapeDataString(awsRequestId)}/error", UriKind.RelativeOrAbsolute),
                 Method = HttpMethod.Post,
+                RequestUri = new Uri($"{baseUrl}/runtime/invocation/{Uri.EscapeDataString(awsRequestId)}/error", UriKind.RelativeOrAbsolute),
                 Content = content,
             };
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -127,25 +104,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
                 return;
             }
 
-            var responseData = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var message = response.StatusCode switch
-            {
-                HttpStatusCode.BadRequest => "Bad Request",
-                HttpStatusCode.Forbidden => "Forbidden",
-                HttpStatusCode.InternalServerError => "Container error. Non-recoverable state. Runtime should exit promptly.\n",
-                _ => "The HTTP status code of the response was not expected (" + (int)response.StatusCode + ").",
-            };
-            throw new RuntimeApiClientException(message, (int)response.StatusCode, responseData, null);
-        }
-    }
-
-    internal class RuntimeApiClientException(string message, int statusCode, string response, Exception? innerException) : Exception(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + response.Substring(0, response.Length >= 512 ? 512 : response.Length), innerException)
-    {
-        public string Response { get; } = response;
-
-        public override string ToString()
-        {
-            return string.Format("HTTP Response: \n\n{0}\n\n{1}", Response, base.ToString());
+            throw new Exception($"Status: {response.StatusCode}");
         }
     }
 }

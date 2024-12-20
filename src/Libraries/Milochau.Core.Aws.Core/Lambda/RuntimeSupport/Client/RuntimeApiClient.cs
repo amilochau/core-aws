@@ -48,14 +48,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
         /// <returns>A Task representing the asynchronous operation.</returns>
         public Task ReportInvocationErrorAsync(string awsRequestId, Exception exception, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(awsRequestId);
+            var exceptionInfoJson = LambdaJsonExceptionWriter.WriteJson(exception);
+            var exceptionInfoXRayJson = LambdaXRayExceptionWriter.WriteJson(exception);
 
-            var exceptionInfo = ExceptionInfo.GetExceptionInfo(exception);
-
-            var exceptionInfoJson = LambdaJsonExceptionWriter.WriteJson(exceptionInfo);
-            var exceptionInfoXRayJson = LambdaXRayExceptionWriter.WriteJson(exceptionInfo);
-
-            return internalClient.ErrorWithXRayCauseAsync(awsRequestId, exceptionInfo.ErrorType, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
+            return internalClient.ErrorWithXRayCauseAsync(awsRequestId, exception.GetType().Name, exceptionInfoJson, exceptionInfoXRayJson, cancellationToken);
         }
 
         /// <summary>
