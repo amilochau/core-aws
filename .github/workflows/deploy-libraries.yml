@@ -15,7 +15,7 @@ env:
 jobs:
   deploy:
     name: Deploy libraries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: PKG
     permissions:
       contents: write
