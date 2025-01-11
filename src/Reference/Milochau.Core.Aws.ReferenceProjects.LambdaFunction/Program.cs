@@ -43,7 +43,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
                     await LambdaBootstrap.RunAsync(function.FunctionHandlerSns, ApplicationJsonSerializerContext.Default.SNSEvent);
                     break;
                 case 4:
-                    await LambdaBootstrap.RunAsync(function.FunctionHandlerDynamoDbStream, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent, ApplicationJsonSerializerContext2.Default.StreamsEventResponse);
+                    await LambdaBootstrap.RunAsync(Function.FunctionHandlerDynamoDbStream, new ApplicationJsonSerializerContext2(Options.JsonSerializerOptions).DynamoDBEvent, ApplicationJsonSerializerContext2.Default.StreamsEventResponse);
                     break;
             }
         }
@@ -87,7 +87,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             }
         }
 
-        public Task<StreamsEventResponse> FunctionHandlerDynamoDbStream(DynamoDBEvent request, ILambdaContext lambdaContext, CancellationToken cancellationToken)
+        public static Task<StreamsEventResponse> FunctionHandlerDynamoDbStream(DynamoDBEvent request, ILambdaContext lambdaContext, CancellationToken cancellationToken)
         {
             var response = new StreamsEventResponse
             {
@@ -131,7 +131,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             return await DoAsync(requestData, context, cancellationToken);
         }
 
-        public async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(FunctionRequest requestData,
+        public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(FunctionRequest requestData,
             ILambdaContext context,
             CancellationToken cancellationToken)
         {

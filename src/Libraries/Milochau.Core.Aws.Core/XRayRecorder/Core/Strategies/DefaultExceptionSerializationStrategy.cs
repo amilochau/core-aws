@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
         /// </summary>
         /// <param name="e">The exception to be added</param>
         /// <returns> List of <see cref="ExceptionDescriptor"/></returns>
-        public List<ExceptionDescriptor> DescribeException(Exception? e)
+        public static List<ExceptionDescriptor> DescribeException(Exception? e)
         {
             List<ExceptionDescriptor> result = new List<ExceptionDescriptor>();
             if (e == null)

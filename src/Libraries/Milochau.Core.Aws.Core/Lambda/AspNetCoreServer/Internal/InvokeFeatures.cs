@@ -430,7 +430,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                 }
 
                 // If there is no Lambda trace id then fallback to the trace id that ASP.NET Core would have generated.
-                _traceIdentifier = (new Microsoft.AspNetCore.Http.Features.HttpRequestIdentifierFeature()).TraceIdentifier;
+                _traceIdentifier = new Microsoft.AspNetCore.Http.Features.HttpRequestIdentifierFeature().TraceIdentifier;
                 return _traceIdentifier;
             }
             set { _traceIdentifier = value; }

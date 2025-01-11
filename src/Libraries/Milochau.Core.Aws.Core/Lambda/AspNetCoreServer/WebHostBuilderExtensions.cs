@@ -12,14 +12,9 @@ namespace Microsoft.AspNetCore.Hosting
         /// This is called instead of UseKestrel. If UseKestrel was called before this it will remove
         /// the service description that was added to the IServiceCollection.
         /// </summary>
-        /// <param name="hostBuilder"></param>
-        /// <returns></returns>
         public static IWebHostBuilder UseLambdaServer(this IWebHostBuilder hostBuilder)
         {
-            return hostBuilder.ConfigureServices(services =>
-            {
-                Utilities.EnsureLambdaServerRegistered(services);
-            });
+            return hostBuilder.ConfigureServices(Utilities.EnsureLambdaServerRegistered);
         }
     }
 }

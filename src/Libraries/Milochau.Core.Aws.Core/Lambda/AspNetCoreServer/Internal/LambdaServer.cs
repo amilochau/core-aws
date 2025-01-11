@@ -89,6 +89,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
     [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNameCaseInsensitive = true)]
     internal partial class LambdaHostingJsonSerializerContext : JsonSerializerContext
     {
     }

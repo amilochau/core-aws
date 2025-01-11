@@ -102,7 +102,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public void AddException(Exception e)
         {
             HasFault = true;
-            Cause = new Cause(exceptionSerializationStrategy.DescribeException(e));
+            Cause = new Cause(DefaultExceptionSerializationStrategy.DescribeException(e));
         }
 
         /// <remarks>Not used for AWS services, but used for external calls</remarks>

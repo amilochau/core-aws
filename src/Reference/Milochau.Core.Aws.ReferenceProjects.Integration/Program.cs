@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.Integration
             {
                 var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
                 var lambdaFunction = new Function(credentials);
-                await lambdaFunction.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
+                await Function.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
             })
             .Produces(200)
             .WithTags("DynamoDB Stream trigger");

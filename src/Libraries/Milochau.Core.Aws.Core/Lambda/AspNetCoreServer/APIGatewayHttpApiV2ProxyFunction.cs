@@ -4,7 +4,6 @@ using Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal;
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.Events;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Linq;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 {
@@ -23,60 +23,17 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         private IServiceProvider serviceProvider;
         private LambdaServer? lambdaServer;
         private ILogger logger;
-        
-        // Defines a mapping from registered content types to the response encoding format
-        // which dictates what transformations should be applied before returning response content
-        private readonly Dictionary<string, ResponseContentEncoding> _responseContentEncodingForContentType = new Dictionary<string, ResponseContentEncoding>
-        {
-            // The complete list of registered MIME content-types can be found at:
-            //    http://www.iana.org/assignments/media-types/media-types.xhtml
 
-            // Here we just include a few commonly used content types found in
-            // Web API responses and allow users to add more as needed below
-
-            ["text/plain"] = ResponseContentEncoding.Default,
-            ["text/xml"] = ResponseContentEncoding.Default,
-            ["application/xml"] = ResponseContentEncoding.Default,
-            ["application/json"] = ResponseContentEncoding.Default,
-            ["text/html"] = ResponseContentEncoding.Default,
-            ["text/css"] = ResponseContentEncoding.Default,
-            ["text/javascript"] = ResponseContentEncoding.Default,
-            ["text/ecmascript"] = ResponseContentEncoding.Default,
-            ["text/markdown"] = ResponseContentEncoding.Default,
-            ["text/csv"] = ResponseContentEncoding.Default,
-
-            ["application/octet-stream"] = ResponseContentEncoding.Base64,
-            ["image/png"] = ResponseContentEncoding.Base64,
-            ["image/gif"] = ResponseContentEncoding.Base64,
-            ["image/jpeg"] = ResponseContentEncoding.Base64,
-            ["image/jpg"] = ResponseContentEncoding.Base64,
-            ["image/x-icon"] = ResponseContentEncoding.Base64,
-            ["application/zip"] = ResponseContentEncoding.Base64,
-            ["application/pdf"] = ResponseContentEncoding.Base64,
-            ["application/x-protobuf"] = ResponseContentEncoding.Base64,
-            ["application/wasm"] = ResponseContentEncoding.Base64
-        };
-
-        // Defines a mapping from registered content encodings to the response encoding format
-        // which dictates what transformations should be applied before returning response content
-        private readonly Dictionary<string, ResponseContentEncoding> _responseContentEncodingForContentEncoding = new Dictionary<string, ResponseContentEncoding>
-        {
-            ["gzip"] = ResponseContentEncoding.Base64,
-            ["deflate"] = ResponseContentEncoding.Base64,
-            ["br"] = ResponseContentEncoding.Base64
-        };
+        public string[] ResponseContentEncodingForContentTypeBase64 { get; set; } = ["application/octet-stream", "image/png", "image/gif", "image/jpeg", "image/jpg", "image/x-icon", "application/zip", "application/pdf", "application/x-protobuf", "application/wasm"];
+        public string[] ResponseContentEncodingForContentEncodingBase64 { get; set; } = ["gzip", "deflate", "br"];
 
         /// <summary>Constructor used by Amazon.Lambda.AspNetCoreServer.Hosting to support ASP.NET Core projects using the Minimal API style</summary>
-        public APIGatewayHttpApiV2ProxyFunction(IServiceProvider hostedServices)
+        public APIGatewayHttpApiV2ProxyFunction(IServiceProvider serviceProvider)
         {
-            serviceProvider = hostedServices;
-            lambdaServer = serviceProvider.GetService(typeof(Microsoft.AspNetCore.Hosting.Server.IServer)) as LambdaServer;
-            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(serviceProvider);
-
+            this.serviceProvider = serviceProvider;
+            lambdaServer = this.serviceProvider.GetService(typeof(Microsoft.AspNetCore.Hosting.Server.IServer)) as LambdaServer;
+            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(this.serviceProvider);
         }
-
-        /// <summary>Defines the default treatment of response content</summary>
-        public ResponseContentEncoding DefaulAPIGatewayHttpApiV2ProxyResponseContentEncoding { get; set; } = ResponseContentEncoding.Default;
 
         /// <summary>
         /// If true, information about unhandled exceptions thrown during request processing
@@ -116,42 +73,31 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         }
 
         /// <summary>Gets the response content encoding for a content type</summary>
-        public ResponseContentEncoding GeAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentType(string? contentType)
+        public ResponseContentEncoding GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentType(string? contentType)
         {
             if (string.IsNullOrEmpty(contentType))
             {
-                return DefaulAPIGatewayHttpApiV2ProxyResponseContentEncoding;
+                return ResponseContentEncoding.Default;
             }
 
             // ASP.NET Core will typically return content type with encoding like this "application/json; charset=utf-8"
             // To find the content type in the dictionary we need to strip the encoding off.
             var contentTypeWithoutEncoding = contentType.Split(';')[0].Trim();
-            if (_responseContentEncodingForContentType.TryGetValue(contentTypeWithoutEncoding, out var encoding))
-            {
-                return encoding;
-            }
-
-            return DefaulAPIGatewayHttpApiV2ProxyResponseContentEncoding;
+            return ResponseContentEncodingForContentTypeBase64.Contains(contentTypeWithoutEncoding)
+                ? ResponseContentEncoding.Base64
+                : ResponseContentEncoding.Default;
         }
 
         /// <summary>Gets the response content encoding for a content encoding</summary>
-        public ResponseContentEncoding GeAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentEncoding(string? contentEncoding)
+        public ResponseContentEncoding GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentEncoding(string? contentEncoding)
         {
-            if (string.IsNullOrEmpty(contentEncoding))
-            {
-                return DefaulAPIGatewayHttpApiV2ProxyResponseContentEncoding;
-            }
-
-            if (_responseContentEncodingForContentEncoding.TryGetValue(contentEncoding, out var encoding))
-            {
-                return encoding;
-            }
-
-            return DefaulAPIGatewayHttpApiV2ProxyResponseContentEncoding;
+            return ResponseContentEncodingForContentEncodingBase64.Contains(contentEncoding)
+                ? ResponseContentEncoding.Base64
+                : ResponseContentEncoding.Default;
         }
 
         /// <summary>Formats an Exception into a string, including all inner exceptions</summary>
-        protected string ErrorReport(Exception e)
+        protected static string ErrorReport(Exception e)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"{e.GetType().Name}:\n{e}");
@@ -221,7 +167,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     }
 
                     logger.LogError(sb.ToString());
-                    ((IHttpResponseFeature)features).StatusCode = 500;
+                    features.StatusCode = 500;
                 }
                 catch (ReflectionTypeLoadException rex)
                 {
@@ -230,8 +176,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     var sb = new StringBuilder();
                     foreach (var loaderException in rex.LoaderExceptions)
                     {
-                        var fileNotFoundException = loaderException as FileNotFoundException;
-                        if (fileNotFoundException != null && !string.IsNullOrEmpty(fileNotFoundException.FileName))
+                        if (loaderException is FileNotFoundException fileNotFoundException && !string.IsNullOrEmpty(fileNotFoundException.FileName))
                         {
                             sb.AppendLine($"Missing file: {fileNotFoundException.FileName}");
                         }
@@ -242,14 +187,14 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     }
 
                     logger.LogError(sb.ToString());
-                    ((IHttpResponseFeature)features).StatusCode = 500;
+                    features.StatusCode = 500;
                 }
                 catch (Exception e)
                 {
                     ex = e;
                     if (rethrowUnhandledError) throw;
                     logger.LogError(e, $"Unknown error responding to request: {ErrorReport(e)}");
-                    ((IHttpResponseFeature)features).StatusCode = 500;
+                    features.StatusCode = 500;
                 }
 
                 if (features.ResponseStartingEvents != null)
@@ -277,10 +222,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         }
 
 
-
-
-
-        private protected void InternalCustomResponseExceptionHandling(APIGatewayHttpApiV2ProxyResponse apiGatewayResponse, ILambdaContext lambdaContext, Exception ex)
+        private protected static void InternalCustomResponseExceptionHandling(APIGatewayHttpApiV2ProxyResponse apiGatewayResponse, ILambdaContext lambdaContext, Exception ex)
         {
             apiGatewayResponse.SetHeaderValues("ErrorType", [ex.GetType().Name], false);
         }
@@ -304,7 +246,6 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             string? contentEncoding = null;
             if (responseFeatures.Headers != null)
             {
-                response.Headers = new Dictionary<string, string?>();
                 foreach (var kvp in responseFeatures.Headers)
                 {
                     if (kvp.Key.Equals(HeaderNames.SetCookie, StringComparison.CurrentCultureIgnoreCase))
@@ -337,14 +278,13 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             if (responseFeatures.Stream != null)
             {
                 // Figure out how we should treat the response content, check encoding first to see if body is compressed, then check content type
-                var rcEncoding = GeAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentEncoding(contentEncoding);
+                var rcEncoding = GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentEncoding(contentEncoding);
                 if (rcEncoding != ResponseContentEncoding.Base64)
                 {
-                    rcEncoding = GeAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentType(contentType);
+                    rcEncoding = GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentType(contentType);
                 }
 
                 (response.Body, response.IsBase64Encoded) = Utilities.ConvertAspNetCoreBodyToLambdaBody(responseFeatures.Stream, rcEncoding);
-
             }
 
             return response;

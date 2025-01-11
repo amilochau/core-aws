@@ -170,7 +170,7 @@ namespace Microsoft.Extensions.Logging
         private static bool TryGetSection(IConfiguration configuration, string key, out IConfiguration value)
         {
             value = configuration.GetSection(key);
-            return (value != null);
+            return value != null;
         }
         // Creates filter for log levels section
         private static Func<string, LogLevel, bool>? CreateFilter(IConfiguration logLevelsSection)
@@ -251,7 +251,7 @@ namespace Microsoft.Extensions.Logging
                 else
                 {
                     // If no log filters then default to logging the log message.
-                    return (logLevel >= defaultLogLevel);
+                    return logLevel >= defaultLogLevel;
                 }
             };
         }
