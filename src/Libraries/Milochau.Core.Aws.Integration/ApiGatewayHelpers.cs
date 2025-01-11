@@ -18,9 +18,9 @@ namespace Milochau.Core.Aws.Integration
         {
             var proxyRequest = new APIGatewayHttpApiV2ProxyRequest
             {
-                Version = "2.0",
-                RawPath = "",
-                RouteKey = "",
+                //Version = "2.0",
+                //RawPath = "",
+                //RouteKey = "",
                 RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
                 {
                     Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
@@ -29,7 +29,7 @@ namespace Milochau.Core.Aws.Integration
                         Path = httpContext.Request.Path,
                         Protocol = httpContext.Request.Protocol,
                         SourceIp = "0.0.0.0",
-                        UserAgent = ""
+                        //UserAgent = ""
                     },
                     Stage = "$default",
                     DomainName = "localhost",

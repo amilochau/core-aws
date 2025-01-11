@@ -14,13 +14,13 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
     public class APIGatewayHttpApiV2ProxyRequest
     {
         /// <summary>The payload format version</summary>
-        public required string Version { get; set; }
+        //public required string Version { get; set; }
 
         /// <summary>The route key</summary>
-        public required string RouteKey { get; set; }
+        //public required string RouteKey { get; set; }
 
         /// <summary>The raw path</summary>
-        public required string RawPath { get; set; }
+        public string? RawPath { get; set; }
 
         /// <summary>The raw query string</summary>
         public string? RawQueryString { get; set; }
@@ -145,7 +145,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
             public required string SourceIp { get; set; }
 
             /// <summary>The user agent for the request</summary>
-            public required string UserAgent { get; set; }
+            //public required string UserAgent { get; set; }
         }
 
         /// <summary>Information about the current requesters authorization</summary>

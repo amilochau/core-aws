@@ -74,7 +74,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
         internal static Stream ConvertLambdaRequestBodyToAspNetCoreBody(string body, bool isBase64Encoded)
         {
-            Byte[] binaryBody;
+            byte[] binaryBody;
             if (isBase64Encoded)
             {
                 binaryBody = Convert.FromBase64String(body);

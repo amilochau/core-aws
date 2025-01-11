@@ -32,7 +32,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
             where TContext : notnull
         {
-            this.Application = new ApplicationWrapper<TContext>(application);
+            Application = new ApplicationWrapper<TContext>(application);
 
             var handler = new APIGatewayHttpApiV2ProxyFunction(serviceProvider).FunctionHandlerAsync;
             return LambdaBootstrap.RunAsync(handler, LambdaHostingJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, LambdaHostingJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);

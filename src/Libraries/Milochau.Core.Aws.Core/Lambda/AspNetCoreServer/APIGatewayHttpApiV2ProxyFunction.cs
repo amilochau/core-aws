@@ -70,8 +70,8 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         public APIGatewayHttpApiV2ProxyFunction(IServiceProvider hostedServices)
         {
             serviceProvider = hostedServices;
-            lambdaServer = this.serviceProvider.GetService(typeof(Microsoft.AspNetCore.Hosting.Server.IServer)) as LambdaServer;
-            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(this.serviceProvider);
+            lambdaServer = serviceProvider.GetService(typeof(Microsoft.AspNetCore.Hosting.Server.IServer)) as LambdaServer;
+            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(serviceProvider);
 
         }
 
@@ -97,16 +97,16 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             var host = builder.Build();
 
             host.Start();
-            this.serviceProvider = host.Services;
+            serviceProvider = host.Services;
 
-            lambdaServer = this.serviceProvider.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>() as LambdaServer;
+            lambdaServer = serviceProvider.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>() as LambdaServer;
             if (lambdaServer == null)
             {
                 throw new Exception("Failed to find the Lambda implementation for the IServer interface in the IServiceProvider for the Host. This happens if UseLambdaServer was " +
                         "not called when constructing the IWebHostBuilder. If CreateHostBuilder was overridden it is recommended that ConfigureWebHostLambdaDefaults should be used " +
                         "instead of ConfigureWebHostDefaults to make sure the property Lambda services are registered.");
             }
-            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(this.serviceProvider);
+            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(serviceProvider);
         }
 
         /// <summary>Creates a context object using the <see cref="LambdaServer"/> field in the class</summary>
@@ -176,13 +176,13 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 
             var features = new InvokeFeatures(request, serviceProvider, lambdaContext);
 
-            var scope = this.serviceProvider.CreateScope();
+            var scope = serviceProvider.CreateScope();
             try
             {
                 ((IServiceProvidersFeature)features).RequestServices = scope.ServiceProvider;
 
-                var context = this.CreateContext(features);
-                var response = await this.ProcessRequest(lambdaContext, context, features);
+                var context = CreateContext(features);
+                var response = await ProcessRequest(lambdaContext, context, features);
 
                 return response;
             }
@@ -208,7 +208,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             {
                 try
                 {
-                    await this.lambdaServer!.Application!.ProcessRequestAsync(context);
+                    await lambdaServer!.Application!.ProcessRequestAsync(context);
                 }
                 catch (AggregateException agex)
                 {
@@ -217,7 +217,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     var sb = new StringBuilder();
                     foreach (var newEx in agex.InnerExceptions)
                     {
-                        sb.AppendLine(this.ErrorReport(newEx));
+                        sb.AppendLine(ErrorReport(newEx));
                     }
 
                     logger.LogError(sb.ToString());
@@ -237,7 +237,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                         }
                         else if (loaderException != null)
                         {
-                            sb.AppendLine(this.ErrorReport(loaderException));
+                            sb.AppendLine(ErrorReport(loaderException));
                         }
                     }
 
@@ -248,7 +248,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 {
                     ex = e;
                     if (rethrowUnhandledError) throw;
-                    logger.LogError(e, $"Unknown error responding to request: {this.ErrorReport(e)}");
+                    logger.LogError(e, $"Unknown error responding to request: {ErrorReport(e)}");
                     ((IHttpResponseFeature)features).StatusCode = 500;
                 }
 
@@ -256,7 +256,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 {
                     await features.ResponseStartingEvents.ExecuteAsync();
                 }
-                var response = this.MarshallResponse(features, lambdaContext, defaultStatusCode);
+                var response = MarshallResponse(features, lambdaContext, defaultStatusCode);
 
                 if (ex != null && IncludeUnhandledExceptionDetailInResponse)
                 {
@@ -272,7 +272,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             }
             finally
             {
-                this.lambdaServer!.Application!.DisposeContext(context, ex);
+                lambdaServer!.Application!.DisposeContext(context, ex);
             }
         }
 
