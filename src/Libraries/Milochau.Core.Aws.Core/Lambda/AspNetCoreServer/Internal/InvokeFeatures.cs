@@ -11,14 +11,12 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Lambda.Events;
 using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Lambda.Core;
-using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {

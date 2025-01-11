@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Milochau.Core.Aws.Core.JsonConverters;
-using System;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 #if DEBUG
 

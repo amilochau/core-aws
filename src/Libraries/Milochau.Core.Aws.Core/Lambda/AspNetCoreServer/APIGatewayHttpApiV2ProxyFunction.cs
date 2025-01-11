@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Primitives;
+﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Net.Http.Headers;
 using Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal;
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.Events;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;

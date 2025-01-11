@@ -1,14 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
-using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.Lambda.Events;
 using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap;
-using Milochau.Core.Aws.Core.Lambda.Serialization.SystemTextJson;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;

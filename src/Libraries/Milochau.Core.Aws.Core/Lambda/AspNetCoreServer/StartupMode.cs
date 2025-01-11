@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
+﻿namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 {
     /// <summary>
     /// The modes for when the ASP.NET Core framework will be initialized.

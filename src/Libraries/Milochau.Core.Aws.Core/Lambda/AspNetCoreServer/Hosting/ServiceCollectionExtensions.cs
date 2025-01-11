@@ -1,10 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal;
-using Milochau.Core.Aws.Core.Lambda.Core;
-using Milochau.Core.Aws.Core.Lambda.Events;
-using Milochau.Core.Aws.Core.Lambda.Serialization.SystemTextJson;
+﻿using Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal;
 using Milochau.Core.Aws.Core.References;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
