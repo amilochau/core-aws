@@ -6,6 +6,7 @@
     <PackageVersion Include="AWSSDK.SecurityToken" Version="3.7.400.49" />
     <PackageVersion Include="AWSSDK.SSO" Version="3.7.400.49" />
     <PackageVersion Include="AWSSDK.SSOOIDC" Version="3.7.400.49" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />

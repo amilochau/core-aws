@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using Milochau.Core.Aws.Core.Lambda.Events;
+using System;
 
 namespace Milochau.Core.Aws.Integration
 {
@@ -17,6 +18,9 @@ namespace Milochau.Core.Aws.Integration
         {
             var proxyRequest = new APIGatewayHttpApiV2ProxyRequest
             {
+                Version = "2.0",
+                RawPath = "",
+                RouteKey = "",
                 RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
                 {
                     Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
@@ -24,7 +28,12 @@ namespace Milochau.Core.Aws.Integration
                         Method = httpContext.Request.Method,
                         Path = httpContext.Request.Path,
                         Protocol = httpContext.Request.Protocol,
+                        SourceIp = "0.0.0.0",
+                        UserAgent = ""
                     },
+                    Stage = "$default",
+                    DomainName = "localhost",
+                    RequestId = Guid.NewGuid().ToString("N"),
                 },
                 Body = await new StreamReader(httpContext.Request.Body).ReadToEndAsync(cancellationToken),
             };
