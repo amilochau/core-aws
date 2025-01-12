@@ -1,4 +1,4 @@
-﻿using Milochau.Core.Aws.Core.References;
+﻿using System;
 using System.Net;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
@@ -12,6 +12,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// </summary>
     public class DaemonConfig
     {
+        /// <summary>
+        /// The environment variable for daemon address.
+        /// </summary>
+        public const string EnvironmentVariableDaemonAddress = "AWS_XRAY_DAEMON_ADDRESS";
 
         /// <summary>
         /// Default address for daemon.
@@ -23,7 +27,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <summary>
         /// Default UDP and TCP endpoint.
         /// </summary>
-        public static readonly IPEndPoint DefaultEndpoint = new(_defaultDaemonAddress, _defaultDaemonPort);
+        public static readonly IPEndPoint DefaultEndpoint = new IPEndPoint(_defaultDaemonAddress, _defaultDaemonPort);
 
         /// <summary>
         /// Gets or sets UDP endpoint.
@@ -31,17 +35,32 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         internal EndPoint _udpEndpoint;
 
         /// <summary>
+        /// Gets or sets TCP endpoint.
+        /// </summary>
+        internal EndPoint _tcpEndpoint;
+
+        /// <summary>
         /// Gets IP for UDP endpoint.
         /// </summary>
-        public IPEndPoint? UDPEndpoint {
+        public IPEndPoint UDPEndpoint
+        {
             get => _udpEndpoint.GetIPEndPoint();
             set => _udpEndpoint = EndPoint.Of(value);
         }
 
-        /// <summary></summary>
+        /// <summary>
+        /// Gets IP for TCP endpoint.
+        /// </summary>
+        public IPEndPoint TCPEndpoint
+        {
+            get => _tcpEndpoint.GetIPEndPoint();
+            set => _tcpEndpoint = EndPoint.Of(value);
+        }
+
         public DaemonConfig()
         {
             _udpEndpoint = EndPoint.Of(DefaultEndpoint);
+            _tcpEndpoint = EndPoint.Of(DefaultEndpoint);
         }
 
         internal static DaemonConfig ParsEndpoint(string? daemonAddress)
@@ -54,14 +73,20 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         }
 
         /// <summary>
-        /// Parses daemonAddress and sets enpoint.
+        /// Parses daemonAddress and sets enpoint. If <see cref="EnvironmentVariableDaemonAddress"/> is set, this call is ignored.
         /// </summary>
+        /// <param name="daemonAddress"> Dameon address to be parsed and set to <see cref="DaemonConfig"/> instance.</param>
         /// <returns></returns>
-        public static DaemonConfig GetEndPoint()
+        public static DaemonConfig GetEndPoint(string? daemonAddress = null)
         {
-            return EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress, out var daemonAddress)
-                ? ParsEndpoint(daemonAddress)
-                : ParsEndpoint(null);
+            if (Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
+            {
+                return ParsEndpoint(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress));
+            }
+            else
+            {
+                return ParsEndpoint(daemonAddress);
+            }
         }
     }
 }

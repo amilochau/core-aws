@@ -1,4 +1,9 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 {
@@ -9,6 +14,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     {
         private HostEndPoint? _h;
         private IPEndPoint? _i;
+        private bool _isHost;
 
         private EndPoint()
         {
@@ -21,7 +27,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <returns></returns>
         public static EndPoint Of(HostEndPoint hostEndPoint)
         {
-            return new EndPoint { _h = hostEndPoint };
+            return new EndPoint { _isHost = true, _h = hostEndPoint };
         }
 
         /// <summary>
@@ -29,18 +35,18 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// </summary>
         /// <param name="ipEndPoint">the ip endpoint to represent.</param>
         /// <returns></returns>
-        public static EndPoint Of(IPEndPoint? ipEndPoint)
+        public static EndPoint Of(IPEndPoint ipEndPoint)
         {
-            return new EndPoint { _i = ipEndPoint };
+            return new EndPoint { _isHost = false, _i = ipEndPoint };
         }
 
         /// <summary>
         /// Gets the ip of the endpoint that is represented.
         /// </summary>
         /// <returns></returns>
-        public IPEndPoint? GetIPEndPoint()
+        public IPEndPoint GetIPEndPoint()
         {
-            return _h != null ? _h.GetIPEndPoint(out _) : _i;
+            return _isHost ? _h!.GetIPEndPoint(out _)! : _i!;
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
+using System;
 using System.Globalization;
 using System.Numerics;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {
@@ -53,7 +53,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// </summary>
         /// <param name="traceId">The trace id</param>
         /// <returns>True if the trace id is valid</returns>
-        public static bool IsIdValid(string traceId)
+        public static bool IsIdValid(string? traceId)
         {
             // Is the input valid?
             // Is the total length valid?
@@ -67,6 +67,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             var idEpoch = elements[1];
             var idRand = elements[2];
 
+            // Is the number of elements valid?
+            // Is the version a valid integer?
+            // Is the version supported?
             // Is the size of epoch and random number valid?
             // Is the epoch a valid 32bit hex number?
             // Is the random number a valid hex number?

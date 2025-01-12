@@ -1,5 +1,5 @@
-﻿using System;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using System;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
 {

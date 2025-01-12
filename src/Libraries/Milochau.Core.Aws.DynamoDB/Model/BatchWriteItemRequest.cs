@@ -156,7 +156,7 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         ///  </li> </ul> </li> </ul>
         /// </summary>
-        public Dictionary<string, List<WriteRequest>>? RequestItems { get; set; }
+        public required Dictionary<string, List<WriteRequest>> RequestItems { get; set; }
 
         /// <summary>
         /// ReturnItemCollectionMetrics
@@ -168,6 +168,16 @@ namespace Milochau.Core.Aws.DynamoDB.Model
         /// </para>
         /// </summary>
         public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; set; }
+
+
+        /// <summary>Get request parameters for XRay</summary>
+        public override Dictionary<string, object?> GetXRayRequestDescriptors()
+        {
+            return new Dictionary<string, object?>
+            {
+                { "table_names", RequestItems.Keys.ToArray() },
+            };
+        }
     }
 
     /// <inheritdoc cref="BatchWriteItemRequest"/>

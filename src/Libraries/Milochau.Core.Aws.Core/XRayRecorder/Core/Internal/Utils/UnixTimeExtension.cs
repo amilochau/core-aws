@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         private const long TicksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
         private const long MicrosecondPerSecond = TimeSpan.TicksPerSecond / TicksPerMicrosecond;
 
-        private static readonly DateTime _epochStart = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime _epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly long _unixEpochMicroseconds = _epochStart.Ticks / TicksPerMicrosecond;
 
         /// <summary>

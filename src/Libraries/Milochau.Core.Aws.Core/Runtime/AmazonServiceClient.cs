@@ -10,7 +10,6 @@ using Milochau.Core.Aws.Core.References;
 using System.Threading.Tasks;
 using Milochau.Core.Aws.Core.Runtime.Internal.Transform;
 using System.Threading;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.Core.Runtime.Credentials;
 
 namespace Milochau.Core.Aws.Core.Runtime
@@ -38,8 +37,8 @@ namespace Milochau.Core.Aws.Core.Runtime
             var responseContext = new ResponseContext();
 
             // 1. Start request monitoring
-            var facadeSegment = new FacadeSegment();
-            var subsegment = XRayPipelineHandler.ProcessBeginRequest(facadeSegment, requestContext);
+            var xrayPipelineHandler = new XRayPipelineHandler();
+            xrayPipelineHandler.ProcessBeginRequest(requestContext.ClientConfig.MonitoringServiceName, requestContext.HttpRequestMessage);
 
             TResponse response;
             try
@@ -65,12 +64,12 @@ namespace Milochau.Core.Aws.Core.Runtime
             }
             catch (Exception e)
             {
-                XRayPipelineHandler.PopulateException(subsegment, e);
+                xrayPipelineHandler.PopulateException(e);
                 throw;
             }
             finally
             {
-                XRayPipelineHandler.ProcessEndRequest(subsegment, requestContext, responseContext);
+                xrayPipelineHandler.ProcessEndRequest(requestContext, responseContext);
                 requestContext.HttpRequestMessage?.Dispose();
             }
 

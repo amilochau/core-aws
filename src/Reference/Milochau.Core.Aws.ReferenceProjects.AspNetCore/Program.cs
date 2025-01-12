@@ -44,6 +44,7 @@ builder.Services.AddAuthorizationBuilder().SetFallbackPolicy(new AuthorizationPo
 
 var app = builder.Build();
 
+app.UseXRay();
 app.UseAuthorization();
 
 app.Run();

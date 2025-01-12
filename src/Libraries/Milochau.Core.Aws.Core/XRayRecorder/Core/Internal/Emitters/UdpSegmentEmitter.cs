@@ -1,8 +1,10 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
 {
@@ -11,18 +13,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
     /// </summary>
     public class UdpSegmentEmitter : ISegmentEmitter
     {
-        private readonly UdpClient udpClient;
-        private readonly DaemonConfig daemonConfig;
+        private readonly UdpClient udpClient = new UdpClient();
+        private readonly DaemonConfig daemonConfig = DaemonConfig.GetEndPoint();
         private bool disposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UdpSegmentEmitter"/> class.
-        /// </summary>
-        public UdpSegmentEmitter()
-        {
-            udpClient = new UdpClient();
-            daemonConfig = DaemonConfig.GetEndPoint();
-        }
 
         /// <summary>
         /// Send segment to local daemon
@@ -32,10 +25,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         {
             try
             {
-                var packet = segment.Marshall()!;
+                var packet = segment.Marshall();
                 var data = Encoding.ASCII.GetBytes(packet);
-                var ip = daemonConfig.UDPEndpoint; //Need local var to ensure ip do not
-                udpClient.BeginSend(data, data.Length, ip, null, null);
+                var ip = daemonConfig.UDPEndpoint; //Need local var to ensure ip do not updates
+                udpClient.Send(data, data.Length, ip);
             }
             catch (SocketException)
             {
@@ -57,7 +50,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 
@@ -75,9 +67,19 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
             if (disposing)
             {
                 udpClient?.Dispose();
-
                 disposed = true;
             }
         }
+    }
+    /// <summary>JSON serialization context</summary>
+    [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonSerializable(typeof(FacadeSegment))]
+    [JsonSerializable(typeof(Segment))]
+    [JsonSerializable(typeof(Subsegment))]
+    [JsonSerializable(typeof(Dictionary<string, long>))]
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    [JsonSerializable(typeof(Dictionary<string, string[]>))]
+    internal partial class XRayJsonSerializerContext : JsonSerializerContext
+    {
     }
 }
