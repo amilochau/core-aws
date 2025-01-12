@@ -34,13 +34,13 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                              IHttpActivityFeature
     {
         /// <summary>Key to access the ILambdaContext object from the HttpContext.Items collection</summary>
-        public const string LAMBDA_CONTEXT = "LambdaContext";
+        private const string LAMBDA_CONTEXT = "LambdaContext";
 
         /// <summary>
         /// Key to access the Lambda request object from the HttpContext.Items collection. The object
         /// can be either APIGatewayProxyRequest or ApplicationLoadBalancerRequest depending on the source of the event.
         /// </summary>
-        public const string LAMBDA_REQUEST_OBJECT = "LambdaRequestObject";
+        private const string LAMBDA_REQUEST_OBJECT = "LambdaRequestObject";
 
         private volatile int _containerRevision;
 
@@ -171,7 +171,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #region IFeatureCollection
         public bool IsReadOnly => false;
 
-        IDictionary<Type, object> _features = new Dictionary<Type, object>();
+        private readonly IDictionary<Type, object> _features = new Dictionary<Type, object>();
 
         public int Revision => _containerRevision;
 
@@ -287,7 +287,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
         internal class EventCallbacks
         {
-            List<EventCallback> _callbacks = [];
+            private readonly List<EventCallback> _callbacks = [];
 
             internal void Add(Func<object, Task> callback, object state)
             {
@@ -324,9 +324,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #endregion
 
         #region IHttpResponseBodyFeature
-#pragma warning disable CS0618 // Le type ou le membre est obsolète
         public Stream Stream => Body;
-#pragma warning restore CS0618 // Le type ou le membre est obsolète
 
         private PipeWriter? _pipeWriter;
 
@@ -405,7 +403,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
         #region ITlsConnectionFeatures
 
-        public Task<X509Certificate2?> GetClientCertificateAsync(CancellationToken cancellationToken) =>  Task.FromResult(ClientCertificate);
+        public Task<X509Certificate2?> GetClientCertificateAsync(CancellationToken cancellationToken) => Task.FromResult(ClientCertificate);
 
         public X509Certificate2? ClientCertificate { get; set; }
 

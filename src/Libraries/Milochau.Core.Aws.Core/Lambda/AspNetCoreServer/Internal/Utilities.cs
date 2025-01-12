@@ -36,7 +36,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         /// <param name="serverType"></param>
         public static void EnsureLambdaServerRegistered(IServiceCollection services, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serverType)
         {
-            IList<ServiceDescriptor> toRemove = new List<ServiceDescriptor>();
+            var toRemove = new List<ServiceDescriptor>();
             var serviceDescriptions = services.Where(x => x.ServiceType == typeof(IServer));
             int lambdaServiceCount = 0;
 
@@ -81,7 +81,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             }
             else
             {
-                binaryBody = UTF8Encoding.UTF8.GetBytes(body);
+                binaryBody = Encoding.UTF8.GetBytes(body);
             }
 
             return new MemoryStream(binaryBody);
@@ -95,31 +95,27 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             {
                 // We want to read the response content "raw" and then Base64 encode it
                 byte[] bodyBytes;
-                if (aspNetCoreBody is MemoryStream)
+                if (aspNetCoreBody is MemoryStream stream)
                 {
-                    bodyBytes = ((MemoryStream)aspNetCoreBody).ToArray();
+                    bodyBytes = stream.ToArray();
                 }
                 else
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        aspNetCoreBody.CopyTo(ms);
-                        bodyBytes = ms.ToArray();
-                    }
+                    using var ms = new MemoryStream();
+                    aspNetCoreBody.CopyTo(ms);
+                    bodyBytes = ms.ToArray();
                 }
                 return (body: Convert.ToBase64String(bodyBytes), isBase64Encoded: true);
             }
-            else if (aspNetCoreBody is MemoryStream)
+            else if (aspNetCoreBody is MemoryStream stream)
             {
-                return (body: UTF8Encoding.UTF8.GetString(((MemoryStream)aspNetCoreBody).ToArray()), isBase64Encoded: false);
+                return (body: Encoding.UTF8.GetString(stream.ToArray()), isBase64Encoded: false);
             }
             else
             {
                 aspNetCoreBody.Position = 0;
-                using (StreamReader reader = new StreamReader(aspNetCoreBody, Encoding.UTF8))
-                {
-                    return (body: reader.ReadToEnd(), isBase64Encoded: false);
-                }
+                using StreamReader reader = new StreamReader(aspNetCoreBody, Encoding.UTF8);
+                return (body: reader.ReadToEnd(), isBase64Encoded: false);
             }
         }
 
@@ -137,7 +133,9 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         public static string? CreateQueryStringParametersFromHttpApiV2(string? queryString)
         {
             if (string.IsNullOrEmpty(queryString))
+            {
                 return null;
+            }
 
             return "?" + queryString;
         }
@@ -146,14 +144,14 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         {
             if (multiValues?.Count > 0)
             {
-                StringBuilder sb = new StringBuilder("?");
+                var sb = new StringBuilder("?");
                 foreach (var kvp in multiValues)
                 {
                     foreach (var value in kvp.Value)
                     {
                         if (sb.Length > 1)
                         {
-                            sb.Append("&");
+                            sb.Append('&');
                         }
                         sb.Append($"{kvp.Key}={(urlEncodeValue ? WebUtility.UrlEncode(value) : value)}");
                     }
@@ -165,12 +163,12 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                 var queryStringParameters = singleValues;
                 if (queryStringParameters != null && queryStringParameters.Count > 0)
                 {
-                    StringBuilder sb = new StringBuilder("?");
+                    var sb = new StringBuilder("?");
                     foreach (var kvp in singleValues)
                     {
                         if (sb.Length > 1)
                         {
-                            sb.Append("&");
+                            sb.Append('&');
                         }
                         sb.Append($"{kvp.Key}={(urlEncodeValue ? WebUtility.UrlEncode(kvp.Value) : kvp.Value)}");
                     }
@@ -223,7 +221,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                     {
                         readLength = (int)Math.Min(bytesRemaining.GetValueOrDefault(), (long)readLength);
                     }
-                    int read = await source.ReadAsync(buffer, 0, readLength, cancel);
+                    int read = await source.ReadAsync(buffer.AsMemory(0, readLength), cancel);
 
                     if (bytesRemaining.HasValue)
                     {
@@ -238,7 +236,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
                     cancel.ThrowIfCancellationRequested();
 
-                    await destination.WriteAsync(buffer, 0, read, cancel);
+                    await destination.WriteAsync(buffer.AsMemory(0, read), cancel);
                 }
             }
             finally

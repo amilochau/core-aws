@@ -18,22 +18,12 @@ using System.Linq;
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 {
     /// <summary>Base class for ASP.NET Core Lambda functions that are getting request from API Gateway HTTP API V2 payload format</summary>
-    public class APIGatewayHttpApiV2ProxyFunction
+    public class APIGatewayHttpApiV2ProxyFunction(IServiceProvider serviceProvider, LambdaServer lambdaServer)
     {
-        private IServiceProvider serviceProvider;
-        private LambdaServer? lambdaServer;
-        private ILogger logger;
+        private readonly ILogger logger = serviceProvider.GetRequiredService<ILogger<APIGatewayHttpApiV2ProxyFunction>>();
 
         public string[] ResponseContentEncodingForContentTypeBase64 { get; set; } = ["application/octet-stream", "image/png", "image/gif", "image/jpeg", "image/jpg", "image/x-icon", "application/zip", "application/pdf", "application/x-protobuf", "application/wasm"];
         public string[] ResponseContentEncodingForContentEncodingBase64 { get; set; } = ["gzip", "deflate", "br"];
-
-        /// <summary>Constructor used by Amazon.Lambda.AspNetCoreServer.Hosting to support ASP.NET Core projects using the Minimal API style</summary>
-        public APIGatewayHttpApiV2ProxyFunction(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-            lambdaServer = this.serviceProvider.GetService(typeof(Microsoft.AspNetCore.Hosting.Server.IServer)) as LambdaServer;
-            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(this.serviceProvider);
-        }
 
         /// <summary>
         /// If true, information about unhandled exceptions thrown during request processing
@@ -41,6 +31,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         /// </summary>
         public bool IncludeUnhandledExceptionDetailInResponse { get; set; }
 
+        /*
         private protected bool IsStarted => lambdaServer != null;
 
         /// <summary>Should be called in the derived constructor</summary>
@@ -65,6 +56,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             }
             logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(serviceProvider);
         }
+        */
 
         /// <summary>Creates a context object using the <see cref="LambdaServer"/> field in the class</summary>
         protected object CreateContext(IFeatureCollection features)
@@ -115,17 +107,19 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 
         public virtual async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandlerAsync(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext lambdaContext, CancellationToken cancellationToken)
         {
+            /*
             if (!IsStarted)
             {
                 Start();
             }
+            */
 
             var features = new InvokeFeatures(request, serviceProvider, lambdaContext);
 
             var scope = serviceProvider.CreateScope();
             try
             {
-                ((IServiceProvidersFeature)features).RequestServices = scope.ServiceProvider;
+                features.RequestServices = scope.ServiceProvider;
 
                 var context = CreateContext(features);
                 var response = await ProcessRequest(lambdaContext, context, features);

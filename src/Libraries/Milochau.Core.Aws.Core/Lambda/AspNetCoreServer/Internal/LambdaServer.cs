@@ -34,7 +34,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         {
             Application = new ApplicationWrapper<TContext>(application);
 
-            var handler = new APIGatewayHttpApiV2ProxyFunction(serviceProvider).FunctionHandlerAsync;
+            var handler = new APIGatewayHttpApiV2ProxyFunction(serviceProvider, this).FunctionHandlerAsync;
             return LambdaBootstrap.RunAsync(handler, LambdaHostingJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, LambdaHostingJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
         }
 
