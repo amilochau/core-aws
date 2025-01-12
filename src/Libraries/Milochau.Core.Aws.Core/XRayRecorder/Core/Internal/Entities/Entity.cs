@@ -26,11 +26,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         protected const char ProtocolDelimiter = '\n';
 
         private readonly Lazy<List<Subsegment>> _lazySubsegments = new Lazy<List<Subsegment>>();
-        private readonly Lazy<ConcurrentDictionary<string, object>> _lazyHttp = new Lazy<ConcurrentDictionary<string, object>>();
-        private readonly Lazy<Dictionary<string, object>> _lazyAnnotations = new Lazy<Dictionary<string, object>>();
-        private readonly Lazy<ConcurrentDictionary<string, string>> _lazySql = new Lazy<ConcurrentDictionary<string, string>>();
-        private readonly Lazy<ConcurrentDictionary<string, IDictionary>> _lazyMetadata = new Lazy<ConcurrentDictionary<string, IDictionary>>();
-        private readonly Lazy<ConcurrentDictionary<string, object?>> _lazyAws = new Lazy<ConcurrentDictionary<string, object?>>();
+        private readonly Lazy<Dictionary<string, object>> _lazyHttp = new Lazy<Dictionary<string, object>>();
+        private readonly Lazy<Dictionary<string, object?>> _lazyAws = new Lazy<Dictionary<string, object?>>();
 
         private string? _traceId;
         private string? _id;
@@ -43,7 +40,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <param name="name">The name.</param>
         public Entity(string name)
         {
-            Id = GenerateId();
+            Id = ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
             IsInProgress = true;
             Name = name;
             IncrementReferenceCounter();
@@ -60,7 +57,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             {
                 return _traceId;
             }
-
             set
             {
                 if (!Entities.TraceId.IsIdValid(value))
@@ -86,7 +82,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             {
                 return _id;
             }
-
             set
             {
                 if (value != null && !IsIdValid(value))
@@ -132,7 +127,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// <c>true</c> if there are subsegments added; otherwise, <c>false</c>.
         /// </value>
         [JsonIgnore]
-        public bool IsSubsegmentsAdded => _lazySubsegments.IsValueCreated && _lazySubsegments.Value.Any();
+        public bool IsSubsegmentsAdded => _lazySubsegments.IsValueCreated && _lazySubsegments.Value.Count != 0;
 
         /// <summary>
         /// Gets or sets the unique id of upstream segment
@@ -148,7 +143,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
             {
                 return _parentId;
             }
-
             set
             {
                 if (value != null && !IsIdValid(value))
@@ -159,22 +153,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
                 _parentId = value;
             }
         }
-
-        /// <summary>
-        /// Gets the annotations of the segment
-        /// </summary>
-        [JsonPropertyName("annotations")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public Dictionary<string, object> Annotations => _lazyAnnotations.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether any annotations have been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if annotations have been added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsAnnotationsAdded => _lazyAnnotations.IsValueCreated && _lazyAnnotations.Value.Any();
 
         /// <summary>
         /// Gets or sets a value indicating whether the segment has faulted or failed
@@ -225,46 +203,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets the http attribute
         /// </summary>
         [JsonPropertyName("http")]
-        public IDictionary<string, object> Http => _lazyHttp.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether any HTTP information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if HTTP information has been added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsHttpAdded => _lazyHttp.IsValueCreated && !_lazyHttp.Value.IsEmpty;
-
-        /// <summary>
-        /// Gets the SQL information
-        /// </summary>
-        [JsonPropertyName("sql")]
-        public IDictionary<string, string> Sql => _lazySql.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether any SQL information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if SQL information has been added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsSqlAdded => _lazySql.IsValueCreated && !_lazySql.Value.IsEmpty;
-
-        /// <summary>
-        /// Gets the metadata.
-        /// </summary>
-        [JsonPropertyName("metadata")]
-        public IDictionary<string, IDictionary> Metadata => _lazyMetadata.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether any metadata has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if metadata has been added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsMetadataAdded => _lazyMetadata.IsValueCreated && !_lazyMetadata.Value.IsEmpty;
+        public Dictionary<string, object> Http => _lazyHttp.Value;
 
         /// <summary>
         /// Gets or sets the sample decision
@@ -282,16 +221,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets aws information
         /// </summary>
         [JsonPropertyName("aws")]
-        public IDictionary<string, object?> Aws => _lazyAws.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether aws information has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if aws information has added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsAwsAdded => _lazyAws.IsValueCreated && !_lazyAws.Value.IsEmpty;
+        public Dictionary<string, object?> Aws => _lazyAws.Value;
 
         /// <summary>
         /// Validate the segment id
@@ -302,12 +232,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             return id.Length == SegmentIdHexDigits && long.TryParse(id, NumberStyles.HexNumber, null, out _);
         }
-
-        /// <summary>
-        /// Generates the id for entity.
-        /// </summary>
-        /// <returns>An id for entity.</returns>
-        public static string GenerateId() => ThreadSafeRandom.GenerateHexNumber(SegmentIdHexDigits);
 
         /// <summary>
         /// Set start time of the entity to current time
@@ -323,89 +247,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public void SetEndTimeToNow()
         {
             EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Sets start time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetStartTime(decimal timestamp)
-        {
-            StartTime = timestamp;
-        }
-        /// <summary>
-        /// Sets end time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetEndTime(decimal timestamp)
-        {
-            EndTime = timestamp;
-        }
-
-        /// <summary>
-        /// Sets start time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetStartTime(DateTime timestamp)
-        {
-            StartTime = timestamp.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Sets end time of the entity to the provided timestamp.
-        /// </summary>
-        public void SetEndTime(DateTime timestamp)
-        {
-            EndTime = timestamp.ToUnixTimeSeconds();
-        }
-
-        /// <summary>
-        /// Adds the specified key and value as annotation to current segment.
-        /// The type of value is restricted. Only <see cref="string" />, <see cref="int" />, <see cref="long" />,
-        /// <see cref="double" /> and <see cref="bool" /> are supported.
-        /// </summary>
-        /// <param name="key">The key of the annotation to add</param>
-        /// <param name="value">The value of the annotation to add</param>
-        /// <exception cref="System.ArgumentException">Key cannot be null or empty - key</exception>
-        /// <exception cref="System.ArgumentNullException">value</exception>
-        /// <exception cref="InvalidAnnotationException">The annotation to be added is invalid.</exception>
-        public void AddAnnotation(string key, object value)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Key cannot be null or empty", nameof(key));
-            }
-
-            ArgumentNullException.ThrowIfNull(value);
-
-            if (value is int intValue)
-            {
-                _lazyAnnotations.Value.Add(key, intValue);
-                return;
-            }
-
-            if (value is long longValue)
-            {
-                _lazyAnnotations.Value.Add(key, longValue);
-                return;
-            }
-
-            if (value is string stringValue)
-            {
-                _lazyAnnotations.Value.Add(key, stringValue);
-                return;
-            }
-
-            if (value is double doubleValue)
-            {
-                _lazyAnnotations.Value.Add(key, doubleValue);
-                return;
-            }
-
-            if (value is bool boolValue)
-            {
-                _lazyAnnotations.Value.Add(key, boolValue);
-                return;
-            }
-
-            throw new InvalidAnnotationException(string.Format(CultureInfo.InvariantCulture, "Failed to add key={0}, value={1}, valueType={2} because the type is not supported.", key, value.ToString(), value.GetType().ToString()));
         }
 
         /// <summary>
@@ -438,27 +279,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         {
             HasFault = true;
             Cause = new Cause(AWSXRayRecorder.Instance.ExceptionSerializationStrategy.DescribeException(e, Subsegments));
-        }
-
-        /// <summary>
-        /// Adds the specific key and value to metadata under default namespace.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string key, object value)
-        {
-            AddMetadata(DefaultMetadataNamespace, key, value);
-        }
-
-        /// <summary>
-        /// Adds the specific key and value to metadata under given namespace.
-        /// </summary>
-        /// <param name="nameSpace">The name space.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void AddMetadata(string nameSpace, string key, object value)
-        {
-            _lazyMetadata.Value.GetOrAdd(nameSpace, new ConcurrentDictionary<string, object>())[key] = value;
         }
 
         /// <summary>

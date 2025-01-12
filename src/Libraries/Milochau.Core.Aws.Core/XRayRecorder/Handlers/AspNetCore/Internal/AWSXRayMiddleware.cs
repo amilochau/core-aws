@@ -154,7 +154,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
 
             if (xForwardedFor == null)
             {
-                requestAttributes["client_ip"] = GetClientIpAddress(request);
+                requestAttributes["client_ip"] = request.HttpContext.Connection.RemoteIpAddress?.ToString();
             }
             else
             {
@@ -169,12 +169,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
         }
 
         // Implementing custom logic : https://github.com/aws/aws-xray-sdk-dotnet/issues/64
-        private static string? GetUrl(HttpRequest? request)
+        private static string? GetUrl(HttpRequest request)
         {
-            if (request == null)
-            {
-                return null;
-            }
             var scheme = request.Scheme ?? string.Empty;
             var host = request.Host.Value ?? string.Empty;
             var pathBase = request.PathBase.Value ?? string.Empty;
@@ -182,8 +178,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
             var queryString = request.QueryString.Value ?? string.Empty;
 
             // PERF: Calculate string length to allocate correct buffer size for StringBuilder.
-            var length = scheme.Length + SchemeDelimiter.Length + host.Length
-                + pathBase.Length + path.Length + queryString.Length;
+            var length = scheme.Length + SchemeDelimiter.Length + host.Length + pathBase.Length + path.Length + queryString.Length;
 
             return new StringBuilder(length)
                 .Append(scheme)
@@ -199,18 +194,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
         {
             string? clientIp = null;
 
-            if (request.HttpContext.Request.Headers.TryGetValue(X_FORWARDED_FOR, out StringValues headerValue))
+            if (request.HttpContext.Request.Headers.TryGetValue(X_FORWARDED_FOR, out StringValues headerValue) && headerValue.ToArray().Length >= 1)
             {
-                if (headerValue.ToArray().Length >= 1)
-                    clientIp = headerValue.ToArray()[0];
+                clientIp = headerValue.ToArray()[0];
             }
 
             return string.IsNullOrEmpty(clientIp) ? null : clientIp.Split(',')[0].Trim();
-        }
-
-        private static string? GetClientIpAddress(HttpRequest request)
-        {
-            return request.HttpContext.Connection.RemoteIpAddress?.ToString();
         }
     }
 }

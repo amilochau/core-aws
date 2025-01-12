@@ -1,4 +1,5 @@
-﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
+﻿using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
@@ -23,7 +24,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// </summary>
         public AWSXRayRecorder() : base(new UdpSegmentEmitter())
         {
-            PopulateContexts();
         }
 
         /// <summary>
@@ -39,11 +39,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// <param name="timestamp">Sets the start time of the subsegment</param>
         /// <exception cref="ArgumentNullException">The argument has a null value.</exception>
         /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public override void BeginSubsegment(string name, DateTime? timestamp = null)
+        public override void BeginSubsegment(string name)
         {
             try
             {
-                ProcessSubsegmentInLambdaContext(name, timestamp);
+                ProcessSubsegmentInLambdaContext(name);
             }
             catch (EntityNotAvailableException)
             {
@@ -53,12 +53,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// <summary>
         /// Begin a tracing subsegment. A new subsegment will be created and added as a subsegment to previous facade segment or subsegment.
         /// </summary>
-        private void ProcessSubsegmentInLambdaContext(string name, DateTime? timestamp = null)
+        private void ProcessSubsegmentInLambdaContext(string name)
         {
             if (!TraceContext.IsEntityPresent()) // No facade segment available and first subsegment of a subsegment branch needs to be added
             {
                 AddFacadeSegment();
-                AddSubsegmentInLambdaContext(name, timestamp);
+                AddSubsegmentInLambdaContext(name);
             }
             else // Facade / Subsegment already present
             {
@@ -68,11 +68,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
                 if (environmentRootTraceId != null && !environmentRootTraceId.Equals(entity.RootSegment?.TraceId)) // If true, customer has leaked subsegments across invocation
                 {
                     TraceContext.ClearEntity(); // reset TraceContext
-                    BeginSubsegment(name, timestamp); // This adds Facade segment with updated environment variables
+                    BeginSubsegment(name); // This adds Facade segment with updated environment variables
                 }
                 else
                 {
-                    AddSubsegmentInLambdaContext(name, timestamp);
+                    AddSubsegmentInLambdaContext(name);
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             TraceContext.SetEntity(newSegment);
         }
 
-        private void AddSubsegmentInLambdaContext(string name, DateTime? timestamp = null)
+        private void AddSubsegmentInLambdaContext(string name)
         {
             // If the request is not sampled, the passed subsegment will still be available in TraceContext to
             // stores the information of the trace. The trace information will still propagated to 
@@ -113,14 +113,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             };
             parentEntity.AddSubsegment(subsegment);
             subsegment.Sampled = parentEntity.Sampled;
-            if (timestamp == null)
-            {
-                subsegment.SetStartTimeToNow();
-            }
-            else
-            {
-                subsegment.SetStartTime(timestamp.Value);
-            }
+            subsegment.SetStartTimeToNow();
             TraceContext.SetEntity(subsegment);
         }
 
@@ -217,8 +210,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// </summary>
         private static string? GetTraceVariablesFromEnvironment()
         {
-            var lambdaTraceHeader = Environment.GetEnvironmentVariable(LambdaTraceHeaderKey);
-            return lambdaTraceHeader;
+            return EnvironmentVariables.GetEnvironmentVariable(LambdaTraceHeaderKey);
         }
     }
 }

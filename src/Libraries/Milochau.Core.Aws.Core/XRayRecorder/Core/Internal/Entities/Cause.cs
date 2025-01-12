@@ -40,20 +40,5 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// </value>
         [JsonIgnore]
         public bool IsExceptionAdded => exceptions.IsValueCreated && exceptions.Value.Count != 0;
-
-        /*
-        /// <summary>
-        /// Add list of <see cref="ExceptionDescriptor"/> to cause instance.
-        /// </summary>
-        /// <param name="exceptionDescriptors">List of <see cref="ExceptionDescriptor"/>.</param>
-        public void AddException(List<ExceptionDescriptor>? exceptionDescriptors)
-        {
-            if (exceptionDescriptors != null)
-            {
-                WorkingDirectory = Directory.GetCurrentDirectory();
-                exceptions.Value.AddRange(exceptionDescriptors);
-            }
-        }
-        */
     }
 }

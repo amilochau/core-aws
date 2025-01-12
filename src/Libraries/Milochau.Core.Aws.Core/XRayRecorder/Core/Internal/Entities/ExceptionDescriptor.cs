@@ -45,11 +45,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public string? Type { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ExceptionDescriptor"/> is remove.
-        /// </summary>
-        //public bool Remove { get; set; }
-
-        /// <summary>
         /// Gets or sets the stack.
         /// </summary>
         [JsonPropertyName("stack")]

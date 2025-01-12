@@ -78,6 +78,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
     [JsonSerializable(typeof(Subsegment))]
     [JsonSerializable(typeof(Dictionary<string, long>))]
     [JsonSerializable(typeof(Dictionary<string, string>))]
+    [JsonSerializable(typeof(Dictionary<string, string?>))]
     [JsonSerializable(typeof(Dictionary<string, string[]>))]
     internal partial class XRayJsonSerializerContext : JsonSerializerContext
     {

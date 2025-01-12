@@ -18,7 +18,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
     /// </summary>
     public class XRayPipelineHandler
     {
-        private AWSXRayRecorder recorder = AWSXRayRecorder.Instance;
+        private readonly AWSXRayRecorder recorder = AWSXRayRecorder.Instance;
 
         /// <summary>
         /// Processes Begin request by starting subsegment.
@@ -65,8 +65,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
                 return;
             }
 
-            var client = requestContext.ClientConfig;
-            if (client == null)
+            if (requestContext.ClientConfig == null)
             {
                 return;
             }

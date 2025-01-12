@@ -6,15 +6,15 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
     /// <summary>
     /// This context is used in AWS Lambda environment.
     /// </summary>
-    public class LambdaContextContainer : TraceContextImpl
+    public class LambdaContextContainer
     {
-        private static AsyncLocal<Entity?> _entityHolder = new AsyncLocal<Entity?>();
+        private static readonly AsyncLocal<Entity?> _entityHolder = new();
 
         /// <summary>
         /// Get entity (segment/subsegment) from the context.
         /// </summary>
         /// <returns>The segment get from context.</returns>
-        public override Entity GetEntity()
+        public Entity GetEntity()
         {
             Entity? entity = _entityHolder.Value;
             if (entity == null)
@@ -31,7 +31,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
         /// </summary>
         /// <param name="entity">The segment to be set.</param>
         /// <exception cref="EntityNotAvailableException">Thrown when the entity is not available to set.</exception>
-        public override void SetEntity(Entity entity)
+        public void SetEntity(Entity entity)
         {
             _entityHolder.Value = entity;
         }
@@ -39,7 +39,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
         /// <summary>
         /// Clear entity from trace context for cleanup.
         /// </summary>
-        public override void ClearEntity()
+        public void ClearEntity()
         {
             _entityHolder.Value = null;
         }
@@ -48,7 +48,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
         /// Checks whether enity is present in <see cref="AsyncLocal{T}"/>.
         /// </summary>
         /// <returns>True if entity is present in <see cref="AsyncLocal{T}"/> else false.</returns>
-        public override bool IsEntityPresent()
+        public bool IsEntityPresent()
         {
             return _entityHolder.Value != null;
         }

@@ -9,8 +9,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// </summary>
     public class Subsegment(string name) : Entity(name)
     {
-        //private readonly Lazy<HashSet<string>> lazyPrecursorIds = new();
-
         /// <summary>
         /// Gets or sets the namespace of the subsegment
         /// </summary>
@@ -28,45 +26,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// </summary>
         [JsonPropertyName("type")]
         public string? Type { get; set; }
-
-        /*
-        /// <summary>
-        /// Gets the precursor ids
-        /// </summary>
-        [JsonPropertyName("precursor_ids")]
-        public IEnumerable<string> PrecursorIds => lazyPrecursorIds.Value;
-
-        /// <summary>
-        /// Gets a value indicating whether precursor is has been added.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if precursor id has been added; otherwise, <c>false</c>.
-        /// </value>
-        [JsonIgnore]
-        public bool IsPrecursorIdAdded => lazyPrecursorIds.IsValueCreated && lazyPrecursorIds.Value.Any();
-
-        /// <summary>
-        /// Add the given precursor id to a set
-        /// </summary>
-        /// <param name="precursorId">The precursor id to add to the set</param>
-        /// <returns>true if the id is added; false if the id is already present.</returns>
-        /// <exception cref="ArgumentException">The given precursor id is not a valid segment id.</exception>
-        public bool AddPrecursorId(string precursorId)
-        {
-            if (!IsIdValid(precursorId))
-            {
-                throw new ArgumentException("The precursor id is not a valid segment id: ", precursorId);
-            }
-
-            bool ret;
-            lock (lazyPrecursorIds.Value)
-            {
-                ret = lazyPrecursorIds.Value.Add(precursorId);
-            }
-
-            return ret;
-        }
-        */
 
         /// <summary>
         /// Check if this segment or the root segment that this segment belongs to is ok to emit
