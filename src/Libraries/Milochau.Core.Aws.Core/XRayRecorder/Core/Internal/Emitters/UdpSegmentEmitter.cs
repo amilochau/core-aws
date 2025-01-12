@@ -13,7 +13,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters
     /// </summary>
     public class UdpSegmentEmitter : ISegmentEmitter
     {
-        private readonly UdpClient udpClient = new UdpClient();
+        private readonly UdpClient udpClient = new();
         private readonly DaemonConfig daemonConfig = DaemonConfig.GetEndPoint();
         private bool disposed;
 

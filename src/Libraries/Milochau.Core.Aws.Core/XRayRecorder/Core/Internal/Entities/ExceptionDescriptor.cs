@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 

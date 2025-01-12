@@ -1,5 +1,4 @@
-﻿using Milochau.Core.Aws.Core.References;
-using Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -20,7 +19,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns>Instance of <see cref="IApplicationBuilder"/> instrumented with X-Ray middleware.</returns>
         public static IApplicationBuilder UseXRay(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<AWSXRayMiddleware>(EnvironmentVariables.FunctionName);
+            return builder.UseMiddleware<AWSXRayMiddleware>();
         }
     }
 }

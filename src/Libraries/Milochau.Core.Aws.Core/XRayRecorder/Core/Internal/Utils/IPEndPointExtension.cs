@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 {
@@ -191,7 +187,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             if (TryParse(daemonAddress[0], out EndPoint? udpEndpoint))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = udpEndpoint;
                 return true;
             }
             else
@@ -210,10 +205,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             addressMap[address2[0]] = address2[1] + _addressPortDelimiter + address2[2];
             string udpAddress = addressMap[_udpKey];
             string tcpAddress = addressMap[_tcpKey];
-            if (TryParse(udpAddress, out EndPoint? udpEndpoint) && TryParse(tcpAddress, out EndPoint? tcpEndpoint))
+            if (TryParse(udpAddress, out EndPoint? udpEndpoint) && TryParse(tcpAddress, out EndPoint? _))
             {
                 endPoint._udpEndpoint = udpEndpoint;
-                endPoint._tcpEndpoint = tcpEndpoint;
                 return true;
             }
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.References;
 using System.Net;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
@@ -12,11 +12,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// </summary>
     public class DaemonConfig
     {
-        /// <summary>
-        /// The environment variable for daemon address.
-        /// </summary>
-        public const string EnvironmentVariableDaemonAddress = "AWS_XRAY_DAEMON_ADDRESS";
-
         /// <summary>
         /// Default address for daemon.
         /// </summary>
@@ -35,11 +30,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         internal EndPoint _udpEndpoint;
 
         /// <summary>
-        /// Gets or sets TCP endpoint.
-        /// </summary>
-        internal EndPoint _tcpEndpoint;
-
-        /// <summary>
         /// Gets IP for UDP endpoint.
         /// </summary>
         public IPEndPoint UDPEndpoint
@@ -48,19 +38,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             set => _udpEndpoint = EndPoint.Of(value);
         }
 
-        /// <summary>
-        /// Gets IP for TCP endpoint.
-        /// </summary>
-        public IPEndPoint TCPEndpoint
-        {
-            get => _tcpEndpoint.GetIPEndPoint();
-            set => _tcpEndpoint = EndPoint.Of(value);
-        }
-
         public DaemonConfig()
         {
             _udpEndpoint = EndPoint.Of(DefaultEndpoint);
-            _tcpEndpoint = EndPoint.Of(DefaultEndpoint);
         }
 
         internal static DaemonConfig ParsEndpoint(string? daemonAddress)
@@ -77,16 +57,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// </summary>
         /// <param name="daemonAddress"> Dameon address to be parsed and set to <see cref="DaemonConfig"/> instance.</param>
         /// <returns></returns>
-        public static DaemonConfig GetEndPoint(string? daemonAddress = null)
+        public static DaemonConfig GetEndPoint()
         {
-            if (Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress) != null)
-            {
-                return ParsEndpoint(Environment.GetEnvironmentVariable(EnvironmentVariableDaemonAddress));
-            }
-            else
-            {
-                return ParsEndpoint(daemonAddress);
-            }
+            return ParsEndpoint(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress));
         }
     }
 }

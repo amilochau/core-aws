@@ -1,45 +1,18 @@
 ﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
-using System;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
 {
     /// <summary>
     /// The default streaming strategy. It uses the total count of a segment's children subsegments as a threshold. If the threshold is breached, it uses subtree streaming to stream out.
     /// </summary>
-    public class DefaultStreamingStrategy : IStreamingStrategy
+    public class DefaultStreamingStrategy
     {
         /// <summary>
         /// Default max subsegment size to stream for the strategy.
         /// </summary>
         private const long DefaultMaxSubsegmentSize = 100;
-
-        /// <summary>
-        /// Max subsegment size to stream fot the strategy.
-        /// </summary>
-        public long MaxSubsegmentSize { get; private set; } = DefaultMaxSubsegmentSize;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultStreamingStrategy"/> class.
-        /// </summary>
-        public DefaultStreamingStrategy() : this(DefaultMaxSubsegmentSize)
-        {
-
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultStreamingStrategy"/> class.
-        /// </summary>
-        /// <param name="maxSubsegmentSize"></param>
-        public DefaultStreamingStrategy(long maxSubsegmentSize)
-        {
-            if (maxSubsegmentSize < 0)
-            {
-                throw new ArgumentException("maxSubsegmentSize cannot be a negative number.");
-            }
-            MaxSubsegmentSize = maxSubsegmentSize;
-        }
 
         /// <summary>
         /// Checks whether subsegments of the current instance of  <see cref="Entity"/> should be streamed.
@@ -48,7 +21,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
         /// <returns>True if the subsegments are streamable.</returns>
         public bool ShouldStream(Entity entity)
         {
-            return entity.Sampled == SampleDecision.Sampled && entity.RootSegment != null && entity.RootSegment.Size >= MaxSubsegmentSize;
+            return entity.Sampled == SampleDecision.Sampled && entity.RootSegment != null && entity.RootSegment.Size >= DefaultMaxSubsegmentSize;
         }
 
         /// <summary>

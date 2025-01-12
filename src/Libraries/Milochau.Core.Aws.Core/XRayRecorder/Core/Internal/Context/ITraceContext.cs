@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
-using System;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
 {
@@ -32,13 +31,5 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
         /// </summary>
         /// <returns>True if entity is present incontext container else false.</returns>
         bool IsEntityPresent();
-
-        /// <summary>
-        /// If the entity is missing from the context, the behavior is defined using <see cref="ContextMissingStrategy"/>
-        /// </summary>
-        /// <param name="recorder"><see cref="IAWSXRayRecorder"/> instance</param>
-        /// <param name="e">Instance of <see cref="Exception"/></param>
-        /// <param name="message">String message</param>
-        void HandleEntityMissing(IAWSXRayRecorder recorder, Exception e, string message);
     }
 }

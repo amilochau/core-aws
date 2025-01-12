@@ -9,7 +9,6 @@ using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using System.Text.Json.Serialization;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {

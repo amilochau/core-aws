@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
@@ -15,7 +14,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Context
         /// Get entity (segment/subsegment) from the context.
         /// </summary>
         /// <returns>The segment get from context.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "It's a wrapper for AsyncLocal.")]
         public override Entity GetEntity()
         {
             Entity? entity = _entityHolder.Value;

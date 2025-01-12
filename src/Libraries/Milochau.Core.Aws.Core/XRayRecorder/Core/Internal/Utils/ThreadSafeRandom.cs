@@ -10,8 +10,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// </summary>
     public static class ThreadSafeRandom
     {
-        private static readonly Random _global = new Random();
-        private static readonly ThreadLocal<Random> _local = new ThreadLocal<Random>(() =>
+        private static readonly Random _global = new();
+        private static readonly ThreadLocal<Random> _local = new(() =>
         {
             int seed;
             lock (_global)
@@ -29,11 +29,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <returns>The generated hex number</returns>
         public static string GenerateHexNumber(int digits)
         {
-            if (digits < 0)
-            {
-                throw new ArgumentException("Length can't be a negative number.", nameof(digits));
-            }
-
             byte[] bytes = new byte[digits / 2];
             NextBytes(bytes);
             string hexNumber = string.Concat(bytes.Select(x => x.ToString("x2", CultureInfo.InvariantCulture)).ToArray());
@@ -43,16 +38,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             }
 
             return hexNumber;
-        }
-
-        /// <summary>
-        /// Thread safe version of System.Random.NextDouble().
-        /// Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
-        /// </summary>
-        /// <returns>A double-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
-        public static double NextDouble()
-        {
-            return _local.Value!.NextDouble();
         }
 
         /// <summary>

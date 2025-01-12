@@ -1,9 +1,5 @@
-﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
-using System;
-using System.Collections.Generic;
+﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {

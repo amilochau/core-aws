@@ -1,12 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 {
@@ -17,31 +13,23 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
     /// Internally resolves and caches an ip for the hostname.
     /// The ip is cached to keep the normal path speedy and non-blocking.
     /// </summary>
-    public class HostEndPoint
+    /// <remarks>
+    /// Create a HostEndPoint.
+    /// </remarks>
+    public class HostEndPoint(string host, int port, int cacheTtl = 60)
     {
-        private readonly int _cacheTtl; //Seconds to consider a cached dns response valid
         private IPEndPoint? _ipCache;
         private DateTime? _timestampOfLastIPCacheUpdate;
         private readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        /// Create a HostEndPoint.
-        /// </summary>
-        public HostEndPoint(string host, int port, int cacheTtl = 60)
-        {
-            Host = host;
-            Port = port;
-            _cacheTtl = cacheTtl;
-        }
-
-        /// <summary>
         /// Get the hostname that identifies the endpoint.
         /// </summary>
-        public string Host { get; }
+        public string Host { get; } = host;
         /// <summary>
         /// Get the port of the endpoint.
         /// </summary>
-        public int Port { get; }
+        public int Port { get; } = port;
 
 
         /// <summary>
@@ -56,12 +44,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
                 return CacheState.Invalid;
             }
 
-            if (!(_timestampOfLastIPCacheUpdate is DateTime lastTimestamp))
+            if (_timestampOfLastIPCacheUpdate is not DateTime lastTimestamp)
             {
                 return CacheState.Invalid;
             }
 
-            if (DateTime.Now.Subtract(lastTimestamp).TotalSeconds < _cacheTtl)
+            if (DateTime.Now.Subtract(lastTimestamp).TotalSeconds < cacheTtl)
             {
                 return CacheState.Valid;
             }

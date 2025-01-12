@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities

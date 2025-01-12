@@ -1,7 +1,6 @@
 ﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 using System;
 
@@ -31,15 +30,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// Gets the singleton instance of <see cref="AWSXRayRecorder"/> with default configuration.
         /// </summary>
         /// <returns>An instance of <see cref="AWSXRayRecorder"/> class.</returns>
-        public static AWSXRayRecorder Instance { get; } = new AWSXRayRecorder
-        {
-            ContextMissingStrategy = Strategies.ContextMissingStrategy.LOG_ERROR
-        };
-
-        /// <summary>
-        /// Instance of <see cref="XRayOptions"/> class.
-        /// </summary>
-        public XRayOptions XRayOptions { get; set; } = new XRayOptions();
+        public static AWSXRayRecorder Instance { get; } = new AWSXRayRecorder();
 
         /// <summary>
         /// Begin a tracing subsegment. A new segment will be created and added as a subsegment to previous segment/subsegment.
@@ -54,9 +45,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 ProcessSubsegmentInLambdaContext(name, timestamp);
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to start subsegment because the parent segment is not available.");
             }
         }
 
@@ -139,34 +129,25 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// </summary>
         /// <param name="timestamp">Sets the end time for the subsegment</param>
         /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
-        public override void EndSubsegment(DateTime? timestamp = null)
+        public override void EndSubsegment()
         {
             try
             {
-                ProcessEndSubsegmentInLambdaContext(timestamp);
+                ProcessEndSubsegmentInLambdaContext();
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to end subsegment because subsegment is not available in trace context.");
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
-                HandleEntityNotAvailableException(new EntityNotAvailableException("Failed to cast the entity to Subsegment.", e), "Failed to cast the entity to Subsegment.");
             }
         }
 
-        private void ProcessEndSubsegmentInLambdaContext(DateTime? timestamp = null)
+        private void ProcessEndSubsegmentInLambdaContext()
         {
             var subsegment = PrepEndSubsegmentInLambdaContext();
 
-            if (timestamp == null)
-            {
-                subsegment.SetEndTimeToNow();
-            }
-            else
-            {
-                subsegment.SetEndTime(timestamp.Value);
-            }
+            subsegment.SetEndTimeToNow();
 
             // Check emittable
             if (subsegment.RootSegment != null && subsegment.IsEmittable())
@@ -223,13 +204,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
 
                 TraceContext.ClearEntity();
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to end facade segment because cannot get the segment from trace context.");
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
-                HandleEntityNotAvailableException(new EntityNotAvailableException("Failed to cast the entity to Facade segment.", e), "Failed to cast the entity to Facade Segment.");
             }
         }
 

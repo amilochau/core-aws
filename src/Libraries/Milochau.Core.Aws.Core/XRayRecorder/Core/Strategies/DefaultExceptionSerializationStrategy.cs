@@ -3,7 +3,6 @@ using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
@@ -13,17 +12,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
     /// </summary>
     public class DefaultExceptionSerializationStrategy
     {
-        private static readonly List<Type> _defaultExceptionClasses = [typeof(AmazonServiceException)];
-
         /// <summary>
         /// Default stack frame size for the recorded <see cref="Exception"/>.
         /// </summary>
         public const int DefaultStackFrameSize = 50;
-
-        /// <summary>
-        /// The maximum stack frame size for the strategy.
-        /// </summary>
-        public int MaxStackFrameSize { get; private set; } = DefaultStackFrameSize;
 
         /// <summary>
         /// Checks whether the exception should be marked as remote.
@@ -87,11 +79,11 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                     Path = x.GetFileName(),
                     Line = x.GetFileLineNumber(),
                 }).ToArray();
-                if (frames != null && frames.Length > MaxStackFrameSize)
+                if (frames != null && frames.Length > DefaultStackFrameSize)
                 {
-                    curDescriptor.Truncated = frames.Length - MaxStackFrameSize;
-                    curDescriptor.Stack = new InternalStackFrame[MaxStackFrameSize];
-                    Array.Copy(frames, curDescriptor.Stack, MaxStackFrameSize);
+                    curDescriptor.Truncated = frames.Length - DefaultStackFrameSize;
+                    curDescriptor.Stack = new InternalStackFrame[DefaultStackFrameSize];
+                    Array.Copy(frames, curDescriptor.Stack, DefaultStackFrameSize);
                 }
                 else
                 {
@@ -109,7 +101,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                 if (e != null)
                 {
                     // Inner exception alreay described
-                    ExceptionDescriptor? innerExceptionDescriptor = existingExceptionDescriptors != null ? existingExceptionDescriptors.FirstOrDefault(d => d.Exception != null && d.Exception.Equals(e)) : null;
+                    ExceptionDescriptor? innerExceptionDescriptor = existingExceptionDescriptors?.FirstOrDefault(d => d.Exception != null && d.Exception.Equals(e));
                     if (innerExceptionDescriptor != null)
                     {
                         curDescriptor.Cause = innerExceptionDescriptor.Id;

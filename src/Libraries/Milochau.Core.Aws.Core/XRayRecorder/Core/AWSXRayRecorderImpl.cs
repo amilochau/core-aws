@@ -15,53 +15,14 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
     /// <summary>
     /// This class provides utilities to build an instance of <see cref="AWSXRayRecorder"/> with different configurations.
     /// </summary>
-    public abstract class AWSXRayRecorderImpl : IAWSXRayRecorder
+    public abstract class AWSXRayRecorderImpl(ISegmentEmitter emitter) : IAWSXRayRecorder
     {
-        /// <summary>
-        /// The environment variable that setting context missing strategy.
-        /// </summary>
-        public const string EnvironmentVariableContextMissingStrategy = "AWS_XRAY_CONTEXT_MISSING";
-
         protected const long MaxSubsegmentSize = 100;
-        protected ContextMissingStrategy cntxtMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-
-        protected AWSXRayRecorderImpl(ISegmentEmitter emitter)
-        {
-            Emitter = emitter;
-        }
 
         /// <summary>
         /// Gets or sets the sampling strategy.
         /// </summary>
         public LocalizedSamplingStrategy SamplingStrategy { get; set; } = new LocalizedSamplingStrategy();
-
-        /// <summary>
-        /// Gets or sets the context missing strategy.
-        /// </summary>
-        public ContextMissingStrategy ContextMissingStrategy
-        {
-            get
-            {
-                return cntxtMissingStrategy;
-            }
-
-            set
-            {
-                cntxtMissingStrategy = value;
-                string? modeFromEnvironmentVariable = Environment.GetEnvironmentVariable(EnvironmentVariableContextMissingStrategy);
-                if (string.IsNullOrEmpty(modeFromEnvironmentVariable))
-                {
-                }
-                else if (modeFromEnvironmentVariable.Equals(ContextMissingStrategy.LOG_ERROR.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    cntxtMissingStrategy = ContextMissingStrategy.LOG_ERROR;
-                }
-                else if (modeFromEnvironmentVariable.Equals(ContextMissingStrategy.RUNTIME_ERROR.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    cntxtMissingStrategy = ContextMissingStrategy.RUNTIME_ERROR;
-                }
-            }
-        }
 
         /// <summary>
         /// Instance of <see cref="ITraceContext"/>, used to store segment/subsegment.
@@ -76,7 +37,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// <summary>
         /// Emitter used to send Traces.
         /// </summary>
-        public ISegmentEmitter Emitter { get; set; }
+        public ISegmentEmitter Emitter { get; set; } = emitter;
 
         protected bool Disposed { get; set; }
 
@@ -88,9 +49,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         public DefaultExceptionSerializationStrategy ExceptionSerializationStrategy { get; set; } = new DefaultExceptionSerializationStrategy();
 
         /// <summary>
-        /// Instance of <see cref="IStreamingStrategy"/>, used to define the streaming strategy for segment/subsegment.
+        /// Instance of <see cref="DefaultStreamingStrategy"/>, used to define the streaming strategy for segment/subsegment.
         /// </summary>
-        public IStreamingStrategy StreamingStrategy { get; set; } = new DefaultStreamingStrategy();
+        public DefaultStreamingStrategy StreamingStrategy { get; set; } = new DefaultStreamingStrategy();
 
         /// <summary>
         /// Begin a tracing subsegment. A new subsegment will be created and added as a subsegment to previous segment.
@@ -115,7 +76,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// End a subsegment.
         /// </summary>
         /// <param name="timestamp">Sets the end time for the subsegment</param>
-        public abstract void EndSubsegment(DateTime? timestamp = null);
+        public abstract void EndSubsegment();
 
         /// <summary>
         /// Adds the specified key and value as annotation to current segment.
@@ -131,9 +92,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 TraceContext.GetEntity().AddAnnotation(key, value);
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to add annotation because subsegment is not available in trace context.");
             }
         }
 
@@ -158,9 +118,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
 
                 subsegment.Namespace = value;
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to set namespace because of subsegment is not available.");
             }
         }
 
@@ -207,9 +166,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 TraceContext.GetEntity().Http[key] = value;
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to add http because segment is not available in trace context.");
             }
         }
 
@@ -225,9 +183,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
                 entity.HasFault = true;
                 entity.HasError = false;
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to mark fault because segment is not available in trace context.");
             }
         }
 
@@ -243,9 +200,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
                 entity.HasError = true;
                 entity.HasFault = false;
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to mark error because segment is not available in trace context.");
             }
         }
 
@@ -260,9 +216,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 TraceContext.GetEntity().AddException(ex);
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to add exception because segment is not available in trace context.");
             }
         }
 
@@ -277,9 +232,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
                 TraceContext.GetEntity().IsThrottled = true;
                 MarkError();
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to mark throttle because segment is not available in trace context.");
             }
         }
 
@@ -294,9 +248,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 TraceContext.GetEntity().AddMetadata(key, value);
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to add metadata because segment is not available in trace context.");
             }
         }
 
@@ -312,9 +265,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             {
                 TraceContext.GetEntity().AddMetadata(nameSpace, key, value);
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                HandleEntityNotAvailableException(e, "Failed to add metadata because segment is not available in trace context.");
             }
         }
 
@@ -466,16 +418,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             subsegment.Release();
 
             return subsegment;
-        }
-
-        /// <summary>
-        /// If entity is not available in the <see cref="TraceContext"/>, exception is thrown.
-        /// </summary>
-        /// <param name="e">Instance of <see cref="EntityNotAvailableException"/>.</param>
-        /// <param name="message">String message.</param>
-        protected void HandleEntityNotAvailableException(EntityNotAvailableException e, string message)
-        {
-            TraceContext.HandleEntityMissing(this, e, message);
         }
 
         /// <summary>

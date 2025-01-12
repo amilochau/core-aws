@@ -30,9 +30,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             {
                 entity = recorder.GetEntity();
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                recorder.TraceContext.HandleEntityMissing(recorder, e, "Cannot get entity while processing AWS SDK request");
             }
 
             recorder.BeginSubsegment(AWSXRaySDKUtils.FormatServiceName(serviceName));
@@ -56,9 +55,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             {
                 subsegment = recorder.GetEntity();
             }
-            catch (EntityNotAvailableException e)
+            catch (EntityNotAvailableException)
             {
-                recorder.TraceContext.HandleEntityMissing(recorder, e, "Cannot get entity from the trace context while processing response of AWS SDK request.");
                 return;
             }
 
@@ -201,9 +199,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             {
                 subsegment = recorder.GetEntity();
             }
-            catch (EntityNotAvailableException ex)
+            catch (EntityNotAvailableException)
             {
-                recorder.TraceContext.HandleEntityMissing(recorder, ex, "Cannot get entity from trace context while processing exception for AWS SDK request.");
                 return;
             }
 
