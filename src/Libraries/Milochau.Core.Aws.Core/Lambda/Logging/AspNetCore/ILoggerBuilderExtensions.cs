@@ -1,46 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-
-namespace Microsoft.Extensions.Logging
+﻿namespace Microsoft.Extensions.Logging
 {
     /// <summary>
     /// ILoggingBuilder extensions
     /// </summary>
     public static class ILoggerBuilderExtensions
     {
-        /// <summary>
-        /// Adds a Lambda logger provider with default options.
-        /// </summary>
-        /// <param name="builder">ILoggingBuilder to add Lambda logger to.</param>
-        /// <returns>Updated ILoggingBuilder.</returns>
-        public static ILoggingBuilder AddLambdaLogger(this ILoggingBuilder builder)
-        {
-            var options = new LambdaLoggerOptions();
-            return AddLambdaLogger(builder, options);
-        }
-
-        /// <summary>
-        /// Adds a Lambda logger provider with specified options.
-        /// </summary>
-        /// <param name="builder">ILoggingBuilder to add Lambda logger to.</param>
-        /// <param name="options">Lambda logging options.</param>
-        /// <returns>Updated ILoggingBuilder.</returns>
-        public static ILoggingBuilder AddLambdaLogger(this ILoggingBuilder builder, LambdaLoggerOptions options)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var provider = new LambdaILoggerProvider(options);
-            builder.AddProvider(provider);
-            return builder;
-        }
-
         /// <summary>
         /// Adds a Lambda logger provider with options loaded from the specified subsection of the
         /// configuration section.
@@ -49,22 +13,9 @@ namespace Microsoft.Extensions.Logging
         /// <param name="configuration">IConfiguration to use when construction logging options.</param>
         /// <param name="loggingSectionName">Name of the logging section with required settings.</param>
         /// <returns>Updated ILoggingBuilder.</returns>
-        public static ILoggingBuilder AddLambdaLogger(this ILoggingBuilder builder, IConfiguration configuration, string loggingSectionName)
+        public static ILoggingBuilder AddLambdaLogger(this ILoggingBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-            if (string.IsNullOrEmpty(loggingSectionName))
-            {
-                throw new ArgumentNullException(nameof(loggingSectionName));
-            }
-
-            var options = new LambdaLoggerOptions(configuration, loggingSectionName);
+            var options = new LambdaLoggerOptions();
             var provider = new LambdaILoggerProvider(options);
             builder.AddProvider(provider);
             return builder;

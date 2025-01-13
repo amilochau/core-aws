@@ -8,11 +8,6 @@ namespace Milochau.Core.Aws.Core.Lambda.Core
     public interface ILambdaLogger
     {
         /// <summary>
-        /// Logs a message
-        /// </summary>
-        void Log(string message);
-
-        /// <summary>
         /// Logs a message, followed by the current line terminator, to AWS CloudWatch Logs.
         /// </summary>
         void LogLine(LogLevel level, string message);

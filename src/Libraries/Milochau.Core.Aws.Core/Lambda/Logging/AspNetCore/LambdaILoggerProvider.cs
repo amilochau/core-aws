@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Logging.AspNetCore;
-using System;
 using System.Collections.Concurrent;
 
 namespace Microsoft.Extensions.Logging
@@ -8,61 +7,37 @@ namespace Microsoft.Extensions.Logging
     /// The ILoggerProvider implementation that is added to the ASP.NET Core logging system to create loggers
     /// that will send the messages to the CloudWatch LogGroup associated with this Lambda function.
     /// </summary>
-    internal class LambdaILoggerProvider : ILoggerProvider, ISupportExternalScope
+    /// <remarks>
+    /// Creates the provider
+    /// </remarks>
+    internal class LambdaILoggerProvider(LambdaLoggerOptions options) : ILoggerProvider, ISupportExternalScope
     {
-        // Private fields
-        private readonly LambdaLoggerOptions _options;
-        private IExternalScopeProvider _scopeProvider;
-        private readonly ConcurrentDictionary<string, LambdaILogger> _loggers;
-
-        // Constants
-        private const string DEFAULT_CATEGORY_NAME = "Default";
-
-        /// <summary>
-        /// Creates the provider
-        /// </summary>
-        /// <param name="options"></param>
-        public LambdaILoggerProvider(LambdaLoggerOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            _options = options;
-            _loggers = new ConcurrentDictionary<string, LambdaILogger>();
-            _scopeProvider = options.IncludeScopes ? new LoggerExternalScopeProvider() : NullExternalScopeProvider.Instance;
-        }
+        private IExternalScopeProvider scopeProvider = options.IncludeScopes ? new LoggerExternalScopeProvider() : NullExternalScopeProvider.Instance;
+        private readonly ConcurrentDictionary<string, LambdaILogger> loggers = new();
 
         /// <summary>
         /// Creates the logger with the specified category.
         /// </summary>
-        /// <param name="categoryName"></param>
-        /// <returns></returns>
         public ILogger CreateLogger(string categoryName)
         {
-            var name = string.IsNullOrEmpty(categoryName) ? DEFAULT_CATEGORY_NAME : categoryName;
-
-            return _loggers.GetOrAdd(name, loggerName => new LambdaILogger(name, _options)
+            return loggers.GetOrAdd(categoryName, loggerName => new LambdaILogger(categoryName, options)
             {
-                ScopeProvider = _scopeProvider
+                ScopeProvider = scopeProvider
             });
         }
 
         /// <inheritdoc />
         public void SetScopeProvider(IExternalScopeProvider scopeProvider)
         {
-            _scopeProvider = scopeProvider;
+            this.scopeProvider = scopeProvider;
 
-            foreach (var logger in _loggers)
+            foreach (var logger in loggers)
             {
-                logger.Value.ScopeProvider = _scopeProvider;
+                logger.Value.ScopeProvider = this.scopeProvider;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary></summary>
         public void Dispose()
         {
         }

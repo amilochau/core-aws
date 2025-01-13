@@ -1,19 +1,15 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class LambdaILogger(string categoryName, LambdaLoggerOptions options) : ILogger
+    internal class LambdaILogger(string categoryName, LambdaLoggerOptions options) : LambdaConsoleLogger(string.Empty), ILogger
     {
         internal IExternalScopeProvider? ScopeProvider { get; set; }
 
         // ILogger methods
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => ScopeProvider?.Push(state) ?? new NoOpDisposable();
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return options.Filter == null || options.Filter(categoryName, logLevel);
-        }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
@@ -25,13 +21,9 @@ namespace Microsoft.Extensions.Logging
             }
 
             // Format of the logged text, optional components are in {}
-            //  {[LogLevel] }{ => Scopes : }{Category: }{EventId: }MessageText {Exception}{\n}
+            //  { => Scopes : }{Category: }{EventId: }MessageText {Exception}{\n}
 
             var components = new List<string?>(4);
-            if (options.IncludeLogLevel)
-            {
-                components.Add($"[{logLevel}]");
-            }
 
             GetScopeInformation(components);
 
@@ -51,13 +43,17 @@ namespace Microsoft.Extensions.Logging
             {
                 components.Add($"{exception}");
             }
-            if (options.IncludeNewline)
-            {
-                components.Add(Environment.NewLine);
-            }
 
             var finalText = string.Join(" ", components);
-            Milochau.Core.Aws.Core.Lambda.Core.LambdaLogger.Log(finalText);
+
+            if (logLevel >= LogLevel.Error)
+            {
+                LogLineError(logLevel, finalText);
+            }
+            else
+            {
+                LogLine(logLevel, finalText);
+            }
         }
 
         private void GetScopeInformation(List<string?> logMessageComponents)
@@ -83,13 +79,12 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        // Private classes	       
+        // Private classes
         private class NoOpDisposable : IDisposable
         {
             public void Dispose()
             {
             }
         }
-
     }
 }

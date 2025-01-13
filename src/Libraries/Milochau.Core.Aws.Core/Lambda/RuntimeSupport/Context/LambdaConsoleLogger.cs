@@ -10,7 +10,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
     internal class LambdaConsoleLogger(string currentAwsRequestId) : ILambdaLogger
     {
-        private static readonly LogLevel minimumLogLevel = EnvironmentVariables.LogLevel switch
+        protected static LogLevel MinimumLogLevel { get; } = EnvironmentVariables.LogLevel switch
         {
             "TRACE" => LogLevel.Trace,
             "DEBUG" => LogLevel.Debug,
@@ -21,9 +21,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             _ => LogLevel.Information,
         };
 
-        public void Log(string message)
+        public bool IsEnabled(LogLevel logLevel)
         {
-            Console.Out.Write(message);
+            return logLevel >= MinimumLogLevel && logLevel != LogLevel.None;
         }
 
         public void LogLine(LogLevel level, string message)
@@ -36,9 +36,9 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             FormattedWriteLine(Console.Error, level, message);
         }
 
-        private void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
+        protected void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
         {
-            if (logLevel < minimumLogLevel || logLevel == LogLevel.None)
+            if (!IsEnabled(logLevel))
             {
                 return;
             }

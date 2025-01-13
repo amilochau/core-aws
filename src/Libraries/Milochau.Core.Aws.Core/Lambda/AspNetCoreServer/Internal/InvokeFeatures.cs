@@ -88,7 +88,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                 QueryString = rawQueryString ?? string.Empty;
 
                 Path = Utilities.DecodeResourcePath(apiGatewayRequest.RequestContext.Http.Path);
-                if (!Path.StartsWith("/"))
+                if (!Path.StartsWith('/'))
                 {
                     Path = "/" + Path;
                 }

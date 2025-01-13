@@ -1,10 +1,7 @@
 ﻿using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling;
 using System;
-using System.Collections.Concurrent;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;

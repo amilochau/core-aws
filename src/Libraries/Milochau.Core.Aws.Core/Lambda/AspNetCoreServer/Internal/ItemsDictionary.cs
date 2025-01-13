@@ -6,7 +6,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {
     internal class ItemsDictionary : IDictionary<object, object?>
     {
-        private IDictionary<object, object?> _items = new Dictionary<object, object?>();
+        private readonly IDictionary<object, object?> _items = new Dictionary<object, object?>();
 
         public IDictionary<object, object?> Items => this;
 

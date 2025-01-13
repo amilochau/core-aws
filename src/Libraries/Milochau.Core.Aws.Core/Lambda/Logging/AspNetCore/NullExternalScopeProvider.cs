@@ -8,10 +8,6 @@ namespace Milochau.Core.Aws.Core.Lambda.Logging.AspNetCore
     /// </summary>
     internal class NullExternalScopeProvider : IExternalScopeProvider
     {
-        private NullExternalScopeProvider()
-        {
-        }
-
         /// <summary>
         /// Returns a cached instance of <see cref="NullExternalScopeProvider"/>.
         /// </summary>

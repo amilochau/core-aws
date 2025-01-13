@@ -29,33 +29,6 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         /// </summary>
         public bool IncludeUnhandledExceptionDetailInResponse { get; set; }
 
-        /*
-        private protected bool IsStarted => lambdaServer != null;
-
-        /// <summary>Should be called in the derived constructor</summary>
-        protected void Start()
-        {
-            var builder = Host
-                .CreateDefaultBuilder()
-                .ConfigureWebHostLambdaDefaults()
-                .ConfigureServices(Utilities.EnsureLambdaServerRegistered);
-
-            var host = builder.Build();
-
-            host.Start();
-            serviceProvider = host.Services;
-
-            lambdaServer = serviceProvider.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>() as LambdaServer;
-            if (lambdaServer == null)
-            {
-                throw new Exception("Failed to find the Lambda implementation for the IServer interface in the IServiceProvider for the Host. This happens if UseLambdaServer was " +
-                        "not called when constructing the IWebHostBuilder. If CreateHostBuilder was overridden it is recommended that ConfigureWebHostLambdaDefaults should be used " +
-                        "instead of ConfigureWebHostDefaults to make sure the property Lambda services are registered.");
-            }
-            logger = ActivatorUtilities.CreateInstance<Logger<APIGatewayHttpApiV2ProxyFunction>>(serviceProvider);
-        }
-        */
-
         /// <summary>Creates a context object using the <see cref="LambdaServer"/> field in the class</summary>
         protected object CreateContext(IFeatureCollection features)
         {
@@ -105,13 +78,6 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 
         public virtual async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandlerAsync(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext lambdaContext, CancellationToken cancellationToken)
         {
-            /*
-            if (!IsStarted)
-            {
-                Start();
-            }
-            */
-
             var features = new InvokeFeatures(request, serviceProvider, lambdaContext);
 
             var scope = serviceProvider.CreateScope();

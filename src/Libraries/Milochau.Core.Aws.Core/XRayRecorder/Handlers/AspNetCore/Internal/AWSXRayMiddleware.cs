@@ -51,7 +51,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
                 recorder.AddException(exc);
                 throw;
             }
-
             finally
             {
                 ProcessHttpResponse(context);
@@ -74,7 +73,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
 
         private void PopulateResponseAttributes(HttpResponse response, Dictionary<string, object> responseAttributes)
         {
-            int statusCode = (int)response.StatusCode;
+            int statusCode = response.StatusCode;
 
             if (statusCode >= 400 && statusCode <= 499)
             {

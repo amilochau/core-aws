@@ -1,77 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary></summary>
     public static class Utilities
     {
-        /// <summary>
-        /// Method to make sure the Lambda implementation is the only registered implementation of IServer for ASP.NET Core runtime.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void EnsureLambdaServerRegistered(IServiceCollection services)
-        {
-            EnsureLambdaServerRegistered(services, typeof(LambdaServer));
-        }
-
-        /// <summary>
-        /// Method to make sure the Lambda implementation is the only registered implementation of IServer for ASP.NET Core runtime.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="serverType"></param>
-        public static void EnsureLambdaServerRegistered(IServiceCollection services, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serverType)
-        {
-            var toRemove = new List<ServiceDescriptor>();
-            var serviceDescriptions = services.Where(x => x.ServiceType == typeof(IServer));
-            int lambdaServiceCount = 0;
-
-            // There can be more then one IServer implementation registered if the consumer called ConfigureWebHostDefaults in the Init override for the IHostBuilder.
-            // This makes sure there is only one registered IServer using LambdaServer and removes any other registrations.
-            foreach (var serviceDescription in serviceDescriptions)
-            {
-                if (serviceDescription.ImplementationType == serverType)
-                {
-                    lambdaServiceCount++;
-                    // If more then one LambdaServer registration has occurred then remove the extra registrations.
-                    if (lambdaServiceCount > 1)
-                    {
-                        toRemove.Add(serviceDescription);
-                    }
-                }
-                // If there is an IServer registered that isn't LambdaServer then remove it. This is most likely caused
-                // by leaving the UseKestrel call.
-                else
-                {
-                    toRemove.Add(serviceDescription);
-                }
-            }
-
-            foreach (var serviceDescription in toRemove)
-            {
-                services.Remove(serviceDescription);
-            }
-
-            if (lambdaServiceCount == 0)
-            {
-                services.AddSingleton(typeof(IServer), serverType);
-            }
-        }
-
         internal static Stream ConvertLambdaRequestBodyToAspNetCoreBody(string body, bool isBase64Encoded)
         {
             byte[] binaryBody;
@@ -138,63 +77,6 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             }
 
             return "?" + queryString;
-        }
-
-        internal static string CreateQueryStringParameters(IDictionary<string, string> singleValues, IDictionary<string, IList<string>> multiValues, bool urlEncodeValue)
-        {
-            if (multiValues?.Count > 0)
-            {
-                var sb = new StringBuilder("?");
-                foreach (var kvp in multiValues)
-                {
-                    foreach (var value in kvp.Value)
-                    {
-                        if (sb.Length > 1)
-                        {
-                            sb.Append('&');
-                        }
-                        sb.Append($"{kvp.Key}={(urlEncodeValue ? WebUtility.UrlEncode(value) : value)}");
-                    }
-                }
-                return sb.ToString();
-            }
-            else if (singleValues?.Count > 0)
-            {
-                var queryStringParameters = singleValues;
-                if (queryStringParameters != null && queryStringParameters.Count > 0)
-                {
-                    var sb = new StringBuilder("?");
-                    foreach (var kvp in singleValues)
-                    {
-                        if (sb.Length > 1)
-                        {
-                            sb.Append('&');
-                        }
-                        sb.Append($"{kvp.Key}={(urlEncodeValue ? WebUtility.UrlEncode(kvp.Value) : kvp.Value)}");
-                    }
-                    return sb.ToString();
-                }
-            }
-
-            return string.Empty;
-        }
-
-        internal static void SetHeadersCollection(IHeaderDictionary headers, IDictionary<string, string> singleValues, IDictionary<string, IList<string>> multiValues)
-        {
-            if (multiValues?.Count > 0)
-            {
-                foreach (var kvp in multiValues)
-                {
-                    headers[kvp.Key] = new StringValues(kvp.Value.ToArray());
-                }
-            }
-            else if (singleValues?.Count > 0)
-            {
-                foreach (var kvp in singleValues)
-                {
-                    headers[kvp.Key] = new StringValues(kvp.Value);
-                }
-            }
         }
 
         // This code is taken from the Apache 2.0 licensed ASP.NET Core repo.

@@ -29,7 +29,7 @@ var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
 
 #endif
 
-builder.Services.AddAWSLambdaHosting();
+builder.AddAWSLambdaHosting();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

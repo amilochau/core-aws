@@ -3,7 +3,6 @@ using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Emitters;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Sampling.Local;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core
