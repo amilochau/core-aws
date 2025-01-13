@@ -10,9 +10,9 @@ namespace Microsoft.Extensions.Logging
     /// <remarks>
     /// Creates the provider
     /// </remarks>
-    internal class LambdaILoggerProvider(LambdaLoggerOptions options) : ILoggerProvider, ISupportExternalScope
+    internal class LambdaILoggerProvider() : ILoggerProvider//, ISupportExternalScope
     {
-        private IExternalScopeProvider scopeProvider = options.IncludeScopes ? new LoggerExternalScopeProvider() : NullExternalScopeProvider.Instance;
+        private IExternalScopeProvider scopeProvider = NullExternalScopeProvider.Instance;
         private readonly ConcurrentDictionary<string, LambdaILogger> loggers = new();
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            return loggers.GetOrAdd(categoryName, loggerName => new LambdaILogger(categoryName, options)
+            return loggers.GetOrAdd(categoryName, loggerName => new LambdaILogger(categoryName)
             {
                 ScopeProvider = scopeProvider
             });

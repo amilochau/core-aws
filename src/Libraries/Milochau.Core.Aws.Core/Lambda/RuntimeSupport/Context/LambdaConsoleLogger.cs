@@ -2,7 +2,6 @@
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.References;
 using System;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,17 +25,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             return logLevel >= MinimumLogLevel && logLevel != LogLevel.None;
         }
 
-        public void LogLine(LogLevel level, string message)
-        {
-            FormattedWriteLine(Console.Out, level, message);
-        }
-
-        public void LogLineError(LogLevel level, string message)
-        {
-            FormattedWriteLine(Console.Error, level, message);
-        }
-
-        protected void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
+        public void LogLine(LogLevel logLevel, string message)
         {
             if (!IsEnabled(logLevel))
             {
@@ -49,7 +38,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId);
             var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
 
-            textWriter.WriteLine(stringifiedLine);
+            Console.WriteLine(stringifiedLine);
         }
 
         /// <summary>

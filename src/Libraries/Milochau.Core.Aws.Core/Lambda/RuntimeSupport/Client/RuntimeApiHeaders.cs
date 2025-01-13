@@ -1,15 +1,30 @@
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 {
-    internal class RuntimeApiHeaders(HttpHeaders headers)
+    internal class RuntimeApiHeaders
     {
         internal const string HeaderAwsRequestId = "Lambda-Runtime-Aws-Request-Id";
         internal const string HeaderTraceId = "Lambda-Runtime-Trace-Id";
 
-        public string AwsRequestId { get; } = GetHeaderValueRequired(headers, HeaderAwsRequestId);
-        public string? TraceId { get; } = GetHeaderValueOrNull(headers, HeaderTraceId);
+        public RuntimeApiHeaders(HttpHeaders headers)
+        {
+            AwsRequestId = GetHeaderValueRequired(headers, HeaderAwsRequestId);
+            TraceId = GetHeaderValueOrNull(headers, HeaderTraceId);
+            requestId.Value = AwsRequestId;
+        }
+
+        public string AwsRequestId { get; }
+        public string? TraceId { get; }
+
+        private static readonly AsyncLocal<string> requestId = new();
+        public static string RequestId
+        {
+            get => requestId.Value ?? string.Empty;
+            set => requestId.Value = value;
+        }
 
         private static string GetHeaderValueRequired(HttpHeaders headers, string header)
         {
@@ -18,12 +33,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client
 
         private static string? GetHeaderValueOrNull(HttpHeaders headers, string header)
         {
-            if (headers.TryGetValues(header, out var values))
-            {
-                return values.FirstOrDefault();
-            }
-
-            return null;
+            return headers.TryGetValues(header, out var values) ? values.FirstOrDefault() : null;
         }
     }
 }

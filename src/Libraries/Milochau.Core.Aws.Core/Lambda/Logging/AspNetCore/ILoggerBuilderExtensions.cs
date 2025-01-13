@@ -15,8 +15,7 @@
         /// <returns>Updated ILoggingBuilder.</returns>
         public static ILoggingBuilder AddLambdaLogger(this ILoggingBuilder builder)
         {
-            var options = new LambdaLoggerOptions();
-            var provider = new LambdaILoggerProvider(options);
+            var provider = new LambdaILoggerProvider();
             builder.AddProvider(provider);
             return builder;
         }

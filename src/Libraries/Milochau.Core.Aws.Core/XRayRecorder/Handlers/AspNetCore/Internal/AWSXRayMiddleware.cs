@@ -98,19 +98,14 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
         }
 
         /// <summary>
-        /// Processes HTTP request.
+        /// Processes HTTP request
         /// </summary>
         private void ProcessHttpRequest(HttpContext context)
         {
-            HttpRequest request = context.Request;
             string? headerString = null;
-
-            if (request.Headers.TryGetValue(TraceHeader.HeaderKey, out StringValues headerValue))
+            if (context.Request.Headers.TryGetValue(TraceHeader.HeaderKey, out StringValues headerValue) && headerValue.ToArray().Length >= 1)
             {
-                if (headerValue.ToArray().Length >= 1)
-                {
-                    headerString = headerValue.ToArray()[0];
-                }
+                headerString = headerValue.ToArray()[0];
             }
 
             // Trace header doesn't exist, which means this is the root node. Create a new traceId and inject the trace header.
@@ -124,7 +119,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
                 };
             }
 
-            var segmentName = EnvironmentVariables.FunctionName;
             bool isSampleDecisionRequested = traceHeader.Sampled == SampleDecision.Requested;
 
             // Make sample decision
@@ -133,10 +127,10 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AspNetCore.Internal
                 traceHeader.Sampled = recorder.SamplingStrategy.ShouldTrace();
             }
 
-            recorder.BeginSubsegment(segmentName);
+            recorder.BeginSubsegment(EnvironmentVariables.FunctionName);
 
             var requestAttributes = new Dictionary<string, object?>();
-            PopulateRequestAttributes(request, requestAttributes);
+            PopulateRequestAttributes(context.Request, requestAttributes);
             recorder.AddHttpInformation("request", requestAttributes);
 
             if (isSampleDecisionRequested)

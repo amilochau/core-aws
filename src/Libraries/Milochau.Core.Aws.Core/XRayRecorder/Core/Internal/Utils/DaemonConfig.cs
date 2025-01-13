@@ -43,7 +43,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             _udpEndpoint = EndPoint.Of(DefaultEndpoint);
         }
 
-        internal static DaemonConfig ParsEndpoint(string? daemonAddress)
+        internal static DaemonConfig ParseEndpoint(string? daemonAddress)
         {
             if (!IPEndPointExtension.TryParse(daemonAddress, out DaemonConfig? daemonEndPoint))
             {
@@ -59,7 +59,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         /// <returns></returns>
         public static DaemonConfig GetEndPoint()
         {
-            return ParsEndpoint(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress));
+            return ParseEndpoint(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.Key_DaemonAddress));
         }
     }
 }

@@ -171,7 +171,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #region IFeatureCollection
         public bool IsReadOnly => false;
 
-        private readonly IDictionary<Type, object> _features = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _features = [];
 
         public int Revision => _containerRevision;
 

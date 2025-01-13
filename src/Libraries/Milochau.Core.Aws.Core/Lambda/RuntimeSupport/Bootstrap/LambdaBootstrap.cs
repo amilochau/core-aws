@@ -68,7 +68,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Bootstrap
             }
             catch (Exception ex)
             {
-                invocation.LambdaContext.Logger.LogLineError(Microsoft.Extensions.Logging.LogLevel.Error, ex.ToString());
+                invocation.LambdaContext.Logger.LogLine(Microsoft.Extensions.Logging.LogLevel.Error, ex.ToString());
                 await runtimeApiClient.ReportInvocationErrorAsync(invocation.LambdaContext.AwsRequestId, ex, cancellationToken);
                 return;
             }

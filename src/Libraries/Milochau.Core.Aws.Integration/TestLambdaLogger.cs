@@ -10,21 +10,9 @@ namespace Milochau.Core.Aws.Integration
     public class TestLambdaLogger : ILambdaLogger
     {
         /// <inheritdoc/>
-        public void Log(string message)
-        {
-            Console.Out.Write(message);
-        }
-
-        /// <inheritdoc/>
         public void LogLine(LogLevel logLevel, string message)
         {
-            Console.Out.WriteLine(message);
-        }
-
-        /// <inheritdoc/>
-        public void LogLineError(LogLevel level, string message)
-        {
-            Console.Error.WriteLine(message);
+            Console.WriteLine(message);
         }
     }
 }
