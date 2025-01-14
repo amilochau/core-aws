@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
-    internal class LambdaConsoleLogger(string? currentAwsRequestId) : ILambdaLogger
+    internal class LambdaConsoleLogger : ILambdaLogger
     {
         protected static LogLevel MinimumLogLevel { get; } = EnvironmentVariables.LogLevel switch
         {
@@ -35,7 +35,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             var displayLevel = ConvertLogLevelToLabel(logLevel);
 
             // We assume that we always want to use JSON log format
-            var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId ?? EnvironmentVariables.RequestId ?? string.Empty, EnvironmentVariables.TraceId ?? string.Empty);
+            var formattedLine = new LogLine(displayLevel, message, EnvironmentVariables.RequestId ?? string.Empty, EnvironmentVariables.TraceId ?? string.Empty);
             var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
 
             Console.WriteLine(stringifiedLine);

@@ -8,6 +8,7 @@ namespace Milochau.Core.Aws.Core.References
     public static class EnvironmentVariables
     {
         internal const string Key_TraceId = "_X_AMZN_TRACE_ID";
+        internal const string Key_RequestId = "XRAY_REQUEST_ID";
         internal const string Key_AccessKeyId = "AWS_ACCESS_KEY_ID";
         internal const string Key_DefaultRegion = "AWS_DEFAULT_REGION";
         internal const string Key_LambdaFunctionMemorySize = "AWS_LAMBDA_FUNCTION_MEMORY_SIZE";
@@ -94,8 +95,8 @@ namespace Milochau.Core.Aws.Core.References
         /// <summary>Request id</summary>
         public static string? RequestId
         {
-            get => GetEnvironmentVariable(Key_TraceId)!;
-            internal set => SetEnvironmentVariable(Key_TraceId, value);
+            get => GetEnvironmentVariable(Key_RequestId)!;
+            internal set => SetEnvironmentVariable(Key_RequestId, value);
         }
 
         /// <summary>XRay Daemon address</summary>

@@ -3,7 +3,7 @@ using System;
 
 namespace Microsoft.Extensions.Logging
 {
-    internal class LambdaILogger(string categoryName) : LambdaConsoleLogger(null), ILogger
+    internal class LambdaILogger(string categoryName) : LambdaConsoleLogger(), ILogger
     {
         internal IExternalScopeProvider? ScopeProvider { get; set; }
 

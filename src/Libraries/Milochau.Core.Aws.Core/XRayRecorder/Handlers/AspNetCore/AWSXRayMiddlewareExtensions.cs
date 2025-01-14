@@ -15,7 +15,6 @@ namespace Microsoft.AspNetCore.Builder
         /// Adds <see cref="AWSXRayMiddleware"/> to the applicaion's request pipeline.
         /// </summary>
         /// <param name="builder">Instance of <see cref="IApplicationBuilder"/>.</param>
-        /// <param name="segmentName">Segment name.</param>
         /// <returns>Instance of <see cref="IApplicationBuilder"/> instrumented with X-Ray middleware.</returns>
         public static IApplicationBuilder UseXRay(this IApplicationBuilder builder)
         {

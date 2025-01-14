@@ -13,9 +13,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
     /// <seealso cref="Amazon.XRay.Recorder.Core.IAWSXRayRecorder" />
     public class AWSXRayRecorder : AWSXRayRecorderImpl
     {
-        public const string LambdaTaskRootKey = "LAMBDA_TASK_ROOT";
-        public const string LambdaTraceHeaderKey = "_X_AMZN_TRACE_ID";
-
         private static string? _lambdaVariables;
 
         /// <summary>

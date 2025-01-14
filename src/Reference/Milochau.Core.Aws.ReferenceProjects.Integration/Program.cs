@@ -5,6 +5,7 @@ using System.Threading;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
 using System;
 using Milochau.Core.Aws.DynamoDB.Events;
+using Milochau.Core.Aws.Core.References;
 
 var options = new IntegrationWebApplicationOptions
 {
@@ -20,7 +21,7 @@ app.UseIntegrationMiddlewares(options);
 
 app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken cancellationToken) =>
 {
-    var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
+    var credentials = new AssumeRoleAWSCredentials(EnvironmentVariables.RoleArn);
     var lambdaFunction = new Function(credentials);
     await Function.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
 })
