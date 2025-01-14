@@ -19,18 +19,6 @@ namespace Microsoft.Extensions.DependencyInjection
             // Not running in Lambda so exit and let Kestrel be the web server
             if (!string.IsNullOrEmpty(EnvironmentVariables.FunctionName))
             {
-                /*
-                var toRemove = new List<ServiceDescriptor>();
-
-                foreach (var serviceDescriptor in builder.Services.Where(x => x.ServiceType == typeof(IServer)))
-                {
-                    toRemove.Add(serviceDescriptor);
-                }
-                foreach (var serviceDescription in toRemove)
-                {
-                    builder.Services.Remove(serviceDescription);
-                }
-                */
                 builder.Services.RemoveAll<IServer>();
                 builder.Services.AddSingleton<IServer, LambdaServer>();
 

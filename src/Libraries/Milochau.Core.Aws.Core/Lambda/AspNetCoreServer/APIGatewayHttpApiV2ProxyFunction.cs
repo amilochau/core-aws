@@ -86,7 +86,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 features.RequestServices = scope.ServiceProvider;
 
                 var context = CreateContext(features);
-                var response = await ProcessRequest(lambdaContext, context, features);
+                var response = await ProcessRequest(context, features);
 
                 return response;
             }
@@ -97,14 +97,13 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         }
 
         /// <summary>Processes the current request</summary>
-        /// <param name="lambdaContext"><see cref="ILambdaContext"/> implementation.</param>
         /// <param name="context">The hosting application request context object.</param>
         /// <param name="features">An <see cref="InvokeFeatures"/> instance.</param>
         /// <param name="rethrowUnhandledError">
         /// If specified, an unhandled exception will be rethrown for custom error handling.
         /// Ensure that the error handling code calls 'this.MarshallResponse(features, 500);' after handling the error to return a the typed Lambda object to the user.
         /// </param>
-        protected async Task<APIGatewayHttpApiV2ProxyResponse> ProcessRequest(ILambdaContext lambdaContext, object context, InvokeFeatures features, bool rethrowUnhandledError = false)
+        protected async Task<APIGatewayHttpApiV2ProxyResponse> ProcessRequest(object context, InvokeFeatures features, bool rethrowUnhandledError = false)
         {
             var defaultStatusCode = 200;
             Exception? ex = null;
@@ -112,7 +111,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             {
                 try
                 {
-                    await lambdaServer!.Application!.ProcessRequestAsync(context);
+                    await lambdaServer.Application!.ProcessRequestAsync(context);
                 }
                 catch (AggregateException agex)
                 {
@@ -159,11 +158,11 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 {
                     await features.ResponseStartingEvents.ExecuteAsync();
                 }
-                var response = MarshallResponse(features, lambdaContext, defaultStatusCode);
+                var response = MarshallResponse(features, defaultStatusCode);
 
                 if (ex != null && IncludeUnhandledExceptionDetailInResponse)
                 {
-                    InternalCustomResponseExceptionHandling(response, lambdaContext, ex);
+                    InternalCustomResponseExceptionHandling(response, ex);
                 }
 
                 if (features.ResponseCompletedEvents != null)
@@ -180,7 +179,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         }
 
 
-        private protected static void InternalCustomResponseExceptionHandling(APIGatewayHttpApiV2ProxyResponse apiGatewayResponse, ILambdaContext lambdaContext, Exception ex)
+        private protected static void InternalCustomResponseExceptionHandling(APIGatewayHttpApiV2ProxyResponse apiGatewayResponse, Exception ex)
         {
             apiGatewayResponse.SetHeaderValues("ErrorType", [ex.GetType().Name], false);
         }
@@ -191,8 +190,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         /// </summary>
         /// <param name="responseFeatures"></param>
         /// <param name="statusCodeIfNotSet">Sometimes the ASP.NET server doesn't set the status code correctly when successful, so this parameter will be used when the value is 0.</param>
-        /// <param name="lambdaContext"></param>
-        protected APIGatewayHttpApiV2ProxyResponse MarshallResponse<TFeature>(TFeature responseFeatures, ILambdaContext lambdaContext, int statusCodeIfNotSet = 200)
+        protected APIGatewayHttpApiV2ProxyResponse MarshallResponse<TFeature>(TFeature responseFeatures, int statusCodeIfNotSet = 200)
             where TFeature : IHttpResponseFeature, IHttpResponseBodyFeature
         {
             var response = new APIGatewayHttpApiV2ProxyResponse
