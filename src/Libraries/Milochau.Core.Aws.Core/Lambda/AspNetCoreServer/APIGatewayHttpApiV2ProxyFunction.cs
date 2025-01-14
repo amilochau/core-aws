@@ -231,6 +231,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 response.Headers["Content-Type"] = null;
             }
 
+            /*
             if (responseFeatures.Stream != null)
             {
                 // Figure out how we should treat the response content, check encoding first to see if body is compressed, then check content type
@@ -242,6 +243,21 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
 
                 (response.Body, response.IsBase64Encoded) = Utilities.ConvertAspNetCoreBodyToLambdaBody(responseFeatures.Stream, rcEncoding);
             }
+            */
+
+#pragma warning disable CS0618 // Le type ou le membre est obsolète
+            if (responseFeatures.Body != null)
+            {
+                // Figure out how we should treat the response content, check encoding first to see if body is compressed, then check content type
+                var rcEncoding = GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentEncoding(contentEncoding);
+                if (rcEncoding != ResponseContentEncoding.Base64)
+                {
+                    rcEncoding = GetAPIGatewayHttpApiV2ProxyResponseContentEncodingForContentType(contentType);
+                }
+
+                (response.Body, response.IsBase64Encoded) = Utilities.ConvertAspNetCoreBodyToLambdaBody(responseFeatures.Body, rcEncoding);
+            }
+#pragma warning restore CS0618 // Le type ou le membre est obsolète
 
             return response;
         }

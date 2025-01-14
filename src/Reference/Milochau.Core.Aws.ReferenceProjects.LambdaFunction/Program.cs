@@ -1,5 +1,4 @@
 ﻿using Milochau.Core.Aws.Core.Lambda.Events;
-using Milochau.Core.Aws.ApiGateway;
 using Milochau.Core.Aws.DynamoDB;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction.DataAccess;
 using System.IO;
@@ -23,19 +22,13 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 {
     public class FunctionHandler
     {
-        private static readonly int handlerChoice = 0;
+        private static readonly int handlerChoice = 2;
         private static readonly Function function = new Function(new EnvironmentVariablesAWSCredentials());
 
         private static async Task Main()
         {
             switch (handlerChoice)
             {
-                case 0:
-                    await LambdaBootstrap.RunAsync(function.DoAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyResponse);
-                    break;
-                case 1:
-                    await LambdaBootstrap.RunAsync(function.DoAsync, ApplicationJsonSerializerContext.Default.APIGatewayHttpApiV2ProxyRequest);
-                    break;
                 case 2:
                     await LambdaBootstrap.RunAsync(function.FunctionHandlerScheduler);
                     break;
@@ -76,14 +69,14 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
 
         public Task FunctionHandlerScheduler(Stream requestStream, ILambdaContext context, CancellationToken cancellationToken)
         {
-            return DoAsync(new FunctionRequest(null), context, cancellationToken);
+            return DoAsync(new FunctionRequest(), context, cancellationToken);
         }
 
         public async Task FunctionHandlerSns(SNSEvent request, ILambdaContext context, CancellationToken cancellationToken)
         {
             foreach (var record in request.Records)
             {
-                await DoAsync(new FunctionRequest(null), context, cancellationToken);
+                await DoAsync(new FunctionRequest(), context, cancellationToken);
             }
         }
 
@@ -118,20 +111,7 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             return Task.FromResult(response);
         }
 
-        public async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(APIGatewayHttpApiV2ProxyRequest request,
-            ILambdaContext context,
-            CancellationToken cancellationToken)
-        {
-            if (!request.TryParseAndValidate<FunctionRequest>(new ValidationOptions { AuthenticationRequired = false }, out var proxyResponse, out var requestData))
-            {
-                return proxyResponse;
-            }
-
-            var response = new FunctionResponse();
-            return await DoAsync(requestData, context, cancellationToken);
-        }
-
-        public static async Task<APIGatewayHttpApiV2ProxyResponse> DoAsync(FunctionRequest requestData,
+        public static async Task<FunctionResponse> DoAsync(FunctionRequest requestData,
             ILambdaContext context,
             CancellationToken cancellationToken)
         {
@@ -143,14 +123,11 @@ namespace Milochau.Core.Aws.ReferenceProjects.LambdaFunction
             //await cognitoDataAccess.LoginAsync(cancellationToken);
             //await cognitoDataAccess.UpdateAttributesAsync(cancellationToken);
 
-            var response = new FunctionResponse();
-            return HttpResponse.Ok(response, ApplicationJsonSerializerContext.Default.FunctionResponse);
+            return new FunctionResponse();
         }
     }
 
     [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = [typeof(GuidConverter)])]
-    [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyRequest))]
-    [JsonSerializable(typeof(APIGatewayHttpApiV2ProxyResponse))]
     [JsonSerializable(typeof(SNSEvent))]
     [JsonSerializable(typeof(EmailRequest))]
     [JsonSerializable(typeof(EmailRequestContent))]

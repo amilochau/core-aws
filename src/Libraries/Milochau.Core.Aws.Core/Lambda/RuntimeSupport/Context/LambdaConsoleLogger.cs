@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Milochau.Core.Aws.Core.Lambda.Core;
-using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
 using Milochau.Core.Aws.Core.References;
 using System;
 using System.Text.Json;
@@ -36,7 +35,7 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             var displayLevel = ConvertLogLevelToLabel(logLevel);
 
             // We assume that we always want to use JSON log format
-            var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId ?? RuntimeApiHeaders.RequestId);
+            var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId ?? EnvironmentVariables.RequestId ?? string.Empty, EnvironmentVariables.TraceId ?? string.Empty);
             var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
 
             Console.WriteLine(stringifiedLine);
@@ -62,12 +61,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         }
     }
 
-    internal class LogLine(string logLevel, string message, string requestId)
+    internal class LogLine(string logLevel, string message, string requestId, string traceId)
     {
         public DateTime Timestamp { get; } = DateTime.UtcNow;
         public string Level { get; } = logLevel;
         public string Message { get; } = message;
         public string RequestId { get; } = requestId;
+        public string TraceId { get; } = traceId;
         public string FunctionName { get; } = EnvironmentVariables.FunctionName;
     }
 

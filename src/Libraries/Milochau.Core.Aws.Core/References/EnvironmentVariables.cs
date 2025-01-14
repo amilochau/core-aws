@@ -24,63 +24,49 @@ namespace Milochau.Core.Aws.Core.References
         internal const string Key_ConventionApplication = "CONVENTION__APPLICATION";
         internal const string Key_ConventionHost = "CONVENTION__HOST";
         internal const string Key_AccountId = "ACCOUNT_ID";
+        internal const string Key_RoleArn = "AWS_ROLE_ARN";
 
-        private static IDictionary Variables { get; } = Environment.GetEnvironmentVariables();
+        private static readonly IDictionary variables = Environment.GetEnvironmentVariables();
 
         /// <summary>Get environment variable</summary>
-        public static string? GetEnvironmentVariable(string key)
+        public static string? GetEnvironmentVariable(string key, bool forceRead = false)
         {
-            TryGetEnvironmentVariable(key, out var value);
-            return value;
-        }
-
-        /// <summary>Set environment variable</summary>
-        public static void SetEnvironmentVariable(string key, string value)
-        {
-            // We don't really set the environment variable
-            if (Variables.Contains(key))
+            if (forceRead)
             {
-                Variables[key] = value;
+                return Environment.GetEnvironmentVariable(key);
             }
             else
             {
-                Variables.Add(key, value);
+                TryGetEnvironmentVariable(key, out var value);
+                return value;
             }
         }
 
         /// <summary>Try get environment variable</summary>
         public static bool TryGetEnvironmentVariable(string key, [NotNullWhen(true)] out string? value)
         {
-            if (!Variables.Contains(key))
+            if (!variables.Contains(key))
             {
                 value = null;
                 return false;
             }
             else
             {
-                value = Variables[key]!.ToString();
+                value = variables[key]!.ToString();
                 return value != null;
             }
         }
 
-        /// <summary>
-        /// Gets the name of the AWS region.
-        /// </summary>
+        /// <summary>REgion name</summary>
         public static string RegionName { get; } = GetEnvironmentVariable(Key_Region)!;
 
-        /// <summary>
-        /// Gets the AccessKey property for the current credentials.
-        /// </summary>
+        /// <summary>Access key</summary>
         public static string AccessKey { get; } = GetEnvironmentVariable(Key_AccessKeyId)!;
 
-        /// <summary>
-        /// Gets the SecretKey property for the current credentials.
-        /// </summary>
+        /// <summary>Secret key</summary>
         public static string SecretKey { get; } = GetEnvironmentVariable(Key_SecretAccessKey)!;
 
-        /// <summary>
-        /// Gets the Token property for the current credentials.
-        /// </summary>
+        /// <summary>Session token</summary>
         public static string? Token { get; } = GetEnvironmentVariable(Key_SessionToken);
 
         /// <summary>Convention - Prefix</summary>
@@ -98,6 +84,26 @@ namespace Milochau.Core.Aws.Core.References
         /// <summary>Account id</summary>
         public static string AccountId { get; } = GetEnvironmentVariable(Key_AccountId)!;
 
+        /// <summary>Trace id</summary>
+        public static string? TraceId
+        {
+            get => GetEnvironmentVariable(Key_TraceId)!;
+            internal set => SetEnvironmentVariable(Key_TraceId, value);
+        }
+
+        /// <summary>Request id</summary>
+        public static string? RequestId
+        {
+            get => GetEnvironmentVariable(Key_TraceId)!;
+            internal set => SetEnvironmentVariable(Key_TraceId, value);
+        }
+
+        /// <summary>XRay Daemon address</summary>
+        public static string? DaemonAddress { get; } = GetEnvironmentVariable(Key_DaemonAddress);
+
+        /// <summary>Role ARN</summary>
+        public static string RoleArn { get; } = GetEnvironmentVariable(Key_RoleArn)!;
+
         /// <summary>Lambda Function memory size, in MB</summary>
         internal static string FunctionMemorySize { get; } = GetEnvironmentVariable(Key_LambdaFunctionMemorySize)!;
 
@@ -107,5 +113,19 @@ namespace Milochau.Core.Aws.Core.References
         internal static string LogLevel { get; } = GetEnvironmentVariable(Key_LambdaLogLevel)!;
 
         internal static string? RuntimeServerHostAndPort { get; } = GetEnvironmentVariable(Key_LambdaRuntimeApi);
+
+
+        private static void SetEnvironmentVariable(string key, string? value)
+        {
+            // We don't really set the environment variable
+            if (variables.Contains(key))
+            {
+                variables[key] = value;
+            }
+            else
+            {
+                variables.Add(key, value);
+            }
+        }
     }
 }

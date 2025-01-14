@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.Builder
                 });
             });
             builder.Services.AddCors();
-            builder.Services.AddSingleton<IAWSCredentials>(new AssumeRoleAWSCredentials(EnvironmentVariables.GetEnvironmentVariable("AWS_ROLE_ARN")!));
+            builder.Services.AddSingleton<IAWSCredentials>(new AssumeRoleAWSCredentials(EnvironmentVariables.RoleArn));
             builder.Services.AddAuthentication().AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters

@@ -18,17 +18,6 @@ var app = builder.Build();
 
 app.UseIntegrationMiddlewares(options);
 
-app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
-{
-    var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
-    var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
-    var lambdaFunction = new Function(credentials);
-    var proxyResponse = await lambdaFunction.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
-    return ApiGatewayHelpers.BuildResult(proxyResponse);
-})
-.Produces(204)
-.WithTags("Http trigger");
-
 app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken cancellationToken) =>
 {
     var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);

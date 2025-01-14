@@ -113,7 +113,8 @@ namespace Milochau.Core.Aws.Core.Runtime
         {
             var httpRequestMessage = invokeOptions.MarshallRequest(originalRequest);
 
-            if (EnvironmentVariables.TryGetEnvironmentVariable(EnvironmentVariables.Key_TraceId, out string? amznTraceId))
+            var amznTraceId = EnvironmentVariables.TraceId;
+            if (amznTraceId != null)
             {
                 httpRequestMessage.Headers.Add(HeaderKeys.XAmznTraceIdHeader, AWSSDKUtils.EncodeTraceIdHeaderValue(amznTraceId));
             }

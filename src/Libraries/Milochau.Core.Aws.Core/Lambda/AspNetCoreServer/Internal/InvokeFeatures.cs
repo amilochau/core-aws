@@ -422,14 +422,14 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                     return _traceIdentifier;
                 }
 
-                var lambdaTraceId = EnvironmentVariables.GetEnvironmentVariable("_X_AMZN_TRACE_ID");
+                var lambdaTraceId = EnvironmentVariables.TraceId;
                 if (!string.IsNullOrEmpty(lambdaTraceId))
                 {
                     return lambdaTraceId;
                 }
 
                 // If there is no Lambda trace id then fallback to the trace id that ASP.NET Core would have generated.
-                _traceIdentifier = new Microsoft.AspNetCore.Http.Features.HttpRequestIdentifierFeature().TraceIdentifier;
+                _traceIdentifier = new HttpRequestIdentifierFeature().TraceIdentifier;
                 return _traceIdentifier;
             }
             set { _traceIdentifier = value; }

@@ -63,7 +63,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             else // Facade / Subsegment already present
             {
                 var entity = TraceContext.GetEntity(); // can be Facade segment or Subsegment
-                var environmentRootTraceId = TraceHeader.FromString(GetTraceVariablesFromEnvironment()).RootTraceId;
+                var environmentRootTraceId = TraceHeader.FromString(EnvironmentVariables.TraceId).RootTraceId;
 
                 if (environmentRootTraceId != null && !environmentRootTraceId.Equals(entity.RootSegment?.TraceId)) // If true, customer has leaked subsegments across invocation
                 {
@@ -82,7 +82,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         /// </summary>
         internal void AddFacadeSegment()
         {
-            _lambdaVariables = GetTraceVariablesFromEnvironment();
+            _lambdaVariables = EnvironmentVariables.TraceId;
 
             if (!TraceHeader.TryParseAll(_lambdaVariables, out TraceHeader traceHeader))
             {
@@ -203,14 +203,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
             catch (InvalidCastException)
             {
             }
-        }
-
-        /// <summary>
-        /// Returns value set for environment variable "_X_AMZN_TRACE_ID"
-        /// </summary>
-        private static string? GetTraceVariablesFromEnvironment()
-        {
-            return EnvironmentVariables.GetEnvironmentVariable(LambdaTraceHeaderKey);
         }
     }
 }
