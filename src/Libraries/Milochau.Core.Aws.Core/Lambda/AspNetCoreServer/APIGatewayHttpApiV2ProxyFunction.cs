@@ -113,12 +113,12 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                 {
                     await lambdaServer.Application!.ProcessRequestAsync(context);
                 }
-                catch (AggregateException agex)
+                catch (AggregateException e)
                 {
-                    ex = agex;
-                    logger.LogError(agex, $"Caught AggregateException: '{agex}'");
+                    ex = e;
+                    logger.LogError(e, $"Caught AggregateException: '{e}'");
                     var sb = new StringBuilder();
-                    foreach (var newEx in agex.InnerExceptions)
+                    foreach (var newEx in e.InnerExceptions)
                     {
                         sb.AppendLine(ErrorReport(newEx));
                     }
@@ -126,12 +126,12 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     logger.LogError(sb.ToString());
                     features.StatusCode = 500;
                 }
-                catch (ReflectionTypeLoadException rex)
+                catch (ReflectionTypeLoadException e)
                 {
-                    ex = rex;
-                    logger.LogError(rex, $"Caught ReflectionTypeLoadException: '{rex}'");
+                    ex = e;
+                    logger.LogError(e, $"Caught ReflectionTypeLoadException: '{e}'");
                     var sb = new StringBuilder();
-                    foreach (var loaderException in rex.LoaderExceptions)
+                    foreach (var loaderException in e.LoaderExceptions)
                     {
                         if (loaderException is FileNotFoundException fileNotFoundException && !string.IsNullOrEmpty(fileNotFoundException.FileName))
                         {

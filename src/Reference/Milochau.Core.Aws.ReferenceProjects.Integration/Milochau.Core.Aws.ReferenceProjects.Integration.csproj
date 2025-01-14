@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Integration\Milochau.Core.Aws.Integration.csproj" />
+    <ProjectReference Include="..\Milochau.Core.Aws.ReferenceProjects.AspNetCore\Milochau.Core.Aws.ReferenceProjects.AspNetCore.csproj" />
     <ProjectReference Include="..\Milochau.Core.Aws.ReferenceProjects.LambdaFunction\Milochau.Core.Aws.ReferenceProjects.LambdaFunction.csproj" />
   </ItemGroup>
 

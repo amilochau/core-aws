@@ -1,6 +1,4 @@
-﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Client;
-using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
-using Milochau.Core.Aws.Core.XRayRecorder.Core;
+﻿using Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context;
 using System;
 
 namespace Microsoft.Extensions.Logging

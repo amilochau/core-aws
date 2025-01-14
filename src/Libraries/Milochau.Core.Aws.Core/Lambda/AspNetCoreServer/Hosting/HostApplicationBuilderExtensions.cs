@@ -1,32 +1,43 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal;
-using Milochau.Core.Aws.Core.References;
+using Milochau.Core.Aws.Core.Runtime.Credentials;
+using Microsoft.AspNetCore.Authorization;
+using System;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.AspNetCore.Builder
 {
-    /// <summary>Extension methods to IServiceCollection</summary>
-    public static class HostApplicationBuilderExtensions
+    public class AwsLambdaWebApplicationOptions : WebApplicationOptions
     {
-        /// <summary>
-        /// Add the ability to run the ASP.NET Core Lambda function in AWS Lambda. If the project is not running in Lambda 
-        /// this method will do nothing allowing the normal Kestrel webserver to host the application.
-        /// </summary>
-        public static IHostApplicationBuilder AddAWSLambdaHosting(this IHostApplicationBuilder builder)
-        {
-            // Not running in Lambda so exit and let Kestrel be the web server
-            if (!string.IsNullOrEmpty(EnvironmentVariables.FunctionName))
-            {
-                builder.Services.RemoveAll<IServer>();
-                builder.Services.AddSingleton<IServer, LambdaServer>();
+        public required Action<JsonOptions> JsonOptions { get; set; }
+    }
 
-                builder.Logging.ClearProviders();
-                builder.Logging.AddLambdaLogger();
-            }
+    public static class AwsLambdaWebApplication
+    {
+        public static WebApplicationBuilder CreateBuilder(AwsLambdaWebApplicationOptions options)
+        {
+            var builder = WebApplication.CreateEmptyBuilder(options);
+
+            builder.Services.AddSingleton<IServer, LambdaServer>();
+            builder.Services.AddRoutingCore();
+            builder.Services.AddSingleton<IAWSCredentials>(new EnvironmentVariablesAWSCredentials());
+            builder.Services.AddAuthenticationCore();
+            builder.Services.ConfigureHttpJsonOptions(options.JsonOptions);
+            builder.Services.AddAuthorizationBuilder().SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+
+            builder.Logging.AddLambdaLogger();
 
             return builder;
+        }
+
+        public static WebApplication UseAwsLambdaMiddlewares(this WebApplication app)
+        {
+            app.UseXRay();
+            app.UseAuthorization();
+
+            return app;
         }
     }
 }

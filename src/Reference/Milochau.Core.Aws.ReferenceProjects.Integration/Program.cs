@@ -6,42 +6,36 @@ using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
 using System;
 using Milochau.Core.Aws.DynamoDB.Events;
 
-namespace Milochau.Core.Aws.ReferenceProjects.Integration
+var options = new IntegrationWebApplicationOptions
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddMilochauServices();
+    Args = args,
+    CorsOrigins = ["http://localhost:3000", "http://localhost:4173"]
+};
 
-            var app = builder.Build();
-            app.UseMilochauServices(new()
-            {
-                CorsOrigins = ["http://localhost:3000", "http://localhost:4173"],
-            });
+var builder = IntegrationWebApplication.CreateBuilder(options);
 
-            app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
-            {
-                var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
-                var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
-                var lambdaFunction = new Function(credentials);
-                var proxyResponse = await lambdaFunction.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
-                return ApiGatewayHelpers.BuildResult(proxyResponse);
-            })
-            .Produces(204)
-            .WithTags("Http trigger");
+var app = builder.Build();
 
-            app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken cancellationToken) =>
-            {
-                var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
-                var lambdaFunction = new Function(credentials);
-                await Function.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
-            })
-            .Produces(200)
-            .WithTags("DynamoDB Stream trigger");
+app.UseIntegrationMiddlewares(options);
 
-            app.Run();
-        }
-    }
-}
+app.MapPost("/http", async (HttpContext httpContext, CancellationToken cancellationToken) =>
+{
+    var proxyRequest = await ApiGatewayHelpers.BuildProxyRequestAsync(httpContext, new ProxyRequestOptions(), cancellationToken);
+    var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
+    var lambdaFunction = new Function(credentials);
+    var proxyResponse = await lambdaFunction.DoAsync(proxyRequest, new TestLambdaContext(), cancellationToken);
+    return ApiGatewayHelpers.BuildResult(proxyResponse);
+})
+.Produces(204)
+.WithTags("Http trigger");
+
+app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken cancellationToken) =>
+{
+    var credentials = new AssumeRoleAWSCredentials(Environment.GetEnvironmentVariable("AWS_ROLE_ARN")!);
+    var lambdaFunction = new Function(credentials);
+    await Function.FunctionHandlerDynamoDbStream(proxyRequest!, new TestLambdaContext(), cancellationToken);
+})
+.Produces(200)
+.WithTags("DynamoDB Stream trigger");
+
+app.Run();

@@ -29,10 +29,10 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         public string[]? Cookies { get; set; }
 
         /// <summary>Headers sent with the request. Multiple values for the same header will be separated by a comma.</summary>
-        public IDictionary<string, string>? Headers { get; set; }
+        public Dictionary<string, string>? Headers { get; set; }
 
         /// <summary>Query string parameters sent with the request. Multiple values for the same parameter will be separated by a comma.</summary>
-        public IDictionary<string, string>? QueryStringParameters { get; set; }
+        public Dictionary<string, string>? QueryStringParameters { get; set; }
 
         /// <summary>The request context for the request</summary>
         public required ProxyRequestContext RequestContext { get; set; }
@@ -41,7 +41,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         public string? Body { get; set; }
 
         /// <summary>Path parameters sent with the request</summary>
-        public IDictionary<string, string>? PathParameters { get; set; }
+        public Dictionary<string, string>? PathParameters { get; set; }
 
         /// <summary>True if the body of the request is base 64 encoded</summary>
         public bool IsBase64Encoded { get; set; }

@@ -12,7 +12,7 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
         public int StatusCode { get; set; }
 
         /// <summary>The Http headers returned in the response. Multiple header values set for the the same header should be separate by a comma.</summary>
-        public IDictionary<string, string?> Headers { get; set; } = new Dictionary<string, string?>();
+        public Dictionary<string, string?> Headers { get; set; } = [];
 
         /// <summary>The cookies returned in the response</summary>
         public string?[]? Cookies { get; set; }

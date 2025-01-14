@@ -24,13 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Abstractions\Milochau.Core.Aws.Abstractions.csproj" />
     <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.ApiGateway\Milochau.Core.Aws.ApiGateway.csproj" />
-    <ProjectReference Include="..\..\Libraries\Milochau.Core.Aws.Lambda\Milochau.Core.Aws.Lambda.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
   <ItemGroup>

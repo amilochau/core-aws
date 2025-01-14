@@ -17,6 +17,7 @@ using Milochau.Core.Aws.Core.Lambda.Events;
 using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Lambda.Core;
+using Milochau.Core.Aws.Core.References;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {
@@ -421,7 +422,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                     return _traceIdentifier;
                 }
 
-                var lambdaTraceId = Environment.GetEnvironmentVariable("_X_AMZN_TRACE_ID");
+                var lambdaTraceId = EnvironmentVariables.GetEnvironmentVariable("_X_AMZN_TRACE_ID");
                 if (!string.IsNullOrEmpty(lambdaTraceId))
                 {
                     return lambdaTraceId;

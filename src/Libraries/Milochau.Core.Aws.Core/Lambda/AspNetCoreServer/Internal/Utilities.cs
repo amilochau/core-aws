@@ -28,15 +28,20 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 
         internal static (string body, bool isBase64Encoded) ConvertAspNetCoreBodyToLambdaBody(Stream aspNetCoreBody, ResponseContentEncoding rcEncoding)
         {
+            // Ensure the stream position is at the beginning
+            if (aspNetCoreBody.CanSeek)
+            {
+                aspNetCoreBody.Position = 0;
+            }
 
             // Do we encode the response content in Base64 or treat it as UTF-8
             if (rcEncoding == ResponseContentEncoding.Base64)
             {
                 // We want to read the response content "raw" and then Base64 encode it
                 byte[] bodyBytes;
-                if (aspNetCoreBody is MemoryStream stream)
+                if (aspNetCoreBody is MemoryStream memoryStream)
                 {
-                    bodyBytes = stream.ToArray();
+                    bodyBytes = memoryStream.ToArray();
                 }
                 else
                 {
@@ -46,14 +51,14 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                 }
                 return (body: Convert.ToBase64String(bodyBytes), isBase64Encoded: true);
             }
-            else if (aspNetCoreBody is MemoryStream stream)
+            else if (aspNetCoreBody is MemoryStream memoryStream)
             {
-                return (body: Encoding.UTF8.GetString(stream.ToArray()), isBase64Encoded: false);
+                return (body: Encoding.UTF8.GetString(memoryStream.ToArray()), isBase64Encoded: false);
             }
             else
             {
                 aspNetCoreBody.Position = 0;
-                using StreamReader reader = new StreamReader(aspNetCoreBody, Encoding.UTF8);
+                using var reader = new StreamReader(aspNetCoreBody, Encoding.UTF8);
                 return (body: reader.ReadToEnd(), isBase64Encoded: false);
             }
         }
