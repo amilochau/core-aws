@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 {
     /// <summary>
-    /// Provides extension function to <see cref="IPEndPoint"/>.
+    /// Provides extension function to <see cref="System.Net.IPEndPoint"/>.
     /// </summary>
     public static class IPEndPointExtension
     {
@@ -35,9 +35,9 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
                 return false;
             }
         }
-        
+
         /// <summary>
-        /// Tries to parse a string to <see cref="IPEndPoint"/>.
+        /// Tries to parse a string to <see cref="System.Net.IPEndPoint"/>.
         /// </summary>
         /// <param name="input">The input string. Must be able to be validated by <see cref="IsIPAddress"/>.</param>
         /// <param name="endPoint">The parsed IPEndPoint</param>
@@ -74,8 +74,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
                 return false;
             }
         }
-        
-        
+
+
         /// <summary>
         /// Tries to parse a string to <see cref="HostEndPoint"/>
         /// </summary>
@@ -100,12 +100,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
                 hostEndpoint = null;
                 return false;
             }
-            
+
             /*
              * Almost anything can be a hostname which makes further validation here hard.
              * Accept any string in entries[0] and let it fail in the DNS lookup instead.
              */
-            
+
             hostEndpoint = new HostEndPoint(entries[0], port);
             return true;
         }
@@ -156,8 +156,8 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
 
             try
             {
-              string[] ep = daemonAddress.Split(_addressDelimiter);
-              return TryParseDaemonAddress(ep, out daemonEndPoint);
+                string[] ep = daemonAddress.Split(_addressDelimiter);
+                return TryParseDaemonAddress(ep, out daemonEndPoint);
             }
             catch (Exception)
             {
@@ -180,7 +180,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
             return false;
         }
 
-        private static bool ParseSingleForm(string[] daemonAddress, [NotNullWhen(true)] out DaemonConfig? endPoint)
+        private static bool ParseSingleForm(string[] daemonAddress, out DaemonConfig endPoint)
         {
             endPoint = new DaemonConfig();
 
@@ -197,7 +197,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils
         private static bool ParseDoubleForm(string[] daemonAddress, out DaemonConfig endPoint)
         {
             endPoint = new DaemonConfig();
-            IDictionary<string, string> addressMap = new Dictionary<string, string>();
+            var addressMap = new Dictionary<string, string>();
             string[] address1 = daemonAddress[0].Split(_addressPortDelimiter); // tcp:<hostname or address>:2000 udp:<hostname or address>:2001
             string[] address2 = daemonAddress[1].Split(_addressPortDelimiter);
 

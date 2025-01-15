@@ -26,8 +26,7 @@ namespace Milochau.Core.Aws.Integration
         {
             // Get credentials from default profile
 
-            var mainCredentials = FallbackCredentialsFactory.GetCredentials() as SSOAWSCredentials;
-            if (mainCredentials == null)
+            if (FallbackCredentialsFactory.GetCredentials() is not SSOAWSCredentials mainCredentials)
             {
                 throw new ArgumentException(nameof(mainCredentials));
             }

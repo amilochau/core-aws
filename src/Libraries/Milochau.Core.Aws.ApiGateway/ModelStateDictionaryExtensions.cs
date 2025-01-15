@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -7,9 +6,26 @@ using System.Linq;
 
 namespace Milochau.Core.Aws.ApiGateway
 {
-    /// <summary>Extension methods for validation</summary>
-    public static class ValidationExtensions
+    /// <summary>Extensions methods with API Gateway requests</summary>
+    public static class ModelStateDictionaryExtensions
     {
+        /// <summary>Populate a model state dictionary with errors</summary>
+        public static Dictionary<string, Collection<string>> Populate(this Dictionary<string, Collection<string>> modelStateDictionary, string key, string errorMessage)
+        {
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                if (!modelStateDictionary.TryGetValue(key, out Collection<string>? value))
+                {
+                    value = [];
+                    modelStateDictionary.Add(key, value);
+                }
+                value.Add(errorMessage);
+            }
+
+            return modelStateDictionary;
+        }
+
+
         #region General
 
         /// <summary>Validate a required value</summary>
@@ -26,7 +42,7 @@ namespace Milochau.Core.Aws.ApiGateway
 
         /// <summary>Validate a min value</summary>
         public static void ValidateMinValue<TValue>(this Dictionary<string, Collection<string>> modelStateDictionary, string key, TValue? value, TValue minValue)
-            where TValue: struct, IComparable<TValue>
+            where TValue : struct, IComparable<TValue>
         {
             if (value != null && value.Value.CompareTo(minValue) < 0)
             {
@@ -61,7 +77,7 @@ namespace Milochau.Core.Aws.ApiGateway
             if (value != null)
             {
                 if (value.Value.CompareTo(minValue) < 0 || value.Value.CompareTo(maxValue) > 0)
-                modelStateDictionary.Populate(key, $"Between {minValue} and {maxValue} value");
+                    modelStateDictionary.Populate(key, $"Between {minValue} and {maxValue} value");
             }
         }
 
@@ -168,23 +184,6 @@ namespace Milochau.Core.Aws.ApiGateway
                 {
                     modelStateDictionary.Populate(key, "URI required");
                 }
-            }
-        }
-
-        #endregion
-        #region ValidationOptions
-
-        /// <summary>Validate using an options validator</summary>
-        public static void UseValidator<TValidator, TOptions>(this Dictionary<string, Collection<string>> modelStateDictionary, TOptions value)
-            where TValidator: IValidateOptions<TOptions>, new()
-            where TOptions: class
-        {
-            var validator = new TValidator();
-            var result = validator.Validate(null, value);
-
-            if (result.Failures != null)
-            {
-                modelStateDictionary.Add(string.Empty, new Collection<string>(result.Failures.ToList()));
             }
         }
 

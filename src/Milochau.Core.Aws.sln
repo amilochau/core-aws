@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Milochau.Core.Aws.DynamoDB.Tests", "Libraries\Milochau.Core.Aws.DynamoDB.Tests\Milochau.Core.Aws.DynamoDB.Tests.csproj", "{42FA1763-3278-4577-9BF0-A34FB323D365}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Milochau.Core.Aws.ReferenceProjects.AspNetCore", "Reference\Milochau.Core.Aws.ReferenceProjects.AspNetCore\Milochau.Core.Aws.ReferenceProjects.AspNetCore.csproj", "{2940FFFD-CF75-4394-8936-C7E2E8A0C50B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{42FA1763-3278-4577-9BF0-A34FB323D365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42FA1763-3278-4577-9BF0-A34FB323D365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42FA1763-3278-4577-9BF0-A34FB323D365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2940FFFD-CF75-4394-8936-C7E2E8A0C50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2940FFFD-CF75-4394-8936-C7E2E8A0C50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2940FFFD-CF75-4394-8936-C7E2E8A0C50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2940FFFD-CF75-4394-8936-C7E2E8A0C50B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{FF15F47A-341A-4AA6-ACC8-89256058F669} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{C8749B51-5672-4944-89FB-D551E6F34CBF} = {CB7C2181-2BFA-4105-9CAE-6520D08F9664}
 		{42FA1763-3278-4577-9BF0-A34FB323D365} = {21DD2CF3-EFB0-4867-BE50-FD873F3C0D27}
+		{2940FFFD-CF75-4394-8936-C7E2E8A0C50B} = {2E096EB8-7464-42F8-B04C-617BF240F956}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE0AA8A9-B4DC-4C33-A403-D3B1C55B24DA}

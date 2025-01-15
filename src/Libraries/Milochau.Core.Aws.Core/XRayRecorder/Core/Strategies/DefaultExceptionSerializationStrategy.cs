@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Milochau.Core.Aws.Core.Runtime;
+using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Milochau.Core.Aws.Core.Runtime;
-using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
 {
     /// <summary>
     /// Defines default startegy for recording exception. By default <see cref="AmazonServiceException"/> class exeptions are marked as remote. 
     /// </summary>
-    [Serializable]
     public class DefaultExceptionSerializationStrategy
     {
         /// <summary>
@@ -22,7 +21,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
         /// Checks whether the exception should be marked as remote.
         /// </summary>
         /// <param name="e">Instance of <see cref="Exception"/>.</param>
-        /// <returns>True if the exception is of type present in <see cref="remoteExceptionClasses"/>, else false.</returns>
         private static bool IsRemoteException(Exception e)
         {
             Type exceptionType = e.GetType();
@@ -35,19 +33,47 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
         /// Otherwise, describe it and add it to the Cause and  returns the list of <see cref="ExceptionDescriptor"/>.
         /// </summary>
         /// <param name="e">The exception to be added</param>
+        /// <param name="subsegments">The subsegments to search for existing exception descriptor.</param>
         /// <returns> List of <see cref="ExceptionDescriptor"/></returns>
-        public List<ExceptionDescriptor> DescribeException(Exception? e)
+        public List<ExceptionDescriptor> DescribeException(Exception? e, IEnumerable<Subsegment> subsegments)
         {
-            List<ExceptionDescriptor> result = new List<ExceptionDescriptor>();
+            var result = new List<ExceptionDescriptor>();
             if (e == null)
             {
                 return result;
             }
 
+            // First check if the exception has been described in subsegment
+            var ex = new ExceptionDescriptor();
+            IEnumerable<ExceptionDescriptor>? existingExceptionDescriptors = null;
+            if (subsegments != null)
+            {
+                existingExceptionDescriptors = subsegments.Where(subsegment => subsegment.Cause != null && subsegment.Cause.IsExceptionAdded).SelectMany(subsegment => subsegment.Cause!.ExceptionDescriptors!);
+            }
+
+            ExceptionDescriptor? existingDescriptor = null;
+            if (existingExceptionDescriptors != null)
+            {
+                existingDescriptor = existingExceptionDescriptors.FirstOrDefault(descriptor => e.Equals(descriptor.Exception));
+            }
+
+            // While referencing exception from child, record id if exists or cause and return.
+            if (existingDescriptor != null)
+            {
+                ex.Cause = existingDescriptor.Id != null ? existingDescriptor.Id : existingDescriptor.Cause;
+                ex.Exception = existingDescriptor.Exception; // pass the exception of the cause so that this reference can be found if the same exception is thrown again
+                ex.Id = null;  // setting this to null since, cause is already populated with reference to downstream exception
+                result.Add(ex);
+                return result;
+            }
+
             // The exception is not described. Start describe it.
-            ExceptionDescriptor curDescriptor = new ExceptionDescriptor(e.Message, e.GetType().Name);
+            ExceptionDescriptor curDescriptor = new ExceptionDescriptor();
             while (e != null)
             {
+                curDescriptor.Exception = e;
+                curDescriptor.Message = e.Message;
+                curDescriptor.Type = e.GetType().Name;
                 InternalStackFrame[] frames = new StackTrace(e, true).GetFrames().Select(x => new InternalStackFrame
                 {
                     Path = x.GetFileName(),
@@ -55,7 +81,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                 }).ToArray();
                 if (frames != null && frames.Length > DefaultStackFrameSize)
                 {
-                    curDescriptor.Truncated = frames.Length - DefaultStackFrameSize > 0 ? frames.Length - DefaultStackFrameSize : null;
+                    curDescriptor.Truncated = frames.Length - DefaultStackFrameSize;
                     curDescriptor.Stack = new InternalStackFrame[DefaultStackFrameSize];
                     Array.Copy(frames, curDescriptor.Stack, DefaultStackFrameSize);
                 }
@@ -75,9 +101,18 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Strategies
                 if (e != null)
                 {
                     // Inner exception alreay described
-                    var newDescriptor = new ExceptionDescriptor(e.Message, e.GetType().Name);
-                    curDescriptor.Cause = newDescriptor.Id;
-                    curDescriptor = newDescriptor;
+                    ExceptionDescriptor? innerExceptionDescriptor = existingExceptionDescriptors?.FirstOrDefault(d => d.Exception != null && d.Exception.Equals(e));
+                    if (innerExceptionDescriptor != null)
+                    {
+                        curDescriptor.Cause = innerExceptionDescriptor.Id;
+                        e = null;
+                    }
+                    else
+                    {
+                        var newDescriptor = new ExceptionDescriptor();
+                        curDescriptor.Cause = newDescriptor.Id;
+                        curDescriptor = newDescriptor;
+                    }
                 }
             }
 

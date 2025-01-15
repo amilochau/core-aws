@@ -1,3 +1,4 @@
+﻿using System;
 using System.Text.Json.Serialization;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 
@@ -18,10 +19,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// <summary>
     /// AWS X-Ray Descriptor of Exception
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ExceptionDescriptor"/> class.
-    /// </remarks>
-    public class ExceptionDescriptor(string message, string type)
+    public class ExceptionDescriptor
     {
         /// <summary>
         /// The exception descriptor identifier length
@@ -38,13 +36,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets or sets the message.
         /// </summary>
         [JsonPropertyName("message")]
-        public string Message { get; set; } = message;
+        public string? Message { get; set; }
 
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
         [JsonPropertyName("type")]
-        public string Type { get; set; } = type;
+        public string? Type { get; set; }
 
         /// <summary>
         /// Gets or sets the stack.
@@ -65,9 +63,15 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public string? Cause { get; set; }
 
         /// <summary>
+        /// Gets or sets the exception.
+        /// </summary>
+        [JsonIgnore]
+        public Exception? Exception { get; set; }
+
+        /// <summary>
         /// The exception's "remote" attribute should be set to true if the exception on a "remote" subsegment is caused by or originated from a downstream service.
         /// </summary>
         [JsonPropertyName("remote")]
-        public bool Remote { get; set;}
+        public bool Remote { get; set; }
     }
 }

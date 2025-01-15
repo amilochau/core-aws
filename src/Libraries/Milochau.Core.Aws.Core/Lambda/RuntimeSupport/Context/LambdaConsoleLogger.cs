@@ -2,15 +2,14 @@
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.References;
 using System;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
 {
-    internal class LambdaConsoleLogger(string currentAwsRequestId) : ILambdaLogger
+    internal class LambdaConsoleLogger : ILambdaLogger
     {
-        private static readonly LogLevel minimumLogLevel = EnvironmentVariables.LogLevel switch
+        protected static LogLevel MinimumLogLevel { get; } = EnvironmentVariables.LogLevel switch
         {
             "TRACE" => LogLevel.Trace,
             "DEBUG" => LogLevel.Debug,
@@ -21,24 +20,14 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             _ => LogLevel.Information,
         };
 
-        public void Log(string message)
+        public bool IsEnabled(LogLevel logLevel)
         {
-            Console.Out.Write(message);
+            return logLevel >= MinimumLogLevel && logLevel != LogLevel.None;
         }
 
-        public void LogLine(LogLevel level, string message)
+        public void LogLine(LogLevel logLevel, string message)
         {
-            FormattedWriteLine(Console.Out, level, message);
-        }
-
-        public void LogLineError(LogLevel level, string message)
-        {
-            FormattedWriteLine(Console.Error, level, message);
-        }
-
-        private void FormattedWriteLine(TextWriter textWriter, LogLevel logLevel, string message)
-        {
-            if (logLevel < minimumLogLevel || logLevel == LogLevel.None)
+            if (!IsEnabled(logLevel))
             {
                 return;
             }
@@ -46,10 +35,10 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
             var displayLevel = ConvertLogLevelToLabel(logLevel);
 
             // We assume that we always want to use JSON log format
-            var formattedLine = new LogLine(displayLevel, message, currentAwsRequestId);
+            var formattedLine = new LogLine(displayLevel, message, EnvironmentVariables.RequestId ?? string.Empty, EnvironmentVariables.TraceId ?? string.Empty);
             var stringifiedLine = JsonSerializer.Serialize(formattedLine, LoggerJsonSerializerContext.Default.LogLine);
 
-            textWriter.WriteLine(stringifiedLine);
+            Console.WriteLine(stringifiedLine);
         }
 
         /// <summary>
@@ -72,12 +61,13 @@ namespace Milochau.Core.Aws.Core.Lambda.RuntimeSupport.Context
         }
     }
 
-    internal class LogLine(string logLevel, string message, string requestId)
+    internal class LogLine(string logLevel, string message, string requestId, string traceId)
     {
         public DateTime Timestamp { get; } = DateTime.UtcNow;
         public string Level { get; } = logLevel;
         public string Message { get; } = message;
         public string RequestId { get; } = requestId;
+        public string TraceId { get; } = traceId;
         public string FunctionName { get; } = EnvironmentVariables.FunctionName;
     }
 
