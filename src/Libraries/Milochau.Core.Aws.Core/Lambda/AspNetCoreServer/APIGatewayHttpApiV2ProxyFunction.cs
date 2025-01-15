@@ -83,7 +83,8 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
             var scope = serviceProvider.CreateScope();
             try
             {
-                features.RequestServices = scope.ServiceProvider;
+                var serviceProvidersFeatures = (IServiceProvidersFeature)features;
+                serviceProvidersFeatures.RequestServices = scope.ServiceProvider;
 
                 var context = CreateContext(features);
                 var response = await ProcessRequest(context, features);
@@ -107,6 +108,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
         {
             var defaultStatusCode = 200;
             Exception? ex = null;
+            var responseFeatures = (IHttpResponseFeature)features;
             try
             {
                 try
@@ -124,7 +126,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     }
 
                     logger.LogError(sb.ToString());
-                    features.StatusCode = 500;
+                    responseFeatures.StatusCode = 500;
                 }
                 catch (ReflectionTypeLoadException e)
                 {
@@ -144,14 +146,14 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer
                     }
 
                     logger.LogError(sb.ToString());
-                    features.StatusCode = 500;
+                    responseFeatures.StatusCode = 500;
                 }
                 catch (Exception e)
                 {
                     ex = e;
                     if (rethrowUnhandledError) throw;
                     logger.LogError(e, $"Unknown error responding to request: {ErrorReport(e)}");
-                    features.StatusCode = 500;
+                    responseFeatures.StatusCode = 500;
                 }
 
                 if (features.ResponseStartingEvents != null)

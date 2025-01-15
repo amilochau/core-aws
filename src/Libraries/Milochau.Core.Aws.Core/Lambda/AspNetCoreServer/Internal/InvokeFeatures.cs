@@ -18,21 +18,23 @@ using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.References;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {
-    public class InvokeFeatures : IFeatureCollection,
-                             IItemsFeature,
-                             IHttpAuthenticationFeature,
-                             IHttpRequestFeature,
-                             IHttpResponseFeature,
-                             IHttpConnectionFeature,
-                             IServiceProvidersFeature,
-                             ITlsConnectionFeature,
-                             IHttpRequestIdentifierFeature,
-                             IHttpResponseBodyFeature,
-                             IHttpRequestBodyDetectionFeature,
-                             IHttpActivityFeature
+    public class InvokeFeatures //(APIGatewayHttpApiV2ProxyRequest apiGatewayRequest, IServiceProvider serviceProvider, ILambdaContext lambdaContext)
+        : IFeatureCollection,
+          IItemsFeature,
+          IHttpAuthenticationFeature,
+          IHttpRequestFeature,
+          IHttpResponseFeature,
+          IHttpConnectionFeature,
+          IServiceProvidersFeature,
+          ITlsConnectionFeature,
+          IHttpRequestIdentifierFeature,
+          IHttpResponseBodyFeature,
+          IHttpRequestBodyDetectionFeature,
+          IHttpActivityFeature
     {
         /// <summary>Key to access the ILambdaContext object from the HttpContext.Items collection</summary>
         private const string LAMBDA_CONTEXT = "LambdaContext";
@@ -60,6 +62,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             this[typeof(IHttpActivityFeature)] = this;
 
             {
+                var authFeatures = (IHttpAuthenticationFeature)this;
                 var authorizer = apiGatewayRequest.RequestContext.Authorizer;
 
                 if (authorizer != null)
@@ -68,43 +71,41 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                     if (authorizer.Jwt?.Claims != null && authorizer.Jwt.Claims.Count != 0)
                     {
                         var identity = new ClaimsIdentity(authorizer.Jwt.Claims.Select(x => new Claim(x.Key, x.Value.ToString())), "AuthorizerIdentity");
-                        User = new ClaimsPrincipal(identity);
+                        authFeatures.User = new ClaimsPrincipal(identity);
                     }
                     else
                     {
                         // handling claims output from custom lambda authorizer
                         var identity = new ClaimsIdentity(authorizer.Jwt?.Claims?.Select(x => new Claim(x.Key, x.Value)), "AuthorizerIdentity");
-                        User = new ClaimsPrincipal(identity);
+                        authFeatures.User = new ClaimsPrincipal(identity);
                     }
                 }
             }
 
             {
-                Protocol = apiGatewayRequest.RequestContext.Http.Protocol;
-                Scheme = "https";
-                Method = apiGatewayRequest.RequestContext.Http.Method;
+                var requestFeatures = (IHttpRequestFeature)this;
+
+                requestFeatures.Protocol = apiGatewayRequest.RequestContext.Http.Protocol;
+                requestFeatures.Scheme = "https";
+                requestFeatures.Method = apiGatewayRequest.RequestContext.Http.Method;
 
                 var rawQueryString = Utilities.CreateQueryStringParametersFromHttpApiV2(apiGatewayRequest.RawQueryString);
-                RawTarget = apiGatewayRequest.RawPath + rawQueryString;
-                QueryString = rawQueryString ?? string.Empty;
+                requestFeatures.RawTarget = apiGatewayRequest.RawPath + rawQueryString;
+                requestFeatures.QueryString = rawQueryString ?? string.Empty;
 
-                Path = Utilities.DecodeResourcePath(apiGatewayRequest.RequestContext.Http.Path);
-                if (!Path.StartsWith('/'))
+                requestFeatures.Path = Utilities.DecodeResourcePath(apiGatewayRequest.RequestContext.Http.Path);
+                if (!requestFeatures.Path.StartsWith('/'))
                 {
-                    Path = "/" + Path;
+                    requestFeatures.Path = "/" + requestFeatures.Path;
                 }
 
                 // If there is a stage name in the resource path strip it out and set the stage name as the base path.
                 // This is required so that ASP.NET Core will route request based on the resource path without the stage name.
-                PathBase = string.Empty;
-                var stageName = apiGatewayRequest.RequestContext.Stage;
-                if (!string.IsNullOrWhiteSpace(stageName))
+                requestFeatures.PathBase = string.Empty;
+                if (!string.IsNullOrWhiteSpace(apiGatewayRequest.RequestContext.Stage) && requestFeatures.Path.StartsWith($"/{apiGatewayRequest.RequestContext.Stage}"))
                 {
-                    if (Path.StartsWith($"/{stageName}"))
-                    {
-                        Path = Path.Substring(stageName.Length + 1);
-                        PathBase = $"/{stageName}";
-                    }
+                    requestFeatures.Path = requestFeatures.Path.Substring(apiGatewayRequest.RequestContext.Stage.Length + 1);
+                    requestFeatures.PathBase = $"/{apiGatewayRequest.RequestContext.Stage}";
                 }
 
                 // API Gateway HTTP API V2 format supports multiple values for headers by comma separating the values.
@@ -112,60 +113,67 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
                 {
                     foreach (var kvp in apiGatewayRequest.Headers)
                     {
-                        Headers[kvp.Key] = new StringValues(kvp.Value?.Split(','));
+                        requestFeatures.Headers[kvp.Key] = new StringValues(kvp.Value?.Split(','));
                     }
                 }
 
-                if (!Headers.ContainsKey("Host"))
+                if (!requestFeatures.Headers.ContainsKey("Host"))
                 {
-                    Headers["Host"] = apiGatewayRequest.RequestContext.DomainName;
+                    requestFeatures.Headers["Host"] = apiGatewayRequest.RequestContext.DomainName;
                 }
 
                 if (apiGatewayRequest.Cookies != null)
                 {
                     // Add Cookies from the event
-                    Headers["Cookie"] = string.Join("; ", apiGatewayRequest.Cookies);
+                    requestFeatures.Headers["Cookie"] = string.Join("; ", apiGatewayRequest.Cookies);
                 }
 
                 if (!string.IsNullOrEmpty(apiGatewayRequest.Body))
                 {
-                    Body = Utilities.ConvertLambdaRequestBodyToAspNetCoreBody(apiGatewayRequest.Body, apiGatewayRequest.IsBase64Encoded);
+                    requestFeatures.Body = Utilities.ConvertLambdaRequestBodyToAspNetCoreBody(apiGatewayRequest.Body, apiGatewayRequest.IsBase64Encoded);
                 }
 
                 // Make sure the content-length header is set if header was not present.
                 const string contentLengthHeaderName = "Content-Length";
-                if (!Headers.ContainsKey(contentLengthHeaderName))
+                if (!requestFeatures.Headers.ContainsKey(contentLengthHeaderName))
                 {
-                    Headers[contentLengthHeaderName] = Body == null ? "0" : Body.Length.ToString(CultureInfo.InvariantCulture);
+                    requestFeatures.Headers[contentLengthHeaderName] = requestFeatures.Body == null ? "0" : requestFeatures.Body.Length.ToString(CultureInfo.InvariantCulture);
                 }
             }
 
             {
-                ConnectionId = apiGatewayRequest.RequestContext.RequestId;
+                var connectionFeatures = (IHttpConnectionFeature)this;
 
-                if (!string.IsNullOrEmpty(apiGatewayRequest.RequestContext.Http.SourceIp) &&
-                    IPAddress.TryParse(apiGatewayRequest.RequestContext.Http.SourceIp, out var remoteIpAddress))
+                connectionFeatures.ConnectionId = apiGatewayRequest.RequestContext.RequestId;
+
+                if (!string.IsNullOrEmpty(apiGatewayRequest.RequestContext.Http.SourceIp) && IPAddress.TryParse(apiGatewayRequest.RequestContext.Http.SourceIp, out var remoteIpAddress))
                 {
-                    RemoteIpAddress = remoteIpAddress;
+                    connectionFeatures.RemoteIpAddress = remoteIpAddress;
                 }
 
                 if (apiGatewayRequest.Headers?.TryGetValue("X-Forwarded-Port", out var port) == true)
                 {
-                    RemotePort = int.Parse(port, CultureInfo.InvariantCulture);
+                    connectionFeatures.RemotePort = int.Parse(port, CultureInfo.InvariantCulture);
                 }
             }
 
             {
-                RequestServices = serviceProvider;
+                var serviceProviderFeatures = (IServiceProvidersFeature)this;
+
+                serviceProviderFeatures.RequestServices = serviceProvider;
             }
 
             {
-                Items[LAMBDA_CONTEXT] = lambdaContext;
-                Items[LAMBDA_REQUEST_OBJECT] = apiGatewayRequest;
+                var itemsFeatures = (IItemsFeature)this;
+
+                itemsFeatures.Items[LAMBDA_CONTEXT] = lambdaContext;
+                itemsFeatures.Items[LAMBDA_REQUEST_OBJECT] = apiGatewayRequest;
             }
 
             {
-                Activity = new Activity($"{apiGatewayRequest.RequestContext.Http.Method} {apiGatewayRequest.RequestContext.Http.Path}");
+                var activityFeatures = (IHttpActivityFeature)this;
+
+                activityFeatures.Activity = new Activity($"{apiGatewayRequest.RequestContext.Http.Method} {apiGatewayRequest.RequestContext.Http.Path}");
             }
         }
 
@@ -236,51 +244,55 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #endregion
 
         #region IItemsFeature
-        public IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
+        IDictionary<object, object?> IItemsFeature.Items { get; set; } = new Dictionary<object, object?>();
         #endregion
 
         #region IHttpAuthenticationFeature
-        public ClaimsPrincipal? User { get; set; }
+        ClaimsPrincipal? IHttpAuthenticationFeature.User { get; set; }
 
         #endregion
 
         #region IHttpRequestFeature
-        public string Protocol { get; set; }
+        string IHttpRequestFeature.Protocol { get; set; } = string.Empty;
 
-        public string Scheme { get; set; }
+        string IHttpRequestFeature.Scheme { get; set; } = string.Empty;
 
-        public string Method { get; set; }
+        string IHttpRequestFeature.Method { get; set; } = string.Empty;
 
-        public string PathBase { get; set; }
+        string IHttpRequestFeature.PathBase { get; set; } = string.Empty;
 
-        public string Path { get; set; }
+        string IHttpRequestFeature.Path { get; set; } = string.Empty;
 
-        public string QueryString { get; set; }
+        string IHttpRequestFeature.QueryString { get; set; } = string.Empty;
 
-        public string RawTarget { get; set; }
+        string IHttpRequestFeature.RawTarget { get; set; } = string.Empty;
 
-        public IHeaderDictionary Headers { get; set; } = new HeaderDictionary();
+        IHeaderDictionary IHttpRequestFeature.Headers { get; set; } = new HeaderDictionary();
 
-        public Stream Body { get; set; } = new MemoryStream();
+        Stream IHttpRequestFeature.Body { get; set; } = new MemoryStream();
 
         #endregion
 
         #region IHttpResponseFeature
-        public int StatusCode { get; set; } = 200;
+        int IHttpResponseFeature.StatusCode { get; set; } = 200;
 
-        public string? ReasonPhrase { get; set; }
+        string? IHttpResponseFeature.ReasonPhrase { get; set; }
 
-        public bool HasStarted { get; }
+        bool IHttpResponseFeature.HasStarted { get; }
+
+        IHeaderDictionary IHttpResponseFeature.Headers { get; set; } = new HeaderDictionary();
+
+        Stream IHttpResponseFeature.Body { get; set; } = new MemoryStream();
 
         internal EventCallbacks? ResponseStartingEvents { get; private set; }
-        public void OnStarting(Func<object, Task> callback, object state)
+        void IHttpResponseFeature.OnStarting(Func<object, Task> callback, object state)
         {
             ResponseStartingEvents ??= new EventCallbacks();
             ResponseStartingEvents.Add(callback, state);
         }
 
         internal EventCallbacks? ResponseCompletedEvents { get; private set; }
-        public void OnCompleted(Func<object, Task> callback, object state)
+        void IHttpResponseFeature.OnCompleted(Func<object, Task> callback, object state)
         {
             ResponseCompletedEvents ??= new EventCallbacks();
             ResponseCompletedEvents.Add(callback, state);
@@ -325,11 +337,13 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #endregion
 
         #region IHttpResponseBodyFeature
-        public Stream Stream => Body;
+#pragma warning disable CS0618 // Type or member is obsolete
+        Stream IHttpResponseBodyFeature.Stream => ((IHttpResponseFeature)this).Body;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         private PipeWriter? _pipeWriter;
 
-        public PipeWriter Writer
+        PipeWriter IHttpResponseBodyFeature.Writer
         {
             get
             {
@@ -338,15 +352,15 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             }
         }
 
-        public Task CompleteAsync() => Task.CompletedTask;
+        Task IHttpResponseBodyFeature.CompleteAsync() => Task.CompletedTask;
 
-        public void DisableBuffering()
+        void IHttpResponseBodyFeature.DisableBuffering()
         {
         }
 
         // This code is taken from the Apache 2.0 licensed ASP.NET Core repo.
         // https://github.com/aspnet/AspNetCore/blob/ab02951b37ac0cb09f8f6c3ed0280b46d89b06e0/src/Http/Http/src/SendFileFallback.cs
-        public async Task SendFileAsync(string filePath, long offset, long? count, CancellationToken cancellationToken)
+        async Task IHttpResponseBodyFeature.SendFileAsync(string filePath, long offset, long? count, CancellationToken cancellationToken)
         {
             var fileInfo = new FileInfo(filePath);
             if (offset < 0 || offset > fileInfo.Length)
@@ -378,27 +392,27 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
             }
         }
 
-        public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        Task IHttpResponseBodyFeature.StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         #endregion
 
         #region IHttpConnectionFeature
 
-        public string ConnectionId { get; set; }
+        string IHttpConnectionFeature.ConnectionId { get; set; } = string.Empty;
 
-        public IPAddress? RemoteIpAddress { get; set; }
+        IPAddress? IHttpConnectionFeature.RemoteIpAddress { get; set; }
 
-        public IPAddress? LocalIpAddress { get; set; }
+        IPAddress? IHttpConnectionFeature.LocalIpAddress { get; set; }
 
-        public int RemotePort { get; set; }
+        int IHttpConnectionFeature.RemotePort { get; set; }
 
-        public int LocalPort { get; set; }
+        int IHttpConnectionFeature.LocalPort { get; set; }
 
         #endregion
 
         #region IServiceProvidersFeature
 
-        public IServiceProvider RequestServices { get; set; }
+        IServiceProvider IServiceProvidersFeature.RequestServices { get; set; } = null!;
 
         #endregion
 
@@ -413,7 +427,7 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         #region IHttpRequestIdentifierFeature
 
         string? _traceIdentifier;
-        public string TraceIdentifier
+        string IHttpRequestIdentifierFeature.TraceIdentifier
         {
             get
             {
@@ -436,8 +450,15 @@ namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
         }
 
         #endregion
-        public bool CanHaveBody => Body != null && Body.Length > 0;
+        bool IHttpRequestBodyDetectionFeature.CanHaveBody
+        {
+            get
+            {
+                var requestFeature = (IHttpRequestFeature)this;
+                return requestFeature.Body != null && requestFeature.Body.Length > 0;
+            }
+        }
 
-        public Activity Activity { get; set; }
+        Activity IHttpActivityFeature.Activity { get; set; } = null!;
     }
 }

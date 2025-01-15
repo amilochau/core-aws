@@ -30,17 +30,10 @@ namespace Milochau.Core.Aws.Core.References
         private static readonly IDictionary variables = Environment.GetEnvironmentVariables();
 
         /// <summary>Get environment variable</summary>
-        public static string? GetEnvironmentVariable(string key, bool forceRead = false)
+        public static string? GetEnvironmentVariable(string key)
         {
-            if (forceRead)
-            {
-                return Environment.GetEnvironmentVariable(key);
-            }
-            else
-            {
-                TryGetEnvironmentVariable(key, out var value);
-                return value;
-            }
+            TryGetEnvironmentVariable(key, out var value);
+            return value;
         }
 
         /// <summary>Try get environment variable</summary>
@@ -58,7 +51,7 @@ namespace Milochau.Core.Aws.Core.References
             }
         }
 
-        /// <summary>REgion name</summary>
+        /// <summary>Region name</summary>
         public static string RegionName { get; } = GetEnvironmentVariable(Key_Region)!;
 
         /// <summary>Access key</summary>
