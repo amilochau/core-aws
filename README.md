@@ -24,6 +24,7 @@
 
 ## Main features
 
+- Web: ASP.NET application libraries, optimized to run within Lambda functions
 - API Gateway: authentication checks, request validations
 - DynamoDB: document attribute mapping, expressions based on code generation
 - Integration: multi-lambda integration application baseline
@@ -50,7 +51,10 @@ dotnet add package Milochau.Core.Aws.SNS
 
 2. Use the packages
 
-See [the reference project](./src/Reference%20Projects/Milochau.Core.Aws.ReferenceProjects.LambdaFunction/) to find usage examples.
+See the reference projects to find usage examples:
+- [ASP.NET lambda function](./src/Reference%20Projects/Milochau.Core.Aws.ReferenceProjects.AspNetCore)
+- [Event-based lambda function](./src/Reference%20Projects/Milochau.Core.Aws.ReferenceProjects.LambdaFunction)
+- [Integration project](./src/Reference%20Projects/Milochau.Core.Aws.ReferenceProjects.Integration), typically used to test multiple lambda functions together
 
 --- 
 

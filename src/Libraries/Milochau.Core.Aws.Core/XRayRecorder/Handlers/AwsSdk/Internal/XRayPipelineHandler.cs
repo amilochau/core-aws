@@ -92,7 +92,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
                     }
                 }
             }
-            else if(responseContext.Response.ResponseMetadata != null)
+            else if (responseContext.Response.ResponseMetadata != null)
             {
                 subsegment.Aws["request_id"] = responseContext.Response.ResponseMetadata.RequestId;
 
