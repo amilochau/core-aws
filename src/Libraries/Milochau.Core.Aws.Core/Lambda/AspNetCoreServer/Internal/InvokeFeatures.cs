@@ -18,7 +18,6 @@ using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using Milochau.Core.Aws.Core.Lambda.Core;
 using Milochau.Core.Aws.Core.References;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Milochau.Core.Aws.Core.Lambda.AspNetCoreServer.Internal
 {

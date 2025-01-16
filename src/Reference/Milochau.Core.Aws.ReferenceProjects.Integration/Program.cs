@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
-using System;
 using Milochau.Core.Aws.DynamoDB.Events;
 using Milochau.Core.Aws.Core.References;
 
