@@ -24,7 +24,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         protected const char ProtocolDelimiter = '\n';
 
         private readonly Lazy<List<Subsegment>> _lazySubsegments = new Lazy<List<Subsegment>>();
-        private readonly Lazy<Annotations> _lazyAnnotations = new Lazy<Annotations>();
+        private readonly Lazy<Dictionary<string, string>> _lazyAnnotations = new Lazy<Dictionary<string, string>>();
         private readonly Lazy<Dictionary<string, object>> _lazyHttp = new Lazy<Dictionary<string, object>>();
         private readonly Lazy<Dictionary<string, object?>> _lazyAws = new Lazy<Dictionary<string, object?>>();
 
@@ -157,13 +157,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         /// Gets the annotations of the segment
         /// </summary>
         [JsonPropertyName("annotations")]
-        public Annotations Annotations
-        {
-            get
-            {
-                return _lazyAnnotations.Value;
-            }
-        }
+        public Dictionary<string, string> Annotations => _lazyAnnotations.Value;
 
         /// <summary>
         /// Gets or sets a value indicating whether the segment has faulted or failed
