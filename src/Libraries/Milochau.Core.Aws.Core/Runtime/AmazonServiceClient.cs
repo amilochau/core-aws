@@ -38,7 +38,8 @@ namespace Milochau.Core.Aws.Core.Runtime
 
             // 1. Start request monitoring
             var xrayPipelineHandler = new XRayPipelineHandler();
-            xrayPipelineHandler.ProcessBeginRequest(requestContext.ClientConfig.MonitoringServiceName, requestContext.HttpRequestMessage);
+            xrayPipelineHandler.ProcessBeginRequest(requestContext.ClientConfig.MonitoringServiceName);
+            xrayPipelineHandler.AddHttpRequestHeader(requestContext.HttpRequestMessage);
 
             TResponse response;
             try

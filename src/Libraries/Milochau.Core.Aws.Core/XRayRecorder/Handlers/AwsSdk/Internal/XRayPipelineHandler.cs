@@ -19,13 +19,13 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
     public class XRayPipelineHandler
     {
         private readonly AWSXRayRecorder recorder = AWSXRayRecorder.Instance;
+        private Entity? entity;
 
         /// <summary>
         /// Processes Begin request by starting subsegment.
         /// </summary>
-        public void ProcessBeginRequest(string serviceName, HttpRequestMessage request)
+        public Entity? ProcessBeginRequest(string serviceName)
         {
-            Entity? entity = null;
             try
             {
                 entity = recorder.GetEntity();
@@ -38,7 +38,12 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             recorder.SetNamespace("aws");
 
             entity = entity == null ? null : recorder.GetEntity();
+            return entity;
+        }
 
+
+        public void AddHttpRequestHeader(HttpRequestMessage request)
+        {
             if (TraceHeader.TryParse(entity, out TraceHeader? traceHeader))
             {
                 request.Headers.Add(TraceHeader.HeaderKey, traceHeader.ToString());
@@ -111,10 +116,16 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Handlers.AwsSdk.Internal
             }
 
             AddRequestSpecificInformation(requestContext.OriginalRequest, subsegment.Aws);
+
+            if (requestContext.OriginalRequest.UserId != null && requestContext.OriginalRequest.UserId.Value != default)
+            {
+                subsegment.AddAnnotation("user_id", requestContext.OriginalRequest.UserId.Value.ToString("N"));
+            }
+
             recorder.EndSubsegment();
         }
 
-        private void AddHttpInformation(HttpResponseMessage httpResponse)
+        public void AddHttpInformation(HttpResponseMessage httpResponse)
         {
             var responseAttributes = new Dictionary<string, object>();
             int statusCode = (int)httpResponse.StatusCode;
