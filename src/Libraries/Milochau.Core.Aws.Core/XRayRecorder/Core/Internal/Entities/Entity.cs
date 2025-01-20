@@ -6,6 +6,7 @@ using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using System.Text.Json.Serialization;
+using System.Linq;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {
@@ -23,6 +24,7 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         protected const char ProtocolDelimiter = '\n';
 
         private readonly Lazy<List<Subsegment>> _lazySubsegments = new Lazy<List<Subsegment>>();
+        private readonly Lazy<Annotations> _lazyAnnotations = new Lazy<Annotations>();
         private readonly Lazy<Dictionary<string, object>> _lazyHttp = new Lazy<Dictionary<string, object>>();
         private readonly Lazy<Dictionary<string, object?>> _lazyAws = new Lazy<Dictionary<string, object?>>();
 
@@ -152,6 +154,18 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         }
 
         /// <summary>
+        /// Gets the annotations of the segment
+        /// </summary>
+        [JsonPropertyName("annotations")]
+        public Annotations Annotations
+        {
+            get
+            {
+                return _lazyAnnotations.Value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the segment has faulted or failed
         /// </summary>
         [JsonPropertyName("fault")]
@@ -244,6 +258,27 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
         public void SetEndTimeToNow()
         {
             EndTime = DateTime.UtcNow.ToUnixTimeSeconds();
+        }
+
+        /// <summary>
+        /// Adds the specified key and value as annotation to current segment.
+        /// The type of value is restricted. Only <see cref="string" />, <see cref="int" />, <see cref="long" />,
+        /// <see cref="double" /> and <see cref="bool" /> are supported.
+        /// </summary>
+        /// <param name="key">The key of the annotation to add</param>
+        /// <param name="value">The value of the annotation to add</param>
+        /// <exception cref="System.ArgumentException">Key cannot be null or empty - key</exception>
+        /// <exception cref="System.ArgumentNullException">value</exception>
+        /// <exception cref="InvalidAnnotationException">The annotation to be added is invalid.</exception>
+        public void AddAnnotation(string key, string value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Key cannot be null or empty", nameof(key));
+            }
+
+            _lazyAnnotations.Value.Add(key, value);
+            return;
         }
 
         /// <summary>
