@@ -59,6 +59,25 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core
         public abstract void EndSubsegment();
 
         /// <summary>
+        /// Adds the specified key and value as annotation to current segment.
+        /// The type of value is restricted. Only <see cref="string" />, <see cref="int" />, <see cref="long" />,
+        /// <see cref="double" /> and <see cref="bool" /> are supported.
+        /// </summary>
+        /// <param name="key">The key of the annotation to add.</param>
+        /// <param name="value">The value of the annotation to add.</param>
+        /// <exception cref="EntityNotAvailableException">Entity is not available in trace context.</exception>
+        public void AddAnnotation(string key, string value)
+        {
+            try
+            {
+                TraceContext.GetEntity().AddAnnotation(key, value);
+            }
+            catch (EntityNotAvailableException)
+            {
+            }
+        }
+
+        /// <summary>
         /// Set namespace to current segment.
         /// </summary>
         /// <param name="value">The value of the namespace.</param>
