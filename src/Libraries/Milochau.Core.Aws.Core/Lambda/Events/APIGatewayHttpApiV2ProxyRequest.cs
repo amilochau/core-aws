@@ -1,9 +1,4 @@
-﻿using Milochau.Core.Aws.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
+﻿using System.Collections.Generic;
 
 namespace Milochau.Core.Aws.Core.Lambda.Events
 {
@@ -209,65 +204,6 @@ namespace Milochau.Core.Aws.Core.Lambda.Events
                 /// <summary>The Identity Pool Id of the IAM Authorizer</summary>
                 //public string IdentityPoolId { get; set; }
             }
-        }
-
-
-        /// <summary>Try get JWT claims</summary>
-        public bool TryGetJwtClaims(string key, [NotNullWhen(true)] out string? value)
-        {
-            value = null;
-            return RequestContext.Authorizer?.Jwt?.Claims?.TryGetValue(key, out value) ?? false;
-        }
-
-        /// <summary>Try get Identity User</summary>
-        public bool TryGetIdentityUser([NotNullWhen(true)] out IdentityUser? user)
-        {
-            user = null;
-
-            if (!TryGetJwtClaims("sub", out var userSub)
-                || !TryGetJwtClaims("email", out var userEmail)
-                || !TryGetJwtClaims("name", out var userName)
-                || !TryGetJwtClaims("custom:user_id", out var rawUserId) || !Guid.TryParse(rawUserId, out var userId))
-            {
-                return false;
-            }
-
-            user = new IdentityUser(userSub, userName, userEmail, userId);
-            return true;
-        }
-
-        /// <summary>Try get the value of a path parameter</summary>
-        public bool TryGetPathParameter(string key, [NotNullWhen(true)] out string? value)
-        {
-            value = null;
-            return PathParameters?.TryGetValue(key, out value) ?? false;
-        }
-
-        /// <summary>Try get the value of a query string parameter</summary>
-        public bool TryGetQueryStringParameter(string key, [NotNullWhen(true)] out string? value)
-        {
-            value = null;
-            return QueryStringParameters?.TryGetValue(key, out value) ?? false;
-        }
-
-        /// <summary>Try get the value of a header</summary>
-        public bool TryGetHeader(string key, [NotNullWhen(true)] out string? value)
-        {
-            value = null;
-            return Headers?.TryGetValue(key, out value) ?? false;
-        }
-
-        /// <summary>Try deserialize the body</summary>
-        public bool TryDeserializeBody<TBody>([NotNullWhen(true)] out TBody? value, JsonTypeInfo<TBody> jsonTypeInfo)
-        {
-            value = default;
-            if (Body == null)
-            {
-                return false;
-            }
-
-            value = JsonSerializer.Deserialize(Body, jsonTypeInfo);
-            return value != null;
         }
     }
 }
