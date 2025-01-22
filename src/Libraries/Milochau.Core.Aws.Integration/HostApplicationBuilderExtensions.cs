@@ -75,6 +75,24 @@ namespace Microsoft.AspNetCore.Builder
 
             builder.Services.ConfigureHttpJsonOptions(options.JsonOptions);
 
+            builder.Services.ConfigureHttpJsonOptions(options.JsonOptions);
+
+            // HTTP Context and identity
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped(serviceProvider =>
+            {
+                IHttpContextAccessor httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+                var claims = httpContextAccessor.HttpContext.User.Claims;
+                return new IdentityUser
+                (
+                    sub: claims.First(x => x.Type == ClaimTypes.NameIdentifier || x.Type == "sub").Value,
+                    name: claims.First(x => x.Type == "name").Value,
+                    email: claims.First(x => x.Type == ClaimTypes.Email || x.Type == "email").Value,
+                    userId: Guid.Parse(claims.First(x => x.Type == "custom:user_id").Value)
+                );
+            });
+
             return builder;
         }
 

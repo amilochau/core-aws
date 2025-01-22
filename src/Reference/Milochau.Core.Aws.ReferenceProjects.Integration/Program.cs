@@ -5,11 +5,21 @@ using System.Threading;
 using Milochau.Core.Aws.ReferenceProjects.LambdaFunction;
 using Milochau.Core.Aws.DynamoDB.Events;
 using Milochau.Core.Aws.Core.References;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Milochau.Core.Aws.Core.JsonConverters;
 
 var options = new IntegrationWebApplicationOptions
 {
     Args = args,
-    CorsOrigins = ["http://localhost:3000", "http://localhost:4173"]
+    CorsOrigins = ["http://localhost:3000", "http://localhost:4173"],
+    JsonOptions = options =>
+    {
+        options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.SerializerOptions.Converters.Add(new GuidConverter());
+        options.SerializerOptions.TypeInfoResolver = ApiPayloadJsonSerializerContext.Default;
+    },
 };
 
 var builder = IntegrationWebApplication.CreateBuilder(options);
@@ -28,3 +38,8 @@ app.MapPost("/dynamodb", async (DynamoDBEvent proxyRequest, CancellationToken ca
 .WithTags("DynamoDB Stream trigger");
 
 app.Run();
+
+[JsonSerializable(typeof(string))]
+public partial class ApiPayloadJsonSerializerContext : JsonSerializerContext
+{
+}
