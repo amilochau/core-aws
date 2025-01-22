@@ -16,6 +16,9 @@ using Scalar.AspNetCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Milochau.Core.Aws.Core.References;
+using System.Security.Claims;
+using Milochau.Core.Aws.Abstractions;
+using Microsoft.AspNetCore.Http.Json;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -24,6 +27,9 @@ namespace Microsoft.AspNetCore.Builder
     {
         /// <summary>CORS origins</summary>
         public required string[] CorsOrigins { get; set; }
+
+        /// <summary>JSON options, used to configure the JSON serializer for HTTP API payloads</summary>
+        public required Action<JsonOptions> JsonOptions { get; set; }
     }
 
     /// <summary>Web Application used for integration</summary>
@@ -66,6 +72,8 @@ namespace Microsoft.AspNetCore.Builder
             {
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
+
+            builder.Services.ConfigureHttpJsonOptions(options.JsonOptions);
 
             return builder;
         }
