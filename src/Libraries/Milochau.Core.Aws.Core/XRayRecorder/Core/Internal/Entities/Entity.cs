@@ -6,7 +6,6 @@ using System.Threading;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Utils;
 using Milochau.Core.Aws.Core.XRayRecorder.Core.Exceptions;
 using System.Text.Json.Serialization;
-using System.Linq;
 
 namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
 {
@@ -15,7 +14,6 @@ namespace Milochau.Core.Aws.Core.XRayRecorder.Core.Internal.Entities
     /// </summary>
     public abstract class Entity
     {
-        private const string DefaultMetadataNamespace = "default";
         private const int SegmentIdHexDigits = 16;  // Number of hex digits in segment id
 
         /// <summary>Protocol header</summary>
