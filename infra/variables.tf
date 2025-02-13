@@ -2,15 +2,15 @@ variable "context" {
   description = "Context to use"
   type = object({
     organization_name = string
-    application_name = string
-    host_name        = string
+    application_name  = string
+    host_name         = string
   })
 }
 
 variable "assume_roles" {
   description = "Roles to be assumed"
   type = object({
-    workloads      = string
+    workloads = string
   })
 }
 

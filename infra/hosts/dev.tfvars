@@ -1,12 +1,12 @@
 context = {
   organization_name = "mil"
-  application_name = "test"
-  host_name        = "dev"
-  temporary        = true
+  application_name  = "test"
+  host_name         = "dev"
+  temporary         = true
 }
 
 assume_roles = {
-  workloads      = "arn:aws:iam::381492034295:role/administrator-access"
+  workloads = "arn:aws:iam::381492034295:role/administrator-access"
 }
 
 lambda_settings = {
